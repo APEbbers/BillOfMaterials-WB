@@ -1,5 +1,5 @@
 # ***************************************************************************
-# *   Copyright (c) 2015 Paul Ebbers paul.ebbers@gmail.com                  *
+# *   Copyright (c) 2023 Paul Ebbers paul.ebbers@gmail.com                  *
 # *                                                                         *
 # *   This file is part of the FreeCAD CAx development system.              *
 # *                                                                         *
@@ -43,13 +43,13 @@ PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI").replace("\\", "/")
 class BOM_WB(Gui.Workbench):
     MenuText = "Bill of Materials Workbench"
     ToolTip = "A workbench for creating a Bill of Materials"
-    # Icon = os.path.join(PATH_TB_ICONS, "BoMWB.svg").replace("\\", "/")
+    Icon = os.path.join(PATH_TB_ICONS, "BoMWB.svg").replace("\\", "/")
 
     Gui.addIconPath(PATH_TB_ICONS)
-    Gui.addPreferencePage(
-        os.path.join(PATH_TB_UI, "PreferenceUI.ui"),
-        "Bill of Materiala Workbench",
-    )
+    # Gui.addPreferencePage(
+    #     os.path.join(PATH_TB_UI, "PreferenceUI.ui"),
+    #     "Bill of Materiala Workbench",
+    # )
 
     def GetClassName(self):
         # This function is mandatory if this is a full Python workbench
@@ -60,11 +60,14 @@ class BOM_WB(Gui.Workbench):
         """This function is executed when the workbench is first activated.
         It is executed once in a FreeCAD session followed by the Activated function.
         """
-        import MyModuleA, MyModuleB # import here all the needed files that create your FreeCAD commands
-        self.list = ["MyCommand1", "MyCommand2"] # a list of command names created in the line above
-        self.appendToolbar("My Commands", self.list) # creates a new toolbar with your commands
-        self.appendMenu("My New Menu", self.list) # creates a new menu
-        self.appendMenu(["An existing Menu", "My submenu"], self.list) # appends a submenu to an existing menu
+        import Commands  # import here all the needed files that create your FreeCAD commands
+        # a list of command names created in the line above
+        self.list = ["CreateBOM"]
+        # creates a new toolbar with your commands
+        self.appendToolbar("My Commands", self.list)
+        self.appendMenu("My New Menu", self.list)  # creates a new menu
+        # appends a submenu to an existing menu
+        self.appendMenu(["An existing Menu", "My submenu"], self.list)
 
     def Activated(self):
         """This function is executed whenever the workbench is activated"""
@@ -77,30 +80,8 @@ class BOM_WB(Gui.Workbench):
     def ContextMenu(self, recipient):
         """This function is executed whenever the user right-clicks on screen"""
         # "recipient" will be either "view" or "tree"
-        self.appendContextMenu("My commands", self.list) # add commands to the context menu
-
-    def GetClassName(self): 
-        # This function is mandatory if this is a full Python workbench
-        # This is not a template, the returned string should be exactly "Gui::PythonWorkbench"
-        return "Gui::PythonWorkbench"
-
-    def Activated(self):
-        """This function is executed whenever the workbench is activated"""
-
-        import TechDrawFunctions
-
-        TechDrawFunctions.ImportTemplates()
-        TechDrawFunctions.SetDefaultTemplate()
-        return
-
-    def Deactivated(self):
-        """This function is executed whenever the workbench is deactivated"""
-        return
-
-    # def ContextMenu(self, recipient):
-    #     """This function is executed whenever the user right-clicks on screen"""
-    #     # "recipient" will be either "view" or "tree"
-    #     self.appendContextMenu("My commands", self.list) # add commands to the context menu
+        # add commands to the context menu
+        self.appendContextMenu("My commands", self.list)
 
 
 Gui.addWorkbench(BOM_WB())
