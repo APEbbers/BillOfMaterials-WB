@@ -26,6 +26,7 @@ import Standard_Functions_BOM_WB
 
 
 class BomFunctions:
+    # The startrow number which increases with every item and child
     StartRow = 0
 
     @classmethod
@@ -87,66 +88,102 @@ class BomFunctions:
         Args:
             docObjects (_type_):    list[DocumentObjects]\n
             sheet (_type_):         must be the spreadsheet object\n
-            StartRow (_type_):      The row where to start filling the spreadsheet\n
             ItemNumber (_type_):    The first position number\n
-
+            ParentNumber (_type_):  The number from the parent as a string\n
         Returns:
             True
         """
         for i in range(len(docObjects)):
+            # Get the documentObject
             object = docObjects[i]
+
+            # Increase the itemnumber
             ItemNumber = ItemNumber + 1
+
+            # Increase the global startrow to make sure the data ends up in the next row
             self.StartRow = self.StartRow + 1
 
+            # If the documentObject is one of the allowed types, continue
             if BomFunctions.AllowedObjectType(object.TypeId) is True:
+                # define the itemnumber string. for toplevel this is equel to Itemnumber.
+                # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
                 ItemNumberString = str(ItemNumber)
+                # If there is a parentnumber (like 1.1, add it as prefix.)
                 if ParentNumber != "":
                     ItemNumberString = ParentNumber
+
+                # Write the spreadsheet row with the ItemNumberString and properties from the document object.
                 sheet.set("A" + str(self.StartRow), ItemNumberString)
                 sheet.set("B" + str(self.StartRow), object.Label)
                 sheet.set("C" + str(self.StartRow), object.Label2)
                 sheet.set("D" + str(self.StartRow), object.TypeId)
 
+                # If the object is an container, go through the sub items, (a.k.a child objects)
                 if object.TypeId == "App::LinkGroup" or object.TypeId == "App::Link":
+                    # Create a list with child objects as DocumentObjects
                     childObjects = []
+                    # Make sure that the list is empty. (probally overkill)
                     childObjects.clear()
+                    # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                     for i in range(len(object.getSubObjects())):
                         if object.getSubObjects()[i] is not None:
                             childObjects.append(
                                 object.getSubObject(object.getSubObjects()[i], 1),
                             )
+                    # Go the the child objects with a separate function for the child objects
+                    # This way you can go through multiple levels
                     BomFunctions.GoThrough_ChildObjects(
                         ChilddocObjects=childObjects,
                         sheet=sheet,
                         ChildItemNumber=0,
                         ParentNumber=ItemNumberString,
                     )
-        #                   self.StartRow=StartRow
-        #        self.StartRow=StartRow
         return
 
     @classmethod
     def GoThrough_ChildObjects(
         self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""
     ) -> True:
+        """
+        Args:
+            ChilddocObjects (_type_):       list[DocumentObjects]\n
+            sheet (_type_):                 must be the spreadsheet object\n
+            ChildItemNumber (_type_):       The first position number\n
+            ParentNumber (_type_):          The number from the parent as a string\n
+        Returns:
+            True
+        """
         for i in range(len(ChilddocObjects)):
+            # Get the childDocumentObject
             childObject = ChilddocObjects[i]
+
+            # Increase the itemnumber for the child
             ChildItemNumber = ChildItemNumber + 1
+
+            # Increase the global startrow to make sure the data ends up in the next row
             self.StartRow = self.StartRow + 1
 
+            # If the childDocumentObject is one of the allowed types, continue
             if BomFunctions.AllowedObjectType(childObject.TypeId) is True:
+                # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
+
+                # Write the spreadsheet row with the ChildItemNumberString and properties from the child document object.
                 sheet.set("A" + str(self.StartRow), ItemNumberString)
                 sheet.set("B" + str(self.StartRow), childObject.Label)
                 sheet.set("C" + str(self.StartRow), childObject.Label2)
                 sheet.set("D" + str(self.StartRow), childObject.TypeId)
 
+                # If the child object is an container, go through the sub items with this function, (a.k.a child objects)
                 if (
                     childObject.TypeId == "App::LinkGroup"
                     or childObject.TypeId == "App::Link"
                 ):
+                    # Create a list with sub child objects as DocumentObjects
                     subChildObjects = []
+                    # Make sure that the list is empty. (probally overkill)
                     subChildObjects.clear()
+                    # Go through the subObjects of the child document object, If the item(i) is not None, add it to the list.
                     for i in range(len(childObject.getSubObjects())):
                         if childObject.getSubObjects()[i] is not None:
                             subChildObjects.append(
@@ -154,18 +191,17 @@ class BomFunctions:
                                     childObject.getSubObjects()[i], 1
                                 ),
                             )
+                    # Go the the sub child objects with this same function
                     BomFunctions.GoThrough_ChildObjects(
                         ChilddocObjects=subChildObjects,
                         sheet=sheet,
                         ChildItemNumber=0,
                         ParentNumber=ItemNumberString,
                     )
-        #                    self.StartRow=StartRow
-        #        self.StartRow=StartRow
         return
 
     @classmethod
-    def main(self, command=""):
+    def Start(self, command=""):
         try:
             sheet = App.ActiveDocument.getObject("BoM")
             # check if the result is not empty
