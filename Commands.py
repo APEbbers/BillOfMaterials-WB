@@ -39,7 +39,7 @@ class CreateBOM_Class:
     def Activated(self):
         import GetBOM
 
-        GetBOM.main()
+        GetBOM.BomFunctions.Start()
         return
 
     def IsActive(self):

@@ -28,9 +28,11 @@ import Standard_Functions_BOM_WB
 class BomFunctions:
     # The startrow number which increases with every item and child
     StartRow = 0
+    mainList = []
 
+    # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
-    def GetTreeObjects(self):
+    def GetTreeObjects(self) -> True:
         # Get the active document
         doc = App.ActiveDocument
         # get all the objects at first level. doc.Objects will return Applink part of the link group as well
@@ -39,14 +41,11 @@ class BomFunctions:
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
 
-        # Set the headers in the spreadsheet
-        sheet.set("A1", "Number")
-        sheet.set("B1", "Name")
-        sheet.set("C1", "Description")
-        sheet.set("D1", "Type")
-
-        # Define the row to start from
-        #        StartRow = 1
+        # # Set the headers in the spreadsheet
+        # sheet.set("A1", "Number")
+        # sheet.set("B1", "Name")
+        # sheet.set("C1", "Description")
+        # sheet.set("D1", "Type")
 
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
@@ -112,11 +111,13 @@ class BomFunctions:
                 if ParentNumber != "":
                     ItemNumberString = ParentNumber
 
-                # Write the spreadsheet row with the ItemNumberString and properties from the document object.
-                sheet.set("A" + str(self.StartRow), ItemNumberString)
-                sheet.set("B" + str(self.StartRow), object.Label)
-                sheet.set("C" + str(self.StartRow), object.Label2)
-                sheet.set("D" + str(self.StartRow), object.TypeId)
+                # Create a rowList
+                rowList = []
+                rowList.append(ItemNumberString)
+                rowList.append(object)
+
+                # add the rowList to the mainList
+                self.mainList.append(rowList)
 
                 # If the object is an container, go through the sub items, (a.k.a child objects)
                 if object.TypeId == "App::LinkGroup" or object.TypeId == "App::Link":
@@ -168,13 +169,15 @@ class BomFunctions:
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
 
-                # Write the spreadsheet row with the ChildItemNumberString and properties from the child document object.
-                sheet.set("A" + str(self.StartRow), ItemNumberString)
-                sheet.set("B" + str(self.StartRow), childObject.Label)
-                sheet.set("C" + str(self.StartRow), childObject.Label2)
-                sheet.set("D" + str(self.StartRow), childObject.TypeId)
+                # Create a rowList
+                rowList = []
+                rowList.append(ItemNumberString)
+                rowList.append(childObject)
 
-                # If the child object is an container, go through the sub items with this function, (a.k.a child objects)
+                # add the rowList to the mainList
+                self.mainList.append(rowList)
+
+                # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
                 if (
                     childObject.TypeId == "App::LinkGroup"
                     or childObject.TypeId == "App::Link"
@@ -183,7 +186,7 @@ class BomFunctions:
                     subChildObjects = []
                     # Make sure that the list is empty. (probally overkill)
                     subChildObjects.clear()
-                    # Go through the subObjects of the child document object, If the item(i) is not None, add it to the list.
+                    # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
                     for i in range(len(childObject.getSubObjects())):
                         if childObject.getSubObjects()[i] is not None:
                             subChildObjects.append(
@@ -200,23 +203,55 @@ class BomFunctions:
                     )
         return
 
+    # endregion
+
+    @classmethod
+    # function to create a Total BoM
+    def createTotalBoM(self):
+        # Get the spreadsheet.
+        sheet = App.ActiveDocument.getObject("BoM")
+
+        # Set the headers in the spreadsheet
+        sheet.set("A1", "Number")
+        sheet.set("B1", "Name")
+        sheet.set("C1", "Description")
+        sheet.set("D1", "Type")
+
+        print(len(self.mainList))
+        # Go through the main list and add every rowList to the spreadsheet.
+        for i in range(len(self.mainList)):
+            rowList = self.mainList[i]
+            # Set the row offset to 2. otherwise the headers will be overwritten
+            rowOffset = 2
+            # Increase the row
+            Row = i + rowOffset
+
+            # Fill the spreadsheet
+            sheet.set("A" + str(Row), rowList[0])
+            sheet.set("B" + str(Row), rowList[1].Label)
+            sheet.set("C" + str(Row), rowList[1].Label2)
+            sheet.set("D" + str(Row), rowList[1].TypeId)
+
     @classmethod
     def Start(self, command=""):
         try:
+            # create the mainList
+            BomFunctions.GetTreeObjects()
             sheet = App.ActiveDocument.getObject("BoM")
             # check if the result is not empty
             if sheet is not None:
                 # clear the sspreadsheet
-                sheet.clear()
+                sheet.clearAll()
+
                 # Proceed with the macro.
-                BomFunctions.GetTreeObjects()
+                BomFunctions.createTotalBoM()
 
             # if the result is empty, create a new titleblock spreadsheet
             if sheet is None:
                 sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
 
                 # Proceed with the macro.
-                BomFunctions.GetTreeObjects()
+                BomFunctions.createTotalBoM()
         except Exception as e:
             raise e
         return
