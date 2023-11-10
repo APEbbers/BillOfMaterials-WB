@@ -25,21 +25,49 @@
 import FreeCAD as App
 import FreeCADGui as Gui
 
-# Export data from the titleblock to the spreadsheet
 
-
-class CreateBOM_Class:
+class CreateTotalBOM_Class:
     def GetResources(self):
         return {
             "Pixmap": "CreateBOM.svg",  # the name of a svg file available in the resources
-            "MenuText": "Create BoM",
+            "MenuText": "Create a overall BoM",
             "ToolTip": "Create a Bill of Materials in a spreadsheet",
         }
 
     def Activated(self):
         import GetBOM
 
-        GetBOM.BomFunctions.Start()
+        GetBOM.BomFunctions.Start("Total")
+        return
+
+    def IsActive(self):
+        """Here you can define if the command must be active or not (greyed) if certain conditions
+        are met or not. This function is optional."""
+        # Set the default state
+        result = False
+        # Get for the active document.
+        ActiveDoc = App.activeDocument()
+        if ActiveDoc is not None:
+            # Check if the document has any pages. If so the result is True and the command is activated.
+            pages = App.ActiveDocument.findObjects("TechDraw::DrawPage")
+            if pages is not None:
+                result = True
+
+        return result
+
+
+class CreateRawBOM_Class:
+    def GetResources(self):
+        return {
+            "Pixmap": "CreateBOM.svg",  # the name of a svg file available in the resources
+            "MenuText": "Create the raw BoM",
+            "ToolTip": "Create a Bill of Materials in a spreadsheet, as is.",
+        }
+
+    def Activated(self):
+        import GetBOM
+
+        GetBOM.BomFunctions.Start("Raw")
         return
 
     def IsActive(self):
@@ -59,4 +87,5 @@ class CreateBOM_Class:
 
 
 # Add the commands to the Gui
-Gui.addCommand("CreateBOM", CreateBOM_Class())
+Gui.addCommand("CreateBOM_Total", CreateTotalBOM_Class())
+Gui.addCommand("CreateBOM_Raw", CreateRawBOM_Class())

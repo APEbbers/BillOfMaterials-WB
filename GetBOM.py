@@ -112,9 +112,15 @@ class BomFunctions:
                     ItemNumberString = ParentNumber
 
                 # Create a rowList
-                rowList = []
-                rowList.append(ItemNumberString)
-                rowList.append(object)
+                rowList = {
+                    "ItemNumber": ItemNumberString,
+                    "DocumentObject": object,
+                    "Qty": 1,
+                }
+                # rowList = []
+                # rowList.append(ItemNumberString)
+                # rowList.append(object)
+                # rowList.append(1)  # this will be used for the quantity
 
                 # add the rowList to the mainList
                 self.mainList.append(rowList)
@@ -170,9 +176,11 @@ class BomFunctions:
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
 
                 # Create a rowList
-                rowList = []
-                rowList.append(ItemNumberString)
-                rowList.append(childObject)
+                rowList = {
+                    "ItemNumber": ItemNumberString,
+                    "DocumentObject": childObject,
+                    "Qty": 1,
+                }
 
                 # add the rowList to the mainList
                 self.mainList.append(rowList)
@@ -206,8 +214,8 @@ class BomFunctions:
     # endregion
 
     @classmethod
-    # function to create a Total BoM
-    def createTotalBoM(self):
+    # function to create BoM. If no Bom omitted, a raw BoM will be generated.
+    def createBoM(self, BoM: list = None):
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
 
@@ -216,27 +224,123 @@ class BomFunctions:
         sheet.set("B1", "Name")
         sheet.set("C1", "Description")
         sheet.set("D1", "Type")
+        sheet.set("E1", "Qty")
 
-        print(len(self.mainList))
+        # copy the main list. Leave the orginal intact for other fdunctions
+        if BoM is not None:
+            CopyMainList = BoM.copy()
+        else:
+            CopyMainList = self.mainList.copy()
+
         # Go through the main list and add every rowList to the spreadsheet.
-        for i in range(len(self.mainList)):
-            rowList = self.mainList[i]
+        for i in range(len(CopyMainList)):
+            rowList = CopyMainList[i]
             # Set the row offset to 2. otherwise the headers will be overwritten
             rowOffset = 2
             # Increase the row
             Row = i + rowOffset
 
             # Fill the spreadsheet
-            sheet.set("A" + str(Row), rowList[0])
-            sheet.set("B" + str(Row), rowList[1].Label)
-            sheet.set("C" + str(Row), rowList[1].Label2)
-            sheet.set("D" + str(Row), rowList[1].TypeId)
+            sheet.set("A" + str(Row), rowList["ItemNumber"])
+            sheet.set("B" + str(Row), rowList["DocumentObject"].Label)
+            sheet.set("C" + str(Row), rowList["DocumentObject"].Label2)
+            sheet.set("D" + str(Row), rowList["DocumentObject"].TypeId)
+            sheet.set("E" + str(Row), str(rowList["Qty"]))
+
+    @classmethod
+    def CreateTotalBoM(self):
+        # copy the main list. Leave the orginal intact for other fdunctions
+        CopyMainList = self.mainList.copy()
+        # Create a temporary list
+        TemporaryList = []
+        # at the top row of the CopyMainList to the temporary list
+        TemporaryList.append(CopyMainList[0])
+
+        # create a counter
+        i = 0
+        for rowList in CopyMainList:
+            # In crease the counter
+            i = i + 1
+            # create a place holder for the quantity
+            QtyValue = 1
+
+            # As long the counter is less than the length of the list, continue
+            if i < len(CopyMainList):
+                # Get the row item
+                rowList = CopyMainList[i]
+                # Get the itemnumber
+                itemNumber = str(rowList["ItemNumber"])
+                # Get the name of the object
+                objectName = rowList["DocumentObject"].Label
+                # Get the object type of the next object
+                objectType = rowList["DocumentObject"].TypeId
+
+                # Make sure that you don't go too far. Otherwise you cannot define the next rows
+                if i <= len(CopyMainList) - 2:
+                    # Get the next row item
+                    rowListNext = CopyMainList[i + 1]
+                    # Get the object type of the next object
+                    objectTypeNext = rowListNext["DocumentObject"].TypeId
+                    # Get the name of the next object
+                    objectNameNext = rowListNext["DocumentObject"].Label
+                    # Get the itemnumber of the next object
+                    itemNumberNext = str(rowListNext["ItemNumber"])
+
+                    # Get the previous row item
+                    rowListPrevious = CopyMainList[i - 1]
+                    # Get the name of the previous object
+                    objectNamePrevious = rowListPrevious["DocumentObject"].Label
+                    # Get the object type of the previous object
+                    objectTypePrevious = rowListPrevious["DocumentObject"].TypeId
+                    # Get the itemnumber of the previous object
+                    itemNumberPrevious = str(rowListPrevious["ItemNumber"])
+
+                    # compare the current item with the previous one
+                    if (
+                        objectName == objectNamePrevious
+                        and objectType == objectTypePrevious
+                    ):
+                        # Split the itemnumber with "." and compare the lengths of the current itemnumber
+                        # with the length of next itemnumber.
+                        # If the next itemnumber is shorter, you have reached the last item in App::Link
+                        if len(itemNumberNext.split(".")) < len(itemNumber.split(".")):
+                            # Set the quantity. This is equeal to the lastnumber in the number string.
+                            # (for example 10 in 1.3.10)
+                            QtyValue = int(itemNumber.rsplit(".", 1)[1])
+                            # Create a new dict as new Row item
+                            rowListNew = {
+                                "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
+                                "DocumentObject": rowList["DocumentObject"],
+                                "Qty": QtyValue,
+                            }
+                            # add this new row item th the temporary list
+                            TemporaryList.append(rowListNew)
+
+                    # Compare the name of the object and the next object
+                    # if the names are different but the length of the next itemnumber is equal or greater,
+                    # add the current row to the temporary list
+                    if objectNameNext != objectName and len(
+                        itemNumberNext.split(".")
+                    ) >= len(itemNumber.split(".")):
+                        # Create a new dict as new Row item
+                        rowListNew = {
+                            "ItemNumber": rowList["ItemNumber"],
+                            "DocumentObject": rowList["DocumentObject"],
+                            "Qty": rowList["Qty"],
+                        }
+                        # add this new row item th the temporary list
+                        TemporaryList.append(rowListNew)
+
+        # Create the spreadsheet
+        BomFunctions.createBoM(TemporaryList)
+        return
 
     @classmethod
     def Start(self, command=""):
         try:
             # create the mainList
             BomFunctions.GetTreeObjects()
+
             sheet = App.ActiveDocument.getObject("BoM")
             # check if the result is not empty
             if sheet is not None:
@@ -244,14 +348,20 @@ class BomFunctions:
                 sheet.clearAll()
 
                 # Proceed with the macro.
-                BomFunctions.createTotalBoM()
+                if command == "Total":
+                    BomFunctions.CreateTotalBoM()
+                if command == "Raw":
+                    BomFunctions.createBoM()
 
-            # if the result is empty, create a new titleblock spreadsheet
+            # if the result is empty, create a new spreadsheet
             if sheet is None:
                 sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
 
                 # Proceed with the macro.
-                BomFunctions.createTotalBoM()
+                if command == "Total":
+                    BomFunctions.CreateTotalBoM()
+                if command == "Raw":
+                    BomFunctions.createBoM()
         except Exception as e:
             raise e
         return

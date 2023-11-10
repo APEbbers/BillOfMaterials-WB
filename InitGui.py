@@ -24,9 +24,9 @@ import os
 import FreeCADGui as Gui
 from inspect import getsourcefile
 
-__title__ = "TitleBlock Workbench"
+__title__ = "Bill of Materials Workbench"
 __author__ = "A.P. Ebbers"
-__url__ = "https://github.com/APEbbers/TechDrawTitleBlockUtility.git"
+__url__ = "https://github.com/APEbbers/BillOfMaterials-WB.git"
 
 # get the path of the current python script
 PATH_TB = file_path = os.path.dirname(getsourcefile(lambda: 0))
@@ -60,9 +60,10 @@ class BOM_WB(Gui.Workbench):
         """This function is executed when the workbench is first activated.
         It is executed once in a FreeCAD session followed by the Activated function.
         """
-        import Commands  # import here all the needed files that create your FreeCAD commands
+        import BoM_Commands  # import here all the needed files that create your FreeCAD commands
+
         # a list of command names created in the line above
-        self.list = ["CreateBOM"]
+        self.list = ["CreateBOM_Raw", "CreateBOM_Total"]
         # creates a new toolbar with your commands
         self.appendToolbar("My Commands", self.list)
         self.appendMenu("My New Menu", self.list)  # creates a new menu
