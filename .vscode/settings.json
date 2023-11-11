@@ -1,8 +1,15 @@
 {
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
-    },
-    "python.formatting.provider": "none",
-    "editor.fontLigatures": false,
-    "workbench.colorCustomizations": {}
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.formatting.provider": "none",
+  "editor.fontLigatures": false,
+  "workbench.colorCustomizations": {},
+  "autopep8.interpreter": [
+    "D:\\Python\\Python3.11\\python.exe",
+    "--max-line-length",
+    "120",
+    "--experimental"
+  ],
+  "editor.insertSpaces": false
 }

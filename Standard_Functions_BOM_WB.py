@@ -200,3 +200,31 @@ def OpenFile(FileName: str):
             subprocess.call(("xdg-open", FileName))
     else:
         print(f"Error: {FileName} does not exist.")
+
+
+def SetColumnWidth_SpreadSheet(self, sheet, column: str, cellValue: str, factor: int = 10) -> bool:
+    """_summary_
+
+    Args:
+        sheet (_type_): FreeCAD spreadsheet object.\n
+        column (str): The column for which the width will be set. must be like "A", "B", etc.\n
+        cellValue (str): The string to calulate the widht from.\n
+        factor (int, optional): to increase the stringlength with a factor. Defaults to 10.\n
+
+    Returns:
+        bool: returns True or False
+    """
+    try:
+        # Calculate the text length needed.
+        length = int(len(cellValue) * factor)
+
+        print(column)
+        # Set the column width
+        sheet.setColumnWidth(column, length)
+
+        # Recompute the sheet
+        sheet.recompute()
+    except Exception:
+        return False
+
+    return True

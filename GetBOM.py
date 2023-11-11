@@ -51,9 +51,7 @@ class BomFunctions:
         ItemNumber = 0
 
         # Go Through all objects
-        BomFunctions.GoThrough_Objects(
-            docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber
-        )
+        BomFunctions.GoThrough_Objects(docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber)
 
         return
 
@@ -80,9 +78,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(
-        self, docObjects, sheet, ItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_Objects(self, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
             docObjects (_type_):    list[DocumentObjects]\n
@@ -148,9 +144,7 @@ class BomFunctions:
         return
 
     @classmethod
-    def GoThrough_ChildObjects(
-        self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_ChildObjects(self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
             ChilddocObjects (_type_):       list[DocumentObjects]\n
@@ -186,10 +180,7 @@ class BomFunctions:
                 self.mainList.append(rowList)
 
                 # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
-                if (
-                    childObject.TypeId == "App::LinkGroup"
-                    or childObject.TypeId == "App::Link"
-                ):
+                if childObject.TypeId == "App::LinkGroup" or childObject.TypeId == "App::Link":
                     # Create a list with sub child objects as DocumentObjects
                     subChildObjects = []
                     # Make sure that the list is empty. (probally overkill)
@@ -198,9 +189,7 @@ class BomFunctions:
                     for i in range(len(childObject.getSubObjects())):
                         if childObject.getSubObjects()[i] is not None:
                             subChildObjects.append(
-                                childObject.getSubObject(
-                                    childObject.getSubObjects()[i], 1
-                                ),
+                                childObject.getSubObject(childObject.getSubObjects()[i], 1),
                             )
                     # Go the the sub child objects with this same function
                     BomFunctions.GoThrough_ChildObjects(
@@ -213,10 +202,10 @@ class BomFunctions:
 
     # endregion
 
-    @classmethod
     # function to create BoM. standard, a raw BoM will befrom the main list.
     # If a modified list is created, this function can be used to write it the a spreadsheet.
     # You can add a dict for the headers of this list
+    @classmethod
     def createBoM(self, List: list = None, Headers: dict = None):
         """_summary_
 
@@ -237,7 +226,6 @@ class BomFunctions:
 
         # Define CopyMainList and Header
         CopyMainList = []
-        Header = dict
 
         # if List is None, copy the main list
         CopyMainList = List
@@ -248,18 +236,21 @@ class BomFunctions:
         if Headers is None:
             Headers = {
                 "A1": "Number",
-                "B1": "Name",
-                "C1": "Description",
-                "D1": "Type",
-                "E1": "Qty",
+                "B1": "Qty",
+                "C1": "Name",
+                "D1": "Description",
+                "E1": "Type",
             }
         for key in Headers:
             cell = str(key)
             value = str(Headers[key])
             print(cell + ", " + value)
             sheet.set(cell, value)
+            # set the width
+            self.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=value)
 
         # Go through the main list and add every rowList to the spreadsheet.
+        i = 0
         for i in range(len(CopyMainList)):
             rowList = CopyMainList[i]
             # Set the row offset to 2. otherwise the headers will be overwritten
@@ -269,13 +260,39 @@ class BomFunctions:
 
             # Fill the spreadsheet
             sheet.set("A" + str(Row), str(rowList["ItemNumber"]))
-            sheet.set("B" + str(Row), rowList["DocumentObject"].Label)
-            sheet.set("C" + str(Row), rowList["DocumentObject"].Label2)
-            sheet.set("D" + str(Row), rowList["DocumentObject"].TypeId)
-            sheet.set("E" + str(Row), str(rowList["Qty"]))
+            sheet.set("B" + str(Row), str(rowList["Qty"]))
+            sheet.set("C" + str(Row), rowList["DocumentObject"].Label)
+            sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
+            sheet.set("E" + str(Row), rowList["DocumentObject"].TypeId)
+
+            # Set the column width if the content is longer than the header
+            if len(str(sheet.getContents("A1"))) < len(str(sheet.getContents("A" + str(Row)))):
+                Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
+                    sheet=sheet, column="A", cellValue=str(sheet.getContents("A" + str(Row)))
+                )
+            if len(str(sheet.getContents("B1"))) < len(str(sheet.getContents("B" + str(Row)))):
+                Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
+                    sheet=sheet, column="B", cellValue=str(sheet.getContents("B" + str(Row)))
+                )
+
+            if len(str(sheet.getContents("C1"))) < len(str(sheet.getContents("C" + str(Row)))):
+                Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
+                    sheet=sheet, column="C", cellValue=str(sheet.getContents("C" + str(Row)))
+                )
+            if len(str(sheet.getContents("D1"))) < len(str(sheet.getContents("D" + str(Row)))):
+                Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
+                    sheet=sheet, column="D", cellValue=str(sheet.getContents("D" + str(Row)))
+                )
+            if len(str(sheet.getContents("E1"))) < len(str(sheet.getContents("E" + str(Row)))):
+                Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
+                    sheet=sheet, column="E", cellValue=str(sheet.getContents("E" + str(Row)))
+                )
+
+        # Allign the columns
+        sheet.setAlignment("A1:E" + str(Row), "center", "keep")
 
     @classmethod
-    def CreateTotalBoM(self, CreateSpreadSheet: bool = False):
+    def CreateTotalBoM(self, CreateSpreadSheet: bool = False, IndentNumbering: bool = True):
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
         # Create a temporary list
@@ -289,7 +306,7 @@ class BomFunctions:
 
             # As long the counter is less than the length of the list, continue
             if i < len(CopyMainList):
-                # Get the row item
+                # getContents the row item
                 rowList = CopyMainList[i]
                 # Get the itemnumber
                 itemNumber = str(rowList["ItemNumber"])
@@ -302,8 +319,6 @@ class BomFunctions:
                 if i <= len(CopyMainList) - 2:
                     # Get the next row item
                     rowListNext = CopyMainList[i + 1]
-                    # Get the object type of the next object
-                    objectTypeNext = rowListNext["DocumentObject"].TypeId
                     # Get the name of the next object
                     objectNameNext = rowListNext["DocumentObject"].Label
                     # Get the itemnumber of the next object
@@ -315,14 +330,9 @@ class BomFunctions:
                     objectNamePrevious = rowListPrevious["DocumentObject"].Label
                     # Get the object type of the previous object
                     objectTypePrevious = rowListPrevious["DocumentObject"].TypeId
-                    # Get the itemnumber of the previous object
-                    itemNumberPrevious = str(rowListPrevious["ItemNumber"])
 
                     # compare the current item with the previous one
-                    if (
-                        objectName == objectNamePrevious
-                        and objectType == objectTypePrevious
-                    ):
+                    if objectName == objectNamePrevious and objectType == objectTypePrevious:
                         # Split the itemnumber with "." and compare the lengths of the current itemnumber
                         # with the length of next itemnumber.
                         # If the next itemnumber is shorter, you have reached the last item in App::Link
@@ -342,9 +352,7 @@ class BomFunctions:
                     # Compare the name of the object and the next object
                     # if the names are different but the length of the next itemnumber is equal or greater,
                     # add the current row to the temporary list
-                    if objectNameNext != objectName and len(
-                        itemNumberNext.split(".")
-                    ) >= len(itemNumber.split(".")):
+                    if objectNameNext != objectName and len(itemNumberNext.split(".")) >= len(itemNumber.split(".")):
                         # Create a new dict as new Row item
                         rowListNew = {
                             "ItemNumber": rowList["ItemNumber"],
@@ -354,10 +362,37 @@ class BomFunctions:
                         # add this new row item th the temporary list
                         TemporaryList.append(rowListNew)
 
+        # If no indented numbering is needed, number the parts 1,2,3, etc.
+        if IndentNumbering is False:
+            for k in range(len(TemporaryList)):
+                tempItem = TemporaryList[k]
+                tempItem["ItemNumber"] = k + 1
+
         # Create the spreadsheet
         if CreateSpreadSheet is True:
             BomFunctions.createBoM(TemporaryList)
         return
+
+    @classmethod
+    def SummerizedBoM(self):
+        # copy the main list. Leave the orginal intact for other fdunctions
+        CopyMainList = self.mainList.copy()
+
+        # get the deepest level
+        counter = 0
+        for i in range(1, len(CopyMainList)):
+            # Get the row item
+            rowList = CopyMainList[i]
+            # Get the itemnumber
+            itemNumberLength = len(rowList["ItemNumber"]).split(".")
+            if itemNumberLength > counter:
+                counter = itemNumberLength
+
+        # Create a temporary list
+        TemporaryList = []
+
+        # at the top row of the CopyMainList to the temporary list
+        TemporaryList.append(CopyMainList[0])
 
     @classmethod
     def PartsOnly(self):
