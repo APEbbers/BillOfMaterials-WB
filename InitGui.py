@@ -63,7 +63,7 @@ class BOM_WB(Gui.Workbench):
         import BoM_Commands  # import here all the needed files that create your FreeCAD commands
 
         # a list of command names created in the line above
-        self.list = ["CreateBOM_Raw", "CreateBOM_Total"]
+        self.list = ["CreateBOM_Raw", "CreateBOM_Total", "CreateBOM_PartsOnly"]
         # creates a new toolbar with your commands
         self.appendToolbar("My Commands", self.list)
         self.appendMenu("My New Menu", self.list)  # creates a new menu

@@ -214,23 +214,50 @@ class BomFunctions:
     # endregion
 
     @classmethod
-    # function to create BoM. If no Bom omitted, a raw BoM will be generated.
-    def createBoM(self, BoM: list = None):
+    # function to create BoM. standard, a raw BoM will befrom the main list.
+    # If a modified list is created, this function can be used to write it the a spreadsheet.
+    # You can add a dict for the headers of this list
+    def createBoM(self, List: list = None, Headers: dict = None):
+        """_summary_
+
+        Args:
+            List (list, optional): PartList.\n
+                    Defaults to None.
+            Headers (dict, optional): {\n
+                        "A1": "Number",\n
+                        "B1": "Name",\n
+                        "C1": "Description",\n
+                        "D1": "Type",\n
+                        "E1": "Qty",\n
+                    },\n
+                    . Defaults to None.
+        """
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
 
-        # Set the headers in the spreadsheet
-        sheet.set("A1", "Number")
-        sheet.set("B1", "Name")
-        sheet.set("C1", "Description")
-        sheet.set("D1", "Type")
-        sheet.set("E1", "Qty")
+        # Define CopyMainList and Header
+        CopyMainList = []
+        Header = dict
 
-        # copy the main list. Leave the orginal intact for other fdunctions
-        if BoM is not None:
-            CopyMainList = BoM.copy()
-        else:
+        # if List is None, copy the main list
+        CopyMainList = List
+        if List is None:
             CopyMainList = self.mainList.copy()
+
+        # Set the headers in the spreadsheet
+        if Headers is None:
+            Headers = {
+                "A1": "Number",
+                "B1": "Name",
+                "C1": "Description",
+                "D1": "Type",
+                "E1": "Qty",
+            }
+        for key in Headers:
+            cell = str(key)
+            value = str(Headers[key])
+            print(cell + ", " + value)
+            sheet.set(cell, value)
 
         # Go through the main list and add every rowList to the spreadsheet.
         for i in range(len(CopyMainList)):
@@ -241,14 +268,14 @@ class BomFunctions:
             Row = i + rowOffset
 
             # Fill the spreadsheet
-            sheet.set("A" + str(Row), rowList["ItemNumber"])
+            sheet.set("A" + str(Row), str(rowList["ItemNumber"]))
             sheet.set("B" + str(Row), rowList["DocumentObject"].Label)
             sheet.set("C" + str(Row), rowList["DocumentObject"].Label2)
             sheet.set("D" + str(Row), rowList["DocumentObject"].TypeId)
             sheet.set("E" + str(Row), str(rowList["Qty"]))
 
     @classmethod
-    def CreateTotalBoM(self):
+    def CreateTotalBoM(self, CreateSpreadSheet: bool = False):
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
         # Create a temporary list
@@ -256,11 +283,7 @@ class BomFunctions:
         # at the top row of the CopyMainList to the temporary list
         TemporaryList.append(CopyMainList[0])
 
-        # create a counter
-        i = 0
-        for rowList in CopyMainList:
-            # In crease the counter
-            i = i + 1
+        for i in range(1, len(CopyMainList)):
             # create a place holder for the quantity
             QtyValue = 1
 
@@ -332,6 +355,49 @@ class BomFunctions:
                         TemporaryList.append(rowListNew)
 
         # Create the spreadsheet
+        if CreateSpreadSheet is True:
+            BomFunctions.createBoM(TemporaryList)
+        return
+
+    @classmethod
+    def PartsOnly(self):
+        # copy the main list. Leave the orginal intact for other fdunctions
+        CopyMainList = self.mainList.copy()
+        # Create a temporary list
+        TemporaryList = []
+
+        for i in range(1, len(CopyMainList)):
+            # As long the counter is less than the length of the list, continue
+            if i < len(CopyMainList) - 2:
+                # Get the row item
+                rowList = CopyMainList[i]
+                # Get the itemnumber
+                itemNumber = str(rowList["ItemNumber"])
+                # Get the name of the object
+                objectName = rowList["DocumentObject"].Label
+
+                # Get the next row item
+                rowListNext = CopyMainList[i + 1]
+                # Get the itemnumber of the next object
+                itemNumberNext = str(rowListNext["ItemNumber"])
+
+                if len(itemNumber.split(".")) >= len(itemNumberNext.split(".")):
+                    counter = 0
+                    if len(TemporaryList) > 0:
+                        for j in range(len(TemporaryList)):
+                            tempItem = TemporaryList[j]
+                            if tempItem["DocumentObject"].Label == objectName:
+                                tempItem["Qty"] = tempItem["Qty"] + 1
+                                counter = counter + 1
+                    if counter == 0:
+                        TemporaryList.append(rowList)
+
+        # number the parts 1,2,3, etc.
+        for k in range(len(TemporaryList)):
+            tempItem = TemporaryList[k]
+            tempItem["ItemNumber"] = k + 1
+
+        # Create the spreadsheet
         BomFunctions.createBoM(TemporaryList)
         return
 
@@ -349,9 +415,11 @@ class BomFunctions:
 
                 # Proceed with the macro.
                 if command == "Total":
-                    BomFunctions.CreateTotalBoM()
+                    BomFunctions.CreateTotalBoM(CreateSpreadSheet=True)
                 if command == "Raw":
                     BomFunctions.createBoM()
+                if command == "PartsOnly":
+                    BomFunctions.PartsOnly()
 
             # if the result is empty, create a new spreadsheet
             if sheet is None:
@@ -359,9 +427,11 @@ class BomFunctions:
 
                 # Proceed with the macro.
                 if command == "Total":
-                    BomFunctions.CreateTotalBoM()
+                    BomFunctions.CreateTotalBoM(CreateSpreadSheet=True)
                 if command == "Raw":
                     BomFunctions.createBoM()
+                if command == "PartsOnly":
+                    BomFunctions.PartsOnly()
         except Exception as e:
             raise e
         return
