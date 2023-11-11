@@ -41,12 +41,6 @@ class BomFunctions:
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
 
-        # # Set the headers in the spreadsheet
-        # sheet.set("A1", "Number")
-        # sheet.set("B1", "Name")
-        # sheet.set("C1", "Description")
-        # sheet.set("D1", "Type")
-
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
 
@@ -55,7 +49,7 @@ class BomFunctions:
 
         return
 
-    # function to quickly expand supported object types
+    # function to quickly expand supported object types and filter out not allowed types.
     @classmethod
     def AllowedObjectType(self, objectID: str) -> bool:
         """
@@ -113,10 +107,6 @@ class BomFunctions:
                     "DocumentObject": object,
                     "Qty": 1,
                 }
-                # rowList = []
-                # rowList.append(ItemNumberString)
-                # rowList.append(object)
-                # rowList.append(1)  # this will be used for the quantity
 
                 # add the rowList to the mainList
                 self.mainList.append(rowList)
@@ -143,6 +133,7 @@ class BomFunctions:
                     )
         return
 
+    # Sub function of GoThrough_Objects.
     @classmethod
     def GoThrough_ChildObjects(self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = "") -> True:
         """
@@ -202,7 +193,7 @@ class BomFunctions:
 
     # endregion
 
-    # function to create BoM. standard, a raw BoM will befrom the main list.
+    # Function to create BoM. standard, a raw BoM will befrom the main list.
     # If a modified list is created, this function can be used to write it the a spreadsheet.
     # You can add a dict for the headers of this list
     @classmethod
@@ -230,7 +221,10 @@ class BomFunctions:
         # if List is None, copy the main list
         CopyMainList = List
         if List is None:
-            CopyMainList = self.mainList.copy()
+            if len(self.mainList > 0):
+                CopyMainList = self.mainList.copy()
+            else:
+                return
 
         # Set the headers in the spreadsheet
         if Headers is None:
@@ -247,10 +241,10 @@ class BomFunctions:
             print(cell + ", " + value)
             sheet.set(cell, value)
             # set the width
-            self.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=value)
+            Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=value)
 
         # Go through the main list and add every rowList to the spreadsheet.
-        i = 0
+        Row = 0
         for i in range(len(CopyMainList)):
             rowList = CopyMainList[i]
             # Set the row offset to 2. otherwise the headers will be overwritten
@@ -274,7 +268,6 @@ class BomFunctions:
                 Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
                     sheet=sheet, column="B", cellValue=str(sheet.getContents("B" + str(Row)))
                 )
-
             if len(str(sheet.getContents("C1"))) < len(str(sheet.getContents("C" + str(Row)))):
                 Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
                     sheet=sheet, column="C", cellValue=str(sheet.getContents("C" + str(Row)))
@@ -289,14 +282,22 @@ class BomFunctions:
                 )
 
         # Allign the columns
-        sheet.setAlignment("A1:E" + str(Row), "center", "keep")
+        if Row > 1:
+            sheet.setAlignment("A1:E" + str(Row), "center", "keep")
 
+    # Function to create a BoM list for a total BoM.
+    # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
     def CreateTotalBoM(self, CreateSpreadSheet: bool = False, IndentNumbering: bool = True):
+        # If the Mainlist is empty, return.
+        if len(self.mainList) == 0:
+            return
+
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
         # Create a temporary list
         TemporaryList = []
+
         # at the top row of the CopyMainList to the temporary list
         TemporaryList.append(CopyMainList[0])
 
@@ -375,6 +376,10 @@ class BomFunctions:
 
     @classmethod
     def SummerizedBoM(self):
+        # If the Mainlist is empty, return.
+        if len(self.mainList) == 0:
+            return
+
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
 
@@ -394,8 +399,13 @@ class BomFunctions:
         # at the top row of the CopyMainList to the temporary list
         TemporaryList.append(CopyMainList[0])
 
+    # Function to create a BoM list for a parts only BoM.
+    # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
     def PartsOnly(self):
+        # If the Mainlist is empty, return.
+        if len(self.mainList) == 0:
+            return
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
         # Create a temporary list
@@ -436,37 +446,41 @@ class BomFunctions:
         BomFunctions.createBoM(TemporaryList)
         return
 
+    # Function to start the other functions based on a command string that is passed.
     @classmethod
     def Start(self, command=""):
         try:
+            # Clear the mainList to avoid double data
+            self.mainList.clear()
             # create the mainList
             BomFunctions.GetTreeObjects()
 
-            sheet = App.ActiveDocument.getObject("BoM")
-            # check if the result is not empty
-            if sheet is not None:
-                # clear the sspreadsheet
-                sheet.clearAll()
+            if len(self.mainList) > 0:
+                sheet = App.ActiveDocument.getObject("BoM")
+                # check if the result is not empty
+                if sheet is not None:
+                    # clear the sspreadsheet
+                    sheet.clearAll()
 
-                # Proceed with the macro.
-                if command == "Total":
-                    BomFunctions.CreateTotalBoM(CreateSpreadSheet=True)
-                if command == "Raw":
-                    BomFunctions.createBoM()
-                if command == "PartsOnly":
-                    BomFunctions.PartsOnly()
+                    # Proceed with the macro.
+                    if command == "Total":
+                        BomFunctions.CreateTotalBoM(CreateSpreadSheet=True)
+                    if command == "Raw":
+                        BomFunctions.createBoM()
+                    if command == "PartsOnly":
+                        BomFunctions.PartsOnly()
 
-            # if the result is empty, create a new spreadsheet
-            if sheet is None:
-                sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
+                # if the result is empty, create a new spreadsheet
+                if sheet is None:
+                    sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
 
-                # Proceed with the macro.
-                if command == "Total":
-                    BomFunctions.CreateTotalBoM(CreateSpreadSheet=True)
-                if command == "Raw":
-                    BomFunctions.createBoM()
-                if command == "PartsOnly":
-                    BomFunctions.PartsOnly()
+                    # Proceed with the macro.
+                    if command == "Total":
+                        BomFunctions.CreateTotalBoM(CreateSpreadSheet=True, IndentNumbering=True)
+                    if command == "Raw":
+                        BomFunctions.createBoM()
+                    if command == "PartsOnly":
+                        BomFunctions.PartsOnly()
         except Exception as e:
             raise e
         return

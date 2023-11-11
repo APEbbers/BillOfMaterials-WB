@@ -202,7 +202,7 @@ def OpenFile(FileName: str):
         print(f"Error: {FileName} does not exist.")
 
 
-def SetColumnWidth_SpreadSheet(self, sheet, column: str, cellValue: str, factor: int = 10) -> bool:
+def SetColumnWidth_SpreadSheet(sheet, column: str, cellValue: str, factor: int = 10) -> bool:
     """_summary_
 
     Args:
