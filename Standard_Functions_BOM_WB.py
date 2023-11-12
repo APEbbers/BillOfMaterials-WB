@@ -218,7 +218,6 @@ def SetColumnWidth_SpreadSheet(sheet, column: str, cellValue: str, factor: int =
         # Calculate the text length needed.
         length = int(len(cellValue) * factor)
 
-        print(column)
         # Set the column width
         sheet.setColumnWidth(column, length)
 

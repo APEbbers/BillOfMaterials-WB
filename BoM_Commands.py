@@ -35,9 +35,9 @@ class CreatePartsOnlyBOM_Class:
         }
 
     def Activated(self):
-        import GetBOM
+        import GetBOM_AppLink
 
-        GetBOM.BomFunctions..Start("PartsOnly")
+        GetBOM_AppLink.BomFunctions.Start("PartsOnly")
         return
 
     def IsActive(self):
@@ -65,9 +65,9 @@ class CreateTotalBOM_Class:
         }
 
     def Activated(self):
-        import GetBOM
+        import GetBOM_AppLink
 
-        GetBOM.BomFunctions.Start("Total")
+        GetBOM_AppLink.BomFunctions.Start("Total")
         return
 
     def IsActive(self):
@@ -95,9 +95,9 @@ class CreateRawBOM_Class:
         }
 
     def Activated(self):
-        import GetBOM
+        import GetBOM_AppLink
 
-        GetBOM.BomFunctions.Start("Raw")
+        GetBOM_AppLink.BomFunctions.Start("Raw")
         return
 
     def IsActive(self):

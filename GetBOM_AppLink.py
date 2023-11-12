@@ -36,7 +36,16 @@ class BomFunctions:
         # Get the active document
         doc = App.ActiveDocument
         # get all the objects at first level. doc.Objects will return Applink part of the link group as well
+        docObjects = []
         docObjects = doc.RootObjects
+        for docObject in docObjects:
+            try:
+                if docObject.LinkedObject.Label.strip():
+                    if BomFunctions.AllowedObjectType(docObject.LinkedObject.TypeId) is True:
+                        docObjects.append(docObject.LinkedObject)
+            except Exception as e:
+                pass
+        docObjects.reverse()
 
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
@@ -81,14 +90,14 @@ class BomFunctions:
             # Get the documentObject
             object = docObjects[i]
 
-            # Increase the itemnumber
-            ItemNumber = ItemNumber + 1
-
-            # Increase the global startrow to make sure the data ends up in the next row
-            self.StartRow = self.StartRow + 1
-
             # If the documentObject is one of the allowed types, continue
             if BomFunctions.AllowedObjectType(object.TypeId) is True:
+                # Increase the itemnumber
+                ItemNumber = ItemNumber + 1
+
+                # Increase the global startrow to make sure the data ends up in the next row
+                self.StartRow = self.StartRow + 1
+
                 # define the itemnumber string. for toplevel this is equel to Itemnumber.
                 # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
                 ItemNumberString = str(ItemNumber)
@@ -144,14 +153,14 @@ class BomFunctions:
             # Get the childDocumentObject
             childObject = ChilddocObjects[i]
 
-            # Increase the itemnumber for the child
-            ChildItemNumber = ChildItemNumber + 1
-
-            # Increase the global startrow to make sure the data ends up in the next row
-            self.StartRow = self.StartRow + 1
-
             # If the childDocumentObject is one of the allowed types, continue
             if BomFunctions.AllowedObjectType(childObject.TypeId) is True:
+                # Increase the itemnumber for the child
+                ChildItemNumber = ChildItemNumber + 1
+
+                # Increase the global startrow to make sure the data ends up in the next row
+                self.StartRow = self.StartRow + 1
+
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
 
@@ -227,7 +236,6 @@ class BomFunctions:
         for key in Headers:
             cell = str(key)
             value = str(Headers[key])
-            print(cell + ", " + value)
             sheet.set(cell, value)
             # set the width
             Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=value)
@@ -277,9 +285,7 @@ class BomFunctions:
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
-    def CreateTotalBoM(
-        self, CreateSpreadSheet: bool = False, IndentNumbering: bool = True, IncludeBodies: bool = False
-    ):
+    def CreateTotalBoM(self, CreateSpreadSheet: bool = False, IndentNumbering: bool = True, IncludeBodies: bool = True):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -295,6 +301,9 @@ class BomFunctions:
         for i in range(1, len(CopyMainList)):
             # create a place holder for the quantity
             QtyValue = 1
+
+            # Create a new dict as new Row item.
+            rowListNew = dict
 
             # As long the counter is less than the length of the list, continue
             if i < len(CopyMainList):
@@ -322,41 +331,13 @@ class BomFunctions:
                     objectNamePrevious = rowListPrevious["DocumentObject"].Label
                     # Get the object type of the previous object
                     objectTypePrevious = rowListPrevious["DocumentObject"].TypeId
-
-                    # compare the current item with the previous one
-                    if objectName == objectNamePrevious and objectType == objectTypePrevious:
-                        # Split the itemnumber with "." and compare the lengths of the current itemnumber
-                        # with the length of next itemnumber.
-                        # If the next itemnumber is shorter, you have reached the last item in App::Link
-                        if len(itemNumberNext.split(".")) < len(itemNumber.split(".")):
-                            # Set the quantity. This is equeal to the lastnumber in the number string.
-                            # (for example 10 in 1.3.10)
-                            QtyValue = int(itemNumber.rsplit(".", 1)[1])
-                            # Create a new dict as new Row item.
-                            # If includeBodies is True, thread the AppLink with Part:Features as an container (Assembly)
-                            if IncludeBodies is True:
-                                rowListNew = {
-                                    "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
-                                    "DocumentObject": rowList["DocumentObject"],
-                                    "Qty": QtyValue,
-                                }
-                                # add this new row item to the temporary list
-                                TemporaryList.append(rowListNew)
-                            # If includeBodies is False, thread the App::Link with Part:Features as the final part
-                            if IncludeBodies is False:
-                                rowListNew = {
-                                    "ItemNumber": itemNumber.rsplit(".", 1)[0],
-                                    "DocumentObject": rowList["DocumentObject"],
-                                    "Qty": QtyValue,
-                                }
-                                # Replace the App::Link with this new row item to the temporary list
-                                TemporaryList.pop()
-                                TemporaryList.append(rowListNew)
+                    # Get the itemnumber of the next object
+                    itemNumberPrevious = str(rowListPrevious["ItemNumber"])
 
                     # Compare the name of the object and the next object
-                    # if the names are different but the length of the next itemnumber is equal or greater,
+                    # if the names are different,
                     # add the current row to the temporary list
-                    if objectNameNext != objectName and len(itemNumberNext.split(".")) >= len(itemNumber.split(".")):
+                    if objectNamePrevious != objectName:
                         # Create a new dict as new Row item
                         rowListNew = {
                             "ItemNumber": rowList["ItemNumber"],
@@ -365,6 +346,91 @@ class BomFunctions:
                         }
                         # add this new row item th the temporary list
                         TemporaryList.append(rowListNew)
+
+                    # If the names are equel, but the body type is different
+                    # add the current row also to the temporary list.
+                    # you have probally an App:Link with the same name as its bodies.
+                    if objectNamePrevious == objectName and objectTypePrevious != objectType:
+                        # Create a new dict as new Row item
+                        rowListNew = {
+                            "ItemNumber": rowList["ItemNumber"],
+                            "DocumentObject": rowList["DocumentObject"],
+                            "Qty": rowList["Qty"],
+                        }
+                        # add this new row item th the temporary list
+                        TemporaryList.append(rowListNew)
+
+                    # compare the current item with the previous one and if both names and type are equal, continue.
+                    if objectName == objectNamePrevious and objectType == objectTypePrevious:
+                        # Split the itemnumber with "." and compare the lengths of the current itemnumber
+                        # with the length of next itemnumber.
+                        # If the next itemnumber is shorter, you have reached the last item in App::Link
+                        if len(itemNumberNext.split(".")) < len(itemNumber.split(".")):
+                            # Set the quantity. This is equeal to the lastnumber in the number string.
+                            # (for example 10 in 1.3.10)
+                            QtyValue = int(itemNumber.rsplit(".", 1)[1])
+
+                            # If includeBodies is True, thread the App::Link with Part::Features as an container (Assembly)
+                            if IncludeBodies is True:
+                                rowListNew = {
+                                    "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
+                                    "DocumentObject": rowList["DocumentObject"],
+                                    "Qty": QtyValue,
+                                }
+                            # If includeBodies is False, thread the App::Link with Part:Features as the final part.
+                            # In this case you will replace the last rowItem with the new rowItem
+                            if IncludeBodies is False:
+                                rowListNew = {
+                                    "ItemNumber": itemNumber.rsplit(".", 1)[0],
+                                    "DocumentObject": rowList["DocumentObject"],
+                                    "Qty": QtyValue,
+                                }
+                                # Remove the last item. (the App::Link)
+                                TemporaryList.pop()
+
+                            # add the new row item th the temporary list
+                            # to avoid double rows, remove the last row and add the new one. Caused by the first statement at row 340.
+                            TemporaryList.pop()
+                            TemporaryList.append(rowListNew)
+
+                            # if include bodies is false, remove the last digit from the itemnumber of the last row
+                            if IncludeBodies is False:
+                                TemporaryList[len(TemporaryList) - 1][0] = itemNumber.rsplit(".", 1)[0]
+
+        # the last row will be skipped, because the for statement must start from 1.
+        # Get the last row items.
+        LastItem = CopyMainList[len(CopyMainList) - 1]
+        LastItemNumber = LastItem["ItemNumber"]
+        LastObjectName = LastItem["DocumentObject"].Label
+
+        rowList = TemporaryList[len(TemporaryList) - 1]
+        # Get the itemnumber
+        itemNumber = str(rowList["ItemNumber"])
+        # Get the object type of the next object
+        objectName = rowList["DocumentObject"].Label
+
+        # If the last row does not match the last row in the temporary list. Just add it.
+        if LastObjectName != objectName:
+            rowListNew = {
+                "ItemNumber": LastItemNumber.rsplit(".", 1)[0],
+                "DocumentObject": LastItem["DocumentObject"],
+                "Qty": LastItem["Qty"],
+            }
+
+        # If the last itemnumber and the last item number have the same length and the names are equal:
+        # This is a last item of the last sub assy. Replace the last row with the last row of the CopyMainList.
+        # Use it's last number in its itemnumber as quantity.
+        if len(LastItemNumber.split(".")) == len(itemNumber.split(".")) and LastObjectName == objectName:
+            QtyValue = int(LastItemNumber.rsplit(".", 1)[1])
+            rowListNew = {
+                "ItemNumber": LastItemNumber.rsplit(".", 1)[0],
+                "DocumentObject": LastItem["DocumentObject"],
+                "Qty": QtyValue,
+            }
+            TemporaryList.pop()
+
+        # add the last row
+        TemporaryList.append(rowListNew)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:
