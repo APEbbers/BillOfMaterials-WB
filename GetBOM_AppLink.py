@@ -56,12 +56,7 @@ class BomFunctions:
         Check if the objectype is allowed.
         """
         result = False
-        listObjecttypes = [
-            "App::Link",
-            "App::LinkGroup",
-            "Part::FeaturePython",
-            "Part::Feature",
-        ]
+        listObjecttypes = ["App::Link", "App::LinkGroup", "Part::FeaturePython", "Part::Feature"]
 
         for objecttypes in listObjecttypes:
             if objecttypes == objectID:
@@ -221,20 +216,14 @@ class BomFunctions:
         # if List is None, copy the main list
         CopyMainList = List
         if List is None:
-            if len(self.mainList > 0):
+            if len(self.mainList) > 0:
                 CopyMainList = self.mainList.copy()
             else:
                 return
 
         # Set the headers in the spreadsheet
         if Headers is None:
-            Headers = {
-                "A1": "Number",
-                "B1": "Qty",
-                "C1": "Name",
-                "D1": "Description",
-                "E1": "Type",
-            }
+            Headers = {"A1": "Number", "B1": "Qty", "C1": "Name", "D1": "Description", "E1": "Type"}
         for key in Headers:
             cell = str(key)
             value = str(Headers[key])
@@ -288,7 +277,9 @@ class BomFunctions:
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
-    def CreateTotalBoM(self, CreateSpreadSheet: bool = False, IndentNumbering: bool = True):
+    def CreateTotalBoM(
+        self, CreateSpreadSheet: bool = False, IndentNumbering: bool = True, IncludeBodies: bool = False
+    ):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -341,14 +332,26 @@ class BomFunctions:
                             # Set the quantity. This is equeal to the lastnumber in the number string.
                             # (for example 10 in 1.3.10)
                             QtyValue = int(itemNumber.rsplit(".", 1)[1])
-                            # Create a new dict as new Row item
-                            rowListNew = {
-                                "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
-                                "DocumentObject": rowList["DocumentObject"],
-                                "Qty": QtyValue,
-                            }
-                            # add this new row item th the temporary list
-                            TemporaryList.append(rowListNew)
+                            # Create a new dict as new Row item.
+                            # If includeBodies is True, thread the AppLink with Part:Features as an container (Assembly)
+                            if IncludeBodies is True:
+                                rowListNew = {
+                                    "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
+                                    "DocumentObject": rowList["DocumentObject"],
+                                    "Qty": QtyValue,
+                                }
+                                # add this new row item to the temporary list
+                                TemporaryList.append(rowListNew)
+                            # If includeBodies is False, thread the App::Link with Part:Features as the final part
+                            if IncludeBodies is False:
+                                rowListNew = {
+                                    "ItemNumber": itemNumber.rsplit(".", 1)[0],
+                                    "DocumentObject": rowList["DocumentObject"],
+                                    "Qty": QtyValue,
+                                }
+                                # Replace the App::Link with this new row item to the temporary list
+                                TemporaryList.pop()
+                                TemporaryList.append(rowListNew)
 
                     # Compare the name of the object and the next object
                     # if the names are different but the length of the next itemnumber is equal or greater,

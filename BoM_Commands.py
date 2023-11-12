@@ -37,7 +37,7 @@ class CreatePartsOnlyBOM_Class:
     def Activated(self):
         import GetBOM
 
-        GetBOM.BomFunctions.Start("PartsOnly")
+        GetBOM.BomFunctions..Start("PartsOnly")
         return
 
     def IsActive(self):
