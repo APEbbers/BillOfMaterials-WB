@@ -23,6 +23,7 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB
+import ctypes
 
 
 class BomFunctions:
@@ -35,16 +36,24 @@ class BomFunctions:
     def GetTreeObjects(self) -> True:
         # Get the active document
         doc = App.ActiveDocument
-        # get all the objects at first level. doc.Objects will return Applink part of the link group as well
-        docObjects = []
+
+        # Get the list with rootobjects
         docObjects = doc.RootObjects
+        # Check if there are parts which are duplicates. Threat them as identical parts and replace the copies with the original
         for docObject in docObjects:
-            try:
-                if docObject.LinkedObject.Label.strip():
-                    if BomFunctions.AllowedObjectType(docObject.LinkedObject.TypeId) is True:
-                        docObjects.append(docObject.LinkedObject)
-            except Exception as e:
-                pass
+            if BomFunctions.AllowedObjectType(docObject.TypeId) is True:
+                docObjects = BomFunctions.ReturnEquealPart(docObject=docObject, ObjectList=docObjects)
+
+        # Check if a App::LinkGroup is copied. this will appear as an App::Link. Replace the App::LinkGroup with a second App::Link. (other way around doesn't work!)
+        docObjectsTemp = []  # a temporary list for the extra assembly
+        for docObject in docObjects:
+            # Return the linked object
+            object = BomFunctions.ReturnLinkedAssy(docObject=docObject)
+            # if an object is returned, add a second docobject.
+            if object is not None:
+                if BomFunctions.AllowedObjectType(docObject.TypeId) is True:
+                    docObjectsTemp.append(docObject)
+        docObjects.extend(docObjectsTemp)
         docObjects.reverse()
 
         # Get the spreadsheet.
@@ -57,6 +66,44 @@ class BomFunctions:
         BomFunctions.GoThrough_Objects(docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber)
 
         return
+
+    @classmethod
+    def ReturnLinkedAssy(self, docObject) -> App.DocumentObject:
+        result = None
+        # Try to get the linked object. If an error is thrown, the docObject has no linked object.add()
+        # The result then will be None.
+        try:
+            object = docObject.LinkedObject
+            result = object
+        except Exception:
+            result = None
+        return result
+
+    @classmethod
+    def ReturnEquealPart(self, docObject, ObjectList: list):
+        # define the initial replace object as the original object.
+        # If something goes wrong, the result will be the same list of Objects as at the begining.
+        replaceItem = docObject
+        # Find the replace item. This is the item without v001 at the end.
+        ObjectName = docObject.Label
+        for i in range(len(ObjectList)):
+            if ObjectName[:-3] == ObjectList[i].Label:
+                replaceItem = ObjectList[i]
+
+        # Go through the ObjectList
+        for j in range(len(ObjectList)):
+            # if the object is an Part, continue
+            if ObjectList[j].TypeId == "Part::FeaturePython":
+                # if the label of the object ends with v001 or v002, etc. continue
+                if ObjectList[j].Label[-3].isnumeric() is True:
+                    # go through the same list and replace all objects with similar labels with the replace item.
+                    for k in range(len(ObjectList)):
+                        if ObjectList[j].Label == ObjectList[k].Label and ObjectList[j].Label[:-3] == replaceItem.Label:
+                            ObjectList.remove(ObjectList[j])
+                            ObjectList.append(replaceItem)
+
+        # return the objectList
+        return ObjectList
 
     # function to quickly expand supported object types and filter out not allowed types.
     @classmethod
@@ -285,16 +332,26 @@ class BomFunctions:
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
-    def CreateTotalBoM(self, CreateSpreadSheet: bool = False, IndentNumbering: bool = True, IncludeBodies: bool = True):
+    def CreateTotalBoM(
+        self, Level: int = 0, CreateSpreadSheet: bool = True, IndentNumbering: bool = True, IncludeBodies: bool = True
+    ) -> list:
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
 
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
+
+        # Get the deepest level if Level is set to zero.
+        if Level == 0:
+            for i in range(len(CopyMainList)):
+                if len(CopyMainList[i]["ItemNumber"].split(".")) > Level:
+                    Level = len(CopyMainList[i]["ItemNumber"].split("."))
+
+        print(Level)
+
         # Create a temporary list
         TemporaryList = []
-
         # at the top row of the CopyMainList to the temporary list
         TemporaryList.append(CopyMainList[0])
 
@@ -316,86 +373,99 @@ class BomFunctions:
                 # Get the object type of the next object
                 objectType = rowList["DocumentObject"].TypeId
 
-                # Make sure that you don't go too far. Otherwise you cannot define the next rows
-                if i <= len(CopyMainList) - 2:
-                    # Get the next row item
-                    rowListNext = CopyMainList[i + 1]
-                    # Get the name of the next object
-                    objectNameNext = rowListNext["DocumentObject"].Label
-                    # Get the itemnumber of the next object
-                    itemNumberNext = str(rowListNext["ItemNumber"])
+                while Level > 1:
+                    print(Level)
+                    if len(itemNumber.split(".")) < Level:
+                        if TemporaryList.__contains__(rowList) is False:
+                            TemporaryList.append(rowList)
+                        # for k in range(len(TemporaryList)):
+                        #     tempRowList = TemporaryList[i]
+                        #     tempItemNumber = str(tempRowList["ItemNumber"])
+                        #     tempObjectName = tempRowList["DocumentObject"].Label
+                        #     tempObjectType = tempRowList["DocumentObject"].TypeId
+                        #     if tempItemNumber != itemNumber:
+                        #         TemporaryList.append(rowList)
 
-                    # Get the previous row item
-                    rowListPrevious = CopyMainList[i - 1]
-                    # Get the name of the previous object
-                    objectNamePrevious = rowListPrevious["DocumentObject"].Label
-                    # Get the object type of the previous object
-                    objectTypePrevious = rowListPrevious["DocumentObject"].TypeId
-                    # Get the itemnumber of the next object
-                    itemNumberPrevious = str(rowListPrevious["ItemNumber"])
+                    if len(itemNumber.split(".")) == Level:
+                        # Make sure that you don't go too far. Otherwise you cannot define the next rows
+                        if i <= len(CopyMainList) - 2:
+                            # Get the next row item
+                            rowListNext = CopyMainList[i + 1]
+                            # Get the itemnumber of the next object
+                            itemNumberNext = str(rowListNext["ItemNumber"])
 
-                    # Compare the name of the object and the next object
-                    # if the names are different,
-                    # add the current row to the temporary list
-                    if objectNamePrevious != objectName:
-                        # Create a new dict as new Row item
-                        rowListNew = {
-                            "ItemNumber": rowList["ItemNumber"],
-                            "DocumentObject": rowList["DocumentObject"],
-                            "Qty": rowList["Qty"],
-                        }
-                        # add this new row item th the temporary list
-                        TemporaryList.append(rowListNew)
+                            # Get the previous row item
+                            rowListPrevious = CopyMainList[i - 1]
+                            # Get the name of the previous object
+                            objectNamePrevious = rowListPrevious["DocumentObject"].Label
+                            # Get the object type of the previous object
+                            objectTypePrevious = rowListPrevious["DocumentObject"].TypeId
 
-                    # If the names are equel, but the body type is different
-                    # add the current row also to the temporary list.
-                    # you have probally an App:Link with the same name as its bodies.
-                    if objectNamePrevious == objectName and objectTypePrevious != objectType:
-                        # Create a new dict as new Row item
-                        rowListNew = {
-                            "ItemNumber": rowList["ItemNumber"],
-                            "DocumentObject": rowList["DocumentObject"],
-                            "Qty": rowList["Qty"],
-                        }
-                        # add this new row item th the temporary list
-                        TemporaryList.append(rowListNew)
-
-                    # compare the current item with the previous one and if both names and type are equal, continue.
-                    if objectName == objectNamePrevious and objectType == objectTypePrevious:
-                        # Split the itemnumber with "." and compare the lengths of the current itemnumber
-                        # with the length of next itemnumber.
-                        # If the next itemnumber is shorter, you have reached the last item in App::Link
-                        if len(itemNumberNext.split(".")) < len(itemNumber.split(".")):
-                            # Set the quantity. This is equeal to the lastnumber in the number string.
-                            # (for example 10 in 1.3.10)
-                            QtyValue = int(itemNumber.rsplit(".", 1)[1])
-
-                            # If includeBodies is True, thread the App::Link with Part::Features as an container (Assembly)
-                            if IncludeBodies is True:
+                            # Compare the name of the object and the next object
+                            # if the names are different,
+                            # add the current row to the temporary list
+                            if objectNamePrevious != objectName:
+                                # Create a new dict as new Row item
                                 rowListNew = {
-                                    "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
+                                    "ItemNumber": rowList["ItemNumber"],
                                     "DocumentObject": rowList["DocumentObject"],
-                                    "Qty": QtyValue,
+                                    "Qty": rowList["Qty"],
                                 }
-                            # If includeBodies is False, thread the App::Link with Part:Features as the final part.
-                            # In this case you will replace the last rowItem with the new rowItem
-                            if IncludeBodies is False:
+                                # add this new row item th the temporary list
+                                TemporaryList.append(rowListNew)
+
+                            # If the names are equel, but the body type is different
+                            # add the current row also to the temporary list.
+                            # you have probally an App:Link with the same name as its bodies.
+                            if objectNamePrevious == objectName and objectTypePrevious != objectType:
+                                # Create a new dict as new Row item
                                 rowListNew = {
-                                    "ItemNumber": itemNumber.rsplit(".", 1)[0],
+                                    "ItemNumber": rowList["ItemNumber"],
                                     "DocumentObject": rowList["DocumentObject"],
-                                    "Qty": QtyValue,
+                                    "Qty": rowList["Qty"],
                                 }
-                                # Remove the last item. (the App::Link)
-                                TemporaryList.pop()
+                                # add this new row item th the temporary list
+                                TemporaryList.append(rowListNew)
 
-                            # add the new row item th the temporary list
-                            # to avoid double rows, remove the last row and add the new one. Caused by the first statement at row 340.
-                            TemporaryList.pop()
-                            TemporaryList.append(rowListNew)
+                            # compare the current item with the previous one and if both names and type are equal, continue.
+                            if objectName == objectNamePrevious and objectType == objectTypePrevious:
+                                # Split the itemnumber with "." and compare the lengths of the current itemnumber
+                                # with the length of next itemnumber.
+                                # If the next itemnumber is shorter, you have reached the last item in App::Link
+                                if len(itemNumberNext.split(".")) < len(itemNumber.split(".")):
+                                    # Set the quantity. This is equeal to the lastnumber in the number string.
+                                    # (for example 10 in 1.3.10)
+                                    QtyValue = int(itemNumber.rsplit(".", 1)[1])
 
-                            # if include bodies is false, remove the last digit from the itemnumber of the last row
-                            if IncludeBodies is False:
-                                TemporaryList[len(TemporaryList) - 1][0] = itemNumber.rsplit(".", 1)[0]
+                                    # If includeBodies is True, thread the App::Link with Part::Features as an container (Assembly)
+                                    if IncludeBodies is True:
+                                        rowListNew = {
+                                            "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
+                                            "DocumentObject": rowList["DocumentObject"],
+                                            "Qty": QtyValue,
+                                        }
+                                    # If includeBodies is False, thread the App::Link with Part:Features as the final part.
+                                    # In this case you will replace the last rowItem with the new rowItem
+                                    if IncludeBodies is False:
+                                        rowListNew = {
+                                            "ItemNumber": itemNumber.rsplit(".", 1)[0],
+                                            "DocumentObject": rowList["DocumentObject"],
+                                            "Qty": QtyValue,
+                                        }
+                                        # Remove the last item. (the App::Link)
+                                        TemporaryList.pop()
+
+                                    # add the new row item th the temporary list
+                                    # to avoid double rows, remove the last row and add the new one. Caused by the first statement at row 340.
+                                    TemporaryList.pop()
+                                    TemporaryList.append(rowListNew)
+
+                                    # if include bodies is false, remove the last digit from the itemnumber of the last row
+                                    if IncludeBodies is False:
+                                        TemporaryList[len(TemporaryList) - 1][0] = itemNumber.rsplit(".", 1)[0]
+                    Level = Level - 1
+                    if Level == 1:
+                        break
 
         # the last row will be skipped, because the for statement must start from 1.
         # Get the last row items.
@@ -441,32 +511,116 @@ class BomFunctions:
         # Create the spreadsheet
         if CreateSpreadSheet is True:
             BomFunctions.createBoM(TemporaryList)
-        return
+
+        return TemporaryList
 
     @classmethod
-    def SummerizedBoM(self):
+    def SummarizedBoM(self, CreateSpreadSheet: bool = True, IncludeBodies: bool = True):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
 
         # copy the main list. Leave the orginal intact for other fdunctions
+        # Then split the list in separate lists.
         CopyMainList = self.mainList.copy()
+        ItemNumberList = []
+        ObjectList = []
+        ObjectNameList = []
+        ObjectTypeList = []
+        QtyList = []
+        # Go through the CopyMainList and create the separate lists
+        for i1 in range(len(CopyMainList)):
+            Item = CopyMainList[i1]
+            ItemObject = Item["DocumentObject"]
+            ItemObjectName = ItemObject.Label
+            ItemObjectType = ItemObject.TypeId
+            ItemNumber = str(Item["ItemNumber"])
+            ItemQty = int(Item["Qty"])
 
-        # get the deepest level
-        counter = 0
-        for i in range(1, len(CopyMainList)):
-            # Get the row item
-            rowList = CopyMainList[i]
-            # Get the itemnumber
-            itemNumberLength = len(rowList["ItemNumber"]).split(".")
-            if itemNumberLength > counter:
-                counter = itemNumberLength
+            ItemNumberList.append(ItemNumber)
+            ObjectList.append(ItemObject)
+            ObjectNameList.append(ItemObjectName)
+            ObjectTypeList.append(ItemObjectType)
+            QtyList.append(ItemQty)
 
         # Create a temporary list
         TemporaryList = []
 
-        # at the top row of the CopyMainList to the temporary list
-        TemporaryList.append(CopyMainList[0])
+        # Create a shadow list to put objects on which shouldn't be added to the Temporary list, because they are already there.
+        ShadowObjectList = []
+
+        # Go Through the object list
+        for i in range(len(ObjectList)):
+            # Define the separate items for the separate lists
+            ItemObject = ObjectList[i]
+            ItemObjectName = ObjectNameList[i]
+            ItemObjectType = ObjectTypeList[i]
+            ItemNumber = ItemNumberList[i]
+            ItemQty = int(QtyList[i])
+
+            # If ItemObject exits only once in the objectList, the quantity will be one.
+            # Just create a row item for the temporary list.
+            if ObjectList.count(ItemObject) == 1:
+                rowItem = {"ItemNumber": ItemNumberList[i], "DocumentObject": ObjectList[i], "Qty": QtyList[i]}
+                # Add the rowItem if it is not in the shadow list.
+                if ShadowObjectList.__contains__(ItemObject) is False:
+                    TemporaryList.append(rowItem)
+                    ShadowObjectList.append(ItemObject)
+
+            # If the ItemObject exists multiple times, count the items, update the quantity and add it to the temporary list.
+            if ObjectList.count(ItemObject) > 1:
+                ChildQty = ObjectList.count(ItemObject)
+                QtyList[i] = ChildQty
+
+                rowItem = {"ItemNumber": ItemNumberList[i], "DocumentObject": ObjectList[i], "Qty": QtyList[i]}
+                # Add the rowItem if it is not in the shadow list.
+                if ShadowObjectList.__contains__(ItemObject) is False:
+                    TemporaryList.append(rowItem)
+                    ShadowObjectList.append(ItemObject)
+
+        # If App:Links only contain the same bodies and IncludeBodies = False,
+        # replace the App::Links with the bodies they contain. Including their quantity.
+        if IncludeBodies is False:
+            # Create an extra temporary list
+            TempTemporaryList = []
+            # Go through the curent temporary list
+            for i in range(1, len(TemporaryList) - 1):
+                # Define the property objects
+                ItemObject = TemporaryList[i]
+                ItemObjectName = ItemObject["DocumentObject"].Label
+                ItemObjectType = ItemObject["DocumentObject"].TypeId
+                ItemNumber = ItemObject["ItemNumber"]
+
+                # Define the property objects of the next row
+                i = i + 1
+                ItemObjectNext = TemporaryList[i]
+                ItemObjectNameNext = ItemObjectNext["DocumentObject"].Label
+                ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
+                ItemNumberNext = ItemObjectNext["ItemNumber"]
+
+                # Create a flag and set it true as default
+                flag = True
+                # if the next item is a child, continue
+                if ItemNumber == ItemNumberNext.rsplit(".", 1)[0]:
+                    # confirm that the item is an app:link and its child a part::feature
+                    if ItemObjectType == "App::Link" and ItemObjectTypeNext == "Part::Feature":
+                        # confirm that the item name without "001" is equal to the child name.
+                        if ItemObjectName[:-3] == ItemObjectNameNext:
+                            # set the flag to false.
+                            flag = False
+                            # remove the last digit from the itemnumber. otherwise you will go from 1.1.5 to 1.1.6.1 for example.
+                            ItemObjectNext["ItemNumber"] = ItemNumber
+
+                # if the flag is true, append the itemobject to the second temporary list.
+                if flag is True:
+                    TempTemporaryList.append(ItemObject)
+            # Replace the temporary list with the second temporary list.
+            TemporaryList = TempTemporaryList
+
+        # Create the spreadsheet
+        if CreateSpreadSheet is True:
+            BomFunctions.createBoM(TemporaryList)
+        return
 
     # Function to create a BoM list for a parts only BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
@@ -533,23 +687,30 @@ class BomFunctions:
 
                     # Proceed with the macro.
                     if command == "Total":
-                        BomFunctions.CreateTotalBoM(CreateSpreadSheet=True)
+                        BomFunctions.CreateTotalBoM(
+                            CreateSpreadSheet=True, IncludeBodies=True, IndentNumbering=True, Level=0
+                        )
                     if command == "Raw":
                         BomFunctions.createBoM()
                     if command == "PartsOnly":
                         BomFunctions.PartsOnly()
-
+                    if command == "Summarized":
+                        BomFunctions.SummarizedBoM()
                 # if the result is empty, create a new spreadsheet
                 if sheet is None:
                     sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
 
                     # Proceed with the macro.
                     if command == "Total":
-                        BomFunctions.CreateTotalBoM(CreateSpreadSheet=True, IndentNumbering=True)
+                        BomFunctions.CreateTotalBoM(
+                            CreateSpreadSheet=True, IncludeBodies=True, IndentNumbering=True, Level=0
+                        )
                     if command == "Raw":
                         BomFunctions.createBoM()
                     if command == "PartsOnly":
                         BomFunctions.PartsOnly()
+                    if command == "Summarized":
+                        BomFunctions.SummarizedBoM()
         except Exception as e:
             raise e
         return

@@ -25,7 +25,7 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
      inkscape:zoom="0.35355339"
-     inkscape:cx="-41.012193"
+     inkscape:cx="-38.183766"
      inkscape:cy="796.20224"
      inkscape:window-width="3440"
      inkscape:window-height="1369"
@@ -463,13 +463,13 @@
          points="163.23306,160.66685 173.91097,161.27693 114.54946,161.78778 94.384428,161.55559 " /><path
          sodipodi:type="inkscape:box3dside"
          id="path4"
-         style="fill:#d7d7ff;fill-rule:evenodd;stroke:none;stroke-linejoin:round"
+         style="fill:#ffe680;fill-rule:evenodd;stroke:none;stroke-linejoin:round"
          inkscape:box3dsidetype="14"
          d="M 163.23306,160.66685 V 262.77277 L 173.91097,233.8029 V 161.27693 Z"
          points="163.23306,262.77277 173.91097,233.8029 173.91097,161.27693 163.23306,160.66685 " /><path
          sodipodi:type="inkscape:box3dside"
          id="path3"
-         style="fill:#8686bf;fill-rule:evenodd;stroke:none;stroke-linejoin:round"
+         style="fill:#ffcc00;fill-rule:evenodd;stroke:none;stroke-linejoin:round"
          inkscape:box3dsidetype="3"
          d="m 94.384428,161.55559 68.848632,-0.88874 V 262.77277 L 94.384428,220.57093 Z"
          points="163.23306,160.66685 163.23306,262.77277 94.384428,220.57093 94.384428,161.55559 " /></g></g><g

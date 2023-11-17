@@ -5,11 +5,9 @@
   "python.formatting.provider": "none",
   "editor.fontLigatures": false,
   "workbench.colorCustomizations": {},
-  "autopep8.interpreter": [
-    "D:\\Python\\Python3.11\\python.exe",
-    "--max-line-length",
-    "120",
-    "--experimental"
-  ],
-  "editor.insertSpaces": false
+  "autopep8.interpreter": ["D:\\Python\\Python3.11\\python.exe"],
+  "editor.insertSpaces": false,
+  "editor.defaultFormatter": "ms-python.autopep8",
+  "autopep8.args": ["--max-line-length", "160", "--experimental"],
+  "autopep8.importStrategy": "fromEnvironment"
 }

@@ -56,6 +56,36 @@ class CreatePartsOnlyBOM_Class:
         return result
 
 
+class CreateSummarizedBOM_Class:
+    def GetResources(self):
+        return {
+            "Pixmap": "CreateBOM.svg",  # the name of a svg file available in the resources
+            "MenuText": "Create a summarized BoM",
+            "ToolTip": "Create a summary of all the parts and assemblies in a spreadsheet",
+        }
+
+    def Activated(self):
+        import GetBOM_AppLink
+
+        GetBOM_AppLink.BomFunctions.Start("Summarized")
+        return
+
+    def IsActive(self):
+        """Here you can define if the command must be active or not (greyed) if certain conditions
+        are met or not. This function is optional."""
+        # Set the default state
+        result = False
+        # Get for the active document.
+        ActiveDoc = App.activeDocument()
+        if ActiveDoc is not None:
+            # Check if the document has any pages. If so the result is True and the command is activated.
+            pages = App.ActiveDocument.findObjects("TechDraw::DrawPage")
+            if pages is not None:
+                result = True
+
+        return result
+
+
 class CreateTotalBOM_Class:
     def GetResources(self):
         return {
@@ -118,5 +148,6 @@ class CreateRawBOM_Class:
 
 # Add the commands to the Gui
 Gui.addCommand("CreateBOM_PartsOnly", CreatePartsOnlyBOM_Class())
+Gui.addCommand("CreateBOM_Summary", CreateSummarizedBOM_Class())
 Gui.addCommand("CreateBOM_Total", CreateTotalBOM_Class())
 Gui.addCommand("CreateBOM_Raw", CreateRawBOM_Class())
