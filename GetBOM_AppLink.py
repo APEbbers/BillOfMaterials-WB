@@ -67,13 +67,20 @@ class BomFunctions:
 
         return
 
+    # If an App::Link is created as a copy from an App:LinkGroup, return the App::Link. Used to replace the App:Linkgroup with the App:Link
     @classmethod
     def ReturnLinkedAssy(self, docObject) -> App.DocumentObject:
         result = None
         # Try to get the linked object. If an error is thrown, the docObject has no linked object.add()
         # The result then will be None.
         try:
+            # Get the linked object
             object = docObject.LinkedObject
+            # Rename the linked object. Add _master to indicate that this is the master assembly
+            object.Label = object.Label + "_master"
+            # Rename the docObject by replacing the Label with that from the master assembly, but without "_master".
+            docObject.Label = object.Label[:-7]
+            # return the result
             result = object
         except Exception:
             result = None
