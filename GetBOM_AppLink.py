@@ -22,8 +22,7 @@
 # ***************************************************************************/
 
 import FreeCAD as App
-import Standard_Functions_BOM_WB
-import ctypes
+import General_BOM_Functions as General_BOM
 
 
 class BomFunctions:
@@ -44,7 +43,8 @@ class BomFunctions:
             if BomFunctions.AllowedObjectType(docObject.TypeId) is True:
                 docObjects = BomFunctions.ReturnEquealPart(docObject=docObject, ObjectList=docObjects)
 
-        # Check if a App::LinkGroup is copied. this will appear as an App::Link. Replace the App::LinkGroup with a second App::Link. (other way around doesn't work!)
+        # Check if a App::LinkGroup is copied. this will appear as an App::Link.
+        # Replace the App::LinkGroup with a second App::Link. (other way around doesn't work!)
         docObjectsTemp = []  # a temporary list for the extra assembly
         for docObject in docObjects:
             # Return the linked object
@@ -76,8 +76,9 @@ class BomFunctions:
         try:
             # Get the linked object
             object = docObject.LinkedObject
-            # Rename the linked object. Add _master to indicate that this is the master assembly
-            object.Label = object.Label + "_master"
+            # Rename the linked object. Add _master to indicate that this is the master assembly. If _masters is already added. do nothing
+            if object.Label[-7:] != "_master":
+                object.Label = object.Label + "_master"
             # Rename the docObject by replacing the Label with that from the master assembly, but without "_master".
             docObject.Label = object.Label[:-7]
             # return the result
@@ -251,90 +252,76 @@ class BomFunctions:
 
     # endregion
 
-    # Function to create BoM. standard, a raw BoM will befrom the main list.
-    # If a modified list is created, this function can be used to write it the a spreadsheet.
-    # You can add a dict for the headers of this list
     @classmethod
-    def createBoM(self, List: list = None, Headers: dict = None):
-        """_summary_
+    def FilterBodies(self, BOMList: list, Level: int = 0) -> list:
+        # If App:Links only contain the same bodies and IncludeBodies = False,
+        # replace the App::Links with the bodies they contain. Including their quantity.
 
-        Args:
-            List (list, optional): PartList.\n
-                    Defaults to None.
-            Headers (dict, optional): {\n
-                        "A1": "Number",\n
-                        "B1": "Name",\n
-                        "C1": "Description",\n
-                        "D1": "Type",\n
-                        "E1": "Qty",\n
-                    },\n
-                    . Defaults to None.
-        """
-        # Get the spreadsheet.
-        sheet = App.ActiveDocument.getObject("BoM")
+        # Create an extra temporary list
+        TempTemporaryList = []
+        # Go through the curent temporary list
+        for i in range(len(BOMList) - 1):
+            # Define the property objects
+            ItemObject = BOMList[i]
+            ItemObjectName = ItemObject["DocumentObject"].Label
+            ItemObjectType = ItemObject["DocumentObject"].TypeId
+            ItemNumber = ItemObject["ItemNumber"]
 
-        # Define CopyMainList and Header
-        CopyMainList = []
+            # Define the property objects of the next row
+            i = i + 1
+            ItemObjectNext = BOMList[i]
+            ItemObjectNameNext = ItemObjectNext["DocumentObject"].Label
+            ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
+            ItemNumberNext = ItemObjectNext["ItemNumber"]
 
-        # if List is None, copy the main list
-        CopyMainList = List
-        if List is None:
-            if len(self.mainList) > 0:
-                CopyMainList = self.mainList.copy()
-            else:
-                return
+            # Create a flag and set it true as default
+            flag = True
+            # if the next item is a child, continue
+            if ItemNumber == ItemNumberNext.rsplit(".", 1)[0]:
+                # confirm that the item is an app:link and its child a part::feature
+                if ItemObjectType == "App::Link" and ItemObjectTypeNext == "Part::Feature":
+                    # confirm that the item name without "001" is equal to the child name.
+                    if ItemObjectName[:-3] == ItemObjectNameNext:
+                        # set the flag to false.
+                        flag = False
+                        # remove the last digit from the itemnumber. otherwise you will go from 1.1.5 to 1.1.6.1 for example.
+                        ItemObjectNext["ItemNumber"] = ItemNumber
 
-        # Set the headers in the spreadsheet
-        if Headers is None:
-            Headers = {"A1": "Number", "B1": "Qty", "C1": "Name", "D1": "Description", "E1": "Type"}
-        for key in Headers:
-            cell = str(key)
-            value = str(Headers[key])
-            sheet.set(cell, value)
-            # set the width
-            Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=value)
+            # if the flag is true, append the itemobject to the second temporary list.
+            if flag is True:
+                TempTemporaryList.append(ItemObject)
 
-        # Go through the main list and add every rowList to the spreadsheet.
-        Row = 0
-        for i in range(len(CopyMainList)):
-            rowList = CopyMainList[i]
-            # Set the row offset to 2. otherwise the headers will be overwritten
-            rowOffset = 2
-            # Increase the row
-            Row = i + rowOffset
+            # The for statement stops at the second list item, so add the the last item when the statement reaches its end.
+            if i == len(BOMList) - 1:
+                # check if the last item is not deeper than level and add it.
+                if len(ItemNumberNext.split(".")) <= Level or len(ItemNumberNext.split(".")) == 1:
+                    TempTemporaryList.append(ItemObjectNext)
 
-            # Fill the spreadsheet
-            sheet.set("A" + str(Row), str(rowList["ItemNumber"]))
-            sheet.set("B" + str(Row), str(rowList["Qty"]))
-            sheet.set("C" + str(Row), rowList["DocumentObject"].Label)
-            sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
-            sheet.set("E" + str(Row), rowList["DocumentObject"].TypeId)
+        # if Level is more then zero, remove all rows with itemnumber levels higher than Level
+        if Level > 0:
+            # Create an extra temporary list
+            TempTempTemporaryList = []
+            # if the flag is true, append the itemobject to the second temporary list.
+            flag = True
+            # Go through the curent temporary list
+            for i in range(len(TempTemporaryList)):
+                # Define the property objects
+                ItemObject = TempTemporaryList[i]
+                ItemNumber = ItemObject["ItemNumber"]
+                # If the splitted itemnumber is more than level, set flag to False
+                if len(ItemNumber.split(".")) > Level:
+                    flag = False
 
-            # Set the column width if the content is longer than the header
-            if len(str(sheet.getContents("A1"))) < len(str(sheet.getContents("A" + str(Row)))):
-                Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
-                    sheet=sheet, column="A", cellValue=str(sheet.getContents("A" + str(Row)))
-                )
-            if len(str(sheet.getContents("B1"))) < len(str(sheet.getContents("B" + str(Row)))):
-                Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
-                    sheet=sheet, column="B", cellValue=str(sheet.getContents("B" + str(Row)))
-                )
-            if len(str(sheet.getContents("C1"))) < len(str(sheet.getContents("C" + str(Row)))):
-                Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
-                    sheet=sheet, column="C", cellValue=str(sheet.getContents("C" + str(Row)))
-                )
-            if len(str(sheet.getContents("D1"))) < len(str(sheet.getContents("D" + str(Row)))):
-                Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
-                    sheet=sheet, column="D", cellValue=str(sheet.getContents("D" + str(Row)))
-                )
-            if len(str(sheet.getContents("E1"))) < len(str(sheet.getContents("E" + str(Row)))):
-                Standard_Functions_BOM_WB.SetColumnWidth_SpreadSheet(
-                    sheet=sheet, column="E", cellValue=str(sheet.getContents("E" + str(Row)))
-                )
+                # if the flag is true, append the itemobject to the second temporary list.
+                if flag is True:
+                    TempTempTemporaryList.append(ItemObject)
+            # Define the TemporaryList as the second temporary list
+            TempTemporaryList = TempTempTemporaryList
 
-        # Allign the columns
-        if Row > 1:
-            sheet.setAlignment("A1:E" + str(Row), "center", "keep")
+        # Replace the temporary list with the second temporary list.
+        BOMList = TempTemporaryList
+
+        return BOMList
 
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
@@ -353,6 +340,17 @@ class BomFunctions:
 
         # at the top row of the CopyMainList to the temporary list
         TemporaryList.append(CopyMainList[0])
+
+        # Get the deepest level if Level is set to zero.
+        LevelCheck = Level
+        if Level == 0:
+            for i in range(len(CopyMainList)):
+                if len(CopyMainList[i]["ItemNumber"].split(".")) > Level:
+                    Level = len(CopyMainList[i]["ItemNumber"].split("."))
+        # If includeBodies is False, go one level deeper, to get to the quantities.
+        # In the function FilterBodies, the deepest level will be removed afterwards
+        if IncludeBodies is False and LevelCheck > 0:
+            Level = Level + 1
 
         for i in range(1, len(CopyMainList)):
             # create a place holder for the quantity
@@ -389,7 +387,7 @@ class BomFunctions:
                     # Compare the name of the object and the next object
                     # if the names are different,
                     # add the current row to the temporary list
-                    if objectNamePrevious != objectName:
+                    if objectNamePrevious != objectName and len(itemNumber.split(".")) <= Level:
                         # Create a new dict as new Row item
                         rowListNew = {
                             "ItemNumber": rowList["ItemNumber"],
@@ -402,7 +400,11 @@ class BomFunctions:
                     # If the names are equel, but the body type is different
                     # add the current row also to the temporary list.
                     # you have probally an App:Link with the same name as its bodies.
-                    if objectNamePrevious == objectName and objectTypePrevious != objectType:
+                    if (
+                        objectNamePrevious == objectName
+                        and objectTypePrevious != objectType
+                        and len(itemNumber.split(".")) <= Level
+                    ):
                         # Create a new dict as new Row item
                         rowListNew = {
                             "ItemNumber": rowList["ItemNumber"],
@@ -413,7 +415,11 @@ class BomFunctions:
                         TemporaryList.append(rowListNew)
 
                     # compare the current item with the previous one and if both names and type are equal, continue.
-                    if objectName == objectNamePrevious and objectType == objectTypePrevious:
+                    if (
+                        objectName == objectNamePrevious
+                        and objectType == objectTypePrevious
+                        and len(itemNumber.split(".")) <= Level
+                    ):
                         # Split the itemnumber with "." and compare the lengths of the current itemnumber
                         # with the length of next itemnumber.
                         # If the next itemnumber is shorter, you have reached the last item in App::Link
@@ -423,31 +429,16 @@ class BomFunctions:
                             QtyValue = int(itemNumber.rsplit(".", 1)[1])
 
                             # If includeBodies is True, thread the App::Link with Part::Features as an container (Assembly)
-                            if IncludeBodies is True:
-                                rowListNew = {
-                                    "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
-                                    "DocumentObject": rowList["DocumentObject"],
-                                    "Qty": QtyValue,
-                                }
-                            # If includeBodies is False, thread the App::Link with Part:Features as the final part.
-                            # In this case you will replace the last rowItem with the new rowItem
-                            if IncludeBodies is False:
-                                rowListNew = {
-                                    "ItemNumber": itemNumber.rsplit(".", 1)[0],
-                                    "DocumentObject": rowList["DocumentObject"],
-                                    "Qty": QtyValue,
-                                }
-                                # Remove the last item. (the App::Link)
-                                TemporaryList.pop()
+                            rowListNew = {
+                                "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
+                                "DocumentObject": rowList["DocumentObject"],
+                                "Qty": QtyValue,
+                            }
 
                             # add the new row item th the temporary list
                             # to avoid double rows, remove the last row and add the new one. Caused by the first statement at row 340.
                             TemporaryList.pop()
                             TemporaryList.append(rowListNew)
-
-                            # if include bodies is false, remove the last digit from the itemnumber of the last row
-                            if IncludeBodies is False:
-                                TemporaryList[len(TemporaryList) - 1][0] = itemNumber.rsplit(".", 1)[0]
 
         # the last row will be skipped, because the for statement must start from 1.
         # Get the last row items.
@@ -462,7 +453,7 @@ class BomFunctions:
         objectName = rowList["DocumentObject"].Label
 
         # If the last row does not match the last row in the temporary list. Just add it.
-        if LastObjectName != objectName:
+        if LastObjectName != objectName and len(LastItemNumber.split(".")) <= Level:
             rowListNew = {
                 "ItemNumber": LastItemNumber.rsplit(".", 1)[0],
                 "DocumentObject": LastItem["DocumentObject"],
@@ -472,7 +463,11 @@ class BomFunctions:
         # If the last itemnumber and the last item number have the same length and the names are equal:
         # This is a last item of the last sub assy. Replace the last row with the last row of the CopyMainList.
         # Use it's last number in its itemnumber as quantity.
-        if len(LastItemNumber.split(".")) == len(itemNumber.split(".")) and LastObjectName == objectName:
+        if (
+            len(LastItemNumber.split(".")) == len(itemNumber.split("."))
+            and LastObjectName == objectName
+            and len(LastItemNumber.split(".")) <= Level
+        ):
             QtyValue = int(LastItemNumber.rsplit(".", 1)[1])
             rowListNew = {
                 "ItemNumber": LastItemNumber.rsplit(".", 1)[0],
@@ -484,6 +479,11 @@ class BomFunctions:
         # add the last row
         TemporaryList.append(rowListNew)
 
+        # If App:Links only contain the same bodies and IncludeBodies = False,
+        # replace the App::Links with the bodies they contain. Including their quantity.
+        if IncludeBodies is False:
+            TemporaryList = BomFunctions.FilterBodies(BOMList=TemporaryList, Level=Level - 1)
+
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:
             for k in range(len(TemporaryList)):
@@ -492,7 +492,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            BomFunctions.createBoM(TemporaryList)
+            General_BOM.createBoM(TemporaryList)
         return
 
     @classmethod
@@ -562,51 +562,17 @@ class BomFunctions:
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
         if IncludeBodies is False:
-            # Create an extra temporary list
-            TempTemporaryList = []
-            # Go through the curent temporary list
-            for i in range(1, len(TemporaryList) - 1):
-                # Define the property objects
-                ItemObject = TemporaryList[i]
-                ItemObjectName = ItemObject["DocumentObject"].Label
-                ItemObjectType = ItemObject["DocumentObject"].TypeId
-                ItemNumber = ItemObject["ItemNumber"]
-
-                # Define the property objects of the next row
-                i = i + 1
-                ItemObjectNext = TemporaryList[i]
-                ItemObjectNameNext = ItemObjectNext["DocumentObject"].Label
-                ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
-                ItemNumberNext = ItemObjectNext["ItemNumber"]
-
-                # Create a flag and set it true as default
-                flag = True
-                # if the next item is a child, continue
-                if ItemNumber == ItemNumberNext.rsplit(".", 1)[0]:
-                    # confirm that the item is an app:link and its child a part::feature
-                    if ItemObjectType == "App::Link" and ItemObjectTypeNext == "Part::Feature":
-                        # confirm that the item name without "001" is equal to the child name.
-                        if ItemObjectName[:-3] == ItemObjectNameNext:
-                            # set the flag to false.
-                            flag = False
-                            # remove the last digit from the itemnumber. otherwise you will go from 1.1.5 to 1.1.6.1 for example.
-                            ItemObjectNext["ItemNumber"] = ItemNumber
-
-                # if the flag is true, append the itemobject to the second temporary list.
-                if flag is True:
-                    TempTemporaryList.append(ItemObject)
-            # Replace the temporary list with the second temporary list.
-            TemporaryList = TempTemporaryList
+            TemporaryList = BomFunctions.FilterBodies(BOMList=TemporaryList)
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            BomFunctions.createBoM(TemporaryList)
+            General_BOM.createBoM(TemporaryList)
         return
 
     # Function to create a BoM list for a parts only BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
-    def PartsOnly(self):
+    def PartsOnly(self, CreateSpreadSheet: bool = True):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -647,7 +613,8 @@ class BomFunctions:
             tempItem["ItemNumber"] = k + 1
 
         # Create the spreadsheet
-        BomFunctions.createBoM(TemporaryList)
+        if CreateSpreadSheet is True:
+            General_BOM.createBoM(TemporaryList)
         return
 
     # Function to start the other functions based on a command string that is passed.
@@ -672,11 +639,11 @@ class BomFunctions:
                             CreateSpreadSheet=True, IncludeBodies=True, IndentNumbering=True, Level=0
                         )
                     if command == "Raw":
-                        BomFunctions.createBoM()
+                        General_BOM.createBoM(self.mainList)
                     if command == "PartsOnly":
-                        BomFunctions.PartsOnly()
+                        BomFunctions.PartsOnly(CreateSpreadSheet=True)
                     if command == "Summarized":
-                        BomFunctions.SummarizedBoM()
+                        BomFunctions.SummarizedBoM(IncludeBodies=False, CreateSpreadSheet=True)
                 # if the result is empty, create a new spreadsheet
                 if sheet is None:
                     sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
@@ -684,14 +651,14 @@ class BomFunctions:
                     # Proceed with the macro.
                     if command == "Total":
                         BomFunctions.CreateTotalBoM(
-                            CreateSpreadSheet=True, IncludeBodies=True, IndentNumbering=True, Level=0
+                            CreateSpreadSheet=True, IncludeBodies=False, IndentNumbering=True, Level=0
                         )
                     if command == "Raw":
-                        BomFunctions.createBoM()
+                        General_BOM.createBoM(self.mainList)
                     if command == "PartsOnly":
-                        BomFunctions.PartsOnly()
+                        BomFunctions.PartsOnly(CreateSpreadSheet=True)
                     if command == "Summarized":
-                        BomFunctions.SummarizedBoM()
+                        BomFunctions.SummarizedBoM(IncludeBodies=False, CreateSpreadSheet=True)
         except Exception as e:
             raise e
         return
