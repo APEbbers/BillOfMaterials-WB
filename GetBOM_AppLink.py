@@ -341,17 +341,9 @@ class BomFunctions:
 
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
-
-        # Get the deepest level if Level is set to zero.
-        if Level == 0:
-            for i in range(len(CopyMainList)):
-                if len(CopyMainList[i]["ItemNumber"].split(".")) > Level:
-                    Level = len(CopyMainList[i]["ItemNumber"].split("."))
-
-        print(Level)
-
         # Create a temporary list
         TemporaryList = []
+
         # at the top row of the CopyMainList to the temporary list
         TemporaryList.append(CopyMainList[0])
 
@@ -373,99 +365,82 @@ class BomFunctions:
                 # Get the object type of the next object
                 objectType = rowList["DocumentObject"].TypeId
 
-                while Level > 1:
-                    print(Level)
-                    if len(itemNumber.split(".")) < Level:
-                        if TemporaryList.__contains__(rowList) is False:
-                            TemporaryList.append(rowList)
-                        # for k in range(len(TemporaryList)):
-                        #     tempRowList = TemporaryList[i]
-                        #     tempItemNumber = str(tempRowList["ItemNumber"])
-                        #     tempObjectName = tempRowList["DocumentObject"].Label
-                        #     tempObjectType = tempRowList["DocumentObject"].TypeId
-                        #     if tempItemNumber != itemNumber:
-                        #         TemporaryList.append(rowList)
+                # Make sure that you don't go too far. Otherwise you cannot define the next rows
+                if i <= len(CopyMainList) - 2:
+                    # Get the next row item
+                    rowListNext = CopyMainList[i + 1]
+                    # Get the itemnumber of the next object
+                    itemNumberNext = str(rowListNext["ItemNumber"])
 
-                    if len(itemNumber.split(".")) == Level:
-                        # Make sure that you don't go too far. Otherwise you cannot define the next rows
-                        if i <= len(CopyMainList) - 2:
-                            # Get the next row item
-                            rowListNext = CopyMainList[i + 1]
-                            # Get the itemnumber of the next object
-                            itemNumberNext = str(rowListNext["ItemNumber"])
+                    # Get the previous row item
+                    rowListPrevious = CopyMainList[i - 1]
+                    # Get the name of the previous object
+                    objectNamePrevious = rowListPrevious["DocumentObject"].Label
+                    # Get the object type of the previous object
+                    objectTypePrevious = rowListPrevious["DocumentObject"].TypeId
 
-                            # Get the previous row item
-                            rowListPrevious = CopyMainList[i - 1]
-                            # Get the name of the previous object
-                            objectNamePrevious = rowListPrevious["DocumentObject"].Label
-                            # Get the object type of the previous object
-                            objectTypePrevious = rowListPrevious["DocumentObject"].TypeId
+                    # Compare the name of the object and the next object
+                    # if the names are different,
+                    # add the current row to the temporary list
+                    if objectNamePrevious != objectName:
+                        # Create a new dict as new Row item
+                        rowListNew = {
+                            "ItemNumber": rowList["ItemNumber"],
+                            "DocumentObject": rowList["DocumentObject"],
+                            "Qty": rowList["Qty"],
+                        }
+                        # add this new row item th the temporary list
+                        TemporaryList.append(rowListNew)
 
-                            # Compare the name of the object and the next object
-                            # if the names are different,
-                            # add the current row to the temporary list
-                            if objectNamePrevious != objectName:
-                                # Create a new dict as new Row item
+                    # If the names are equel, but the body type is different
+                    # add the current row also to the temporary list.
+                    # you have probally an App:Link with the same name as its bodies.
+                    if objectNamePrevious == objectName and objectTypePrevious != objectType:
+                        # Create a new dict as new Row item
+                        rowListNew = {
+                            "ItemNumber": rowList["ItemNumber"],
+                            "DocumentObject": rowList["DocumentObject"],
+                            "Qty": rowList["Qty"],
+                        }
+                        # add this new row item th the temporary list
+                        TemporaryList.append(rowListNew)
+
+                    # compare the current item with the previous one and if both names and type are equal, continue.
+                    if objectName == objectNamePrevious and objectType == objectTypePrevious:
+                        # Split the itemnumber with "." and compare the lengths of the current itemnumber
+                        # with the length of next itemnumber.
+                        # If the next itemnumber is shorter, you have reached the last item in App::Link
+                        if len(itemNumberNext.split(".")) < len(itemNumber.split(".")):
+                            # Set the quantity. This is equeal to the lastnumber in the number string.
+                            # (for example 10 in 1.3.10)
+                            QtyValue = int(itemNumber.rsplit(".", 1)[1])
+
+                            # If includeBodies is True, thread the App::Link with Part::Features as an container (Assembly)
+                            if IncludeBodies is True:
                                 rowListNew = {
-                                    "ItemNumber": rowList["ItemNumber"],
+                                    "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
                                     "DocumentObject": rowList["DocumentObject"],
-                                    "Qty": rowList["Qty"],
+                                    "Qty": QtyValue,
                                 }
-                                # add this new row item th the temporary list
-                                TemporaryList.append(rowListNew)
-
-                            # If the names are equel, but the body type is different
-                            # add the current row also to the temporary list.
-                            # you have probally an App:Link with the same name as its bodies.
-                            if objectNamePrevious == objectName and objectTypePrevious != objectType:
-                                # Create a new dict as new Row item
+                            # If includeBodies is False, thread the App::Link with Part:Features as the final part.
+                            # In this case you will replace the last rowItem with the new rowItem
+                            if IncludeBodies is False:
                                 rowListNew = {
-                                    "ItemNumber": rowList["ItemNumber"],
+                                    "ItemNumber": itemNumber.rsplit(".", 1)[0],
                                     "DocumentObject": rowList["DocumentObject"],
-                                    "Qty": rowList["Qty"],
+                                    "Qty": QtyValue,
                                 }
-                                # add this new row item th the temporary list
-                                TemporaryList.append(rowListNew)
+                                # Remove the last item. (the App::Link)
+                                TemporaryList.pop()
 
-                            # compare the current item with the previous one and if both names and type are equal, continue.
-                            if objectName == objectNamePrevious and objectType == objectTypePrevious:
-                                # Split the itemnumber with "." and compare the lengths of the current itemnumber
-                                # with the length of next itemnumber.
-                                # If the next itemnumber is shorter, you have reached the last item in App::Link
-                                if len(itemNumberNext.split(".")) < len(itemNumber.split(".")):
-                                    # Set the quantity. This is equeal to the lastnumber in the number string.
-                                    # (for example 10 in 1.3.10)
-                                    QtyValue = int(itemNumber.rsplit(".", 1)[1])
+                            # add the new row item th the temporary list
+                            # to avoid double rows, remove the last row and add the new one. Caused by the first statement at row 340.
+                            TemporaryList.pop()
+                            TemporaryList.append(rowListNew)
 
-                                    # If includeBodies is True, thread the App::Link with Part::Features as an container (Assembly)
-                                    if IncludeBodies is True:
-                                        rowListNew = {
-                                            "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
-                                            "DocumentObject": rowList["DocumentObject"],
-                                            "Qty": QtyValue,
-                                        }
-                                    # If includeBodies is False, thread the App::Link with Part:Features as the final part.
-                                    # In this case you will replace the last rowItem with the new rowItem
-                                    if IncludeBodies is False:
-                                        rowListNew = {
-                                            "ItemNumber": itemNumber.rsplit(".", 1)[0],
-                                            "DocumentObject": rowList["DocumentObject"],
-                                            "Qty": QtyValue,
-                                        }
-                                        # Remove the last item. (the App::Link)
-                                        TemporaryList.pop()
-
-                                    # add the new row item th the temporary list
-                                    # to avoid double rows, remove the last row and add the new one. Caused by the first statement at row 340.
-                                    TemporaryList.pop()
-                                    TemporaryList.append(rowListNew)
-
-                                    # if include bodies is false, remove the last digit from the itemnumber of the last row
-                                    if IncludeBodies is False:
-                                        TemporaryList[len(TemporaryList) - 1][0] = itemNumber.rsplit(".", 1)[0]
-                    Level = Level - 1
-                    if Level == 1:
-                        break
+                            # if include bodies is false, remove the last digit from the itemnumber of the last row
+                            if IncludeBodies is False:
+                                TemporaryList[len(TemporaryList) - 1][0] = itemNumber.rsplit(".", 1)[0]
 
         # the last row will be skipped, because the for statement must start from 1.
         # Get the last row items.
@@ -511,8 +486,7 @@ class BomFunctions:
         # Create the spreadsheet
         if CreateSpreadSheet is True:
             BomFunctions.createBoM(TemporaryList)
-
-        return TemporaryList
+        return
 
     @classmethod
     def SummarizedBoM(self, CreateSpreadSheet: bool = True, IncludeBodies: bool = True):
