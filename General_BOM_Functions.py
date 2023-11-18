@@ -64,21 +64,15 @@ def createBoM(List: list, Headers: dict = None):
         Cell = str(key)
         Value = str(Headers[key])
         sheet.set(Cell, Value)
-        # set the width
+        # set the width based on the headers
         Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=Value)
 
     # Go through the main list and add every rowList to the spreadsheet.
-    # define a ColumnList and a dict as item for that column. Use it later to set the final widht of the columns
-    ColumnList = []
-    ColumnListItem = []
     # Define a row counter
     Row = 0
-    # Fill the ColumnList for the column with with the values of the header
-    for key in Headers:
-        ColumnListItem.append(key[:1])
-        ColumnListItem.append(Headers[key])
-        ColumnList.append(ColumnListItem)
-
+    Column = ""
+    Value = ""
+    ValuePrevious = ""
     # Go through the CopyMainlist
     for i in range(len(CopyMainList)):
         rowList = CopyMainList[i]
@@ -94,13 +88,13 @@ def createBoM(List: list, Headers: dict = None):
         sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
         sheet.set("E" + str(Row), rowList["DocumentObject"].TypeId)
 
-        # Create the ColumnList
+        # Set the column widht
         for key in Headers:
             Column = key[:1]
             Value = str(sheet.getContents(Column + str(Row)))
             ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
 
-            if len(Value) > len(ValuePrevious):
+            if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
                 Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=Column, cellValue=Value)
 
     # Allign the columns
