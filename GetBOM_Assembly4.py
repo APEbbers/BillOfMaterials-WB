@@ -24,8 +24,6 @@
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Function
 import General_BOM_Functions as General_BOM
-import GetBOM_AppLink
-from collections import Counter
 
 
 class BomFunctions:
@@ -77,13 +75,15 @@ class BomFunctions:
 
         return
 
-    # function to quickly expand supported object types and filter out not allowed types.
+    # Function to compare an object type with supported object types.
     @classmethod
     def AllowedObjectType_Assembly4(self, objectID: str) -> bool:
         """
         Check if the objectype is allowed.
         """
+        # Define and set the result to false.
         result = False
+        # The list of object type ID's that are allowed.
         listObjecttypes = [
             "App::Link",
             "App::LinkGroup",
@@ -93,23 +93,34 @@ class BomFunctions:
             "PartDesign::Body",
         ]
 
+        # Go through the list and compare the object ID's in the list with the ObjectId.
+        # If they are the same, the result is true. Exit the for statement.
         for objecttypes in listObjecttypes:
             if objecttypes == objectID:
                 result = True
                 break
 
+        # Return the result.
         return result
 
+    # Function which can be used as an filter. If the name is in the name of the object which is it compared to,
+    # it will return None. So for example "Bearing" is in "Bearing001" and will return None.
     @classmethod
     def FilterLinkedParts(self, ObjectDocument, objectComparison) -> App.DocumentObject:
+        # Use a try-except statement in case the object has no parent method.
         try:
+            # Get the parents as a list. This will be like "[(<Part object>, 'LCS_Origin.')]"
             Parents = ObjectDocument.Parents
+            # Go through the list with parents
             for ParentObject in Parents:
+                # If the name of the second parent is in the compared object,the result will be None.
+                # if the name of the second parent is not in the name of the compared object, the result is the object document.
                 if str(ParentObject[1]).find(objectComparison.Label) == -1:
                     return ObjectDocument
                 else:
                     return None
         except Exception:
+            # on an error return None.
             return None
 
     # function to go through the objects and their child objects
@@ -150,11 +161,10 @@ class BomFunctions:
                     "Qty": 1,
                 }
 
-                # add the rowList to the mainList
+                # Add the rowList to the mainList
                 self.mainList.append(rowList)
 
                 # If the object is an container, go through the sub items, (a.k.a child objects)
-                # if object.TypeId == "App::LinkGroup" or object.TypeId == "App::Link" or object.TypeId == "App::Part":
                 if object.TypeId == "App::Link":
                     # Create a list with child objects as DocumentObjects
                     childObjects = []
@@ -163,9 +173,9 @@ class BomFunctions:
                     # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                     for i in range(len(object.getSubObjects())):
                         if object.getSubObject(subname=object.getSubObjects()[i], retType=1) is not None:
-                            #                            print(Parts[])
+                            # Go through the parts folder and compare the parts with the subobjects.
                             for j in range(len(Parts)):
-                                #                                print(object.getSubObject(subname=object.getSubObjects()[i], retType=1))
+                                # If filtering with the parts in the part folder results in an document object, this is a part. Add it the the child object list.
                                 if (
                                     BomFunctions.FilterLinkedParts(
                                         ObjectDocument=object.getSubObject(
@@ -240,7 +250,9 @@ class BomFunctions:
                     # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
                     for i in range(len(childObject.getSubObjects())):
                         if childObject.getSubObject(subname=childObject.getSubObjects()[i], retType=1) is not None:
+                            # Go through the parts folder and compare the parts with the subobjects.
                             for j in range(len(Parts)):
+                                # If filtering with the parts in the part folder results in an document object, this is a part. Add it the the child object list.
                                 if (
                                     BomFunctions.FilterLinkedParts(
                                         ObjectDocument=childObject.getSubObject(
@@ -285,8 +297,8 @@ class BomFunctions:
 
             # Create a flag and set it true as default
             flag = True
-            # if the next item is a child, continue
 
+            # If the object is an body or feature, set the flag to False.
             if ItemObjectType == "Part::Feature" or ItemObjectType == "PartDesign::Body":
                 # set the flag to false.
                 flag = False
@@ -297,20 +309,25 @@ class BomFunctions:
 
             # The for statement stops at the second list item, so add the the last item when the statement reaches its end.
             if i == len(BOMList):
-                # check if the last item is not deeper than level and add it.
+                # check if the last item is not deeper than level and add it if it is not a body of feature.
                 if ItemObjectTypeNext != "Part::Feature" or ItemObjectTypeNext != "PartDesign::Body":
                     TempTemporaryList.append(ItemObjectNext)
 
         # Replace the temporary list with the second temporary list.
         BOMList = TempTemporaryList
 
+        # return the filtered list.
         return BOMList
 
+    # Function to check if a part is an sub-assembly.
     @classmethod
-    def ReturnLinkedPart(self, docObject) -> App.DocumentObject:
+    def ReturnLinkedObject(self, docObject) -> App.DocumentObject:
+        # Use an try-except statement incase there is no "getPropertyByName" method.
         try:
+            # If the property returns empty, it is an part. Return the linked object. This way, duplicate items (normally like Bearing001, Bearing002, etc.) will be replaced with the original part. This is used for summation of the same parts.
             if docObject.getPropertyByName("Type") == "":
                 return docObject.LinkedObject
+            # If the property returns "Assembly", it is an sub-assembly. Return the object.
             if docObject.getPropertyByName("Type") == "Assembly":
                 return docObject
         except Exception:
@@ -329,15 +346,19 @@ class BomFunctions:
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
 
+        # Replace duplicate items with their original
         for i in range(len(CopyMainList)):
-            ReturnedObject = BomFunctions.ReturnLinkedPart(CopyMainList[i]["DocumentObject"])
+            ReturnedObject = BomFunctions.ReturnLinkedObject(CopyMainList[i]["DocumentObject"])
             if ReturnedObject is not None:
                 CopyMainList[i]["DocumentObject"] = ReturnedObject
 
+        # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
+        # Create two lists for splitting the copy of the main list
         ItemNumberList = []
         ObjectDocumentList = []
 
+        # Create two lists out of the CopyMainList
         for i in range(len(CopyMainList)):
             ItemNumberList.append(CopyMainList[i]["ItemNumber"])
             ObjectDocumentList.append(CopyMainList[i]["DocumentObject"])
@@ -349,16 +370,12 @@ class BomFunctions:
         TemporaryList.append(CopyMainList[0])
 
         # Get the deepest level if Level is set to zero.
-        LevelCheck = Level
         if Level == 0:
             for i in range(len(CopyMainList)):
                 if len(CopyMainList[i]["ItemNumber"].split(".")) > Level:
                     Level = len(CopyMainList[i]["ItemNumber"].split("."))
-        # If includeBodies is False, go one level deeper, to get to the quantities.
-        # In the function FilterBodies, the deepest level will be removed afterwards
-        if IncludeBodies is False and LevelCheck > 0:
-            Level = Level + 1
 
+        # Go through the CopyMainList
         for i in range(1, len(CopyMainList)):
             # create a place holder for the quantity
             QtyValue = 1
@@ -366,7 +383,7 @@ class BomFunctions:
             # Create a new dict as new Row item.
             rowListNew = dict
 
-            # As long the counter is less than the length of the list, continue
+            # As long the counter is less or equal than the length of the list, continue
             if i <= len(CopyMainList):
                 # getContents the row item
                 rowList = CopyMainList[i]

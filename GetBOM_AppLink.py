@@ -113,20 +113,25 @@ class BomFunctions:
         # return the objectList
         return ObjectList
 
-    # function to quickly expand supported object types and filter out not allowed types.
+    # Function to compare an object type with supported object types.
     @classmethod
     def AllowedObjectType(self, objectID: str) -> bool:
         """
         Check if the objectype is allowed.
         """
+        # Define and set the result to false.
         result = False
+        # The list of object type ID's that are allowed.
         listObjecttypes = ["App::Link", "App::LinkGroup", "Part::FeaturePython", "Part::Feature", "PartDesign::Body"]
 
+        # Go through the list and compare the object ID's in the list with the ObjectId.
+        # If they are the same, the result is true. Exit the for statement.
         for objecttypes in listObjecttypes:
             if objecttypes == objectID:
                 result = True
                 break
 
+        # Return the result.
         return result
 
     # function to go through the objects and their child objects
@@ -297,7 +302,7 @@ class BomFunctions:
                 if len(ItemNumberNext.split(".")) <= Level or len(ItemNumberNext.split(".")) == 1:
                     TempTemporaryList.append(ItemObjectNext)
 
-        # if Level is more then zero, remove all rows with itemnumber levels higher than Level
+        # if Level is more than zero, remove all rows with itemnumber levels higher than Level
         if Level > 0:
             # Create an extra temporary list
             TempTempTemporaryList = []
@@ -338,30 +343,27 @@ class BomFunctions:
         # Create a temporary list
         TemporaryList = []
 
+        # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
+        # Create two lists for splitting the copy of the main list
         ItemNumberList = []
         ObjectDocumentList = []
 
+        # Create two lists out of the CopyMainList
         for i in range(len(CopyMainList)):
             ItemNumberList.append(CopyMainList[i]["ItemNumber"])
             ObjectDocumentList.append(CopyMainList[i]["DocumentObject"])
-        #            print(CopyMainList[i]["ItemNumber"])
 
         # at the top row of the CopyMainList to the temporary list
         TemporaryList.append(CopyMainList[0])
 
         # Get the deepest level if Level is set to zero.
-        LevelCheck = Level
         if Level == 0:
             for i in range(len(CopyMainList)):
                 if len(CopyMainList[i]["ItemNumber"].split(".")) > Level:
                     Level = len(CopyMainList[i]["ItemNumber"].split("."))
 
-        # If includeBodies is False, go one level deeper, to get to the quantities.
-        # In the function FilterBodies, the deepest level will be removed afterwards
-        if IncludeBodies is False and LevelCheck > 0:
-            Level = Level + 1
-
+        # Go through the CopyMainList
         for i in range(1, len(CopyMainList)):
             # create a place holder for the quantity
             QtyValue = 1
