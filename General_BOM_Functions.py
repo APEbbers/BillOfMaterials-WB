@@ -100,3 +100,44 @@ def createBoM(List: list, Headers: dict = None):
     # Allign the columns
     if Row > 1:
         sheet.setAlignment("A1:E" + str(Row), "center", "keep")
+
+
+def ObjectCounter(DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: list) -> int:
+    """_summary_
+
+    Args:
+        DocObject (_type_): Document object to search for.
+        ItemNumber (str): Item number of document object.
+        ObjectList (list): List of document objects
+        ItemNumberList (list): List of item numbers.
+
+    Returns:
+        int: number of document number in item number range.
+    """
+    # Set the counter
+    counter = 0
+    # Go Through the objectList
+    for i in range(len(ObjectList)):
+        # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
+        # If the itemnumber is more than one level deep:
+        if len(ItemNumberList[i].split(".")) > 1:
+            if ItemNumberList[i].rsplit(".", 1)[0] == ItemNumber.rsplit(".", 1)[0]:
+                # If the document object  in the list is equeal to DocObject, increase the counter by one.
+                if ObjectList[i] == DocObject:
+                    counter = counter + 1
+        # If the itemnumber is one level deep:
+        if len(ItemNumberList[i].split(".")) == 1:
+            # If the document object  in the list is equeal to DocObject, increase the counter by one.
+            if ObjectList[i] == DocObject:
+                counter = counter + 1
+    # Return the counter
+    return counter
+
+
+# def CorrectItemNumbers(BoMList: list) -> list:
+#     for i in range(len(BoMList)):
+#         RowItem = BoMList[i]
+#         ItemNumber = RowItem["ItemNumber"]
+
+#         RowItemNext =
+#         Level = len(ItemNumber.split("."))

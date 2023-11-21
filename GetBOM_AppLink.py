@@ -120,7 +120,7 @@ class BomFunctions:
         Check if the objectype is allowed.
         """
         result = False
-        listObjecttypes = ["App::Link", "App::LinkGroup", "Part::FeaturePython", "Part::Feature"]
+        listObjecttypes = ["App::Link", "App::LinkGroup", "Part::FeaturePython", "Part::Feature", "PartDesign::Body"]
 
         for objecttypes in listObjecttypes:
             if objecttypes == objectID:
@@ -324,7 +324,7 @@ class BomFunctions:
         return BOMList
 
     # Function to create a BoM list for a total BoM.
-    # The function CreateBoM can be used to write it the an spreadsheet.
+    # The function CreateBoM can be used to write it to an spreadsheet.
     @classmethod
     def CreateTotalBoM(
         self, Level: int = 0, CreateSpreadSheet: bool = True, IndentNumbering: bool = True, IncludeBodies: bool = True
@@ -338,6 +338,15 @@ class BomFunctions:
         # Create a temporary list
         TemporaryList = []
 
+        ShadowList = []
+        ItemNumberList = []
+        ObjectDocumentList = []
+
+        for i in range(len(CopyMainList)):
+            ItemNumberList.append(CopyMainList[i]["ItemNumber"])
+            ObjectDocumentList.append(CopyMainList[i]["DocumentObject"])
+        #            print(CopyMainList[i]["ItemNumber"])
+
         # at the top row of the CopyMainList to the temporary list
         TemporaryList.append(CopyMainList[0])
 
@@ -347,6 +356,7 @@ class BomFunctions:
             for i in range(len(CopyMainList)):
                 if len(CopyMainList[i]["ItemNumber"].split(".")) > Level:
                     Level = len(CopyMainList[i]["ItemNumber"].split("."))
+
         # If includeBodies is False, go one level deeper, to get to the quantities.
         # In the function FilterBodies, the deepest level will be removed afterwards
         if IncludeBodies is False and LevelCheck > 0:
@@ -365,119 +375,70 @@ class BomFunctions:
                 rowList = CopyMainList[i]
                 # Get the itemnumber
                 itemNumber = str(rowList["ItemNumber"])
-                # Get the name of the object
-                objectName = rowList["DocumentObject"].Label
-                # Get the object type of the next object
-                objectType = rowList["DocumentObject"].TypeId
 
-                # Make sure that you don't go too far. Otherwise you cannot define the next rows
-                if i <= len(CopyMainList) - 2:
-                    # Get the next row item
-                    rowListNext = CopyMainList[i + 1]
-                    # Get the itemnumber of the next object
-                    itemNumberNext = str(rowListNext["ItemNumber"])
+                # if the itemnumber is longer than one level (1.1, 1.1.1, etc.) and the level is equal or shorter then the level wanted, continue
+                if len(itemNumber.split(".", 1)[0]) <= Level and len(itemNumber.split(".")) > 1:
+                    # write the itemnumber of the subassy for the shadow list.
+                    shadowItemNumber = itemNumber.split(".", 1)[0]
+                    # Define the shadow item.
+                    shadowObject = rowList["DocumentObject"]
+                    # Create the shadow row
+                    shadowRow = [shadowItemNumber, shadowObject]
 
-                    # Get the previous row item
-                    rowListPrevious = CopyMainList[i - 1]
-                    # Get the name of the previous object
-                    objectNamePrevious = rowListPrevious["DocumentObject"].Label
-                    # Get the object type of the previous object
-                    objectTypePrevious = rowListPrevious["DocumentObject"].TypeId
+                    # Find the quantity for the item
+                    QtyValue = str(
+                        General_BOM.ObjectCounter(
+                            DocObject=shadowObject,
+                            ItemNumber=str(itemNumber),
+                            ObjectList=ObjectDocumentList,
+                            ItemNumberList=ItemNumberList,
+                        )
+                    )
+                    # Create a new row item for the temporary row.
+                    rowListNew = {
+                        "ItemNumber": itemNumber,
+                        "DocumentObject": rowList["DocumentObject"],
+                        "Qty": QtyValue,
+                    }
 
-                    # Compare the name of the object and the next object
-                    # if the names are different,
-                    # add the current row to the temporary list
-                    if objectNamePrevious != objectName and len(itemNumber.split(".")) <= Level:
-                        # Create a new dict as new Row item
-                        rowListNew = {
-                            "ItemNumber": rowList["ItemNumber"],
-                            "DocumentObject": rowList["DocumentObject"],
-                            "Qty": rowList["Qty"],
-                        }
-                        # add this new row item th the temporary list
+                    # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
+                    # Add it to the temporary list.
+                    if ShadowList.__contains__(shadowRow) is False:
                         TemporaryList.append(rowListNew)
+                        # add the shadow row to the shadow list. This prevents from adding this item an second time.
+                        ShadowList.append(shadowRow)
 
-                    # If the names are equel, but the body type is different
-                    # add the current row also to the temporary list.
-                    # you have probally an App:Link with the same name as its bodies.
-                    if (
-                        objectNamePrevious == objectName
-                        and objectTypePrevious != objectType
-                        and len(itemNumber.split(".")) <= Level
-                    ):
-                        # Create a new dict as new Row item
-                        rowListNew = {
-                            "ItemNumber": rowList["ItemNumber"],
-                            "DocumentObject": rowList["DocumentObject"],
-                            "Qty": rowList["Qty"],
-                        }
-                        # add this new row item th the temporary list
+                # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
+                if len(itemNumber.split(".")) == 1:
+                    # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
+                    shadowItemNumber = 0
+                    # Define the shadow item.
+                    shadowObject = rowList["DocumentObject"]
+                    # Create the shadow row
+                    shadowRow = [shadowItemNumber, shadowObject]
+
+                    # Find the quantity for the item
+                    QtyValue = str(
+                        General_BOM.ObjectCounter(
+                            DocObject=shadowObject,
+                            ItemNumber=str(itemNumber),
+                            ObjectList=ObjectDocumentList,
+                            ItemNumberList=ItemNumberList,
+                        )
+                    )
+                    # Create a new row item for the temporary row.
+                    rowListNew = {
+                        "ItemNumber": itemNumber,
+                        "DocumentObject": rowList["DocumentObject"],
+                        "Qty": QtyValue,
+                    }
+
+                    # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
+                    # Add it to the temporary list.
+                    if ShadowList.__contains__(shadowRow) is False:
                         TemporaryList.append(rowListNew)
-
-                    # compare the current item with the previous one and if both names and type are equal, continue.
-                    if (
-                        objectName == objectNamePrevious
-                        and objectType == objectTypePrevious
-                        and len(itemNumber.split(".")) <= Level
-                    ):
-                        # Split the itemnumber with "." and compare the lengths of the current itemnumber
-                        # with the length of next itemnumber.
-                        # If the next itemnumber is shorter, you have reached the last item in App::Link
-                        if len(itemNumberNext.split(".")) < len(itemNumber.split(".")):
-                            # Set the quantity. This is equeal to the lastnumber in the number string.
-                            # (for example 10 in 1.3.10)
-                            QtyValue = int(itemNumber.rsplit(".", 1)[1])
-
-                            # If includeBodies is True, thread the App::Link with Part::Features as an container (Assembly)
-                            rowListNew = {
-                                "ItemNumber": itemNumber.rsplit(".", 1)[0] + ".1",
-                                "DocumentObject": rowList["DocumentObject"],
-                                "Qty": QtyValue,
-                            }
-
-                            # add the new row item th the temporary list
-                            # to avoid double rows, remove the last row and add the new one. Caused by the first statement at row 340.
-                            TemporaryList.pop()
-                            TemporaryList.append(rowListNew)
-
-        # the last row will be skipped, because the for statement must start from 1.
-        # Get the last row items.
-        LastItem = CopyMainList[len(CopyMainList) - 1]
-        LastItemNumber = LastItem["ItemNumber"]
-        LastObjectName = LastItem["DocumentObject"].Label
-
-        rowList = TemporaryList[len(TemporaryList) - 1]
-        # Get the itemnumber
-        itemNumber = str(rowList["ItemNumber"])
-        # Get the object type of the next object
-        objectName = rowList["DocumentObject"].Label
-
-        # If the last row does not match the last row in the temporary list. Just add it.
-        if LastObjectName != objectName and len(LastItemNumber.split(".")) <= Level:
-            rowListNew = {
-                "ItemNumber": LastItemNumber.rsplit(".", 1)[0],
-                "DocumentObject": LastItem["DocumentObject"],
-                "Qty": LastItem["Qty"],
-            }
-
-        # If the last itemnumber and the last item number have the same length and the names are equal:
-        # This is a last item of the last sub assy. Replace the last row with the last row of the CopyMainList.
-        # Use it's last number in its itemnumber as quantity.
-        if (
-            len(LastItemNumber.split(".")) == len(itemNumber.split("."))
-            and LastObjectName == objectName
-            and len(LastItemNumber.split(".")) <= Level
-        ):
-            QtyValue = int(LastItemNumber.rsplit(".", 1)[1])
-            rowListNew = {
-                "ItemNumber": LastItemNumber.rsplit(".", 1)[0],
-                "DocumentObject": LastItem["DocumentObject"],
-                "Qty": QtyValue,
-            }
-            TemporaryList.pop()
-
-        # add the last row
-        TemporaryList.append(rowListNew)
+                        # add the shadow row to the shadow list. This prevents from adding this item an second time.
+                        ShadowList.append(shadowRow)
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.

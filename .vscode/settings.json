@@ -8,6 +8,6 @@
   "autopep8.interpreter": ["D:\\Python\\Python3.11\\python.exe"],
   "editor.insertSpaces": false,
   "editor.defaultFormatter": "ms-python.autopep8",
-  "autopep8.args": ["--max-line-length", "160", "--experimental"],
+  "autopep8.args": ["--max-line-length", "400", "--experimental"],
   "autopep8.importStrategy": "fromEnvironment"
 }
