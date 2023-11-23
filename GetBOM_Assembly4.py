@@ -175,7 +175,8 @@ class BomFunctions:
                         if object.getSubObject(subname=object.getSubObjects()[i], retType=1) is not None:
                             # Go through the parts folder and compare the parts with the subobjects.
                             for j in range(len(Parts)):
-                                # If filtering with the parts in the part folder results in an document object, this is a part. Add it the the child object list.
+                                # If filtering with the parts in the part folder results in an document object,
+                                # this is a part. Add it the the child object list.
                                 if (
                                     BomFunctions.FilterLinkedParts(
                                         ObjectDocument=object.getSubObject(
@@ -252,7 +253,8 @@ class BomFunctions:
                         if childObject.getSubObject(subname=childObject.getSubObjects()[i], retType=1) is not None:
                             # Go through the parts folder and compare the parts with the subobjects.
                             for j in range(len(Parts)):
-                                # If filtering with the parts in the part folder results in an document object, this is a part. Add it the the child object list.
+                                # If filtering with the parts in the part folder results in an document object,
+                                # this is a part. Add it the the child object list.
                                 if (
                                     BomFunctions.FilterLinkedParts(
                                         ObjectDocument=childObject.getSubObject(
@@ -324,7 +326,9 @@ class BomFunctions:
     def ReturnLinkedObject(self, docObject) -> App.DocumentObject:
         # Use an try-except statement incase there is no "getPropertyByName" method.
         try:
-            # If the property returns empty, it is an part. Return the linked object. This way, duplicate items (normally like Bearing001, Bearing002, etc.) will be replaced with the original part. This is used for summation of the same parts.
+            # If the property returns empty, it is an part. Return the linked object.
+            # This way, duplicate items (normally like Bearing001, Bearing002, etc.) will be replaced with
+            # the original part. This is used for summation of the same parts.
             if docObject.getPropertyByName("Type") == "":
                 return docObject.LinkedObject
             # If the property returns "Assembly", it is an sub-assembly. Return the object.
@@ -459,6 +463,10 @@ class BomFunctions:
         # replace the App::Links with the bodies they contain. Including their quantity.
         if IncludeBodies is False:
             TemporaryList = BomFunctions.FilterBodies(BOMList=TemporaryList)
+
+        # Correct the itemnumbers if indentation is wanted.
+        if IndentNumbering is True:
+            TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:

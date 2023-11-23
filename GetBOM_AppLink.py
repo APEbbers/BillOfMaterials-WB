@@ -447,6 +447,10 @@ class BomFunctions:
         if IncludeBodies is False:
             TemporaryList = BomFunctions.FilterBodies(BOMList=TemporaryList, Level=Level - 1)
 
+        # Correct the itemnumbers if indentation is wanted.
+        if IndentNumbering is True:
+            TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
+
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:
             for k in range(len(TemporaryList)):

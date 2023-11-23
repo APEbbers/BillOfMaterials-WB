@@ -134,10 +134,56 @@ def ObjectCounter(DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: 
     return counter
 
 
-# def CorrectItemNumbers(BoMList: list) -> list:
-#     for i in range(len(BoMList)):
-#         RowItem = BoMList[i]
-#         ItemNumber = RowItem["ItemNumber"]
+def CorrectItemNumbers(BoMList: list) -> list:
+    # Go throug the list
+    for i in range(len(BoMList) - 1):
+        # Get the list item and define the current item number
+        RowItem = BoMList[i]
+        if i == 0:
+            RowItem["ItemNumber"] = "1"
+        ItemNumber = str(RowItem["ItemNumber"])
 
-#         RowItemNext =
-#         Level = len(ItemNumber.split("."))
+        # Get the next list item and define the current itemnumber of the next list item
+        RowItemNext = BoMList[i + 1]
+        ItemNumberNext = str(RowItemNext["ItemNumber"])
+
+        # If the splitted Itemnumber and the next splitted item number have an equeal length,
+        # The last number needs to be increased with one.
+        if len(ItemNumberNext.split(".")) == len(ItemNumber.split(".")):
+            # If the length is one, there is only one level (1,2,3 etc) increase this by one. This is the top level
+            if len(ItemNumberNext.split(".")) == 1 and len(ItemNumberNext.split(".")) == len(ItemNumber.split(".")):
+                RowItemNext["ItemNumber"] = str(int(RowItem["ItemNumber"]) + 1)
+                print(RowItemNext["ItemNumber"])
+
+            # If the splitted itemnumber is more than one. Get the first part of the item number and the last digit of the next item number. Make one item number of these for the next itemnumber
+            if len(ItemNumberNext.split(".")) > 1:
+                RowItemNext["ItemNumber"] = (
+                    RowItem["ItemNumber"].rsplit(".", 1)[0]
+                    + "."
+                    + str(int(RowItemNext["ItemNumber"].rsplit(".", 1)[1]))
+                )
+
+            # If the splitted itemnumber of the next list item is shorter, you have a new subassy or a part on a higer level. The first part of the next itemnumber must be equeal to the first part of the itemnumber.
+            if len(ItemNumberNext.split(".")) < len(ItemNumber.split(".")):
+                # Get the length of the next itemnumber split.
+                ItemNumberLength = len(ItemNumberNext.split("."))
+                # create a list of the splitted next itemnumber
+                SplitNumber = ItemNumberNext.split(".")
+                # define a string object for the itemnumber.
+                ItemNumber = ""
+                # Combine the itemnumber with parts of the itemnumber list.
+                # ItemNumberLength determines how many parts wll be combined.
+                for i in range(ItemNumberLength - 1):
+                    ItemNumber = ItemNumber + "." + SplitNumber[i]
+
+                # Combine the created itemnumber with the last digit of the next item number.
+                # Update the next itemnumber with the result.
+                RowItemNext["ItemNumber"] = str(int(ItemNumber) + 1) + "." + RowItemNext["ItemNumber"].rsplit(".", 1)[1]
+
+        # If the next itemnumber is one level deeper, you have the first item in a sub assy.
+        # The next itemnumber is the current itemnumber with ".1" added at the end.
+        if len(ItemNumberNext.split(".")) == len(ItemNumber.split(".")) + 1:
+            RowItemNext["ItemNumber"] = ItemNumber + ".1"
+
+    # Return the result.
+    return BoMList
