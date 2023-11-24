@@ -62,6 +62,12 @@ class BomFunctions:
         else:
             return
 
+        # Get items outside the Assebly group
+        for RootObject in RootObjects:
+            if RootObject.Label != "Assembly" or RootObject.Label == "Parts":
+                if BomFunctions.AllowedObjectType(RootObject.TypeId) is True:
+                    docObjects.append(RootObject)
+
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
 
@@ -77,7 +83,7 @@ class BomFunctions:
 
     # Function to compare an object type with supported object types.
     @classmethod
-    def AllowedObjectType_Assembly4(self, objectID: str) -> bool:
+    def AllowedObjectType(self, objectID: str) -> bool:
         """
         Check if the objectype is allowed.
         """
@@ -140,7 +146,7 @@ class BomFunctions:
             object = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
-            if BomFunctions.AllowedObjectType_Assembly4(objectID=object.TypeId) is True:
+            if BomFunctions.AllowedObjectType(objectID=object.TypeId) is True:
                 # Increase the itemnumber
                 ItemNumber = ItemNumber + 1
 
@@ -222,7 +228,7 @@ class BomFunctions:
             self.StartRow = self.StartRow + 1
 
             # If the childDocumentObject is one of the allowed types, continue
-            if BomFunctions.AllowedObjectType_Assembly4(objectID=childObject.TypeId) is True:
+            if BomFunctions.AllowedObjectType(objectID=childObject.TypeId) is True:
                 # Increase the itemnumber for the child
                 ChildItemNumber = ChildItemNumber + 1
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
@@ -310,7 +316,7 @@ class BomFunctions:
                 TempTemporaryList.append(ItemObject)
 
             # The for statement stops at the second list item, so add the the last item when the statement reaches its end.
-            if i == len(BOMList):
+            if i == len(BOMList) - 1:
                 # check if the last item is not deeper than level and add it if it is not a body of feature.
                 if ItemObjectTypeNext != "Part::Feature" or ItemObjectTypeNext != "PartDesign::Body":
                     TempTemporaryList.append(ItemObjectNext)
@@ -370,9 +376,6 @@ class BomFunctions:
         # Create a temporary list
         TemporaryList = []
 
-        # at the top row of the CopyMainList to the temporary list
-        TemporaryList.append(CopyMainList[0])
-
         # Get the deepest level if Level is set to zero.
         if Level == 0:
             for i in range(len(CopyMainList)):
@@ -380,84 +383,82 @@ class BomFunctions:
                     Level = len(CopyMainList[i]["ItemNumber"].split("."))
 
         # Go through the CopyMainList
-        for i in range(1, len(CopyMainList)):
+        for i in range(len(CopyMainList)):
             # create a place holder for the quantity
             QtyValue = 1
 
             # Create a new dict as new Row item.
             rowListNew = dict
 
-            # As long the counter is less or equal than the length of the list, continue
-            if i <= len(CopyMainList):
-                # getContents the row item
-                rowList = CopyMainList[i]
-                # Get the itemnumber
-                itemNumber = str(rowList["ItemNumber"])
+            # getContents the row item
+            rowList = CopyMainList[i]
+            # Get the itemnumber
+            itemNumber = str(rowList["ItemNumber"])
 
-                # if the itemnumber is longer than one level (1.1, 1.1.1, etc.) and the level is equal or shorter then the level wanted, continue
-                if len(itemNumber.split(".", 1)[0]) <= Level and len(itemNumber.split(".")) > 1:
-                    # write the itemnumber of the subassy for the shadow list.
-                    shadowItemNumber = itemNumber.split(".", 1)[0]
-                    # Define the shadow item.
-                    shadowObject = rowList["DocumentObject"]
-                    # Create the shadow row
-                    shadowRow = [shadowItemNumber, shadowObject]
+            # if the itemnumber is longer than one level (1.1, 1.1.1, etc.) and the level is equal or shorter then the level wanted, continue
+            if len(itemNumber.split(".", 1)[0]) <= Level and len(itemNumber.split(".")) > 1:
+                # write the itemnumber of the subassy for the shadow list.
+                shadowItemNumber = itemNumber.split(".", 1)[0]
+                # Define the shadow item.
+                shadowObject = rowList["DocumentObject"]
+                # Create the shadow row
+                shadowRow = [shadowItemNumber, shadowObject]
 
-                    # Find the quantity for the item
-                    QtyValue = str(
-                        General_BOM.ObjectCounter(
-                            DocObject=shadowObject,
-                            ItemNumber=str(itemNumber),
-                            ObjectList=ObjectDocumentList,
-                            ItemNumberList=ItemNumberList,
-                        )
+                # Find the quantity for the item
+                QtyValue = str(
+                    General_BOM.ObjectCounter(
+                        DocObject=shadowObject,
+                        ItemNumber=str(itemNumber),
+                        ObjectList=ObjectDocumentList,
+                        ItemNumberList=ItemNumberList,
                     )
+                )
 
-                    # Create a new row item for the temporary row.
-                    rowListNew = {
-                        "ItemNumber": itemNumber,
-                        "DocumentObject": rowList["DocumentObject"],
-                        "Qty": QtyValue,
-                    }
+                # Create a new row item for the temporary row.
+                rowListNew = {
+                    "ItemNumber": itemNumber,
+                    "DocumentObject": rowList["DocumentObject"],
+                    "Qty": QtyValue,
+                }
 
-                    # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
-                    # Add it to the temporary list.
-                    if ShadowList.__contains__(shadowRow) is False:
-                        TemporaryList.append(rowListNew)
-                        # add the shadow row to the shadow list. This prevents from adding this item an second time.
-                        ShadowList.append(shadowRow)
+                # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
+                # Add it to the temporary list.
+                if ShadowList.__contains__(shadowRow) is False:
+                    TemporaryList.append(rowListNew)
+                    # add the shadow row to the shadow list. This prevents from adding this item an second time.
+                    ShadowList.append(shadowRow)
 
-                # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
-                if len(itemNumber.split(".")) == 1:
-                    # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
-                    shadowItemNumber = 0
-                    # Define the shadow item.
-                    shadowObject = rowList["DocumentObject"]
-                    # Create the shadow row
-                    shadowRow = [shadowItemNumber, shadowObject]
+            # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
+            if len(itemNumber.split(".")) == 1:
+                # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
+                shadowItemNumber = 0
+                # Define the shadow item.
+                shadowObject = rowList["DocumentObject"]
+                # Create the shadow row
+                shadowRow = [shadowItemNumber, shadowObject]
 
-                    # Find the quantity for the item
-                    QtyValue = str(
-                        General_BOM.ObjectCounter(
-                            DocObject=shadowObject,
-                            ItemNumber=str(itemNumber),
-                            ObjectList=ObjectDocumentList,
-                            ItemNumberList=ItemNumberList,
-                        )
+                # Find the quantity for the item
+                QtyValue = str(
+                    General_BOM.ObjectCounter(
+                        DocObject=shadowObject,
+                        ItemNumber=str(itemNumber),
+                        ObjectList=ObjectDocumentList,
+                        ItemNumberList=ItemNumberList,
                     )
-                    # Create a new row item for the temporary row.
-                    rowListNew = {
-                        "ItemNumber": itemNumber,
-                        "DocumentObject": rowList["DocumentObject"],
-                        "Qty": QtyValue,
-                    }
+                )
+                # Create a new row item for the temporary row.
+                rowListNew = {
+                    "ItemNumber": itemNumber,
+                    "DocumentObject": rowList["DocumentObject"],
+                    "Qty": QtyValue,
+                }
 
-                    # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
-                    # Add it to the temporary list.
-                    if ShadowList.__contains__(shadowRow) is False:
-                        TemporaryList.append(rowListNew)
-                        # add the shadow row to the shadow list. This prevents from adding this item an second time.
-                        ShadowList.append(shadowRow)
+                # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
+                # Add it to the temporary list.
+                if ShadowList.__contains__(shadowRow) is False:
+                    TemporaryList.append(rowListNew)
+                    # add the shadow row to the shadow list. This prevents from adding this item an second time.
+                    ShadowList.append(shadowRow)
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.

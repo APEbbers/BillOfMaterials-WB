@@ -35,9 +35,9 @@ class CreatePartsOnlyBOM_Class:
         }
 
     def Activated(self):
-        import GetBOM_Assembly4
+        import GetBOM_ASSEMBLY_A4
 
-        # GetBOM_Assembly4.BomFunctions.Start("PartsOnly")
+        # GetBOM_ASSEMBLY_A3_A4.BomFunctions.Start("PartsOnly")
         return
 
     def IsActive(self):
@@ -65,9 +65,9 @@ class CreateSummarizedBOM_Class:
         }
 
     def Activated(self):
-        import GetBOM_Assembly4
+        import GetBOM_ASSEMBLY_A4
 
-        # GetBOM_Assembly4.BomFunctions.Start("Summarized")
+        # GetBOM_ASSEMBLY_A3_A4.BomFunctions.Start("Summarized")
         return
 
     def IsActive(self):
@@ -95,9 +95,9 @@ class CreateTotalBOM_Class:
         }
 
     def Activated(self):
-        import GetBOM_Assembly4
+        import GetBOM_ASSEMBLY_A4
 
-        GetBOM_Assembly4.BomFunctions.Start("Total")
+        GetBOM_ASSEMBLY_A4.BomFunctions.Start("Total")
         return
 
     def IsActive(self):
@@ -125,9 +125,9 @@ class CreateRawBOM_Class:
         }
 
     def Activated(self):
-        import GetBOM_Assembly4
+        import GetBOM_ASSEMBLY_A4
 
-        GetBOM_Assembly4.BomFunctions.Start("Raw")
+        GetBOM_ASSEMBLY_A4.BomFunctions.Start("Raw")
         return
 
     def IsActive(self):
