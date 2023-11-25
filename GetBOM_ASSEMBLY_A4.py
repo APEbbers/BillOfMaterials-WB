@@ -480,6 +480,80 @@ class BomFunctions:
             General_BOM.createBoM(TemporaryList)
         return
 
+    @classmethod
+    def SummarizedBoM(self, CreateSpreadSheet: bool = True, IncludeBodies: bool = True):
+        # If the Mainlist is empty, return.
+        if len(self.mainList) == 0:
+            return
+
+        # copy the main list. Leave the orginal intact for other fdunctions
+        # Then split the list in separate lists.
+        CopyMainList = self.mainList.copy()
+        ItemNumberList = []
+        ObjectList = []
+        ObjectNameList = []
+        ObjectTypeList = []
+        QtyList = []
+        # Go through the CopyMainList and create the separate lists
+        for i1 in range(len(CopyMainList)):
+            Item = CopyMainList[i1]
+            ItemObject = Item["DocumentObject"]
+            ItemObjectName = ItemObject.Label
+            ItemObjectType = ItemObject.TypeId
+            ItemNumber = str(Item["ItemNumber"])
+            ItemQty = int(Item["Qty"])
+
+            ItemNumberList.append(ItemNumber)
+            ObjectList.append(ItemObject)
+            ObjectNameList.append(ItemObjectName)
+            ObjectTypeList.append(ItemObjectType)
+            QtyList.append(ItemQty)
+
+        # Create a temporary list
+        TemporaryList = []
+
+        # Create a shadow list to put objects on which shouldn't be added to the Temporary list, because they are already there.
+        ShadowObjectList = []
+
+        # Go Through the object list
+        for i in range(len(ObjectList)):
+            # Define the separate items for the separate lists
+            ItemObject = ObjectList[i]
+            ItemObjectName = ObjectNameList[i]
+            ItemObjectType = ObjectTypeList[i]
+            ItemNumber = ItemNumberList[i]
+            ItemQty = int(QtyList[i])
+
+            # If ItemObject exits only once in the objectList, the quantity will be one.
+            # Just create a row item for the temporary list.
+            if ObjectList.count(ItemObject) == 1:
+                rowItem = {"ItemNumber": ItemNumberList[i], "DocumentObject": ObjectList[i], "Qty": QtyList[i]}
+                # Add the rowItem if it is not in the shadow list.
+                if ShadowObjectList.__contains__(ItemObject) is False:
+                    TemporaryList.append(rowItem)
+                    ShadowObjectList.append(ItemObject)
+
+            # If the ItemObject exists multiple times, count the items, update the quantity and add it to the temporary list.
+            if ObjectList.count(ItemObject) > 1:
+                ChildQty = ObjectList.count(ItemObject)
+                QtyList[i] = ChildQty
+
+                rowItem = {"ItemNumber": ItemNumberList[i], "DocumentObject": ObjectList[i], "Qty": QtyList[i]}
+                # Add the rowItem if it is not in the shadow list.
+                if ShadowObjectList.__contains__(ItemObject) is False:
+                    TemporaryList.append(rowItem)
+                    ShadowObjectList.append(ItemObject)
+
+        # If App:Links only contain the same bodies and IncludeBodies = False,
+        # replace the App::Links with the bodies they contain. Including their quantity.
+        if IncludeBodies is False:
+            TemporaryList = BomFunctions.FilterBodies(BOMList=TemporaryList)
+
+        # Create the spreadsheet
+        if CreateSpreadSheet is True:
+            General_BOM.createBoM(TemporaryList)
+        return
+
     # Function to start the other functions based on a command string that is passed.
     @classmethod
     def Start(self, command=""):
@@ -501,9 +575,10 @@ class BomFunctions:
                         BomFunctions.CreateTotalBoM(CreateSpreadSheet=True, IndentNumbering=True)
                     if command == "Raw":
                         General_BOM.createBoM(self.mainList)
-                    # if command == "PartsOnly":
-                    #     BomFunctions.PartsOnly()
-
+                    if command == "PartsOnly":
+                        General_BOM.PartsOnly(mainList=self.mainList, CreateSpreadSheet=True)
+                    if command == "Summarized":
+                        BomFunctions.SummarizedBoM(IncludeBodies=False, CreateSpreadSheet=True)
                 # if the result is empty, create a new spreadsheet
                 if sheet is None:
                     sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
@@ -513,8 +588,10 @@ class BomFunctions:
                         BomFunctions.CreateTotalBoM(CreateSpreadSheet=True, IndentNumbering=True)
                     if command == "Raw":
                         General_BOM.createBoM(self.mainList)
-                    # if command == "PartsOnly":
-                    #     BomFunctions.PartsOnly()
+                    if command == "PartsOnly":
+                        General_BOM.PartsOnly(mainList=self.mainList, CreateSpreadSheet=True)
+                    if command == "Summarized":
+                        BomFunctions.SummarizedBoM(IncludeBodies=False, CreateSpreadSheet=True)
         except Exception as e:
             raise e
         return

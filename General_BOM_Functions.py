@@ -102,6 +102,82 @@ def createBoM(List: list, Headers: dict = None):
         sheet.setAlignment("A1:E" + str(Row), "center", "keep")
 
 
+# Function to create a BoM list for a parts only BoM.
+# The function CreateBoM can be used to write it the an spreadsheet.
+def PartsOnly(mainList: list, CreateSpreadSheet: bool = True):
+    # If the Mainlist is empty, return.
+    if len(mainList) == 0:
+        return
+    # copy the main list. Leave the orginal intact for other fdunctions
+    CopyMainList = mainList.copy()
+
+    # create a shadowlist. Will be used to avoid duplicates
+    ShadowList = []
+    # Create two lists for splitting the copy of the main list
+    ItemNumberList = []
+    ObjectDocumentList = []
+
+    # Create two lists out of the CopyMainList
+    for i in range(len(CopyMainList)):
+        # Set all itemnumber to 1. These are not important now.
+        # But you have to pass an itemnumber list to the counter function
+        ItemNumberList.append("1")
+        ObjectDocumentList.append(CopyMainList[i]["DocumentObject"])
+
+    # Create a temporary list
+    TemporaryList = []
+
+    for i in range(len(CopyMainList)):
+        # Get the row item
+        rowList = CopyMainList[i]
+
+        # Get the itemnumber
+        itemNumber = str(rowList["ItemNumber"])
+
+        # create a place holder for the quantity
+        QtyValue = 1
+
+        # Create a new dict as new Row item.
+        rowListNew = dict
+
+        # Define the shadow item.
+        shadowObject = rowList["DocumentObject"]
+
+        # Find the quantity for the item
+        QtyValue = str(
+            ObjectCounter(
+                DocObject=shadowObject,
+                ItemNumber=str(itemNumber),
+                ObjectList=ObjectDocumentList,
+                ItemNumberList=ItemNumberList,
+            )
+        )
+
+        # Create a new row item for the temporary row.
+        rowListNew = {
+            "ItemNumber": itemNumber,
+            "DocumentObject": rowList["DocumentObject"],
+            "Qty": QtyValue,
+        }
+
+        # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
+        # Add it to the temporary list.
+        if ShadowList.__contains__(shadowObject) is False:
+            TemporaryList.append(rowListNew)
+            # add the shadow row to the shadow list. This prevents from adding this item an second time.
+            ShadowList.append(shadowObject)
+
+    # number the parts 1,2,3, etc.
+    for k in range(len(TemporaryList)):
+        tempItem = TemporaryList[k]
+        tempItem["ItemNumber"] = k + 1
+
+    # Create the spreadsheet
+    if CreateSpreadSheet is True:
+        createBoM(TemporaryList)
+    return
+
+
 def ObjectCounter(DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: list) -> int:
     """_summary_
 
@@ -116,32 +192,31 @@ def ObjectCounter(DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: 
     """
     # Set the counter
     counter = 0
+
     # Go Through the objectList
     for i in range(len(ObjectList)):
         # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
         # If the itemnumber is more than one level deep:
         if len(ItemNumberList[i].split(".")) > 1:
             if ItemNumberList[i].rsplit(".", 1)[0] == ItemNumber.rsplit(".", 1)[0]:
-                # If the document object  in the list is equeal to DocObject, increase the counter by one.
+                # If the document object  in the list is equal to DocObject, increase the counter by one.
                 if ObjectList[i] == DocObject:
                     counter = counter + 1
         # If the itemnumber is one level deep:
         if len(ItemNumberList[i].split(".")) == 1:
-            # If the document object  in the list is equeal to DocObject, increase the counter by one.
+            # If the document object  in the list is equal to DocObject, increase the counter by one.
             if ObjectList[i] == DocObject:
                 counter = counter + 1
     # Return the counter
     return counter
 
 
-def CorrectItemNumbers(BoMList: list) -> list:
-    # for i in range(len(BoMList)):
-    #     print(BoMList[i]["DocumentObject"].Label)
-
+def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
     # Go throug the list
     for i in range(len(BoMList) - 1):
         # Get the list item and define the current item number
         RowItem = BoMList[i]
+        # Define the startnumber as 1
         if i == 0:
             RowItem["ItemNumber"] = "1"
         ItemNumber = str(RowItem["ItemNumber"])
@@ -150,55 +225,30 @@ def CorrectItemNumbers(BoMList: list) -> list:
         RowItemNext = BoMList[i + 1]
         ItemNumberNext = str(RowItemNext["ItemNumber"])
 
-        # If the splitted Itemnumber and the next splitted item number have an equeal length,
-        # The last number needs to be increased with one.
-        if len(ItemNumberNext.split(".")) == len(ItemNumber.split(".")):
-            # If the length is one, there is only one level (1,2,3 etc) increase this by one. This is the top level
-            if len(ItemNumberNext.split(".")) == 1 and len(ItemNumberNext.split(".")) == len(ItemNumber.split(".")):
-                RowItemNext["ItemNumber"] = str(int(RowItem["ItemNumber"]) + 1)
-                print(RowItemNext["ItemNumber"])
-
-            # If the splitted itemnumber is more than one. Get the first part of the item number
-            # and the last digit of the next item number. Make one item number of these for the next itemnumber
+        # If the splitted ItemNumberNext is equal or shorter than the splitted ItemNumber, continue here
+        if len(ItemNumberNext.split(".")) <= len(ItemNumber.split(".")):
+            # If the splitted ItemNumberNext is longer than 1, continue here
             if len(ItemNumberNext.split(".")) > 1:
+                # The next itemnumber is the first digit from the current itemnumber with rest of the digit
+                # with second part of the next itemnumber
                 RowItemNext["ItemNumber"] = (
-                    RowItem["ItemNumber"].rsplit(".", 1)[0]
-                    + "."
-                    + str(int(RowItemNext["ItemNumber"].rsplit(".", 1)[1]))
+                    str(int(ItemNumber.split(".", 1)[0])) + "." + ItemNumberNext.split(".", 1)[1]
                 )
+            # If the splitted ItemNumberNext is 1, continue here
+            if len(ItemNumberNext.split(".")) == 1:
+                # The next item number is the first digit of the current itemnumber increased by one
+                RowItemNext["ItemNumber"] = str(int(ItemNumber.split(".", 1)[0]) + 1)
 
-        # If the splitted itemnumber of the next list item is shorter,
-        # you have a new subassy or a part on a higer level.
-        # The first part of the next itemnumber must be equeal to the first part of the itemnumber.
-        if len(ItemNumberNext.split(".")) < len(ItemNumber.split(".")):
-            # Get the length of the next itemnumber split.
-            ItemNumberLength = len(ItemNumberNext.split("."))
-            # create a list of the splitted next itemnumber
-            SplitNumber = ItemNumberNext.split(".")
-            # define a string object for the itemnumber.
-            ItemNumber = ""
-
-            # If the splitted itemnumber result in a list of 1, the next itemnumber is the
-            # first digit of the current item + 1.
-            if len(SplitNumber) == 1:
-                RowItemNext["ItemNumber"] = str(int(RowItem["ItemNumber"].rsplit(".", 1)[0]) + 1)
-
-            # if the splitted itemnumber results in a list longer than 1, create the next itemnumber
-            # from the first part of the current number and the last digit of the next itemnumber
-            if len(SplitNumber) > 1:
-                # Combine the itemnumber with parts of the itemnumber list.
-                # ItemNumberLength determines how many parts wll be combined.
-                for i in range(ItemNumberLength - 1):
-                    ItemNumber = ItemNumber + "." + SplitNumber[i]
-
-                # Combine the created itemnumber with the last digit of the next item number.
-                # Update the next itemnumber with the result.
-                RowItemNext["ItemNumber"] = str(int(ItemNumber) + 1) + "." + RowItemNext["ItemNumber"].rsplit(".", 1)[1]
-
-        # If the next itemnumber is one level deeper, you have the first item in a sub assy.
-        # The next itemnumber is the current itemnumber with ".1" added at the end.
+        # If the splitted ItemNumberNext is longer than the splitted ItemNumber, continue here
         if len(ItemNumberNext.split(".")) == len(ItemNumber.split(".")) + 1:
-            RowItemNext["ItemNumber"] = ItemNumber + ".1"
+            # The next itemnumber is the first digit from the current itemnumber with rest of the digit
+            # with second part of the next itemnumber
+            RowItemNext["ItemNumber"] = ItemNumber.split(".", 1)[0] + "." + ItemNumberNext.split(".", 1)[1]
+
+    # If in debug mode, print the resulting list of numbers
+    if DebugMode is True:
+        for i in range(len(BoMList)):
+            print(BoMList[i]["ItemNumber"])
 
     # Return the result.
     return BoMList

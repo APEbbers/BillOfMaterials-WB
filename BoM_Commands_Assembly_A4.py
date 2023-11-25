@@ -37,7 +37,7 @@ class CreatePartsOnlyBOM_Class:
     def Activated(self):
         import GetBOM_ASSEMBLY_A4
 
-        # GetBOM_ASSEMBLY_A3_A4.BomFunctions.Start("PartsOnly")
+        GetBOM_ASSEMBLY_A4.BomFunctions.Start("PartsOnly")
         return
 
     def IsActive(self):
@@ -67,7 +67,7 @@ class CreateSummarizedBOM_Class:
     def Activated(self):
         import GetBOM_ASSEMBLY_A4
 
-        # GetBOM_ASSEMBLY_A3_A4.BomFunctions.Start("Summarized")
+        GetBOM_ASSEMBLY_A4.BomFunctions.Start("Summarized")
         return
 
     def IsActive(self):
@@ -147,7 +147,7 @@ class CreateRawBOM_Class:
 
 
 # Add the commands to the Gui
-# Gui.addCommand("CreateBOM_PartsOnly_Assembly4", CreatePartsOnlyBOM_Class())
-# Gui.addCommand("CreateBOM_Summary_Assembly4", CreateSummarizedBOM_Class())
+Gui.addCommand("CreateBOM_PartsOnly_Assembly4", CreatePartsOnlyBOM_Class())
+Gui.addCommand("CreateBOM_Summary_Assembly4", CreateSummarizedBOM_Class())
 Gui.addCommand("CreateBOM_Total_Assembly4", CreateTotalBOM_Class())
 Gui.addCommand("CreateBOM_Raw_Assembly4", CreateRawBOM_Class())

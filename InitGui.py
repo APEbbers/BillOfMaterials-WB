@@ -77,7 +77,12 @@ class BOM_WB(Gui.Workbench):
 
         import BoM_Commands_Assembly_A4
 
-        self.list = ["CreateBOM_Raw_Assembly4", "CreateBOM_Total_Assembly4"]
+        self.list = [
+            "CreateBOM_Raw_Assembly4",
+            "CreateBOM_Total_Assembly4",
+            "CreateBOM_PartsOnly_Assembly4",
+            "CreateBOM_Summary_Assembly4",
+        ]
         self.appendToolbar("BOM Commands - Assembly4", self.list)
 
     def Activated(self):
