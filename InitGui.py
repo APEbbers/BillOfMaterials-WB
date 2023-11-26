@@ -75,7 +75,7 @@ class BOM_WB(Gui.Workbench):
         # appends a submenu to an existing menu
         self.appendMenu(["An existing Menu", "My submenu"], self.list)
 
-        import BoM_Commands_Assembly_A4
+        import BoM_Commands_A4
 
         self.list = [
             "CreateBOM_Raw_Assembly4",

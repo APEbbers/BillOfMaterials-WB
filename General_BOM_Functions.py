@@ -23,6 +23,9 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
+import GetBOM_AppLink
+import GetBOM_A3
+import GetBOM_A4
 
 
 # Function to create BoM. standard, a raw BoM will befrom the main list.
@@ -105,6 +108,12 @@ def createBoM(List: list, Headers: dict = None):
 # Function to create a BoM list for a parts only BoM.
 # The function CreateBoM can be used to write it the an spreadsheet.
 def PartsOnly(mainList: list, CreateSpreadSheet: bool = True):
+    """_summary_
+
+    Args:
+        mainList (list): The main list from the BOM Class.\n
+        CreateSpreadSheet (bool, optional): Create an FreeCAD spreadsheet yes or no. Defaults to True.\n
+    """
     # If the Mainlist is empty, return.
     if len(mainList) == 0:
         return
@@ -178,6 +187,111 @@ def PartsOnly(mainList: list, CreateSpreadSheet: bool = True):
     return
 
 
+# Function to create a summary list of all assemblies and their parts.
+# The function CreateBoM can be used to write it the an spreadsheet.
+# The value for 'WB' must be provided. It is used for the correct filtering for each support WB
+def SummarizedBoM(mainList: list, CreateSpreadSheet: bool = True, IncludeBodies: bool = True, WB: str = ""):
+    """_summary_
+
+    Args:
+        mainList (list): The main list from the BOM Class.\n
+        CreateSpreadSheet (bool, optional): Create an FreeCAD spreadsheet, True or False. Defaults to True.
+        IncludeBodies (bool, optional): Include solid bodies in the BoM, True or False. Defaults to True.\n
+        WB (str, optional): For which workbench needs to be filtered. Defaults to "" and an empty BoM.\n
+            a list of strings per supported WB:\n
+            - WB = "Assembly WB": the internal assembly workbench\n
+            - WB = "A3 WB"      : the Assembly3 workbench\n
+            - WB = "A4 WB"      : the Assembly4 workbench\n
+            - WB = "AppLink"    : the internal AppLink structure. Usefull for imported assemblies\n
+            - WB = "A2Plus"     : the A2plus workbench\n
+            - WB = "Arch"       : the Arch workbench\n
+    """
+    # If the Mainlist is empty, return.
+    if len(mainList) == 0:
+        return
+
+    if WB == "":
+        return
+
+    # copy the main list. Leave the orginal intact for other fdunctions
+    # Then split the list in separate lists.
+    CopyMainList = mainList.copy()
+    ItemNumberList = []
+    ObjectList = []
+    ObjectNameList = []
+    ObjectTypeList = []
+    QtyList = []
+    # Go through the CopyMainList and create the separate lists
+    for i1 in range(len(CopyMainList)):
+        Item = CopyMainList[i1]
+        ItemObject = Item["DocumentObject"]
+        ItemObjectName = ItemObject.Label
+        ItemObjectType = ItemObject.TypeId
+        ItemNumber = str(Item["ItemNumber"])
+        ItemQty = int(Item["Qty"])
+
+        ItemNumberList.append(ItemNumber)
+        ObjectList.append(ItemObject)
+        ObjectNameList.append(ItemObjectName)
+        ObjectTypeList.append(ItemObjectType)
+        QtyList.append(ItemQty)
+
+    # Create a temporary list
+    TemporaryList = []
+
+    # Create a shadow list to put objects on which shouldn't be added to the Temporary list, because they are already there.
+    ShadowObjectList = []
+
+    # Go Through the object list
+    for i in range(len(ObjectList)):
+        # Define the separate items for the separate lists
+        ItemObject = ObjectList[i]
+        ItemObjectName = ObjectNameList[i]
+        ItemObjectType = ObjectTypeList[i]
+        ItemNumber = ItemNumberList[i]
+        ItemQty = int(QtyList[i])
+
+        # If ItemObject exits only once in the objectList, the quantity will be one.
+        # Just create a row item for the temporary list.
+        if ObjectList.count(ItemObject) == 1:
+            rowItem = {"ItemNumber": ItemNumberList[i], "DocumentObject": ObjectList[i], "Qty": QtyList[i]}
+            # Add the rowItem if it is not in the shadow list.
+            if ShadowObjectList.__contains__(ItemObject) is False:
+                TemporaryList.append(rowItem)
+                ShadowObjectList.append(ItemObject)
+
+        # If the ItemObject exists multiple times, count the items, update the quantity and add it to the temporary list.
+        if ObjectList.count(ItemObject) > 1:
+            ChildQty = ObjectList.count(ItemObject)
+            QtyList[i] = ChildQty
+
+            rowItem = {"ItemNumber": ItemNumberList[i], "DocumentObject": ObjectList[i], "Qty": QtyList[i]}
+            # Add the rowItem if it is not in the shadow list.
+            if ShadowObjectList.__contains__(ItemObject) is False:
+                TemporaryList.append(rowItem)
+                ShadowObjectList.append(ItemObject)
+
+    # If App:Links only contain the same bodies and IncludeBodies = False,
+    # replace the App::Links with the bodies they contain. Including their quantity.
+    if IncludeBodies is False:
+        # if WB == "Assembly WB":
+        # TemporaryList = GetBOM_A4.BomFunctions.FilterBodies(BOMList=TemporaryList)
+        if WB == "A3 WB":
+            TemporaryList = GetBOM_A3.BomFunctions.FilterBodies(BOMList=TemporaryList)
+        if WB == "A4 WB":
+            TemporaryList = GetBOM_A4.BomFunctions.FilterBodies(BOMList=TemporaryList)
+        if WB == "AppLink":
+            TemporaryList = GetBOM_AppLink.BomFunctions.FilterBodies(BOMList=TemporaryList)
+        # if WB == "A2Plus":
+        #     TemporaryList = GetBOM_A2Plus.BomFunctions.FilterBodies(BOMList=TemporaryList)
+
+    # Create the spreadsheet
+    if CreateSpreadSheet is True:
+        createBoM(TemporaryList)
+    return
+
+
+# Functions to count  document objects in a list based on the itemnumber of their parent.
 def ObjectCounter(DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: list) -> int:
     """_summary_
 
@@ -211,7 +325,17 @@ def ObjectCounter(DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: 
     return counter
 
 
+# Function to correct the items of the BoM after filtering has taken place.
 def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
+    """_summary_
+
+    Args:
+        BoMList (list): The list that needs correction.
+        DebugMode (bool, optional): If set to True, all itemnumber will be reported. Defaults to False.
+
+    Returns:
+        list: The corrected list.
+    """
     # Go throug the list
     for i in range(len(BoMList) - 1):
         # Get the list item and define the current item number

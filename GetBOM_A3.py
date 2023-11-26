@@ -41,30 +41,24 @@ class BomFunctions:
         RootObjects = doc.RootObjects
         docObjects = []
 
-        # Get the folder with the parts and create a list from it.
-        PartsGroup = []
-        PartList = []
-        for RootObject in RootObjects:
-            if RootObject.Label == "Parts" and RootObject.TypeId == "App::DocumentObjectGroup":
-                PartsGroup.append(RootObject)
-        for Part in PartsGroup:
-            PartList.append(Part)
-
         # Get the assembly group
-        group = []
+        AssemblyGroup = []
         for RootObject in RootObjects:
-            if RootObject.Label == "Assembly" and RootObject.TypeId == "App::Part":
-                group = RootObject
+            if RootObject.Label == "Assembly" and RootObject.TypeId == "Part::PartFeature":
+                AssemblyGroup = RootObject
 
         # get the items in the group "Assembly"
-        if group is not None:
-            docObjects.extend(group.Group)
+        if AssemblyGroup is not None:
+            for Group in AssemblyGroup:
+                if Group.Label == "Parts" and Group.TypeId == "Part::PartFeature":
+                    for Item in Group:
+                        docObjects.append(Item)
         else:
             return
 
         # Get items outside the Assebly group
         for RootObject in RootObjects:
-            if RootObject.Label != "Assembly" or RootObject.Label == "Parts":
+            if RootObject.Label != "Assembly":
                 if BomFunctions.AllowedObjectType(RootObject.TypeId) is True:
                     docObjects.append(RootObject)
 
@@ -75,9 +69,7 @@ class BomFunctions:
         ItemNumber = 0
 
         # Go Through all objects
-        BomFunctions.GoThrough_Objects(
-            docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber, ParentNumber="", Parts=PartList
-        )
+        BomFunctions.GoThrough_Objects(docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber, ParentNumber="")
 
         return
 
@@ -95,6 +87,7 @@ class BomFunctions:
             "App::LinkGroup",
             "Part::FeaturePython",
             "Part::Feature",
+            "Part::PartFeature",
             "App::Part",
             "PartDesign::Body",
         ]
