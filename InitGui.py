@@ -43,7 +43,7 @@ PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI").replace("\\", "/")
 class BOM_WB(Gui.Workbench):
     MenuText = "Bill of Materials Workbench"
     ToolTip = "A workbench for creating a Bill of Materials"
-    Icon = os.path.join(PATH_TB_ICONS, "BoMWB.svg").replace("\\", "/")
+    Icon = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg").replace("\\", "/")
 
     Gui.addIconPath(PATH_TB_ICONS)
     # Gui.addPreferencePage(

@@ -1,5 +1,22 @@
 <RCC>
     <qresource prefix="/">
-        <file>Resources/Icons/BoMWB.svg</file>        
+        <file>Resources/Icons/AppLink-Parts.svg</file>
+        <file>Resources/Icons/AppLink-Raw.svg</file>
+        <file>Resources/Icons/AppLink-Summary.svg</file>
+        <file>Resources/Icons/AppLink-Total.svg</file>
+        <file>Resources/Icons/Assembly3-Parts.svg</file>
+        <file>Resources/Icons/Assembly3-Raw.svg</file>
+        <file>Resources/Icons/Assembly3-Summary.svg</file>
+        <file>Resources/Icons/Assembly3-Total.svg</file>
+        <file>Resources/Icons/Assembly4-Parts.svg</file>
+        <file>Resources/Icons/Assembly4-Raw.svg</file>
+        <file>Resources/Icons/Assembly4-Summary.svg</file>
+        <file>Resources/Icons/Assembly4-Total.svg</file>
+        <file>Resources/Icons/AssemblyInternal-Parts.svg</file>
+        <file>Resources/Icons/AssemblyInternal-Raw.svg</file>
+        <file>Resources/Icons/AssemblyInternal-Summary.svg</file>
+        <file>Resources/Icons/AssemblyInternal-Total.svg</file>
+        <file>Resources/Icons/BillOfMaterialsWB.svg</file>
+        <file>Resources/Icons/preferences-bill_of_materials_wb.svg</file>    
     </qresource>
 </RCC>

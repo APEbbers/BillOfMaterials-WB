@@ -29,7 +29,7 @@ import FreeCADGui as Gui
 class CreatePartsOnlyBOM_Class:
     def GetResources(self):
         return {
-            "Pixmap": "CreateBOM.svg",  # the name of a svg file available in the resources
+            "Pixmap": "Assembly4-Parts.svg",  # the name of a svg file available in the resources
             "MenuText": "Create a parts only BoM",
             "ToolTip": "Create a parts only Bill of Materials in a spreadsheet",
         }
@@ -59,7 +59,7 @@ class CreatePartsOnlyBOM_Class:
 class CreateSummarizedBOM_Class:
     def GetResources(self):
         return {
-            "Pixmap": "CreateBOM.svg",  # the name of a svg file available in the resources
+            "Pixmap": "Assembly4-Summary.svg",  # the name of a svg file available in the resources
             "MenuText": "Create a summarized BoM",
             "ToolTip": "Create a summary of all the parts and assemblies in a spreadsheet",
         }
@@ -89,7 +89,7 @@ class CreateSummarizedBOM_Class:
 class CreateTotalBOM_Class:
     def GetResources(self):
         return {
-            "Pixmap": "CreateBOM.svg",  # the name of a svg file available in the resources
+            "Pixmap": "Assembly4-Total.svg",  # the name of a svg file available in the resources
             "MenuText": "Create a overall BoM",
             "ToolTip": "Create a Bill of Materials in a spreadsheet",
         }
@@ -119,7 +119,7 @@ class CreateTotalBOM_Class:
 class CreateRawBOM_Class:
     def GetResources(self):
         return {
-            "Pixmap": "CreateBOM.svg",  # the name of a svg file available in the resources
+            "Pixmap": "Assembly4-Raw.svg",  # the name of a svg file available in the resources
             "MenuText": "Create the raw BoM",
             "ToolTip": "Create a Bill of Materials in a spreadsheet, as is.",
         }

@@ -140,41 +140,43 @@ def PartsOnly(mainList: list, CreateSpreadSheet: bool = True):
         # Get the row item
         rowList = CopyMainList[i]
 
-        # Get the itemnumber
-        itemNumber = str(rowList["ItemNumber"])
+        TypeListParts = ["Part::FeaturePython", "Part::Feature", "PartDesign::Body"]
+        if TypeListParts.__contains__(rowList["DocumentObject"].TypeId) is True:
+            # Get the itemnumber
+            itemNumber = str(rowList["ItemNumber"])
 
-        # create a place holder for the quantity
-        QtyValue = 1
+            # create a place holder for the quantity
+            QtyValue = 1
 
-        # Create a new dict as new Row item.
-        rowListNew = dict
+            # Create a new dict as new Row item.
+            rowListNew = dict
 
-        # Define the shadow item.
-        shadowObject = rowList["DocumentObject"]
+            # Define the shadow item.
+            shadowObject = rowList["DocumentObject"]
 
-        # Find the quantity for the item
-        QtyValue = str(
-            ObjectCounter(
-                DocObject=shadowObject,
-                ItemNumber=str(itemNumber),
-                ObjectList=ObjectDocumentList,
-                ItemNumberList=ItemNumberList,
+            # Find the quantity for the item
+            QtyValue = str(
+                ObjectCounter(
+                    DocObject=shadowObject,
+                    ItemNumber=str(itemNumber),
+                    ObjectList=ObjectDocumentList,
+                    ItemNumberList=ItemNumberList,
+                )
             )
-        )
 
-        # Create a new row item for the temporary row.
-        rowListNew = {
-            "ItemNumber": itemNumber,
-            "DocumentObject": rowList["DocumentObject"],
-            "Qty": QtyValue,
-        }
+            # Create a new row item for the temporary row.
+            rowListNew = {
+                "ItemNumber": itemNumber,
+                "DocumentObject": rowList["DocumentObject"],
+                "Qty": QtyValue,
+            }
 
-        # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
-        # Add it to the temporary list.
-        if ShadowList.__contains__(shadowObject) is False:
-            TemporaryList.append(rowListNew)
-            # add the shadow row to the shadow list. This prevents from adding this item an second time.
-            ShadowList.append(shadowObject)
+            # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
+            # Add it to the temporary list.
+            if ShadowList.__contains__(shadowObject) is False:
+                TemporaryList.append(rowListNew)
+                # add the shadow row to the shadow list. This prevents from adding this item an second time.
+                ShadowList.append(shadowObject)
 
     # number the parts 1,2,3, etc.
     for k in range(len(TemporaryList)):
