@@ -52,7 +52,7 @@ class BomFunctions:
         PartsGroup = []
         PartList = []
         for RootObject in RootObjects:
-            if RootObject.Label == "Parts" and RootObject.TypeId == "App::DocumentObjectGroup":
+            if RootObject.Name == "Parts" and RootObject.TypeId == "App::DocumentObjectGroup":
                 PartsGroup.append(RootObject)
         for Part in PartsGroup:
             PartList.append(Part)
@@ -60,7 +60,7 @@ class BomFunctions:
         # Get the assembly group
         group = []
         for RootObject in RootObjects:
-            if RootObject.Label == "Assembly" and RootObject.TypeId == "App::Part":
+            if RootObject.Name == "Assembly" and RootObject.TypeId == "App::Part":
                 group = RootObject
 
         # get the items in the group "Assembly"
@@ -71,7 +71,7 @@ class BomFunctions:
 
         # Get items outside the Assebly group
         for RootObject in RootObjects:
-            if RootObject.Label != "Assembly" or RootObject.Label == "Parts":
+            if RootObject.Name != "Assembly" or RootObject.Name == "Parts":
                 if self.AllowedObjectType(RootObject.TypeId) is True:
                     docObjects.append(RootObject)
 
@@ -128,7 +128,7 @@ class BomFunctions:
             for ParentObject in Parents:
                 # If the name of the second parent is in the compared object,the result will be None.
                 # if the name of the second parent is not in the name of the compared object, the result is the object document.
-                if str(ParentObject[1]).find(objectComparison.Label) == -1:
+                if str(ParentObject[1]).find(objectComparison.Name) == -1:
                     return ObjectDocument
                 else:
                     return None
@@ -173,7 +173,8 @@ class BomFunctions:
                 rowList = {
                     "ItemNumber": ItemNumberString,
                     "DocumentObject": object,
-                    "ObjectName": object.Label,
+                    "ObjectLabel": object.Label,
+                    "ObjectName": object.Name,
                     "Qty": 1,
                 }
 
@@ -248,7 +249,8 @@ class BomFunctions:
                 rowList = {
                     "ItemNumber": ItemNumberString,
                     "DocumentObject": childObject,
-                    "ObjectName": childObject.Label,
+                    "ObjectLabel": childObject.Label,
+                    "ObjectName": childObject.Name,
                     "Qty": 1,
                 }
 
@@ -385,11 +387,13 @@ class BomFunctions:
             # the original part. This is used for summation of the same parts.
             if docObject.getPropertyByName("Type") == "":
                 RowItem["DocumentObject"] = docObject.LinkedObject
-                RowItem["ObjectName"] = docObject.LinkedObject.Label
+                RowItem["ObjectName"] = docObject.LinkedObject.Name
+                RowItem["ObjectLabel"] = docObject.LinkedObject.Label
                 return RowItem
             # If the property returns "Assembly", it is an sub-assembly. Return the object.
             if docObject.getPropertyByName("Type") == "Assembly":
                 RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[0]
+                RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
                 return RowItem
         except Exception:
             return None
@@ -493,6 +497,7 @@ class BomFunctions:
                 rowListNew = {
                     "ItemNumber": itemNumber,
                     "DocumentObject": rowList["DocumentObject"],
+                    "ObjectLabel": rowList["ObjectLabel"],
                     "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
                 }
@@ -526,6 +531,7 @@ class BomFunctions:
                 rowListNew = {
                     "ItemNumber": itemNumber,
                     "DocumentObject": rowList["DocumentObject"],
+                    "ObjectLabel": rowList["ObjectLabel"],
                     "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
                 }
@@ -578,6 +584,7 @@ class BomFunctions:
         ItemNumberList = []
         ObjectList = []
         ObjectNameList = []
+        ObjectLabelList = []
         ObjectTypeList = []
         QtyList = []
 
@@ -586,6 +593,7 @@ class BomFunctions:
             Item = CopyMainList[i1]
             ItemObject = Item["DocumentObject"]
             ItemObjectName = Item["ObjectName"]
+            ItemObjectLabel = Item["ObjectLabel"]
             ItemObjectType = ItemObject.TypeId
             ItemNumber = str(Item["ItemNumber"])
             ItemQty = int(Item["Qty"])
@@ -593,6 +601,7 @@ class BomFunctions:
             ItemNumberList.append(ItemNumber)
             ObjectList.append(ItemObject)
             ObjectNameList.append(ItemObjectName)
+            ObjectLabelList.append(ItemObjectLabel)
             ObjectTypeList.append(ItemObjectType)
             QtyList.append(ItemQty)
 
@@ -609,6 +618,7 @@ class BomFunctions:
             # Define the separate items for the separate lists
             ItemObject = ObjectList[i]
             ItemObjectName = ObjectNameList[i]
+            ItemObjectLabel = ObjectLabelList[i]
             ItemObjectType = ObjectTypeList[i]
             ItemNumber = ItemNumberList[i]
             ItemQty = int(QtyList[i])
@@ -624,6 +634,7 @@ class BomFunctions:
                     "ItemNumber": ItemNumber,
                     "DocumentObject": ItemObject,
                     "ObjectName": ItemObjectName,
+                    "ObjectLabel": ItemObjectLabel,
                     "Qty": ItemQty,
                 }
 
@@ -642,6 +653,7 @@ class BomFunctions:
                     "ItemNumber": ItemNumber,
                     "DocumentObject": ItemObject,
                     "ObjectName": ItemObjectName,
+                    "ObjectLabel": ItemObjectLabel,
                     "Qty": QtyList[i],
                 }
 
@@ -711,6 +723,7 @@ class BomFunctions:
                     "ItemNumber": itemNumber,
                     "DocumentObject": rowList["DocumentObject"],
                     "ObjectName": rowList["ObjectName"],
+                    "ObjectLabel": rowList["ObjectLabel"],
                     "Qty": QtyValue,
                 }
 
@@ -733,82 +746,6 @@ class BomFunctions:
         # Create the spreadsheet
         if CreateSpreadSheet is True:
             General_BOM.createBoM(TemporaryList)
-        return
-
-        """_summary_
-
-        Args:
-        List (list, optional): PartList.\n
-        Defaults to None.
-        Headers (dict, optional): {\n
-        "A1": "Number",\n
-        "B1": "Name",\n
-        "C1": "Description",\n
-        "D1": "Type",\n
-        "E1": "Qty",\n
-        },\n
-        . Defaults to None.
-        """
-        # If the Mainlist is empty, return.
-        if mainList is None:
-            print("No list available!!")
-            return
-
-        # Get the spreadsheet.
-        sheet = App.ActiveDocument.getObject("BoM")
-
-        # Define CopyMainList and Header
-        CopyMainList = []
-
-        # if List is None, copy the main list
-        CopyMainList = mainList
-
-        # Set the headers in the spreadsheet
-        if Headers is None:
-            Headers = {"A1": "Number", "B1": "Qty", "C1": "Name", "D1": "Description", "E1": "Type"}
-
-        # Set the cell width based on the headers as default
-        for key in Headers:
-            Cell = str(key)
-            Value = str(Headers[key])
-            sheet.set(Cell, Value)
-            # set the width based on the headers
-            Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=Value)
-
-        # Go through the main list and add every rowList to the spreadsheet.
-        # Define a row counter
-        Row = 0
-        Column = ""
-        Value = ""
-        ValuePrevious = ""
-        # Go through the CopyMainlist
-        for i in range(len(CopyMainList)):
-            rowList = CopyMainList[i]
-            # Set the row offset to 2. otherwise the headers will be overwritten
-            rowOffset = 2
-            # Increase the row
-            Row = i + rowOffset
-
-            # Fill the spreadsheet
-            sheet.set("A" + str(Row), str(rowList["ItemNumber"]))
-            sheet.set("B" + str(Row), str(rowList["Qty"]))
-            sheet.set("C" + str(Row), rowList["ObjectName"])
-            sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
-            sheet.set("E" + str(Row), rowList["DocumentObject"].TypeId)
-
-            # Set the column widht
-            for key in Headers:
-                Column = key[:1]
-                Value = str(sheet.getContents(Column + str(Row)))
-                ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
-
-                if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
-                    Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=Column, cellValue=Value)
-
-        # Allign the columns
-        if Row > 1:
-            sheet.setAlignment("A1:E" + str(Row), "center", "keep")
-
         return
 
     # endregion

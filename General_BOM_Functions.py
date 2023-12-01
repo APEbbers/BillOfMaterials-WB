@@ -86,7 +86,7 @@ def createBoM(mainList: list, Headers: dict = None):
         # Fill the spreadsheet
         sheet.set("A" + str(Row), str(rowList["ItemNumber"]))
         sheet.set("B" + str(Row), str(rowList["Qty"]))
-        sheet.set("C" + str(Row), rowList["ObjectName"])
+        sheet.set("C" + str(Row), rowList["ObjectLabel"])
         sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
         sheet.set("E" + str(Row), rowList["DocumentObject"].TypeId)
 
@@ -265,14 +265,14 @@ def CheckAssemblyType(DocObject):
         except Exception:
             pass
     # If it is not an A2plus assembly, check for the other type of assemblies
-    if RootObjects[0].Label == "Parts" and RootObjects[0].TypeId == "App::DocumentObjectGroup":
-        if RootObjects[1].Label == "Assembly" and RootObjects[1].TypeId == "App::Part":
+    if RootObjects[0].Name == "Parts" and RootObjects[0].TypeId == "App::DocumentObjectGroup":
+        if RootObjects[1].Name == "Assembly" and RootObjects[1].TypeId == "App::Part":
             return "Assembly4"
-    elif RootObjects[0].Label == "Assembly" and RootObjects[0].TypeId == "App::Part":
-        if RootObjects[0].Group[0].Label == "Joints" and RootObjects[0].Group[0].TypeId == "App::DocumentObjectGroup":
+    elif RootObjects[0].Name == "Assembly" and RootObjects[0].TypeId == "App::Part":
+        if RootObjects[0].Group[0].Name == "Joints" and RootObjects[0].Group[0].TypeId == "App::DocumentObjectGroup":
             return "Internal"
-    elif RootObjects[0].Label == "Assembly" and RootObjects[0].TypeId == "Part::FeaturePython":
-        if RootObjects[0].Group[0].Label == "Constraints" and RootObjects[0].Group[0].TypeId == "App::FeaturePython":
+    elif RootObjects[0].Name == "Assembly" and RootObjects[0].TypeId == "Part::FeaturePython":
+        if RootObjects[0].Group[0].Name == "Constraints" and RootObjects[0].Group[0].TypeId == "App::FeaturePython":
             return "Assembly3"
     else:
         for RootObject in RootObjects:

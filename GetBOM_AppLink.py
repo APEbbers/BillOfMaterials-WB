@@ -177,7 +177,8 @@ class BomFunctions:
                 rowList = {
                     "ItemNumber": ItemNumberString,
                     "DocumentObject": object,
-                    "ObjectName": object.Label,
+                    "ObjectLabel": object.Label,
+                    "ObjectName": object.Name,
                     "Qty": 1,
                 }
 
@@ -237,7 +238,8 @@ class BomFunctions:
                 rowList = {
                     "ItemNumber": ItemNumberString,
                     "DocumentObject": childObject,
-                    "ObjectName": childObject.Label,
+                    "ObjectLabel": childObject.Label,
+                    "ObjectName": childObject.Name,
                     "Qty": 1,
                 }
 
@@ -280,14 +282,14 @@ class BomFunctions:
         for i in range(len(BOMList) - 1):
             # Define the property objects
             ItemObject = BOMList[i]
-            ItemObjectName = ItemObject["DocumentObject"].Label
+            ItemObjectLabel = ItemObject["DocumentObject"].Label
             ItemObjectType = ItemObject["DocumentObject"].TypeId
             ItemNumber = ItemObject["ItemNumber"]
 
             # Define the property objects of the next row
             i = i + 1
             ItemObjectNext = BOMList[i]
-            ItemObjectNameNext = ItemObjectNext["DocumentObject"].Label
+            ItemObjectLabelNext = ItemObjectNext["DocumentObject"].Label
             ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
             ItemNumberNext = ItemObjectNext["ItemNumber"]
 
@@ -298,7 +300,7 @@ class BomFunctions:
                 # confirm that the item is an app:link and its child a part::feature
                 if ItemObjectType == "App::Link" and ItemObjectTypeNext == "Part::Feature":
                     # confirm that the item name without "001" is equal to the child name.
-                    if ItemObjectName[:-3] == ItemObjectNameNext or ItemObjectName == ItemObjectNameNext:
+                    if ItemObjectLabel[:-3] == ItemObjectLabelNext or ItemObjectLabel == ItemObjectLabelNext:
                         # set the flag to false.
                         flag = False
                         # remove the last digit from the itemnumber. otherwise you will go from 1.1.5 to 1.1.6.1 for example.
@@ -409,6 +411,7 @@ class BomFunctions:
                 rowListNew = {
                     "ItemNumber": itemNumber,
                     "DocumentObject": rowList["DocumentObject"],
+                    "ObjectLabel": rowList["ObjectLabel"],
                     "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
                 }
@@ -449,6 +452,7 @@ class BomFunctions:
                 rowListNew = {
                     "ItemNumber": itemNumber,
                     "DocumentObject": rowList["DocumentObject"],
+                    "ObjectLabel": rowList["ObjectLabel"],
                     "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
                 }
@@ -493,6 +497,7 @@ class BomFunctions:
         CopyMainList = self.mainList.copy()
         ItemNumberList = []
         ObjectList = []
+        ObjectLabelList = []
         ObjectNameList = []
         ObjectTypeList = []
         QtyList = []
@@ -500,6 +505,7 @@ class BomFunctions:
         for i1 in range(len(CopyMainList)):
             Item = CopyMainList[i1]
             ItemObject = Item["DocumentObject"]
+            ItemObjectLabel = Item["ObjectLabel"]
             ItemObjectName = Item["ObjectName"]
             ItemObjectType = ItemObject.TypeId
             ItemNumber = str(Item["ItemNumber"])
@@ -507,6 +513,7 @@ class BomFunctions:
 
             ItemNumberList.append(ItemNumber)
             ObjectList.append(ItemObject)
+            ObjectLabelList.append(ItemObjectLabel)
             ObjectNameList.append(ItemObjectName)
             ObjectTypeList.append(ItemObjectType)
             QtyList.append(ItemQty)
@@ -521,6 +528,7 @@ class BomFunctions:
         for i in range(len(ObjectList)):
             # Define the separate items for the separate lists
             ItemObject = ObjectList[i]
+            ItemObjectLabel = ObjectLabelList[i]
             ItemObjectName = ObjectNameList[i]
             ItemObjectType = ObjectTypeList[i]
             ItemNumber = ItemNumberList[i]
@@ -532,6 +540,7 @@ class BomFunctions:
                 rowItem = {
                     "ItemNumber": ItemNumber,
                     "DocumentObject": ItemObject,
+                    "ObjectLabel": ItemObjectLabel,
                     "ObjectName": ItemObjectName,
                     "Qty": ItemQty,
                 }
@@ -548,6 +557,7 @@ class BomFunctions:
                 rowItem = {
                     "ItemNumber": ItemNumber,
                     "DocumentObject": ItemObject,
+                    "ObjectLabel": ItemObjectLabel,
                     "ObjectName": ItemObjectName,
                     "Qty": QtyList[i],
                 }
@@ -629,6 +639,7 @@ class BomFunctions:
                 rowListNew = {
                     "ItemNumber": itemNumber,
                     "DocumentObject": rowList["DocumentObject"],
+                    "ObjectLabel": rowList["ObjectLabel"],
                     "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
                 }
@@ -672,7 +683,7 @@ class BomFunctions:
                     if command == "Total":
                         self.CreateTotalBoM(CreateSpreadSheet=True, IncludeBodies=True, IndentNumbering=True, Level=0)
                     if command == "Raw":
-                        self.createBoM(self.mainList)
+                        General_BOM.createBoM(self.mainList)
                     if command == "PartsOnly":
                         self.PartsOnly(CreateSpreadSheet=True)
                     if command == "Summarized":
@@ -685,7 +696,7 @@ class BomFunctions:
                     if command == "Total":
                         self.CreateTotalBoM(CreateSpreadSheet=True, IncludeBodies=False, IndentNumbering=True, Level=0)
                     if command == "Raw":
-                        self.createBoM(self.mainList)
+                        General_BOM.createBoM(self.mainList)
                     if command == "PartsOnly":
                         self.PartsOnly(CreateSpreadSheet=True)
                     if command == "Summarized":
