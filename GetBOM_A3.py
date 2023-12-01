@@ -399,10 +399,10 @@ class BomFunctions:
 
                 # Find the quantity for the item
                 QtyValue = str(
-                    General_BOM.ObjectCounter(
+                    General_BOM.ObjectCounter_ItemNumber(
                         DocObject=shadowObject,
                         ItemNumber=str(itemNumber),
-                        ObjectList=ObjectDocumentList,
+                        ItemList=ObjectDocumentList,
                         ItemNumberList=ItemNumberList,
                     )
                 )
@@ -432,10 +432,10 @@ class BomFunctions:
 
                 # Find the quantity for the item
                 QtyValue = str(
-                    General_BOM.ObjectCounter(
+                    General_BOM.ObjectCounter_ItemNumber(
                         DocObject=shadowObject,
                         ItemNumber=str(itemNumber),
-                        ObjectList=ObjectDocumentList,
+                        ItemList=ObjectDocumentList,
                         ItemNumberList=ItemNumberList,
                     )
                 )

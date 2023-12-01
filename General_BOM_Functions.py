@@ -25,8 +25,89 @@ import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
 
 
+# Function to create BoM. standard, a raw BoM will befrom the main list.
+# If a modified list is created, this function can be used to write it the a spreadsheet.
+# You can add a dict for the headers of this list
+def createBoM(mainList: list, Headers: dict = None):
+    """_summary_
+
+    Args:
+    List (list, optional): PartList.\n
+    Defaults to None.
+    Headers (dict, optional): {\n
+    "A1": "Number",\n
+    "B1": "Name",\n
+    "C1": "Description",\n
+    "D1": "Type",\n
+    "E1": "Qty",\n
+    },\n
+    . Defaults to None.
+    """
+    # If the Mainlist is empty, return.
+    if mainList is None:
+        print("No list available!!")
+        return
+
+    # Get the spreadsheet.
+    sheet = App.ActiveDocument.getObject("BoM")
+
+    # Define CopyMainList and Header
+    CopyMainList = []
+
+    # if List is None, copy the main list
+    CopyMainList = mainList
+
+    # Set the headers in the spreadsheet
+    if Headers is None:
+        Headers = {"A1": "Number", "B1": "Qty", "C1": "Name", "D1": "Description", "E1": "Type"}
+
+    # Set the cell width based on the headers as default
+    for key in Headers:
+        Cell = str(key)
+        Value = str(Headers[key])
+        sheet.set(Cell, Value)
+        # set the width based on the headers
+        Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=Value)
+
+    # Go through the main list and add every rowList to the spreadsheet.
+    # Define a row counter
+    Row = 0
+    Column = ""
+    Value = ""
+    ValuePrevious = ""
+    # Go through the CopyMainlist
+    for i in range(len(CopyMainList)):
+        rowList = CopyMainList[i]
+        # Set the row offset to 2. otherwise the headers will be overwritten
+        rowOffset = 2
+        # Increase the row
+        Row = i + rowOffset
+
+        # Fill the spreadsheet
+        sheet.set("A" + str(Row), str(rowList["ItemNumber"]))
+        sheet.set("B" + str(Row), str(rowList["Qty"]))
+        sheet.set("C" + str(Row), rowList["ObjectName"])
+        sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
+        sheet.set("E" + str(Row), rowList["DocumentObject"].TypeId)
+
+        # Set the column widht
+        for key in Headers:
+            Column = key[:1]
+            Value = str(sheet.getContents(Column + str(Row)))
+            ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
+
+            if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
+                Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=Column, cellValue=Value)
+
+    # Allign the columns
+    if Row > 1:
+        sheet.setAlignment("A1:E" + str(Row), "center", "keep")
+
+    return
+
+
 # Functions to count  document objects in a list based on the itemnumber of their parent.
-def ObjectCounter(DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: list) -> int:
+def ObjectCounter_ItemNumber(DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: list) -> int:
     """_summary_
 
     Args:
@@ -55,6 +136,56 @@ def ObjectCounter(DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: 
             # If the document object  in the list is equal to DocObject, increase the counter by one.
             if ObjectList[i] == DocObject:
                 counter = counter + 1
+    # Return the counter
+    return counter
+
+
+# Functions to count  document objects in a list. Can be object based or List row based comparison
+def ObjectCounter(DocObject=None, RowItem=None, mainList: list = None) -> int:
+    """_summary_
+    Use this function only two ways:\n
+    1. Enter an DocumentObject (DocObject) and a BoM list with a tuples as items (mainList). RowItem must be None.
+    2. Enter an RowItem from a BoM List (RowItem) and a BoM list with a tuples as items (mainList). DocObject must be None.\n
+
+    Args:
+        DocObject (_type_, optional): DocumentObject to search for. Defaults to None.
+        RowItem (_type_, optional): List item to search for. Defaults to None.
+        ItemList (list, optional): The item or Document object list. Defaults to None.
+
+    Returns:
+        int: _description_
+    """
+    ObjectBased = False
+    ListRowBased = False
+    if DocObject is not None and RowItem is None:
+        ObjectBased = True
+    if DocObject is None and RowItem is not None:
+        ListRowBased = True
+    else:
+        return 0
+
+    # Set the counter
+    counter = 0
+
+    # Go Through the mainList
+    # If ObjectBased is True, compare the objects
+    if ObjectBased is True:
+        for i in range(len(mainList)):
+            # If the document object  in the list is equal to DocObject, increase the counter by one.
+            if mainList[i]["DocumentObject"] == DocObject:
+                counter = counter + 1
+
+    # If ListRowBased is True, compare the name and type of the objects. These are stored in the list items.
+    if ListRowBased is True:
+        for i in range(len(mainList)):
+            ObjectName = mainList[i]["ObjectName"]
+            ObjectType = mainList[i]["DocumentObject"].TypeId
+
+            # If the object name and type of the object in the list are equal to that of the DocObject,
+            # increase the counter by one
+            if RowItem["ObjectName"] == ObjectName and RowItem["DocumentObject"].TypeId == ObjectType:
+                counter = counter + 1
+
     # Return the counter
     return counter
 

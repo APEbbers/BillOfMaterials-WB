@@ -177,6 +177,7 @@ class BomFunctions:
                 rowList = {
                     "ItemNumber": ItemNumberString,
                     "DocumentObject": object,
+                    "ObjectName": object.Label,
                     "Qty": 1,
                 }
 
@@ -236,6 +237,7 @@ class BomFunctions:
                 rowList = {
                     "ItemNumber": ItemNumberString,
                     "DocumentObject": childObject,
+                    "ObjectName": childObject.Label,
                     "Qty": 1,
                 }
 
@@ -396,7 +398,7 @@ class BomFunctions:
 
                 # Find the quantity for the item
                 QtyValue = str(
-                    General_BOM.ObjectCounter(
+                    General_BOM.ObjectCounter_ItemNumber(
                         DocObject=shadowObject,
                         ItemNumber=str(itemNumber),
                         ObjectList=ObjectDocumentList,
@@ -407,6 +409,7 @@ class BomFunctions:
                 rowListNew = {
                     "ItemNumber": itemNumber,
                     "DocumentObject": rowList["DocumentObject"],
+                    "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
                 }
 
@@ -433,7 +436,7 @@ class BomFunctions:
 
                 # Find the quantity for the item
                 QtyValue = str(
-                    General_BOM.ObjectCounter(
+                    General_BOM.ObjectCounter_ItemNumber(
                         DocObject=rowList["DocumentObject"],
                         ItemNumber=str(itemNumber),
                         ObjectList=ObjectDocumentList,
@@ -446,6 +449,7 @@ class BomFunctions:
                 rowListNew = {
                     "ItemNumber": itemNumber,
                     "DocumentObject": rowList["DocumentObject"],
+                    "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
                 }
 
@@ -472,7 +476,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            self.createBoM(TemporaryList)
+            General_BOM.createBoM(TemporaryList)
         return
 
     # Function to create a summary list of all assemblies and their parts.
@@ -496,7 +500,7 @@ class BomFunctions:
         for i1 in range(len(CopyMainList)):
             Item = CopyMainList[i1]
             ItemObject = Item["DocumentObject"]
-            ItemObjectName = ItemObject.Label
+            ItemObjectName = Item["ObjectName"]
             ItemObjectType = ItemObject.TypeId
             ItemNumber = str(Item["ItemNumber"])
             ItemQty = int(Item["Qty"])
@@ -525,7 +529,12 @@ class BomFunctions:
             # If ItemObject exits only once in the objectList, the quantity will be one.
             # Just create a row item for the temporary list.
             if ObjectList.count(ItemObject) == 1:
-                rowItem = {"ItemNumber": ItemNumberList[i], "DocumentObject": ObjectList[i], "Qty": QtyList[i]}
+                rowItem = {
+                    "ItemNumber": ItemNumber,
+                    "DocumentObject": ItemObject,
+                    "ObjectName": ItemObjectName,
+                    "Qty": ItemQty,
+                }
                 # Add the rowItem if it is not in the shadow list.
                 if ShadowObjectList.__contains__(ItemObject) is False:
                     TemporaryList.append(rowItem)
@@ -536,7 +545,12 @@ class BomFunctions:
                 ChildQty = ObjectList.count(ItemObject)
                 QtyList[i] = ChildQty
 
-                rowItem = {"ItemNumber": ItemNumberList[i], "DocumentObject": ObjectList[i], "Qty": QtyList[i]}
+                rowItem = {
+                    "ItemNumber": ItemNumber,
+                    "DocumentObject": ItemObject,
+                    "ObjectName": ItemObjectName,
+                    "Qty": QtyList[i],
+                }
                 # Add the rowItem if it is not in the shadow list.
                 if ShadowObjectList.__contains__(ItemObject) is False:
                     TemporaryList.append(rowItem)
@@ -549,7 +563,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            self.createBoM(TemporaryList)
+            General_BOM.createBoM(TemporaryList)
         return
 
     # Function to create a BoM list for a parts only BoM.
@@ -603,7 +617,7 @@ class BomFunctions:
 
                 # Find the quantity for the item
                 QtyValue = str(
-                    General_BOM.ObjectCounter(
+                    General_BOM.ObjectCounter_ItemNumber(
                         DocObject=shadowObject,
                         ItemNumber=str(itemNumber),
                         ObjectList=ObjectDocumentList,
@@ -615,6 +629,7 @@ class BomFunctions:
                 rowListNew = {
                     "ItemNumber": itemNumber,
                     "DocumentObject": rowList["DocumentObject"],
+                    "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
                 }
 
@@ -632,88 +647,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            self.createBoM(TemporaryList)
-        return
-
-    # Function to create BoM. standard, a raw BoM will befrom the main list.
-    # If a modified list is created, this function can be used to write it the a spreadsheet.
-    # You can add a dict for the headers of this list
-    @classmethod
-    def createBoM(self, mainList: list, Headers: dict = None):
-        """_summary_
-
-        Args:
-        List (list, optional): PartList.\n
-        Defaults to None.
-        Headers (dict, optional): {\n
-        "A1": "Number",\n
-        "B1": "Name",\n
-        "C1": "Description",\n
-        "D1": "Type",\n
-        "E1": "Qty",\n
-        },\n
-        . Defaults to None.
-        """
-        # If the Mainlist is empty, return.
-        if mainList is None:
-            print("No list available!!")
-            return
-
-        # Get the spreadsheet.
-        sheet = App.ActiveDocument.getObject("BoM")
-
-        # Define CopyMainList and Header
-        CopyMainList = []
-
-        # if List is None, copy the main list
-        CopyMainList = mainList
-
-        # Set the headers in the spreadsheet
-        if Headers is None:
-            Headers = {"A1": "Number", "B1": "Qty", "C1": "Name", "D1": "Description", "E1": "Type"}
-
-        # Set the cell width based on the headers as default
-        for key in Headers:
-            Cell = str(key)
-            Value = str(Headers[key])
-            sheet.set(Cell, Value)
-            # set the width based on the headers
-            Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=Value)
-
-        # Go through the main list and add every rowList to the spreadsheet.
-        # Define a row counter
-        Row = 0
-        Column = ""
-        Value = ""
-        ValuePrevious = ""
-        # Go through the CopyMainlist
-        for i in range(len(CopyMainList)):
-            rowList = CopyMainList[i]
-            # Set the row offset to 2. otherwise the headers will be overwritten
-            rowOffset = 2
-            # Increase the row
-            Row = i + rowOffset
-
-            # Fill the spreadsheet
-            sheet.set("A" + str(Row), str(rowList["ItemNumber"]))
-            sheet.set("B" + str(Row), str(rowList["Qty"]))
-            sheet.set("C" + str(Row), rowList["DocumentObject"].Label)
-            sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
-            sheet.set("E" + str(Row), rowList["DocumentObject"].TypeId)
-
-            # Set the column widht
-            for key in Headers:
-                Column = key[:1]
-                Value = str(sheet.getContents(Column + str(Row)))
-                ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
-
-                if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
-                    Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=Column, cellValue=Value)
-
-        # Allign the columns
-        if Row > 1:
-            sheet.setAlignment("A1:E" + str(Row), "center", "keep")
-
+            General_BOM.createBoM(TemporaryList)
         return
 
     # endregion
