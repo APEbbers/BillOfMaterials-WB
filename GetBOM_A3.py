@@ -470,7 +470,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoM(TemporaryList)
+            General_BOM.createBoMSpreadsheet(TemporaryList)
         return
 
     @classmethod
@@ -544,7 +544,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoM(TemporaryList)
+            General_BOM.createBoMSpreadsheet(TemporaryList)
         return
 
     # Function to start the other functions based on a command string that is passed.
@@ -567,7 +567,7 @@ class BomFunctions:
                     if command == "Total":
                         BomFunctions.CreateTotalBoM(CreateSpreadSheet=True, IndentNumbering=True)
                     if command == "Raw":
-                        General_BOM.createBoM(self.mainList)
+                        General_BOM.createBoMSpreadsheet(self.mainList)
                     if command == "PartsOnly":
                         General_BOM.PartsOnly(mainList=self.mainList, CreateSpreadSheet=True)
                     if command == "Summarized":
@@ -580,7 +580,7 @@ class BomFunctions:
                     if command == "Total":
                         BomFunctions.CreateTotalBoM(CreateSpreadSheet=True, IndentNumbering=True)
                     if command == "Raw":
-                        General_BOM.createBoM(self.mainList)
+                        General_BOM.createBoMSpreadsheet(self.mainList)
                     if command == "PartsOnly":
                         General_BOM.PartsOnly(mainList=self.mainList, CreateSpreadSheet=True)
                     if command == "Summarized":

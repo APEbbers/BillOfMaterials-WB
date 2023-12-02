@@ -28,7 +28,7 @@ import Standard_Functions_BOM_WB as Standard_Functions
 # Function to create BoM. standard, a raw BoM will befrom the main list.
 # If a modified list is created, this function can be used to write it the a spreadsheet.
 # You can add a dict for the headers of this list
-def createBoM(mainList: list, Headers: dict = None):
+def createBoMSpreadsheet(mainList: list, Headers: dict = None):
     """_summary_
 
     Args:
@@ -59,7 +59,15 @@ def createBoM(mainList: list, Headers: dict = None):
 
     # Set the headers in the spreadsheet
     if Headers is None:
-        Headers = {"A1": "Number", "B1": "Qty", "C1": "Name", "D1": "Description", "E1": "Type"}
+        Headers = {
+            "A1": "Number",
+            "B1": "Qty",
+            "C1": "Label",
+            "D1": "Description",
+            "E1": "Type",
+            "F1": "Name",
+            "G1": "Fullname",
+        }
 
     # Set the cell width based on the headers as default
     for key in Headers:
@@ -84,11 +92,13 @@ def createBoM(mainList: list, Headers: dict = None):
         Row = i + rowOffset
 
         # Fill the spreadsheet
-        sheet.set("A" + str(Row), str(rowList["ItemNumber"]))
+        sheet.set("A" + str(Row), "'" + str(rowList["ItemNumber"]))  # add ' at the beginning to make sure it is text.
         sheet.set("B" + str(Row), str(rowList["Qty"]))
         sheet.set("C" + str(Row), rowList["ObjectLabel"])
         sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
         sheet.set("E" + str(Row), rowList["DocumentObject"].TypeId)
+        sheet.set("F" + str(Row), rowList["DocumentObject"].Name)
+        sheet.set("G" + str(Row), rowList["DocumentObject"].FullName)
 
         # Set the column widht
         for key in Headers:
@@ -141,16 +151,18 @@ def ObjectCounter_ItemNumber(DocObject, ItemNumber: str, ObjectList: list, ItemN
 
 
 # Functions to count  document objects in a list. Can be object based or List row based comparison
-def ObjectCounter(DocObject=None, RowItem=None, mainList: list = None) -> int:
+def ObjectCounter(DocObject=None, RowItem: dict = None, mainList: list = None, ObjectNameBased: bool = True) -> int:
     """_summary_
     Use this function only two ways:\n
     1. Enter an DocumentObject (DocObject) and a BoM list with a tuples as items (mainList). RowItem must be None.
-    2. Enter an RowItem from a BoM List (RowItem) and a BoM list with a tuples as items (mainList). DocObject must be None.\n
+    2. Enter an RowItem from a BoM List (RowItem), a BoM list with a tuples as items (mainList) and set ObjectNameType to True or False.\n
+       DocObject must be None.\n
 
     Args:
-        DocObject (_type_, optional): DocumentObject to search for. Defaults to None.
-        RowItem (_type_, optional): List item to search for. Defaults to None.
+        DocObject (FreeCAD.DocumentObject, optional): DocumentObject to search for. Defaults to None.
+        RowItem (dict, optional): List item to search for. Defaults to None.
         ItemList (list, optional): The item or Document object list. Defaults to None.
+        ObjectNameType (bool, optional): Set to true if the counter must be Name based or False if the counter must be Label based.
 
     Returns:
         int: _description_
@@ -163,6 +175,10 @@ def ObjectCounter(DocObject=None, RowItem=None, mainList: list = None) -> int:
         ListRowBased = True
     else:
         return 0
+
+    ObjectNameValue = "ObjectName"
+    if ObjectNameBased is False:
+        ObjectNameValue = "ObjectLabel"
 
     # Set the counter
     counter = 0
@@ -178,12 +194,12 @@ def ObjectCounter(DocObject=None, RowItem=None, mainList: list = None) -> int:
     # If ListRowBased is True, compare the name and type of the objects. These are stored in the list items.
     if ListRowBased is True:
         for i in range(len(mainList)):
-            ObjectName = mainList[i]["ObjectName"]
+            ObjectName = mainList[i][ObjectNameValue]
             ObjectType = mainList[i]["DocumentObject"].TypeId
 
             # If the object name and type of the object in the list are equal to that of the DocObject,
             # increase the counter by one
-            if RowItem["ObjectName"] == ObjectName and RowItem["DocumentObject"].TypeId == ObjectType:
+            if RowItem[ObjectNameValue] == ObjectName and RowItem["DocumentObject"].TypeId == ObjectType:
                 counter = counter + 1
 
     # Return the counter
@@ -276,6 +292,6 @@ def CheckAssemblyType(DocObject):
             return "Assembly3"
     else:
         for RootObject in RootObjects:
-            if RootObject.TypeId == "App::Link":
+            if RootObject.TypeId == "App::Link" or RootObject.TypeId == "App::LinkGroup":
                 return "AppLink"
         return "None"

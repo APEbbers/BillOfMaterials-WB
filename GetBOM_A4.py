@@ -57,21 +57,27 @@ class BomFunctions:
         for Part in PartsGroup:
             PartList.append(Part)
 
-        # Get the assembly group
-        group = []
-        for RootObject in RootObjects:
-            if RootObject.Name == "Assembly" and RootObject.TypeId == "App::Part":
-                group = RootObject
+        # # Get the assembly group
+        # group = []
+        # for RootObject in RootObjects:
+        #     if RootObject.Name == "Assembly" and RootObject.TypeId == "App::Part":
+        #         group = RootObject
 
-        # get the items in the group "Assembly"
-        if group is not None:
-            docObjects.extend(group.Group)
-        else:
-            return
+        # # get the items in the group "Assembly"
+        # if group is not None:
+        #     docObjects.extend(group.Group)
+        # else:
+        #     return
+
+        # # Get items outside the Assebly group
+        # for RootObject in RootObjects:
+        #     if RootObject.Name != "Assembly" and RootObject.Name != "Parts":
+        #         if self.AllowedObjectType(RootObject.TypeId) is True:
+        #             docObjects.append(RootObject)
 
         # Get items outside the Assebly group
         for RootObject in RootObjects:
-            if RootObject.Name != "Assembly" or RootObject.Name == "Parts":
+            if RootObject.Name != "Parts":
                 if self.AllowedObjectType(RootObject.TypeId) is True:
                     docObjects.append(RootObject)
 
@@ -155,7 +161,7 @@ class BomFunctions:
             # If the documentObject is one of the allowed types, continue
             if self.AllowedObjectType(objectID=object.TypeId) is True:
                 # Increase the itemnumber
-                ItemNumber = ItemNumber + 1
+                ItemNumber = int(ItemNumber) + 1
 
                 # Increase the global startrow to make sure the data ends up in the next row
                 self.StartRow = self.StartRow + 1
@@ -165,7 +171,7 @@ class BomFunctions:
                 ItemNumberString = str(ItemNumber)
                 # If there is a parentnumber (like 1.1, add it as prefix.)
                 if ParentNumber != "":
-                    ItemNumberString = ParentNumber
+                    ItemNumberString = str(ParentNumber)
 
                 # Get the linked object if there is one.
 
@@ -182,7 +188,7 @@ class BomFunctions:
                 self.mainList.append(rowList)
 
                 # If the object is an container, go through the sub items, (a.k.a child objects)
-                if object.TypeId == "App::Link":
+                if object.TypeId == "App::LinkGroup" or object.TypeId == "App::Link" or object.TypeId == "App::Part":
                     # Create a list with child objects as DocumentObjects
                     childObjects = []
                     # Make sure that the list is empty. (probally overkill)
@@ -211,7 +217,7 @@ class BomFunctions:
                     self.GoThrough_ChildObjects(
                         ChilddocObjects=childObjects,
                         sheet=sheet,
-                        ChildItemNumber=0,
+                        ChildItemNumber=ItemNumber - 1,
                         ParentNumber=ItemNumberString,
                         Parts=Parts,
                     )
@@ -241,10 +247,9 @@ class BomFunctions:
             # If the childDocumentObject is one of the allowed types, continue
             if self.AllowedObjectType(objectID=childObject.TypeId) is True:
                 # Increase the itemnumber for the child
-                ChildItemNumber = ChildItemNumber + 1
+                ChildItemNumber = int(ChildItemNumber) + 1
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
-                #                print(ChildItemNumber)
                 # Create a rowList
                 rowList = {
                     "ItemNumber": ItemNumberString,
@@ -290,7 +295,7 @@ class BomFunctions:
                     self.GoThrough_ChildObjects(
                         ChilddocObjects=subChildObjects,
                         sheet=sheet,
-                        ChildItemNumber=0,
+                        ChildItemNumber=ChildItemNumber,
                         ParentNumber=ItemNumberString,
                         Parts=Parts,
                     )
@@ -301,7 +306,7 @@ class BomFunctions:
     # region -- Functions for creating the different types of BoM's
     # Function to filter out bodies
     @classmethod
-    def FilterBodies(self, BOMList: list, allBodies: bool = True) -> list:
+    def FilterBodies(self, BOMList: list, AllowAllBodies: bool = True) -> list:
         # Create an extra temporary list
         TempTemporaryList = []
         # Go through the curent temporary list
@@ -323,6 +328,8 @@ class BomFunctions:
             try:
                 if ItemObject["DocumentObject"].getParent().getPropertyByName("Type", 2)[1] == "Assembly":
                     testResult = True
+                if len(ItemObject["ItemNumber"].split(".")) == 1:
+                    testResult = True
             except AttributeError:
                 testResult = False
 
@@ -333,11 +340,11 @@ class BomFunctions:
                 or ItemObjectType == "Part::FeaturePython"
             ):
                 # Filter out all type of bodies
-                if allBodies is False:
+                if AllowAllBodies is False:
                     # set the flag to false.
                     flag = False
                 # Allow all bodies that are part of an assembly.
-                if allBodies is True:
+                if AllowAllBodies is True:
                     if testResult is False:
                         # set the flag to false.
                         flag = False
@@ -353,6 +360,8 @@ class BomFunctions:
                 try:
                     if ItemObjectNext["DocumentObject"].getParent().getPropertyByName("Type", 2)[1] == "Assembly":
                         testResult = True
+                    if len(ItemObjectNext["ItemNumber"].split(".")) == 1:
+                        testResult = True
                 except AttributeError:
                     testResult = False
 
@@ -360,18 +369,21 @@ class BomFunctions:
                 if (
                     ItemObjectTypeNext != "Part::Feature"
                     or ItemObjectTypeNext != "PartDesign::Body"
-                    or ItemObjectType != "Part::FeaturePython"
+                    or ItemObjectTypeNext != "Part::FeaturePython"
                 ):
                     # Filter out all type of bodies
-                    if allBodies is False:
+                    if AllowAllBodies is True:
                         TempTemporaryList.append(ItemObjectNext)
                     # Allow all bodies that are part of an assembly.
-                    if allBodies is True:
+                    if AllowAllBodies is False:
                         if testResult is True:
                             TempTemporaryList.append(ItemObjectNext)
 
         # Replace the temporary list with the second temporary list.
         BOMList = TempTemporaryList
+
+        for i in range(len(TempTemporaryList)):
+            print(TempTemporaryList[i]["ItemNumber"] + ", " + TempTemporaryList[i]["DocumentObject"].Label)
 
         # return the filtered list.
         return BOMList
@@ -512,7 +524,7 @@ class BomFunctions:
             # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
             if len(itemNumber.split(".")) == 1:
                 # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
-                shadowItemNumber = 0
+                shadowItemNumber = "'0'"
                 # Define the shadow item.
                 shadowObject = rowList["DocumentObject"]
                 # Create the shadow row
@@ -545,7 +557,7 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.FilterBodies(BOMList=TemporaryList, allBodies=IncludeBodies)
+        TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
@@ -559,14 +571,14 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoM(TemporaryList)
+            General_BOM.createBoMSpreadsheet(TemporaryList)
         return
 
     # Function to create a summary list of all assemblies and their parts.
     # The function CreateBoM can be used to write it the an spreadsheet.
     # The value for 'WB' must be provided. It is used for the correct filtering for each support WB
     @classmethod
-    def SummarizedBoM(self, CreateSpreadSheet: bool = True, IncludeBodies: bool = False):
+    def SummarizedBoM(self, CreateSpreadSheet: bool = True, IncludeBodies: bool = False, ObjectNameBased: bool = False):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -611,7 +623,7 @@ class BomFunctions:
         # Create a shadow list to put objects on which shouldn't be added to the Temporary list, because they are already there.
         ShadowObjectList = []
         # define an item for the shadow list.
-        shadowItem = dict
+        shadowObjectItem = dict
 
         # Go Through the object list
         for i in range(len(CopyMainList)):
@@ -628,58 +640,54 @@ class BomFunctions:
             # The ObjectCounter is used to count the items based on object type and object name
             # This can be done, because earlier the names of the duplicates with a follow-up name are
             # replaced with the names of the master. Done by ReturnLinkedObject Function.
-            Qty = General_BOM.ObjectCounter(DocObject=None, RowItem=CopyMainList[i], mainList=CopyMainList)
-            if Qty == 1:
-                rowItem = {
-                    "ItemNumber": ItemNumber,
-                    "DocumentObject": ItemObject,
-                    "ObjectName": ItemObjectName,
-                    "ObjectLabel": ItemObjectLabel,
-                    "Qty": ItemQty,
-                }
+            ObjectNameField = "ObjectName"
+            if ObjectNameBased is False:
+                ObjectNameField = "ObjectLabel"
+            Qty = General_BOM.ObjectCounter(
+                DocObject=None, RowItem=CopyMainList[i], mainList=CopyMainList, ObjectNameBased=ObjectNameBased
+            )
+            QtyList[i] = Qty
 
-                # Create the row item for the shadow list.
-                shadowItem = {"ObjectName": ItemObjectName, "ObjectType": ItemObjectType}
-                # Add the rowItem if it is not in the shadow list.
-                if ShadowObjectList.__contains__(shadowItem) is False:
-                    TemporaryList.append(rowItem)
-                    ShadowObjectList.append(shadowItem)
+            rowItem = {
+                "ItemNumber": ItemNumber,
+                "DocumentObject": ItemObject,
+                "ObjectName": ItemObjectName,
+                "ObjectLabel": ItemObjectLabel,
+                "Qty": QtyList[i],
+            }
 
-            # If the ItemObject exists multiple times, count the items, update the quantity and add it to the temporary list.
-            if Qty > 1:
-                QtyList[i] = Qty
+            # Create the row item for the shadow list.
+            shadowObjectItem = {"ObjectName": rowItem[ObjectNameField], "ObjectType": ItemObjectType}
+            # Add the rowItem if it is not in the shadow list.
+            if ShadowObjectList.__contains__(shadowObjectItem) is False:
+                TemporaryList.append(rowItem)
+                ShadowObjectList.append(shadowObjectItem)
 
-                rowItem = {
-                    "ItemNumber": ItemNumber,
-                    "DocumentObject": ItemObject,
-                    "ObjectName": ItemObjectName,
-                    "ObjectLabel": ItemObjectLabel,
-                    "Qty": QtyList[i],
-                }
-
-                # Create the row item for the shadow list.
-                shadowItem = {"ObjectName": ItemObjectName, "ObjectType": ItemObjectType}
-                # Add the rowItem if it is not in the shadow list.
-                if ShadowObjectList.__contains__(shadowItem) is False:
-                    TemporaryList.append(rowItem)
-                    ShadowObjectList.append(shadowItem)
+            # The shadow item is in the shadow list, but the itemnumber is a top level number,
+            # the item is outside the assembly folder. Change the itemnumber to include multiple number.
+            # Helpfull to determine where the items are and limit confusion.
+            if ShadowObjectList.__contains__(shadowObjectItem) is True:
+                if len(ItemNumber.split(".")) == 1:
+                    TemporaryList[len(TemporaryList) - 1]["ItemNumber"] = (
+                        TemporaryList[len(TemporaryList) - 1]["ItemNumber"] + "/" + str(ItemNumber)
+                    )
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.FilterBodies(BOMList=TemporaryList, allBodies=IncludeBodies)
+        TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
 
         # Correct the itemnumbers
         TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoM(TemporaryList)
+            General_BOM.createBoMSpreadsheet(TemporaryList)
         return
 
     # Function to create a BoM list for a parts only BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
-    def PartsOnly(self, CreateSpreadSheet: bool = True, IncludeBodies: bool = False):
+    def PartsOnly(self, CreateSpreadSheet: bool = True, IncludeBodies: bool = False, ObjectNameBased: bool = False):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -716,7 +724,11 @@ class BomFunctions:
                 rowListNew = dict
 
                 # Find the quantity for the item
-                QtyValue = str(General_BOM.ObjectCounter(DocObject=None, RowItem=rowList, mainList=CopyMainList))
+                QtyValue = str(
+                    General_BOM.ObjectCounter(
+                        DocObject=None, RowItem=rowList, mainList=CopyMainList, ObjectNameBased=ObjectNameBased
+                    )
+                )
 
                 # Create a new row item for the temporary row.
                 rowListNew = {
@@ -727,8 +739,11 @@ class BomFunctions:
                     "Qty": QtyValue,
                 }
 
+                ObjectNameField = "ObjectName"
+                if ObjectNameBased is False:
+                    ObjectNameField = "ObjectLabel"
                 # Create the row item for the shadow list.
-                shadowItem = {"ObjectName": rowList["ObjectName"], "ObjectType": rowList["DocumentObject"].TypeId}
+                shadowItem = {"ObjectName": rowList[ObjectNameField], "ObjectType": rowList["DocumentObject"].TypeId}
                 # Add the rowItem if it is not in the shadow list.
                 if ShadowObjectList.__contains__(shadowItem) is False:
                     TemporaryList.append(rowListNew)
@@ -736,7 +751,7 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.FilterBodies(BOMList=TemporaryList, allBodies=IncludeBodies)
+        TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):
@@ -745,7 +760,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoM(TemporaryList)
+            General_BOM.createBoMSpreadsheet(TemporaryList)
         return
 
     # endregion
@@ -770,11 +785,11 @@ class BomFunctions:
                     if command == "Total":
                         self.CreateTotalBoM(CreateSpreadSheet=True, IncludeBodies=True, IndentNumbering=True, Level=0)
                     if command == "Raw":
-                        General_BOM.createBoM(self.FilterBodies(self.mainList))
+                        General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
                     if command == "PartsOnly":
-                        self.PartsOnly(CreateSpreadSheet=True, IncludeBodies=True)
+                        self.PartsOnly(CreateSpreadSheet=True, IncludeBodies=True, ObjectNameBased=False)
                     if command == "Summarized":
-                        self.SummarizedBoM(IncludeBodies=True, CreateSpreadSheet=True)
+                        self.SummarizedBoM(IncludeBodies=True, CreateSpreadSheet=True, ObjectNameBased=False)
                 # if the result is empty, create a new spreadsheet
                 if sheet is None:
                     sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
@@ -783,11 +798,11 @@ class BomFunctions:
                     if command == "Total":
                         self.CreateTotalBoM(CreateSpreadSheet=True, IncludeBodies=False, IndentNumbering=True, Level=0)
                     if command == "Raw":
-                        General_BOM.createBoM(self.FilterBodies(self.mainList))
+                        General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
                     if command == "PartsOnly":
-                        self.PartsOnly(CreateSpreadSheet=True, IncludeBodies=False)
+                        self.PartsOnly(CreateSpreadSheet=True, IncludeBodies=False, ObjectNameBased=False)
                     if command == "Summarized":
-                        self.SummarizedBoM(IncludeBodies=False, CreateSpreadSheet=True)
+                        self.SummarizedBoM(IncludeBodies=False, CreateSpreadSheet=True, ObjectNameBased=False)
         except Exception as e:
             raise e
         return
