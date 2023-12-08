@@ -182,6 +182,7 @@ class BomFunctions:
                     "ObjectLabel": object.Label,
                     "ObjectName": object.FullName,
                     "Qty": 1,
+                    "Type": "Part",
                 }
 
                 # add the rowList to the mainList
@@ -189,6 +190,7 @@ class BomFunctions:
 
                 # If the object is an container, go through the sub items, (a.k.a child objects)
                 if object.TypeId == "App::LinkGroup" or object.TypeId == "App::Link":
+                    self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
                     # Create a list with child objects as DocumentObjects
                     childObjects = []
                     # Make sure that the list is empty. (probally overkill)
@@ -199,14 +201,16 @@ class BomFunctions:
                             childObjects.append(
                                 object.getSubObject(object.getSubObjects()[i], 1),
                             )
-                    # Go the the child objects with a separate function for the child objects
-                    # This way you can go through multiple levels
-                    self.GoThrough_ChildObjects(
-                        ChilddocObjects=childObjects,
-                        sheet=sheet,
-                        ChildItemNumber=ItemNumber - 1,
-                        ParentNumber=ItemNumberString,
-                    )
+                    if len(childObjects) > 0:
+                        self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                        # Go the the child objects with a separate function for the child objects
+                        # This way you can go through multiple levels
+                        self.GoThrough_ChildObjects(
+                            ChilddocObjects=childObjects,
+                            sheet=sheet,
+                            ChildItemNumber=0,
+                            ParentNumber=ItemNumberString,
+                        )
         return
 
     # Sub function of GoThrough_Objects.
@@ -243,6 +247,7 @@ class BomFunctions:
                     "ObjectLabel": childObject.Label,
                     "ObjectName": childObject.FullName,
                     "Qty": 1,
+                    "Type": "Part",
                 }
 
                 # add the rowList to the mainList
@@ -250,6 +255,7 @@ class BomFunctions:
 
                 # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
                 if childObject.TypeId == "App::LinkGroup" or childObject.TypeId == "App::Link":
+                    self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
                     # Create a list with sub child objects as DocumentObjects
                     subChildObjects = []
                     # Make sure that the list is empty. (probally overkill)
@@ -260,13 +266,15 @@ class BomFunctions:
                             subChildObjects.append(
                                 childObject.getSubObject(childObject.getSubObjects()[i], 1),
                             )
-                    # Go the the sub child objects with this same function
-                    self.GoThrough_ChildObjects(
-                        ChilddocObjects=subChildObjects,
-                        sheet=sheet,
-                        ChildItemNumber=ChildItemNumber,
-                        ParentNumber=ItemNumberString,
-                    )
+                    if len(subChildObjects) > 0:
+                        self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                        # Go the the sub child objects with this same function
+                        self.GoThrough_ChildObjects(
+                            ChilddocObjects=subChildObjects,
+                            sheet=sheet,
+                            ChildItemNumber=0,
+                            ParentNumber=ItemNumberString,
+                        )
         return
 
     # endregion
@@ -362,7 +370,6 @@ class BomFunctions:
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
-        shadowRow = []
         # Create two lists for splitting the copy of the main list
         ItemNumberList = []
         ObjectDocumentList = []
@@ -392,21 +399,24 @@ class BomFunctions:
             itemNumber = str(rowList["ItemNumber"])
 
             # if the itemnumber is longer than one level (1.1, 1.1.1, etc.) and the level is equal or shorter then the level wanted, continue
-            if len(itemNumber.split(".", 1)[0]) <= Level and len(itemNumber.split(".")) > 1:
+            if len(itemNumber.split(".")) <= Level and len(itemNumber.split(".")) > 1:
                 # write the itemnumber of the subassy for the shadow list.
                 shadowItemNumber = itemNumber.rsplit(".", 1)[0]
                 # Define the shadow item.
-                shadowObject = rowList["DocumentObject"]
-                # Create the shadow row
-                shadowRow = [shadowItemNumber, shadowObject]
+                shadowLabel = rowList["ObjectLabel"]
+                # Define the shadow type:
+                shadowType = rowList["Type"]
+                # Create the row item for the shadow list.
+                shadowRow = {"Item1": shadowItemNumber, "Item2": shadowLabel, "Item3": shadowType}
 
                 # Find the quantity for the item
                 QtyValue = str(
                     General_BOM.ObjectCounter_ItemNumber(
-                        DocObject=shadowObject,
-                        ItemNumber=str(itemNumber),
+                        DocObject=rowList["DocumentObject"],
+                        ItemNumber=itemNumber,
                         ObjectList=ObjectDocumentList,
                         ItemNumberList=ItemNumberList,
+                        ObjectBased=False,
                     )
                 )
                 # Create a new row item for the temporary row.
@@ -416,11 +426,17 @@ class BomFunctions:
                     "ObjectLabel": rowList["ObjectLabel"],
                     "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
+                    "Type": rowList["Type"],
                 }
 
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
-                if ShadowList.__contains__(shadowRow) is False:
+                if (
+                    General_BOM.ListContainsCheck(
+                        List=ShadowList, Item1=shadowRow["Item1"], Item2=shadowRow["Item2"], Item3=shadowRow["Item3"]
+                    )
+                    is False
+                ):
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
@@ -433,19 +449,22 @@ class BomFunctions:
 
                 shadowItemNumber = itemNumber
                 if TypeListParts.__contains__(rowList["DocumentObject"].TypeId) is True:
-                    shadowItemNumber = "X"
+                    shadowItemNumber = "0"
                 # Define the shadow item.
-                shadowObject = rowList["DocumentObject"]
-                # Create the shadow row
-                shadowRow = [shadowItemNumber, shadowObject]
+                shadowLabel = rowList["ObjectLabel"]
+                # Define the shadow type:
+                shadowType = rowList["Type"]
+                # Create the row item for the shadow list.
+                shadowRow = {"Item1": shadowItemNumber, "Item2": shadowLabel, "Item3": shadowType}
 
                 # Find the quantity for the item
                 QtyValue = str(
                     General_BOM.ObjectCounter_ItemNumber(
                         DocObject=rowList["DocumentObject"],
-                        ItemNumber=str(itemNumber),
+                        ItemNumber=shadowItemNumber,
                         ObjectList=ObjectDocumentList,
                         ItemNumberList=ItemNumberList,
+                        ObjectBased=False,
                     )
                 )
                 if TypeListParts.__contains__(rowList["DocumentObject"].TypeId) is False:
@@ -457,9 +476,18 @@ class BomFunctions:
                     "ObjectLabel": rowList["ObjectLabel"],
                     "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
+                    "Type": rowList["Type"],
                 }
 
-                if ShadowList.__contains__(shadowRow) is False:
+                print(QtyValue)
+                print(shadowRow)
+
+                if (
+                    General_BOM.ListContainsCheck(
+                        List=ShadowList, Item1=shadowRow["Item1"], Item2=shadowRow["Item2"], Item3=shadowRow["Item3"]
+                    )
+                    is False
+                ):
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
@@ -503,15 +531,23 @@ class BomFunctions:
         ObjectNameList = []
         ObjectTypeList = []
         QtyList = []
+        TypeList = []
+
+        # If App:Links only contain the same bodies and IncludeBodies = False,
+        # replace the App::Links with the bodies they contain. Including their quantity.
+        if IncludeBodies is False:
+            CopyMainList = self.FilterBodies(BOMList=CopyMainList)
+
         # Go through the CopyMainList and create the separate lists
         for i1 in range(len(CopyMainList)):
-            Item = CopyMainList[i1]
-            ItemObject = Item["DocumentObject"]
-            ItemObjectLabel = Item["ObjectLabel"]
-            ItemObjectName = Item["ObjectName"]
+            rowList = CopyMainList[i1]
+            ItemObject = rowList["DocumentObject"]
+            ItemObjectLabel = rowList["ObjectLabel"]
+            ItemObjectName = rowList["ObjectName"]
             ItemObjectType = ItemObject.TypeId
-            ItemNumber = str(Item["ItemNumber"])
-            ItemQty = int(Item["Qty"])
+            ItemNumber = str(rowList["ItemNumber"])
+            ItemQty = int(rowList["Qty"])
+            ItemType = rowList["Type"]
 
             ItemNumberList.append(ItemNumber)
             ObjectList.append(ItemObject)
@@ -519,23 +555,16 @@ class BomFunctions:
             ObjectNameList.append(ItemObjectName)
             ObjectTypeList.append(ItemObjectType)
             QtyList.append(ItemQty)
+            TypeList.append(ItemType)
 
         # Create a temporary list
         TemporaryList = []
 
         # Create a shadow list to put objects on which shouldn't be added to the Temporary list, because they are already there.
-        ShadowObjectList = []
+        ShadowList = []
 
         # Go Through the object list
         for i in range(len(ObjectList)):
-            # Define the separate items for the separate lists
-            ItemObject = ObjectList[i]
-            ItemObjectLabel = ObjectLabelList[i]
-            ItemObjectName = ObjectNameList[i]
-            ItemObjectType = ObjectTypeList[i]
-            ItemNumber = ItemNumberList[i]
-            ItemQty = int(QtyList[i])
-
             # If ItemObject exits only once in the objectList, the quantity will be one.
             # Just create a row item for the temporary list.
             # The ObjectCounter is used to count the items based on object type and object name
@@ -550,23 +579,34 @@ class BomFunctions:
             QtyList[i] = Qty
 
             rowItem = {
-                "ItemNumber": ItemNumber,
-                "DocumentObject": ItemObject,
-                "ObjectName": ItemObjectName,
-                "ObjectLabel": ItemObjectLabel,
+                "ItemNumber": ItemNumberList[i],
+                "DocumentObject": ObjectList[i],
+                "ObjectName": ObjectNameList[i],
+                "ObjectLabel": ObjectLabelList[i],
                 "Qty": QtyList[i],
+                "Type": TypeList[i],
             }
 
             # Create the row item for the shadow list.
-            shadowItem = {"ObjectName": rowItem[ObjectNameField], "ObjectType": ItemObjectType}
+            shadowRow = {
+                "Item1": rowList[ObjectNameField],
+                "Item2": rowList["DocumentObject"].TypeId,
+                "Item3": rowList["Type"],
+            }
             # Add the rowItem if it is not in the shadow list.
-            if ShadowObjectList.__contains__(shadowItem) is False:
+            if (
+                General_BOM.ListContainsCheck(
+                    List=ShadowList, Item1=shadowRow["Item1"], Item2=shadowRow["Item2"], Item3=shadowRow["Item3"]
+                )
+                is False
+            ):
                 TemporaryList.append(rowItem)
-                ShadowObjectList.append(shadowItem)
-        # If App:Links only contain the same bodies and IncludeBodies = False,
-        # replace the App::Links with the bodies they contain. Including their quantity.
-        if IncludeBodies is False:
-            TemporaryList = self.FilterBodies(BOMList=TemporaryList)
+                ShadowList.append(shadowRow)
+
+        # number the parts 1,2,3, etc.
+        for k in range(len(TemporaryList)):
+            tempItem = TemporaryList[k]
+            tempItem["ItemNumber"] = k + 1
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
@@ -633,20 +673,31 @@ class BomFunctions:
                     "ObjectLabel": rowList["ObjectLabel"],
                     "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
+                    "Type": rowList["Type"],
                 }
 
                 ObjectNameField = "ObjectName"
                 if ObjectNameBased is False:
                     ObjectNameField = "ObjectLabel"
-                # Create the row item for the shadow list.
-                shadowItem = {"ObjectName": rowList[ObjectNameField], "ObjectType": rowList["DocumentObject"].TypeId}
 
+                # Create the row item for the shadow list.
+                shadowRow = {
+                    "Item1": rowList[ObjectNameField],
+                    "Item2": rowList["DocumentObject"].TypeId,
+                    "Item3": rowList["Type"],
+                }
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
-                if ShadowList.__contains__(shadowItem) is False:
+                # Add the rowItem if it is not in the shadow list.
+                if (
+                    General_BOM.ListContainsCheck(
+                        List=ShadowList, Item1=shadowRow["Item1"], Item2=shadowRow["Item2"], Item3=shadowRow["Item3"]
+                    )
+                    is False
+                ):
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
-                    ShadowList.append(shadowItem)
+                    ShadowList.append(shadowRow)
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):

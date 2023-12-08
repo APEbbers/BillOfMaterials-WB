@@ -26,7 +26,7 @@ import FreeCAD as App
 import FreeCADGui as Gui
 
 
-class CreatePartsOnlyBOM_Class:
+class CreatePartsOnlyBOM_AppLink_Class:
     def GetResources(self):
         return {
             "Pixmap": "AppLink-Parts.svg",  # the name of a svg file available in the resources
@@ -56,7 +56,7 @@ class CreatePartsOnlyBOM_Class:
         return result
 
 
-class CreateSummarizedBOM_Class:
+class CreateSummarizedBOM_AppLink_Class:
     def GetResources(self):
         return {
             "Pixmap": "AppLink-Summary.svg",  # the name of a svg file available in the resources
@@ -86,7 +86,7 @@ class CreateSummarizedBOM_Class:
         return result
 
 
-class CreateTotalBOM_Class:
+class CreateTotalBOM_AppLink_Class:
     def GetResources(self):
         return {
             "Pixmap": "AppLink-Total.svg",  # the name of a svg file available in the resources
@@ -116,7 +116,7 @@ class CreateTotalBOM_Class:
         return result
 
 
-class CreateRawBOM_Class:
+class CreateRawBOM_AppLink_Class:
     def GetResources(self):
         return {
             "Pixmap": "AppLink-Raw.svg",  # the name of a svg file available in the resources
@@ -147,7 +147,7 @@ class CreateRawBOM_Class:
 
 
 # Add the commands to the Gui
-Gui.addCommand("CreateBOM_PartsOnly_AppLink", CreatePartsOnlyBOM_Class())
-Gui.addCommand("CreateBOM_Summary_AppLink", CreateSummarizedBOM_Class())
-Gui.addCommand("CreateBOM_Total_AppLink", CreateTotalBOM_Class())
-Gui.addCommand("CreateBOM_Raw_AppLink", CreateRawBOM_Class())
+Gui.addCommand("CreateBOM_PartsOnly_AppLink", CreatePartsOnlyBOM_AppLink_Class())
+Gui.addCommand("CreateBOM_Summary_AppLink", CreateSummarizedBOM_AppLink_Class())
+Gui.addCommand("CreateBOM_Total_AppLink", CreateTotalBOM_AppLink_Class())
+Gui.addCommand("CreateBOM_Raw_AppLink", CreateRawBOM_AppLink_Class())

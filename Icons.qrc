@@ -1,5 +1,13 @@
 <RCC>
     <qresource prefix="/">
+        <file>Resources/Icons/A2plus-Parts.svg</file>
+        <file>Resources/Icons/A2plus-Raw.svg</file>
+        <file>Resources/Icons/A2plus-Summary.svg</file>
+        <file>Resources/Icons/A2plus-Total.svg</file>
+        <file>Resources/Icons/AppPart-Parts.svg</file>
+        <file>Resources/Icons/AppPart-Raw.svg</file>
+        <file>Resources/Icons/AppPart-Summary.svg</file>
+        <file>Resources/Icons/AppPart-Total.svg</file>
         <file>Resources/Icons/AppLink-Parts.svg</file>
         <file>Resources/Icons/AppLink-Raw.svg</file>
         <file>Resources/Icons/AppLink-Summary.svg</file>

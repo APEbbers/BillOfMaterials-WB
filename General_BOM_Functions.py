@@ -67,6 +67,7 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None):
             "E1": "Type",
             "F1": "Name",
             "G1": "Fullname",
+            "H1": "TypeId",
         }
 
     # Set the cell width based on the headers as default
@@ -96,9 +97,10 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None):
         sheet.set("B" + str(Row), str(rowList["Qty"]))
         sheet.set("C" + str(Row), rowList["ObjectLabel"])
         sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
-        sheet.set("E" + str(Row), rowList["DocumentObject"].TypeId)
+        sheet.set("E" + str(Row), rowList["Type"])
         sheet.set("F" + str(Row), rowList["DocumentObject"].Name)
         sheet.set("G" + str(Row), rowList["DocumentObject"].FullName)
+        sheet.set("H" + str(Row), rowList["DocumentObject"].TypeId)
 
         # Set the column widht
         for key in Headers:
@@ -117,18 +119,25 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None):
 
 
 # Functions to count  document objects in a list based on the itemnumber of their parent.
-def ObjectCounter_ItemNumber(DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: list) -> int:
+def ObjectCounter_ItemNumber(
+    DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: list, ObjectBased: bool = True
+) -> int:
     """_summary_
 
     Args:
-        DocObject (_type_): Document object to search for.
+        DocObject (FreeCAD.DocumentObject): Document object to search for.
         ItemNumber (str): Item number of document object.
         ObjectList (list): List of document objects
         ItemNumberList (list): List of item numbers.
+        ObjectBased (bool, optional): Compare objects (True) or object.labels (False) Defaults to True.
 
     Returns:
         int: number of document number in item number range.
     """
+    ObjectNameValue = "Object"
+    if ObjectBased is False:
+        ObjectNameValue = "ObjectLabel"
+
     # Set the counter
     counter = 0
 
@@ -136,18 +145,39 @@ def ObjectCounter_ItemNumber(DocObject, ItemNumber: str, ObjectList: list, ItemN
     for i in range(len(ObjectList)):
         # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
         # If the itemnumber is more than one level deep:
-        if len(ItemNumberList[i].split(".")) > 1:
+        if len(ItemNumber.split(".")) > 1:
             if ItemNumberList[i].rsplit(".", 1)[0] == ItemNumber.rsplit(".", 1)[0]:
                 # If the document object  in the list is equal to DocObject, increase the counter by one.
+                if ObjectNameValue == "Object":
+                    if ObjectList[i] == DocObject:
+                        counter = counter + 1
+                if ObjectNameValue == "ObjectLabel":
+                    if ObjectList[i].Label == DocObject.Label:
+                        counter = counter + 1
+        # If the itemnumber is one level deep:
+        if len(ItemNumber.split(".")) == 1 and len(ItemNumberList[i]) == 1:
+            # If the document object  in the list is equal to DocObject, increase the counter by one.
+            if ObjectNameValue == "Object":
                 if ObjectList[i] == DocObject:
                     counter = counter + 1
-        # If the itemnumber is one level deep:
-        if len(ItemNumberList[i].split(".")) == 1:
-            # If the document object  in the list is equal to DocObject, increase the counter by one.
-            if ObjectList[i] == DocObject:
-                counter = counter + 1
+            if ObjectNameValue == "ObjectLabel":
+                if ObjectList[i].Label == DocObject.Label:
+                    counter = counter + 1
     # Return the counter
     return counter
+
+
+def ListContainsCheck(List: list, Item1, Item2, Item3) -> bool:
+    for i in range(len(List)):
+        rowItem = List[i]
+        ListItem1 = rowItem["Item1"]
+        ListItem2 = rowItem["Item2"]
+        ListItem3 = rowItem["Item3"]
+
+        if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
+            return True
+
+    return False
 
 
 # Functions to count  document objects in a list. Can be object based or List row based comparison
@@ -294,4 +324,6 @@ def CheckAssemblyType(DocObject):
         for RootObject in RootObjects:
             if RootObject.TypeId == "App::Link" or RootObject.TypeId == "App::LinkGroup":
                 return "AppLink"
+            if RootObject.TypeId == "App::Part":
+                return "AppPart"
         return "None"

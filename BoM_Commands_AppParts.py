@@ -26,16 +26,16 @@ import FreeCAD as App
 import FreeCADGui as Gui
 
 
-class CreatePartsOnlyBOM_A4_Class:
+class CreatePartsOnlyBOM_AppParts_Class:
     def GetResources(self):
         return {
-            "Pixmap": "Assembly4-Parts.svg",  # the name of a svg file available in the resources
+            "Pixmap": "AppPart-Parts.svg",  # the name of a svg file available in the resources
             "MenuText": "Create a parts only BoM",
             "ToolTip": "Create a parts only Bill of Materials in a spreadsheet",
         }
 
     def Activated(self):
-        from GetBOM_A4 import BomFunctions
+        from GetBOM_AppPart import BomFunctions
 
         BomFunctions.Start("PartsOnly")
         return
@@ -56,16 +56,16 @@ class CreatePartsOnlyBOM_A4_Class:
         return result
 
 
-class CreateSummarizedBOM_A4_Class:
+class CreateSummarizedBOM_AppParts_Class:
     def GetResources(self):
         return {
-            "Pixmap": "Assembly4-Summary.svg",  # the name of a svg file available in the resources
+            "Pixmap": "AppPart-Summary.svg",  # the name of a svg file available in the resources
             "MenuText": "Create a summarized BoM",
             "ToolTip": "Create a summary of all the parts and assemblies in a spreadsheet",
         }
 
     def Activated(self):
-        from GetBOM_A4 import BomFunctions
+        from GetBOM_AppPart import BomFunctions
 
         BomFunctions.Start("Summarized")
         return
@@ -86,16 +86,16 @@ class CreateSummarizedBOM_A4_Class:
         return result
 
 
-class CreateTotalBOM_A4_Class:
+class CreateTotalBOM_AppParts_Class:
     def GetResources(self):
         return {
-            "Pixmap": "Assembly4-Total.svg",  # the name of a svg file available in the resources
+            "Pixmap": "AppPart-Total.svg",  # the name of a svg file available in the resources
             "MenuText": "Create a overall BoM",
             "ToolTip": "Create a Bill of Materials in a spreadsheet",
         }
 
     def Activated(self):
-        from GetBOM_A4 import BomFunctions
+        from GetBOM_AppPart import BomFunctions
 
         BomFunctions.Start("Total")
         return
@@ -116,16 +116,16 @@ class CreateTotalBOM_A4_Class:
         return result
 
 
-class CreateRawBOM_A4_Class:
+class CreateRawBOM_AppParts_Class:
     def GetResources(self):
         return {
-            "Pixmap": "Assembly4-Raw.svg",  # the name of a svg file available in the resources
+            "Pixmap": "AppPart-Raw.svg",  # the name of a svg file available in the resources
             "MenuText": "Create the raw BoM",
             "ToolTip": "Create a Bill of Materials in a spreadsheet, as is.",
         }
 
     def Activated(self):
-        from GetBOM_A4 import BomFunctions
+        from GetBOM_AppPart import BomFunctions
 
         BomFunctions.Start("Raw")
         return
@@ -147,7 +147,7 @@ class CreateRawBOM_A4_Class:
 
 
 # Add the commands to the Gui
-Gui.addCommand("CreateBOM_PartsOnly_Assembly4", CreatePartsOnlyBOM_A4_Class())
-Gui.addCommand("CreateBOM_Summary_Assembly4", CreateSummarizedBOM_A4_Class())
-Gui.addCommand("CreateBOM_Total_Assembly4", CreateTotalBOM_A4_Class())
-Gui.addCommand("CreateBOM_Raw_Assembly4", CreateRawBOM_A4_Class())
+Gui.addCommand("CreateBOM_PartsOnly_AppPart", CreatePartsOnlyBOM_AppParts_Class())
+Gui.addCommand("CreateBOM_Summary_AppPart", CreateSummarizedBOM_AppParts_Class())
+Gui.addCommand("CreateBOM_Total_AppPart", CreateTotalBOM_AppParts_Class())
+Gui.addCommand("CreateBOM_Raw_AppPart", CreateRawBOM_AppParts_Class())
