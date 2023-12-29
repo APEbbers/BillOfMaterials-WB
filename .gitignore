@@ -1,0 +1,13 @@
+Ender 3 Pro_2.20231202-132402.FCBak
+Ender 3 Pro_2.FCStd
+Ender 3 Pro_3.20231202-134836.FCBak
+Ender 3 Pro_3.FCStd
+Ender 3 Pro.20231117-090430.FCBak
+Ender 3 Pro.FCStd
+.vscode
+__pycache__
+test.csv
+__pycache__/General_BOM_Functions.cpython-38.pyc
+__pycache__/GetBOM_A4.cpython-38.pyc
+__pycache__/GetBOM_AppLink.cpython-38.pyc
+__pycache__/Standard_Functions_BOM_WB.cpython-38.pyc

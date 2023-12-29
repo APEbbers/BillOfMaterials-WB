@@ -22,34 +22,52 @@
 # ***************************************************************************/
 
 
-def Mbox(text, title="", style=0, default="", stringList="[,]"):
+def Mbox(text, title="", style=0, IconType="Information", default="", stringList="[,]"):
     """
     Message Styles:\n
     0 : OK                          (text, title, style)\n
     1 : Yes | No                    (text, title, style)\n
-    2 : Inputbox                    (text, title, style, default)\n
-    3 : Inputbox with dropdown      (text, title, style, default, stringlist)\n
+    20 : Inputbox                    (text, title, style, default)\n
+    21 : Inputbox with dropdown      (text, title, style, default, stringlist)\n
     """
-    from PySide import QtGui
+    from PySide2.QtWidgets import QMessageBox, QInputDialog
+
+    Icon = QMessageBox.Information
+    if IconType == "NoIcon":
+        Icon = QMessageBox.NoIcon
+    if IconType == "Question":
+        Icon = QMessageBox.Question
+    if IconType == "Warning":
+        Icon = QMessageBox.Warning
+    if IconType == "Critical":
+        Icon = QMessageBox.Critical
 
     if style == 0:
-        reply = str(QtGui.QMessageBox.information(None, title, text))
+        # Set the messagebox
+        msgBox = QMessageBox()
+        msgBox.setIcon(Icon)
+        msgBox.setText(text)
+        msgBox.setWindowTitle(title)
+
+        reply = msgBox.exec_()
         return reply
     if style == 1:
-        reply = QtGui.QMessageBox.question(
-            None,
-            title,
-            text,
-            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
-            QtGui.QMessageBox.No,
-        )
-        if reply == QtGui.QMessageBox.Yes:
-            return "yes"
-        if reply == QtGui.QMessageBox.No:
-            return "no"
-    if style == 2:
-        reply = QtGui.QInputDialog.getText(None, title, text, text=default)
+        # Set the messagebox
+        msgBox = QMessageBox()
+        msgBox.setIcon(Icon)
+        msgBox.setText(text)
+        msgBox.setWindowTitle(title)
+        # Set the buttons and default button
+        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msgBox.setDefaultButton(QMessageBox.No)
 
+        reply = msgBox.exec_()
+        if reply == QMessageBox.Yes:
+            return "yes"
+        if reply == QMessageBox.No:
+            return "no"
+    if style == 20:
+        reply = QInputDialog.getText(parent=None, title=title, label=text, text=default)
         if reply[1]:
             # user clicked OK
             replyText = reply[0]
@@ -57,9 +75,8 @@ def Mbox(text, title="", style=0, default="", stringList="[,]"):
             # user clicked Cancel
             replyText = reply[0]  # which will be "" if they clicked Cancel
         return str(replyText)
-    if style == 3:
-        reply = QtGui.QInputDialog.getItem(None, title, text, stringList, 1, True)
-
+    if style == 21:
+        reply = QInputDialog.getItem(parent=None, title=title, label=text, items=stringList, current=1, editable=True)
         if reply[1]:
             # user clicked OK
             replyText = reply[0]
@@ -191,15 +208,27 @@ def OpenFile(FileName: str):
     import os
     import platform
 
-    if os.path.exists(FileName):
-        if platform.system() == "Darwin":  # macOS
-            subprocess.call(("open", FileName))
-        elif platform.system() == "Windows":  # Windows
-            os.startfile(FileName)
-        else:  # linux variants
-            subprocess.call(("xdg-open", FileName))
-    else:
-        print(f"Error: {FileName} does not exist.")
+    try:
+        if os.path.exists(FileName):
+            if platform.system() == "Darwin":  # macOS
+                subprocess.call(("open", FileName))
+            elif platform.system() == "Windows":  # Windows
+                os.startfile(FileName)
+            else:  # linux variants
+                print(FileName)
+                try:
+                    subprocess.check_output(["xdg-open", FileName.strip()])
+                except subprocess.CalledProcessError:
+                    Print(
+                        f"An error occured when opening {FileName}!\n"
+                        + "This can happen when running FreeCAD as an AppImage.\n"
+                        + "Please install FreeCAD directly.",
+                        "Error",
+                    )
+        else:
+            print(f"Error: {FileName} does not exist.")
+    except Exception as e:
+        raise e
 
 
 def SetColumnWidth_SpreadSheet(sheet, column: str, cellValue: str, factor: int = 10) -> bool:
@@ -245,4 +274,4 @@ def Print(Input: str, Type: str = ""):
     elif Type == "Log":
         App.Console.PrintLog(Input + "\n")
     else:
-        App.PrintMessage(Input + "\n")
+        App.Console.PrintMessage(Input + "\n")

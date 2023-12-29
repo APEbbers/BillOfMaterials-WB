@@ -247,46 +247,108 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
     Returns:
         list: The corrected list.
     """
+    TemporaryList = []
     # Go throug the list
-    for i in range(len(BoMList) - 1):
-        # Get the list item and define the current item number
-        RowItem = BoMList[i]
-        # Define the startnumber as 1
-        if i == 0:
-            RowItem["ItemNumber"] = "1"
-        ItemNumber = str(RowItem["ItemNumber"])
+    for i in range(len(BoMList)):
+        TemporaryList.append(BoMList[i])
 
-        # Get the next list item and define the current itemnumber of the next list item
-        RowItemNext = BoMList[i + 1]
-        ItemNumberNext = str(RowItemNext["ItemNumber"])
+        if i > 1:
+            # Get the list item from the new temporary list
+            rowItem = TemporaryList[i]
 
-        # If the splitted ItemNumberNext is equal or shorter than the splitted ItemNumber, continue here
-        if len(ItemNumberNext.split(".")) <= len(ItemNumber.split(".")):
-            # If the splitted ItemNumberNext is longer than 1, continue here
-            if len(ItemNumberNext.split(".")) > 1:
-                # The next itemnumber is the first digit from the current itemnumber with rest of the digit
-                # with second part of the next itemnumber
-                RowItemNext["ItemNumber"] = (
-                    str(int(ItemNumber.split(".", 1)[0])) + "." + ItemNumberNext.split(".", 1)[1]
-                )
-            # If the splitted ItemNumberNext is 1, continue here
-            if len(ItemNumberNext.split(".")) == 1:
-                # The next item number is the first digit of the current itemnumber increased by one
-                RowItemNext["ItemNumber"] = str(int(ItemNumber.split(".", 1)[0]) + 1)
+            # Get the item and define the current itemnumber from the original list
+            rowItemOriginal = BoMList[i]
+            ItemNumberOriginal = str(rowItemOriginal["ItemNumber"])
 
-        # If the splitted ItemNumberNext is longer than the splitted ItemNumber, continue here
-        if len(ItemNumberNext.split(".")) == len(ItemNumber.split(".")) + 1:
-            # The next itemnumber is the first digit from the current itemnumber with rest of the digit
-            # with second part of the next itemnumber
-            RowItemNext["ItemNumber"] = ItemNumber.split(".", 1)[0] + "." + ItemNumberNext.split(".", 1)[1]
+            # Get the previous item from the new temporary list and define the itemnumber
+            RowItemPrevious = TemporaryList[i - 1]
+            ItemNumberPrevious = str(RowItemPrevious["ItemNumber"])
+
+            # create a new empty itemnumber as a placeholder
+            NewItemNumber = ""
+
+            # Get the previous item from the original list and define the itemnumber
+            RowItemPreviousOriginal = BoMList[i - 1]
+            ItemNumberPreviousOriginal = str(RowItemPreviousOriginal["ItemNumber"])
+
+            # Create a new row item for the temporary row.
+            # The comparison is done with the items from the original list.
+            # This way you are certain the comparison is not done on a changing list.
+            # The term longer, shorter, equal means the times the splitter "." is present.
+            # ----------------------------------------------------------------------------------------------------------
+            #
+            # If the previous itemnumber is shorter than the current itemnumber,
+            # you have the first item in a subassembly.
+            # Add ".1" and you have the itemnumber for this first item. (e.g. 1.1 -> 1.1.1)
+            if len(ItemNumberPreviousOriginal.split(".")) < len(ItemNumberOriginal.split(".")):
+                # Define the new itemnumber.
+                NewItemNumber = str(ItemNumberPrevious) + ".1"
+
+            # If the previous itemnumber is as long as the current itemnumber,
+            # you have an item of a subassembly that is not the first item.
+            if len(ItemNumberPreviousOriginal.split(".")) == len(ItemNumberOriginal.split(".")):
+                # If the current item is a first level item, increase the number by 1.
+                if len(ItemNumberOriginal.split(".")) == 1:
+                    NewItemNumber = str(int(ItemNumberPrevious) + 1)
+                # If the current item is a level deeper then one, split the itemnumber in two parts.
+                # The first part is the number without the last digit. This won't change.
+                # The second part is the last digit. Increase this by one.
+                # The new itemnumber is the combined string of part 1 and modified part 2.
+                if len(ItemNumberOriginal.split(".")) > 1:
+                    Part1 = str(ItemNumberPrevious.rsplit(".", 1)[0])
+                    Part2 = str(int(ItemNumberPrevious.rsplit(".", 1)[1]) + 1)
+                    NewItemNumber = Part1 + "." + Part2
+
+            # If the previous itemnumber is longer than the current itemnumber, you have a new subassembly.
+            if len(ItemNumberPreviousOriginal.split(".")) > len(ItemNumberOriginal.split(".")):
+                # if the new subassembly is at the first level, split the previous itemnumber in two
+                # to get the first digit and increase this by one.
+                if len(ItemNumberOriginal.split(".")) == 1:
+                    NewItemNumber = str(int(ItemNumberPrevious.split(".")[0]) + 1)
+                # If the current item is a level deeper then one, determine the length of the current item.
+                # Use this to create a new itemnumber from the previous itemnumber but based on the current number.
+                # Simply removing the last digit won't always work because it is not garuanteed that the new subassembly
+                # is just one level higher in the order. (e.g., you can go from 1.2.4.5 to the next assembly at 1.3)
+                if len(ItemNumberOriginal.split(".")) > 1:
+                    # Get the length for the new itemnumber
+                    Length = len(ItemNumberOriginal.split("."))
+                    # Create a list of all the numbers from the previous itemnumber.
+                    ItemNumberSplit = ItemNumberPrevious.split(".")
+                    # Define a temporary itemnumber. Then add the next part from the list to it.
+                    # Do this until the  temporary itemnumber has correct length.
+                    Part0 = str(ItemNumberSplit[0])
+                    for j in range(1, len(ItemNumberSplit) - 1):
+                        if j <= Length:
+                            Part0 = Part0 + "." + str(ItemNumberSplit[j])
+                    # Split the temporary itemnumber into two parts.
+                    # The first part is the number without the last digit. This won't change.
+                    # The second part is the last digit. Increase this by one.
+                    # The new itemnumber is the combined string of part 1 and modified part 2.
+                    Part1 = str(Part0.rsplit(".", 1)[0])
+                    Part2 = str(int(Part0.rsplit(".", 1)[1]) + 1)
+                    NewItemNumber = Part1 + "." + Part2
+            # ----------------------------------------------------------------------------------------------------------
+
+            # Define the new rowList item.
+            rowListNew = {
+                "ItemNumber": NewItemNumber,
+                "DocumentObject": rowItem["DocumentObject"],
+                "ObjectLabel": rowItem["ObjectLabel"],
+                "ObjectName": rowItem["ObjectName"],
+                "Qty": rowItem["Qty"],
+                "Type": rowItem["Type"],
+            }
+            # Replace the last item in the temporary list with this new one.
+            TemporaryList.pop()
+            TemporaryList.append(rowListNew)
 
     # If in debug mode, print the resulting list of numbers
     if DebugMode is True:
-        for i in range(len(BoMList)):
-            print(BoMList[i]["ItemNumber"])
+        for i in range(len(TemporaryList)):
+            print(TemporaryList[i]["ItemNumber"])
 
     # Return the result.
-    return BoMList
+    return TemporaryList
 
 
 # Function to check the type of workbench

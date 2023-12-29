@@ -295,6 +295,25 @@ class BomFunctions:
     # Function to filter out bodies
     @classmethod
     def FilterBodies(self, BOMList: list, AllowAllBodies: bool = True) -> list:
+        # Correct the item type before filtering if filtering will be done.
+        if AllowAllBodies is False:
+            for i in range(len(BOMList) - 1):
+                # Define the property objects
+                ItemObject = BOMList[i]
+                ItemObjectType = ItemObject["DocumentObject"].TypeId
+
+                # Define the property objects of the next row
+                i = i + 1
+                ItemObjectNext = BOMList[i]
+                ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
+
+                if (
+                    ItemObjectTypeNext == "Part::Feature"
+                    or ItemObjectTypeNext == "PartDesign::Body"
+                    or ItemObjectTypeNext == "Part::FeaturePython"
+                ):
+                    ItemObject["Type"] = "Part"
+
         # Create an extra temporary list
         TempTemporaryList = []
         # Go through the curent temporary list
@@ -567,7 +586,7 @@ class BomFunctions:
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
-            TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
+            TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList, True)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:

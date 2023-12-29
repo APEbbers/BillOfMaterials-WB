@@ -65,6 +65,7 @@ class BOM_WB(Gui.Workbench):
 
         # a list of command names created in the line above
         self.list = [
+            "Separator",
             "CreateBOM_Raw_AppLink",
             "CreateBOM_Total_AppLink",
             "CreateBOM_PartsOnly_AppLink",
@@ -81,6 +82,7 @@ class BOM_WB(Gui.Workbench):
 
         # a list of command names created in the line above
         self.list = [
+            "Separator",
             "CreateBOM_Raw_AppPart",
             "CreateBOM_Total_AppPart",
             "CreateBOM_PartsOnly_AppPart",
@@ -96,12 +98,25 @@ class BOM_WB(Gui.Workbench):
         import BoM_Commands_A4
 
         self.list = [
+            "Separator",
             "CreateBOM_Raw_Assembly4",
             "CreateBOM_Total_Assembly4",
             "CreateBOM_PartsOnly_Assembly4",
             "CreateBOM_Summary_Assembly4",
         ]
         self.appendToolbar("BOM Commands - Assembly4", self.list)
+
+        # -----------------------------------------------------------------------------------------------------
+        import BoM_Commands_Internal
+
+        self.list = [
+            "Separator",
+            "CreateBOM_Raw_INTERNAL",
+            "CreateBOM_Total_INTERNAL",
+            "CreateBOM_PartsOnly_INTERNAL",
+            "CreateBOM_Summary_INTERNAL",
+        ]
+        self.appendToolbar("BOM Commands - INTERNAL", self.list)
 
     def Activated(self):
         """This function is executed whenever the workbench is activated"""
