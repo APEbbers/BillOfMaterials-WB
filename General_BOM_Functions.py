@@ -65,8 +65,13 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
     # Define CopyMainList and Header
     CopyMainList = []
 
-    # if List is None, copy the main list
+    # Copy the main list
     CopyMainList = mainList
+
+    # Set the colors for the table
+    HeaderColorRGB = [243, 202, 98]
+    FirstColorRGB = [169, 169, 169]
+    SecondColorRGB = [128, 128, 128]
 
     # Set the headers in the spreadsheet
     if Headers is None:
@@ -87,9 +92,10 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
         Value = str(Headers[key])
         sheet.set(Cell, Value)
         # set the width based on the headers
-        Standard_Functions.SetColumnWidth_SpreadSheet(
-            sheet=sheet, column=key[:1], cellValue=Value
-        )
+        Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=Value)
+
+    # Style the Top row
+    sheet.setStyle("A1:H1", "bold")  # \bold|italic|underline'
 
     # Go through the main list and add every rowList to the spreadsheet.
     # Define a row counter
@@ -106,9 +112,7 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
         Row = i + rowOffset
 
         # Fill the spreadsheet
-        sheet.set(
-            "A" + str(Row), "'" + str(rowList["ItemNumber"])
-        )  # add ' at the beginning to make sure it is text.
+        sheet.set("A" + str(Row), "'" + str(rowList["ItemNumber"]))  # add ' at the beginning to make sure it is text.
         sheet.set("B" + str(Row), str(rowList["Qty"]))
         sheet.set("C" + str(Row), rowList["ObjectLabel"])
         sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
@@ -124,13 +128,23 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
             ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
 
             if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
-                Standard_Functions.SetColumnWidth_SpreadSheet(
-                    sheet=sheet, column=Column, cellValue=Value
-                )
+                Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=Column, cellValue=Value)
 
     # Allign the columns
     if Row > 1:
         sheet.setAlignment("A1:E" + str(Row), "center", "keep")
+
+    # Style the table
+    RangeStyleHeader = "A1:H1"
+    RangeStyleTable = "A2:H" + str(Row)
+    FormatTableColors(
+        sheet=sheet,
+        HeaderRange=RangeStyleHeader,
+        TableRange=RangeStyleTable,
+        HeaderColorRGB=HeaderColorRGB,
+        FirstColorRGB=FirstColorRGB,
+        SecondColorRGB=SecondColorRGB,
+    )
 
     # Define NoRows. This is needed for the next functions
     NoRows = 0
@@ -156,32 +170,47 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
         # Define the row above which extra rows will be added.
         RowNumber = "1"
         # Set the number of rows to be added.
-        NoRows = 4
+        NoRows = 5
         # Insert the rows and merge for each row the first three cells
         for i in range(NoRows):
             sheet.insertRows(RowNumber, 1)
             sheet.mergeCells("A1:C1")
+        sheet.mergeCells("A1:D1")
 
         # Fill in the cells
-        sheet.set("A1", "Number of parts:")
-        sheet.set("A2", "Number of assemblies:")
-        sheet.set("A3", "The total number of items is:")
-        sheet.set("D1", str(PartCounter))
-        sheet.set("D2", str(AssemblyCounter))
-        sheet.set("D3", str(TotalCounter))
+        sheet.set("A1", "Summary")
+        sheet.set("A2", "Number of parts:")
+        sheet.set("A3", "Number of assemblies:")
+        sheet.set("A4", "The total number of items is:")
+        sheet.set("D2", str(PartCounter))
+        sheet.set("D3", str(AssemblyCounter))
+        sheet.set("D4", str(TotalCounter))
 
         # Align the cells
-        sheet.setAlignment("A1:C3", "left", "keep")
-        sheet.setAlignment("D1:D3", "center", "keep")
+        sheet.setAlignment("A1:C4", "left", "keep")
+        sheet.setAlignment("D1:D4", "center", "keep")
+
+        # Style the table
+        RangeStyleHeader = "A1:D1"
+        RangeStyleTable = "A2:D4"
+        FormatTableColors(
+            sheet=sheet,
+            HeaderRange=RangeStyleHeader,
+            TableRange=RangeStyleTable,
+            HeaderColorRGB=HeaderColorRGB,
+            FirstColorRGB=FirstColorRGB,
+            SecondColorRGB=SecondColorRGB,
+        )
 
     # Add the end of the BoM add indentifaction data
     # Set the row to start from
     Row = Row + NoRows + 2
 
-    # Merge cells for the next three rows
+    # Merge cells for the next four rows
     sheet.mergeCells(f"A{str(Row)}:D{str(Row)}")
     sheet.mergeCells(f"A{str(Row+1)}:D{str(Row+1)}")
-    sheet.mergeCells(f"A{str(Row+2)}:H{str(Row+2)}")
+    sheet.mergeCells(f"A{str(Row+2)}:D{str(Row+2)}")
+    sheet.mergeCells(f"A{str(Row+3)}:H{str(Row+3)}")
 
     # Define the created by value. If no document information is available, use the OS account info.
     CreatedBy = doc.LastModifiedBy
@@ -189,16 +218,107 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
         CreatedBy = os.getlogin()
 
     # Fill in the cells with Date, time, created by and for which file.
+    sheet.set("A" + str(Row), "File information")
     sheet.set(
-        "A" + str(Row),
+        "A" + str(Row + 1),
         f"BoM created at: {datetime.today().strftime('%Y-%m-%d %H:%M:%S')}",
     )
-    sheet.set("A" + str(Row + 1), f"BoM created by: {CreatedBy}")
-    sheet.set("A" + str(Row + 2), f"BoM created for file: {doc.FileName}")
-    sheet.setAlignment(f"A{str(Row)}:C{str(Row + 2)}", "left", "keep")
+    sheet.set("A" + str(Row + 2), f"BoM created by: {CreatedBy}")
+    sheet.set("A" + str(Row + 3), f"BoM created for file: {doc.FileName}")
+
+    # Align the cells
+    sheet.setAlignment(f"A{str(Row)}:C{str(Row + 3)}", "left", "keep")
+
+    # Style the table
+    RangeStyleHeader = f"A{str(Row)}:D{str(Row)}"
+    RangeStyleTable = f"A{str(Row+1)}:D{str(Row+3)}"
+    FormatTableColors(
+        sheet=sheet,
+        HeaderRange=RangeStyleHeader,
+        TableRange=RangeStyleTable,
+        HeaderColorRGB=HeaderColorRGB,
+        FirstColorRGB=FirstColorRGB,
+        SecondColorRGB=SecondColorRGB,
+    )
 
     # Recompute the document
     doc.recompute(None, True, True)
+
+    return
+
+
+def FormatTableColors(
+    sheet,
+    HeaderRange,
+    TableRange,
+    HeaderColorRGB,
+    FirstColorRGB,
+    SecondColorRGB,
+    ForeGroundHeaderRGB=[0, 0, 0],
+    ForeGroundTable=[0, 0, 0],
+    HeaderStyle="bold",
+    TableStyle="",
+):
+    """_summary_
+
+    Args:
+        sheet (object): FreeCAD sheet object
+        HeaderRange (string): Range for the header.
+        TableRange (string): Range for the table
+        HeaderColorRGB (List): RGB color for the header. (e.g. [255, 255, 255])
+        FirstColorRGB (list): RGB color for every 1st row. (e.g. [255, 255, 255])
+        SecondColorRGB (list): RGB color for every 2nd row. (e.g. [255, 255, 255])
+        ForeGroundHeaderRGB (list, optional): _description_. Defaults to [0, 0, 0].
+        ForeGroundTable (list, optional): _description_. Defaults to [0, 0, 0].
+        HeaderStyle (str, optional): Font style for the header. (bold|italic|underline) Defaults to "bold".
+        TableStyle (str, optional): Font style for the table. (bold|italic|underline) Defaults to "".
+    """
+
+    # Format the header ------------------------------------------------------------------------------------------------
+    # Set the font style for the header
+    if HeaderStyle != "":
+        sheet.setStyle(HeaderRange, HeaderStyle)  # \bold|italic|underline'
+    # Set the colors for the header
+    sheet.setBackground(HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB))
+    sheet.setForeground(HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB))  # RGBA
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # Format the table -------------------------------------------------------------------------------------------------
+    # Get the first column and first row
+    TableRangeColumnStart = Standard_Functions.RemoveNumbersFromString(TableRange.split(":")[0])
+    TableRangeRowStart = int(Standard_Functions.RemoveLettersFromString(TableRange.split(":")[0]))
+
+    # Get the last column and last row
+    TableRangeColumnEnd = Standard_Functions.RemoveNumbersFromString(TableRange.split(":")[1])
+    TableRangeRowEnd = int(Standard_Functions.RemoveLettersFromString(TableRange.split(":")[1]))
+
+    # Calculate the delta between the start and end of the table in vertical direction (Rows).
+    DeltaRange = TableRangeRowEnd - TableRangeRowStart + 1
+    # Go through the range
+    for i in range(1, DeltaRange + 2, 2):
+        # Correct the position
+        j = i - 1
+        # Define the first row
+        FirstRow = (
+            f"{TableRangeColumnStart}{str(j+TableRangeRowStart)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart)}"
+        )
+        # Define the second row
+        SecondRow = (
+            f"{TableRangeColumnStart}{str(j+TableRangeRowStart+1)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart+1)}"
+        )
+
+        # if the first and second rows are within the range, set the colors
+        if i <= DeltaRange:
+            sheet.setBackground(FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB))
+            sheet.setForeground(FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable))
+        if i + 1 <= DeltaRange:
+            sheet.setBackground(SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB))
+            sheet.setForeground(SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable))
+
+        # Set the font style for the table
+        if TableStyle != "":
+            sheet.setStyle(TableRange, TableStyle)  # \bold|italic|underline'
+    # ------------------------------------------------------------------------------------------------------------------
     return
 
 
@@ -322,10 +442,7 @@ def ObjectCounter(
 
             # If the object name and type of the object in the list are equal to that of the DocObject,
             # increase the counter by one
-            if (
-                RowItem[ObjectNameValue] == ObjectName
-                and RowItem["DocumentObject"].TypeId == ObjectType
-            ):
+            if RowItem[ObjectNameValue] == ObjectName and RowItem["DocumentObject"].TypeId == ObjectType:
                 counter = counter + 1
 
     # Return the counter
@@ -376,17 +493,13 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
             # If the previous itemnumber is shorter than the current itemnumber,
             # you have the first item in a subassembly.
             # Add ".1" and you have the itemnumber for this first item. (e.g. 1.1 -> 1.1.1)
-            if len(ItemNumberPreviousOriginal.split(".")) < len(
-                ItemNumberOriginal.split(".")
-            ):
+            if len(ItemNumberPreviousOriginal.split(".")) < len(ItemNumberOriginal.split(".")):
                 # Define the new itemnumber.
                 NewItemNumber = str(ItemNumberPrevious) + ".1"
 
             # If the previous itemnumber is as long as the current itemnumber,
             # you have an item of a subassembly that is not the first item.
-            if len(ItemNumberPreviousOriginal.split(".")) == len(
-                ItemNumberOriginal.split(".")
-            ):
+            if len(ItemNumberPreviousOriginal.split(".")) == len(ItemNumberOriginal.split(".")):
                 # If the current item is a first level item, increase the number by 1.
                 if len(ItemNumberOriginal.split(".")) == 1:
                     NewItemNumber = str(int(ItemNumberPrevious) + 1)
@@ -400,9 +513,7 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
                     NewItemNumber = Part1 + "." + Part2
 
             # If the previous itemnumber is longer than the current itemnumber, you have a new subassembly.
-            if len(ItemNumberPreviousOriginal.split(".")) > len(
-                ItemNumberOriginal.split(".")
-            ):
+            if len(ItemNumberPreviousOriginal.split(".")) > len(ItemNumberOriginal.split(".")):
                 # if the new subassembly is at the first level, split the previous itemnumber in two
                 # to get the first digit and increase this by one.
                 if len(ItemNumberOriginal.split(".")) == 1:
@@ -475,33 +586,18 @@ def CheckAssemblyType(DocObject):
         except Exception:
             pass
     # If it is not an A2plus assembly, check for the other type of assemblies
-    if (
-        RootObjects[0].Name == "Parts"
-        and RootObjects[0].TypeId == "App::DocumentObjectGroup"
-    ):
+    if RootObjects[0].Name == "Parts" and RootObjects[0].TypeId == "App::DocumentObjectGroup":
         if RootObjects[1].Name == "Assembly" and RootObjects[1].TypeId == "App::Part":
             return "Assembly4"
     elif RootObjects[0].Name == "Assembly" and RootObjects[0].TypeId == "App::Part":
-        if (
-            RootObjects[0].Group[0].Name == "Joints"
-            and RootObjects[0].Group[0].TypeId == "App::DocumentObjectGroup"
-        ):
+        if RootObjects[0].Group[0].Name == "Joints" and RootObjects[0].Group[0].TypeId == "App::DocumentObjectGroup":
             return "Internal"
-    elif (
-        RootObjects[0].Name == "Assembly"
-        and RootObjects[0].TypeId == "Part::FeaturePython"
-    ):
-        if (
-            RootObjects[0].Group[0].Name == "Constraints"
-            and RootObjects[0].Group[0].TypeId == "App::FeaturePython"
-        ):
+    elif RootObjects[0].Name == "Assembly" and RootObjects[0].TypeId == "Part::FeaturePython":
+        if RootObjects[0].Group[0].Name == "Constraints" and RootObjects[0].Group[0].TypeId == "App::FeaturePython":
             return "Assembly3"
     else:
         for RootObject in RootObjects:
-            if (
-                RootObject.TypeId == "App::Link"
-                or RootObject.TypeId == "App::LinkGroup"
-            ):
+            if RootObject.TypeId == "App::Link" or RootObject.TypeId == "App::LinkGroup":
                 return "AppLink"
             if RootObject.TypeId == "App::Part":
                 return "AppPart"

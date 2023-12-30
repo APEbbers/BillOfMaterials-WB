@@ -161,6 +161,36 @@ def GetA1fromR1C1(input: str) -> str:
         return ""
 
 
+def RemoveNumbersFromString(string: str) -> str:
+    no_digits = []
+
+    # Iterate through the string, adding non-numbers to the no_digits list
+    for i in string:
+        if not i.isdigit():
+            no_digits.append(i)
+
+    # Now join all elements of the list with '',
+    # which puts all of the characters together.
+    result = "".join(no_digits)
+
+    return result
+
+
+def RemoveLettersFromString(string: str) -> str:
+    no_chars = []
+
+    # Iterate through the string, adding non-numbers to the no_digits list
+    for i in string:
+        if i.isdigit():
+            no_chars.append(i)
+
+    # Now join all elements of the list with '',
+    # which puts all of the characters together.
+    result = "".join(no_chars)
+
+    return result
+
+
 def CheckIfWorkbookExists(FullFileName: str, CreateIfNone: bool = True):
     import os
     from openpyxl import Workbook
@@ -238,9 +268,7 @@ def OpenFile(FileName: str):
         raise e
 
 
-def SetColumnWidth_SpreadSheet(
-    sheet, column: str, cellValue: str, factor: int = 10
-) -> bool:
+def SetColumnWidth_SpreadSheet(sheet, column: str, cellValue: str, factor: int = 10) -> bool:
     """_summary_
 
     Args:
