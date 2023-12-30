@@ -196,9 +196,12 @@ class BomFunctions:
                                     )
                                     is not None
                                 ):
-                                    childObjects.append(
-                                        object.getSubObject(subname=object.getSubObjects()[i], retType=1)
-                                    )
+                                    if self.AllowedObjectType(
+                                        object.getSubObject(subname=object.getSubObjects()[i], retType=1).TypeId
+                                    ):
+                                        childObjects.append(
+                                            object.getSubObject(subname=object.getSubObjects()[i], retType=1)
+                                        )
                     if len(childObjects) > 0:
                         self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
                         # Go the the child objects with a separate function for the child objects
@@ -284,12 +287,18 @@ class BomFunctions:
                                     )
                                     is not None
                                 ):
-                                    subChildObjects.append(
+                                    if self.AllowedObjectType(
                                         childObject.getSubObject(
                                             subname=childObject.getSubObjects()[i],
                                             retType=1,
+                                        ).TypeId
+                                    ):
+                                        subChildObjects.append(
+                                            childObject.getSubObject(
+                                                subname=childObject.getSubObjects()[i],
+                                                retType=1,
+                                            )
                                         )
-                                    )
                     if len(subChildObjects) > 0:
                         self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
                         # Go the the sub child objects with this same function
@@ -853,24 +862,38 @@ class BomFunctions:
             self.GetTreeObjects()
 
             if len(self.mainList) > 0:
+                IncludeBodiesText = "Do you want to include bodies?"
+
                 if command == "Total":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText, title="Bill of Materials Workbench", style=1
+                    )
+
                     self.CreateTotalBoM(
                         CreateSpreadSheet=True,
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                         IndentNumbering=True,
                         Level=0,
                     )
                 if command == "Raw":
                     General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
                 if command == "PartsOnly":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText, title="Bill of Materials Workbench", style=1
+                    )
+
                     self.PartsOnly(
                         CreateSpreadSheet=True,
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                         ObjectNameBased=False,
                     )
                 if command == "Summarized":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText, title="Bill of Materials Workbench", style=1
+                    )
+
                     self.SummarizedBoM(
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )

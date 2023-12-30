@@ -750,23 +750,37 @@ class BomFunctions:
             self.GetTreeObjects()
 
             if len(self.mainList) > 0:
+                IncludeBodiesText = "Do you want to include bodies?"
+
                 if command == "Total":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText, title="Bill of Materials Workbench", style=1
+                    )
+
                     self.CreateTotalBoM(
                         CreateSpreadSheet=True,
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                         IndentNumbering=True,
                         Level=0,
                     )
                 if command == "Raw":
                     General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
                 if command == "PartsOnly":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText, title="Bill of Materials Workbench", style=1
+                    )
+
                     self.PartsOnly(
                         CreateSpreadSheet=True,
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                     )
                 if command == "Summarized":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText, title="Bill of Materials Workbench", style=1
+                    )
+
                     self.SummarizedBoM(
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                         CreateSpreadSheet=True,
                     )
         except Exception as e:
