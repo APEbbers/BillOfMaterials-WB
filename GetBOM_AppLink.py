@@ -51,7 +51,9 @@ class BomFunctions:
         # Threat them as identical parts and replace the copies with the original
         for docObject in docObjects:
             if self.AllowedObjectType(docObject.TypeId) is True:
-                docObjects = self.ReturnEquealPart(docObject=docObject, ObjectList=docObjects)
+                docObjects = self.ReturnEquealPart(
+                    docObject=docObject, ObjectList=docObjects
+                )
 
         # Check if a App::LinkGroup is copied. this will appear as an App::Link.
         # Replace the App::LinkGroup with a second App::Link. (other way around doesn't work!)
@@ -73,7 +75,9 @@ class BomFunctions:
         ItemNumber = 0
 
         # Go Through all objects
-        self.GoThrough_Objects(docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber)
+        self.GoThrough_Objects(
+            docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber
+        )
 
         return
 
@@ -116,7 +120,10 @@ class BomFunctions:
             if ObjectList[j].Label[-3].isnumeric() is True:
                 # go through the same list and replace all objects with similar labels with the replace item.
                 for k in range(len(ObjectList)):
-                    if ObjectList[j].Label == ObjectList[k].Label and ObjectList[j].Label[:-3] == replaceItem.Label:
+                    if (
+                        ObjectList[j].Label == ObjectList[k].Label
+                        and ObjectList[j].Label[:-3] == replaceItem.Label
+                    ):
                         ObjectList.remove(ObjectList[j])
                         ObjectList.append(replaceItem)
 
@@ -152,7 +159,9 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(
+        self, docObjects, sheet, ItemNumber, ParentNumber: str = ""
+    ) -> True:
         """
         Args:
             docObjects (_type_):    list[DocumentObjects]\n
@@ -220,7 +229,9 @@ class BomFunctions:
 
     # Sub function of GoThrough_Objects.
     @classmethod
-    def GoThrough_ChildObjects(self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_ChildObjects(
+        self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""
+    ) -> True:
         """
         Args:
             ChilddocObjects (_type_):       list[DocumentObjects]\n
@@ -259,7 +270,10 @@ class BomFunctions:
                 self.mainList.append(rowList)
 
                 # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
-                if childObject.TypeId == "App::LinkGroup" or childObject.TypeId == "App::Link":
+                if (
+                    childObject.TypeId == "App::LinkGroup"
+                    or childObject.TypeId == "App::Link"
+                ):
                     # Create a list with sub child objects as DocumentObjects
                     subChildObjects = []
                     # Make sure that the list is empty. (probally overkill)
@@ -268,7 +282,9 @@ class BomFunctions:
                     for i in range(len(childObject.getSubObjects())):
                         if childObject.getSubObjects()[i] is not None:
                             subChildObjects.append(
-                                childObject.getSubObject(childObject.getSubObjects()[i], 1),
+                                childObject.getSubObject(
+                                    childObject.getSubObjects()[i], 1
+                                ),
                             )
                     if len(subChildObjects) > 0:
                         self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -312,9 +328,15 @@ class BomFunctions:
             # if the next item is a child, continue
             if ItemNumber == ItemNumberNext.rsplit(".", 1)[0]:
                 # confirm that the item is an app:link and its child a part::feature
-                if ItemObjectType == "App::Link" and ItemObjectTypeNext == "Part::Feature":
+                if (
+                    ItemObjectType == "App::Link"
+                    and ItemObjectTypeNext == "Part::Feature"
+                ):
                     # confirm that the item name without "001" is equal to the child name.
-                    if ItemObjectLabel[:-3] == ItemObjectLabelNext or ItemObjectLabel == ItemObjectLabelNext:
+                    if (
+                        ItemObjectLabel[:-3] == ItemObjectLabelNext
+                        or ItemObjectLabel == ItemObjectLabelNext
+                    ):
                         # set the flag to false.
                         flag = False
                         # remove the last digit from the itemnumber. otherwise you will go from 1.1.5 to 1.1.6.1 for example.
@@ -328,7 +350,10 @@ class BomFunctions:
             # The for statement stops at the second list item, so add the the last item when the statement reaches its end.
             if i == len(BOMList) - 1:
                 # check if the last item is not deeper than level and add it.
-                if len(ItemNumberNext.split(".")) <= Level or len(ItemNumberNext.split(".")) == 1:
+                if (
+                    len(ItemNumberNext.split(".")) <= Level
+                    or len(ItemNumberNext.split(".")) == 1
+                ):
                     TempTemporaryList.append(ItemObjectNext)
 
         # if Level is more than zero, remove all rows with itemnumber levels higher than Level
@@ -491,7 +516,10 @@ class BomFunctions:
                         ObjectBased=False,
                     )
                 )
-                if TypeListParts.__contains__(rowList["DocumentObject"].TypeId) is False:
+                if (
+                    TypeListParts.__contains__(rowList["DocumentObject"].TypeId)
+                    is False
+                ):
                     QtyValue = "1"
                 # Create a new row item for the temporary row.
                 rowListNew = {
@@ -632,7 +660,9 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
+            General_BOM.createBoMSpreadsheet(
+                mainList=TemporaryList, Headers=None, Summary=True
+            )
         return
 
     # Function to create a BoM list for a parts only BoM.
