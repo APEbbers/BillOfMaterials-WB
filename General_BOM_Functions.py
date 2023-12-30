@@ -103,6 +103,7 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
     Column = ""
     Value = ""
     ValuePrevious = ""
+    TotalNoItems = 0
     # Go through the CopyMainlist
     for i in range(len(CopyMainList)):
         rowList = CopyMainList[i]
@@ -120,6 +121,9 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
         sheet.set("F" + str(Row), rowList["DocumentObject"].Name)
         sheet.set("G" + str(Row), rowList["DocumentObject"].FullName)
         sheet.set("H" + str(Row), rowList["DocumentObject"].TypeId)
+
+        # Create the total number of items for the summary
+        TotalNoItems = TotalNoItems + int(rowList["Qty"])
 
         # Set the column widht
         for key in Headers:
@@ -170,7 +174,7 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
         # Define the row above which extra rows will be added.
         RowNumber = "1"
         # Set the number of rows to be added.
-        NoRows = 5
+        NoRows = 6
         # Insert the rows and merge for each row the first three cells
         for i in range(NoRows):
             sheet.insertRows(RowNumber, 1)
@@ -179,20 +183,22 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
 
         # Fill in the cells
         sheet.set("A1", "Summary")
-        sheet.set("A2", "Number of parts:")
-        sheet.set("A3", "Number of assemblies:")
-        sheet.set("A4", "The total number of items is:")
-        sheet.set("D2", str(PartCounter))
-        sheet.set("D3", str(AssemblyCounter))
-        sheet.set("D4", str(TotalCounter))
+        sheet.set("A2", "The total number of items:")
+        sheet.set("A3", "Number of unique parts:")
+        sheet.set("A4", "Number of unique assemblies:")
+        sheet.set("A5", "The total number of unique items:")
+        sheet.set("D2", str(TotalNoItems))
+        sheet.set("D3", str(PartCounter))
+        sheet.set("D4", str(AssemblyCounter))
+        sheet.set("D5", str(TotalCounter))
 
         # Align the cells
-        sheet.setAlignment("A1:C4", "left", "keep")
-        sheet.setAlignment("D1:D4", "center", "keep")
+        sheet.setAlignment("A1:C5", "left", "keep")
+        sheet.setAlignment("D1:D5", "center", "keep")
 
         # Style the table
         RangeStyleHeader = "A1:D1"
-        RangeStyleTable = "A2:D4"
+        RangeStyleTable = "A2:D5"
         FormatTableColors(
             sheet=sheet,
             HeaderRange=RangeStyleHeader,
