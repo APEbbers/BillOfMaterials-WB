@@ -793,13 +793,11 @@ class BomFunctions:
                     self.PartsOnly(
                         CreateSpreadSheet=True,
                         IncludeBodies=True,
-                        ObjectNameBased=False,
                     )
                 if command == "Summarized":
                     self.SummarizedBoM(
                         IncludeBodies=True,
                         CreateSpreadSheet=True,
-                        ObjectNameBased=False,
                     )
         except Exception as e:
             raise e

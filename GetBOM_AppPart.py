@@ -608,7 +608,6 @@ class BomFunctions:
                 if command == "Total":
                     self.CreateTotalBoM(
                         CreateSpreadSheet=True,
-                        IncludeBodies=True,
                         IndentNumbering=True,
                         Level=0,
                     )
@@ -617,12 +616,10 @@ class BomFunctions:
                 if command == "PartsOnly":
                     self.PartsOnly(
                         CreateSpreadSheet=True,
-                        IncludeBodies=True,
                         ObjectNameBased=False,
                     )
                 if command == "Summarized":
                     self.SummarizedBoM(
-                        IncludeBodies=True,
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
