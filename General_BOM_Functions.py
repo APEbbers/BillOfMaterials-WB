@@ -216,7 +216,7 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
     sheet.mergeCells(f"A{str(Row)}:D{str(Row)}")
     sheet.mergeCells(f"A{str(Row+1)}:D{str(Row+1)}")
     sheet.mergeCells(f"A{str(Row+2)}:D{str(Row+2)}")
-    sheet.mergeCells(f"A{str(Row+3)}:H{str(Row+3)}")
+    sheet.mergeCells(f"A{str(Row+3)}:D{str(Row+3)}")
 
     # Define the created by value. If no document information is available, use the OS account info.
     CreatedBy = doc.LastModifiedBy
@@ -227,10 +227,10 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
     sheet.set("A" + str(Row), "File information")
     sheet.set(
         "A" + str(Row + 1),
-        f"BoM created at: {datetime.today().strftime('%Y-%m-%d %H:%M:%S')}",
+        f"BoM created at:   {datetime.today().strftime('%Y-%m-%d %H:%M:%S')}",
     )
-    sheet.set("A" + str(Row + 2), f"BoM created by: {CreatedBy}")
-    sheet.set("A" + str(Row + 3), f"BoM created for file: {doc.FileName}")
+    sheet.set("A" + str(Row + 2), f"BoM created by:   {CreatedBy}")
+    sheet.set("A" + str(Row + 3), f"BoM created for file:   ../{os.path.basename(doc.FileName)}")
 
     # Align the cells
     sheet.setAlignment(f"A{str(Row)}:C{str(Row + 3)}", "left", "keep")
