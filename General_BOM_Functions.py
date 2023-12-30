@@ -23,12 +23,14 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
+from datetime import datetime
+import os
 
 
 # Function to create BoM. standard, a raw BoM will befrom the main list.
 # If a modified list is created, this function can be used to write it the a spreadsheet.
 # You can add a dict for the headers of this list
-def createBoMSpreadsheet(mainList: list, Headers: dict = None):
+def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = False):
     """_summary_
 
     Args:
@@ -48,8 +50,17 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None):
         print("No list available!!")
         return
 
-    # Get the spreadsheet.
+    # Get the active document
+    doc = App.ActiveDocument
+
+    # Get or create the spreadsheet.
     sheet = App.ActiveDocument.getObject("BoM")
+    if sheet is not None:
+        for i in range(1, 16384):  # 16384 is the maximum rows of the spreadsheet module
+            doc.BoM.splitCell("A" + str(i))
+        sheet.clearAll()
+    if sheet is None:
+        sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
 
     # Define CopyMainList and Header
     CopyMainList = []
@@ -76,7 +87,9 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None):
         Value = str(Headers[key])
         sheet.set(Cell, Value)
         # set the width based on the headers
-        Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=Value)
+        Standard_Functions.SetColumnWidth_SpreadSheet(
+            sheet=sheet, column=key[:1], cellValue=Value
+        )
 
     # Go through the main list and add every rowList to the spreadsheet.
     # Define a row counter
@@ -93,7 +106,9 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None):
         Row = i + rowOffset
 
         # Fill the spreadsheet
-        sheet.set("A" + str(Row), "'" + str(rowList["ItemNumber"]))  # add ' at the beginning to make sure it is text.
+        sheet.set(
+            "A" + str(Row), "'" + str(rowList["ItemNumber"])
+        )  # add ' at the beginning to make sure it is text.
         sheet.set("B" + str(Row), str(rowList["Qty"]))
         sheet.set("C" + str(Row), rowList["ObjectLabel"])
         sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
@@ -109,18 +124,91 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None):
             ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
 
             if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
-                Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=Column, cellValue=Value)
+                Standard_Functions.SetColumnWidth_SpreadSheet(
+                    sheet=sheet, column=Column, cellValue=Value
+                )
 
     # Allign the columns
     if Row > 1:
         sheet.setAlignment("A1:E" + str(Row), "center", "keep")
 
+    # Define NoRows. This is needed for the next functions
+    NoRows = 0
+    # If a summary is requested, create a summary
+    if Summary is True:
+        # Define the counters
+        AssemblyCounter = 0
+        PartCounter = 0
+        TotalCounter = 0
+
+        # Go through the list. If it is an assembly, increase the AssemblyCounter by 1.
+        # If it is an Part, increase the PartCounter by 1. Always increase the TotalCounter.
+        for i in range(len(CopyMainList)):
+            rowList = CopyMainList[i]
+
+            if rowList["Type"] == "Assembly":
+                AssemblyCounter = AssemblyCounter + 1
+                TotalCounter = TotalCounter + 1
+            if rowList["Type"] == "Part":
+                PartCounter = PartCounter + 1
+                TotalCounter = TotalCounter + 1
+
+        # Define the row above which extra rows will be added.
+        RowNumber = "1"
+        # Set the number of rows to be added.
+        NoRows = 4
+        # Insert the rows and merge for each row the first three cells
+        for i in range(NoRows):
+            sheet.insertRows(RowNumber, 1)
+            sheet.mergeCells("A1:C1")
+
+        # Fill in the cells
+        sheet.set("A1", "Number of parts:")
+        sheet.set("A2", "Number of assemblies:")
+        sheet.set("A3", "The total number of items is:")
+        sheet.set("D1", str(PartCounter))
+        sheet.set("D2", str(AssemblyCounter))
+        sheet.set("D3", str(TotalCounter))
+
+        # Align the cells
+        sheet.setAlignment("A1:C3", "left", "keep")
+        sheet.setAlignment("D1:D3", "center", "keep")
+
+    # Add the end of the BoM add indentifaction data
+    # Set the row to start from
+    Row = Row + NoRows + 2
+
+    # Merge cells for the next three rows
+    sheet.mergeCells(f"A{str(Row)}:D{str(Row)}")
+    sheet.mergeCells(f"A{str(Row+1)}:D{str(Row+1)}")
+    sheet.mergeCells(f"A{str(Row+2)}:H{str(Row+2)}")
+
+    # Define the created by value. If no document information is available, use the OS account info.
+    CreatedBy = doc.LastModifiedBy
+    if CreatedBy == "":
+        CreatedBy = os.getlogin()
+
+    # Fill in the cells with Date, time, created by and for which file.
+    sheet.set(
+        "A" + str(Row),
+        f"BoM created at: {datetime.today().strftime('%Y-%m-%d %H:%M:%S')}",
+    )
+    sheet.set("A" + str(Row + 1), f"BoM created by: {CreatedBy}")
+    sheet.set("A" + str(Row + 2), f"BoM created for file: {doc.FileName}")
+    sheet.setAlignment(f"A{str(Row)}:C{str(Row + 2)}", "left", "keep")
+
+    # Recompute the document
+    doc.recompute(None, True, True)
     return
 
 
 # Functions to count  document objects in a list based on the itemnumber of their parent.
 def ObjectCounter_ItemNumber(
-    DocObject, ItemNumber: str, ObjectList: list, ItemNumberList: list, ObjectBased: bool = True
+    DocObject,
+    ItemNumber: str,
+    ObjectList: list,
+    ItemNumberList: list,
+    ObjectBased: bool = True,
 ) -> int:
     """_summary_
 
@@ -181,7 +269,12 @@ def ListContainsCheck(List: list, Item1, Item2, Item3) -> bool:
 
 
 # Functions to count  document objects in a list. Can be object based or List row based comparison
-def ObjectCounter(DocObject=None, RowItem: dict = None, mainList: list = None, ObjectNameBased: bool = True) -> int:
+def ObjectCounter(
+    DocObject=None,
+    RowItem: dict = None,
+    mainList: list = None,
+    ObjectNameBased: bool = True,
+) -> int:
     """_summary_
     Use this function only two ways:\n
     1. Enter an DocumentObject (DocObject) and a BoM list with a tuples as items (mainList). RowItem must be None.
@@ -229,7 +322,10 @@ def ObjectCounter(DocObject=None, RowItem: dict = None, mainList: list = None, O
 
             # If the object name and type of the object in the list are equal to that of the DocObject,
             # increase the counter by one
-            if RowItem[ObjectNameValue] == ObjectName and RowItem["DocumentObject"].TypeId == ObjectType:
+            if (
+                RowItem[ObjectNameValue] == ObjectName
+                and RowItem["DocumentObject"].TypeId == ObjectType
+            ):
                 counter = counter + 1
 
     # Return the counter
@@ -280,13 +376,17 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
             # If the previous itemnumber is shorter than the current itemnumber,
             # you have the first item in a subassembly.
             # Add ".1" and you have the itemnumber for this first item. (e.g. 1.1 -> 1.1.1)
-            if len(ItemNumberPreviousOriginal.split(".")) < len(ItemNumberOriginal.split(".")):
+            if len(ItemNumberPreviousOriginal.split(".")) < len(
+                ItemNumberOriginal.split(".")
+            ):
                 # Define the new itemnumber.
                 NewItemNumber = str(ItemNumberPrevious) + ".1"
 
             # If the previous itemnumber is as long as the current itemnumber,
             # you have an item of a subassembly that is not the first item.
-            if len(ItemNumberPreviousOriginal.split(".")) == len(ItemNumberOriginal.split(".")):
+            if len(ItemNumberPreviousOriginal.split(".")) == len(
+                ItemNumberOriginal.split(".")
+            ):
                 # If the current item is a first level item, increase the number by 1.
                 if len(ItemNumberOriginal.split(".")) == 1:
                     NewItemNumber = str(int(ItemNumberPrevious) + 1)
@@ -300,7 +400,9 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
                     NewItemNumber = Part1 + "." + Part2
 
             # If the previous itemnumber is longer than the current itemnumber, you have a new subassembly.
-            if len(ItemNumberPreviousOriginal.split(".")) > len(ItemNumberOriginal.split(".")):
+            if len(ItemNumberPreviousOriginal.split(".")) > len(
+                ItemNumberOriginal.split(".")
+            ):
                 # if the new subassembly is at the first level, split the previous itemnumber in two
                 # to get the first digit and increase this by one.
                 if len(ItemNumberOriginal.split(".")) == 1:
@@ -373,18 +475,33 @@ def CheckAssemblyType(DocObject):
         except Exception:
             pass
     # If it is not an A2plus assembly, check for the other type of assemblies
-    if RootObjects[0].Name == "Parts" and RootObjects[0].TypeId == "App::DocumentObjectGroup":
+    if (
+        RootObjects[0].Name == "Parts"
+        and RootObjects[0].TypeId == "App::DocumentObjectGroup"
+    ):
         if RootObjects[1].Name == "Assembly" and RootObjects[1].TypeId == "App::Part":
             return "Assembly4"
     elif RootObjects[0].Name == "Assembly" and RootObjects[0].TypeId == "App::Part":
-        if RootObjects[0].Group[0].Name == "Joints" and RootObjects[0].Group[0].TypeId == "App::DocumentObjectGroup":
+        if (
+            RootObjects[0].Group[0].Name == "Joints"
+            and RootObjects[0].Group[0].TypeId == "App::DocumentObjectGroup"
+        ):
             return "Internal"
-    elif RootObjects[0].Name == "Assembly" and RootObjects[0].TypeId == "Part::FeaturePython":
-        if RootObjects[0].Group[0].Name == "Constraints" and RootObjects[0].Group[0].TypeId == "App::FeaturePython":
+    elif (
+        RootObjects[0].Name == "Assembly"
+        and RootObjects[0].TypeId == "Part::FeaturePython"
+    ):
+        if (
+            RootObjects[0].Group[0].Name == "Constraints"
+            and RootObjects[0].Group[0].TypeId == "App::FeaturePython"
+        ):
             return "Assembly3"
     else:
         for RootObject in RootObjects:
-            if RootObject.TypeId == "App::Link" or RootObject.TypeId == "App::LinkGroup":
+            if (
+                RootObject.TypeId == "App::Link"
+                or RootObject.TypeId == "App::LinkGroup"
+            ):
                 return "AppLink"
             if RootObject.TypeId == "App::Part":
                 return "AppPart"
