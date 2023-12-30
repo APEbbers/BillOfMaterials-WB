@@ -23,12 +23,14 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
+from datetime import datetime
+import os
 
 
 # Function to create BoM. standard, a raw BoM will befrom the main list.
 # If a modified list is created, this function can be used to write it the a spreadsheet.
 # You can add a dict for the headers of this list
-def createBoMSpreadsheet(mainList: list, Headers: dict = None):
+def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = False):
     """_summary_
 
     Args:
@@ -48,8 +50,17 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None):
         print("No list available!!")
         return
 
-    # Get the spreadsheet.
+    # Get the active document
+    doc = App.ActiveDocument
+
+    # Get or create the spreadsheet.
     sheet = App.ActiveDocument.getObject("BoM")
+    if sheet is not None:
+        for i in range(1, 16384):  # 16384 is the maximum rows of the spreadsheet module
+            doc.BoM.splitCell("A" + str(i))
+        sheet.clearAll()
+    if sheet is None:
+        sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
 
     # Define CopyMainList and Header
     CopyMainList = []
@@ -115,6 +126,70 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None):
     if Row > 1:
         sheet.setAlignment("A1:E" + str(Row), "center", "keep")
 
+    # Define NoRows. This is needed for the next functions
+    NoRows = 0
+    # If a summary is requested, create a summary
+    if Summary is True:
+        # Define the counters
+        AssemblyCounter = 0
+        PartCounter = 0
+        TotalCounter = 0
+
+        # Go through the list. If it is an assembly, increase the AssemblyCounter by 1.
+        # If it is an Part, increase the PartCounter by 1. Always increase the TotalCounter.
+        for i in range(len(CopyMainList)):
+            rowList = CopyMainList[i]
+
+            if rowList["Type"] == "Assembly":
+                AssemblyCounter = AssemblyCounter + 1
+                TotalCounter = TotalCounter + 1
+            if rowList["Type"] == "Part":
+                PartCounter = PartCounter + 1
+                TotalCounter = TotalCounter + 1
+
+        # Define the row above which extra rows will be added.
+        RowNumber = "1"
+        # Set the number of rows to be added.
+        NoRows = 4
+        # Insert the rows and merge for each row the first three cells
+        for i in range(NoRows):
+            sheet.insertRows(RowNumber, 1)
+            sheet.mergeCells("A1:C1")
+
+        # Fill in the cells
+        sheet.set("A1", "Number of parts:")
+        sheet.set("A2", "Number of assemblies:")
+        sheet.set("A3", "The total number of items is:")
+        sheet.set("D1", str(PartCounter))
+        sheet.set("D2", str(AssemblyCounter))
+        sheet.set("D3", str(TotalCounter))
+
+        # Align the cells
+        sheet.setAlignment("A1:C3", "left", "keep")
+        sheet.setAlignment("D1:D3", "center", "keep")
+
+    # Add the end of the BoM add indentifaction data
+    # Set the row to start from
+    Row = Row + NoRows + 2
+
+    # Merge cells for the next three rows
+    sheet.mergeCells(f"A{str(Row)}:D{str(Row)}")
+    sheet.mergeCells(f"A{str(Row+1)}:D{str(Row+1)}")
+    sheet.mergeCells(f"A{str(Row+2)}:H{str(Row+2)}")
+
+    # Define the created by value. If no document information is available, use the OS account info.
+    CreatedBy = doc.LastModifiedBy
+    if CreatedBy == "":
+        CreatedBy = os.getlogin()
+
+    # Fill in the cells with Date, time, created by and for which file.
+    sheet.set("A" + str(Row), f"BoM created at: {datetime.today().strftime('%Y-%m-%d %H:%M:%S')}")
+    sheet.set("A" + str(Row + 1), f"BoM created by: {CreatedBy}")
+    sheet.set("A" + str(Row + 2), f"BoM created for file: {doc.FileName}")
+    sheet.setAlignment(f"A{str(Row)}:C{str(Row + 2)}", "left", "keep")
+
+    # Recompute the document
+    doc.recompute(None, True, True)
     return
 
 

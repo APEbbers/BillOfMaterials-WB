@@ -663,7 +663,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList)
+            General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
         return
 
     # Function to create a BoM list for a parts only BoM.
@@ -771,34 +771,14 @@ class BomFunctions:
             self.GetTreeObjects()
 
             if len(self.mainList) > 0:
-                sheet = App.ActiveDocument.getObject("BoM")
-                # check if the result is not empty
-                if sheet is not None:
-                    # clear the sspreadsheet
-                    sheet.clearAll()
-
-                    # Proceed with the macro.
-                    if command == "Total":
-                        self.CreateTotalBoM(CreateSpreadSheet=True, IncludeBodies=False, IndentNumbering=True, Level=0)
-                    if command == "Raw":
-                        General_BOM.createBoMSpreadsheet(self.mainList)
-                    if command == "PartsOnly":
-                        self.PartsOnly(CreateSpreadSheet=True, ObjectNameBased=False)
-                    if command == "Summarized":
-                        self.SummarizedBoM(IncludeBodies=False, CreateSpreadSheet=True, ObjectNameBased=False)
-                # if the result is empty, create a new spreadsheet
-                if sheet is None:
-                    sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
-
-                    # Proceed with the macro.
-                    if command == "Total":
-                        self.CreateTotalBoM(CreateSpreadSheet=True, IncludeBodies=True, IndentNumbering=True, Level=0)
-                    if command == "Raw":
-                        General_BOM.createBoMSpreadsheet(self.mainList)
-                    if command == "PartsOnly":
-                        self.PartsOnly(CreateSpreadSheet=True, ObjectNameBased=False)
-                    if command == "Summarized":
-                        self.SummarizedBoM(IncludeBodies=False, CreateSpreadSheet=True, ObjectNameBased=False)
+                if command == "Total":
+                    self.CreateTotalBoM(CreateSpreadSheet=True, IncludeBodies=True, IndentNumbering=True, Level=0)
+                if command == "Raw":
+                    General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
+                if command == "PartsOnly":
+                    self.PartsOnly(CreateSpreadSheet=True, IncludeBodies=True, ObjectNameBased=False)
+                if command == "Summarized":
+                    self.SummarizedBoM(IncludeBodies=True, CreateSpreadSheet=True, ObjectNameBased=False)
         except Exception as e:
             raise e
         return
