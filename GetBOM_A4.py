@@ -876,7 +876,13 @@ class BomFunctions:
                         Level=0,
                     )
                 if command == "Raw":
-                    General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText, title="Bill of Materials Workbench", style=1
+                    )
+                    if IncludeBodies is True:
+                        General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
+                    else:
+                        General_BOM.createBoMSpreadsheet(self.mainList)
                 if command == "PartsOnly":
                     IncludeBodies = Standard_Functions.Mbox(
                         text=IncludeBodiesText, title="Bill of Materials Workbench", style=1
