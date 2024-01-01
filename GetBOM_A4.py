@@ -854,7 +854,7 @@ class BomFunctions:
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
-    def Start(self, command=""):
+    def Start(self, command="", Level=0):
         try:
             # Clear the mainList to avoid double data
             self.mainList.clear()
@@ -873,7 +873,7 @@ class BomFunctions:
                         CreateSpreadSheet=True,
                         IncludeBodies=IncludeBodies,
                         IndentNumbering=True,
-                        Level=0,
+                        Level=Level,
                     )
                 if command == "Raw":
                     IncludeBodies = Standard_Functions.Mbox(

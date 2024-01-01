@@ -70,6 +70,7 @@ class BOM_WB(Gui.Workbench):
             "CreateBOM_Total",
             "CreateBOM_PartsOnly",
             "CreateBOM_Summary",
+            "CreateBOM_1stLevel",
         ]
         # creates a new toolbar with your commands
         self.appendToolbar("BOM Commands", self.list)

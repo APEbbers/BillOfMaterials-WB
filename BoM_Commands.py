@@ -167,6 +167,53 @@ class CreateTotalBOM_Class:
         return result
 
 
+class CreateSingleLevelBOM_Class:
+    def GetResources(self):
+        return {
+            "Pixmap": "1stLevel.svg",  # the name of a svg file available in the resources
+            "MenuText": "Create a single level BoM",
+            "ToolTip": "Create a Bill of Materials in a spreadsheet for the first level",
+        }
+
+    def Activated(self):
+        from General_BOM_Functions import CheckAssemblyType
+        import GetBOM_A4
+        import GetBOM_AppLink
+        import GetBOM_AppPart
+        import GetBOM_INTERNAL
+
+        doc = App.ActiveDocument
+        # if CheckAssemblyType(doc) == "A2plus":
+        #     GetBOM_A2Plus.BomFunctions.Start("Total")
+        if CheckAssemblyType(doc) == "Assembly4":
+            GetBOM_A4.BomFunctions.Start(command="Total", Level=1)
+        if CheckAssemblyType(doc) == "AppLink":
+            GetBOM_AppLink.BomFunctions.Start(command="Total", Level=1)
+        if CheckAssemblyType(doc) == "AppPart":
+            GetBOM_AppPart.BomFunctions.Start(command="Total", Level=1)
+        # if CheckAssemblyType(doc) == "Assembly3":
+        #     GetBom_A3.BomFunctions.Start(command="Total", Level=1)
+        if CheckAssemblyType(doc) == "Internal":
+            GetBOM_INTERNAL.BomFunctions.Start(command="Total", Level=1)
+
+        return
+
+    def IsActive(self):
+        """Here you can define if the command must be active or not (greyed) if certain conditions
+        are met or not. This function is optional."""
+        # Set the default state
+        result = False
+        # Get for the active document.
+        ActiveDoc = App.activeDocument()
+        if ActiveDoc is not None:
+            # Check if the document has any pages. If so the result is True and the command is activated.
+            pages = App.ActiveDocument.findObjects("TechDraw::DrawPage")
+            if pages is not None:
+                result = True
+
+        return result
+
+
 class CreateRawBOM_Class:
     def GetResources(self):
         return {
@@ -218,4 +265,5 @@ class CreateRawBOM_Class:
 Gui.addCommand("CreateBOM_PartsOnly", CreatePartsOnlyBOM_Class())
 Gui.addCommand("CreateBOM_Summary", CreateSummarizedBOM_Class())
 Gui.addCommand("CreateBOM_Total", CreateTotalBOM_Class())
+Gui.addCommand("CreateBOM_1stLevel", CreateSingleLevelBOM_Class())
 Gui.addCommand("CreateBOM_Raw", CreateRawBOM_Class())
