@@ -63,9 +63,9 @@ def Mbox(text, title="", style=0, IconType="Information", default="", stringList
 
         reply = msgBox.exec_()
         if reply == QMessageBox.Yes:
-            return "yes"
+            return True
         if reply == QMessageBox.No:
-            return "no"
+            return False
     if style == 20:
         reply = QInputDialog.getText(parent=None, title=title, label=text, text=default)
         if reply[1]:

@@ -427,7 +427,7 @@ def ObjectCounter(
     """_summary_
     Use this function only two ways:\n
     1. Enter an DocumentObject (DocObject) and a BoM list with a tuples as items (mainList). RowItem must be None.
-    2. Enter an RowItem from a BoM List (RowItem), a BoM list with a tuples as items (mainList) and set ObjectNameType to True or False.\n
+    2. Enter an RowItem from a BoM List (RowItem), a BoM list with tuples as items (mainList) and set ObjectNameBased to True or False.\n
        DocObject must be None.\n
 
     Args:

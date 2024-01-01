@@ -61,6 +61,24 @@ class BOM_WB(Gui.Workbench):
         It is executed once in a FreeCAD session followed by the Activated function.
         """
         # -----------------------------------------------------------------------------------------------------
+        import BoM_Commands  # import here all the needed files that create your FreeCAD commands
+
+        # a list of command names created in the line above
+        self.list = [
+            "Separator",
+            "CreateBOM_Raw",
+            "CreateBOM_Total",
+            "CreateBOM_PartsOnly",
+            "CreateBOM_Summary",
+            "CreateBOM_1stLevel",
+        ]
+        # creates a new toolbar with your commands
+        self.appendToolbar("BOM Commands", self.list)
+        self.appendMenu("BOM Commands", self.list)  # creates a new menu
+        # # appends a submenu to an existing menu
+        # self.appendMenu(["An existing Menu", "My submenu"], self.list)
+
+        # -----------------------------------------------------------------------------------------------------
         import BoM_Commands_AppLink  # import here all the needed files that create your FreeCAD commands
 
         # a list of command names created in the line above
@@ -71,11 +89,9 @@ class BOM_WB(Gui.Workbench):
             "CreateBOM_PartsOnly_AppLink",
             "CreateBOM_Summary_AppLink",
         ]
-        # creates a new toolbar with your commands
-        self.appendToolbar("BOM Commands - AppLink", self.list)
-        self.appendMenu("My New Menu", self.list)  # creates a new menu
-        # appends a submenu to an existing menu
-        self.appendMenu(["An existing Menu", "My submenu"], self.list)
+        # # creates a new toolbar with your commands
+        # self.appendToolbar("BOM Commands - AppLink", self.list)
+        self.appendMenu("BOM Commands", self.list)  # creates a new menu
 
         # -----------------------------------------------------------------------------------------------------
         import BoM_Commands_AppParts  # import here all the needed files that create your FreeCAD commands
@@ -88,11 +104,9 @@ class BOM_WB(Gui.Workbench):
             "CreateBOM_PartsOnly_AppPart",
             "CreateBOM_Summary_AppPart",
         ]
-        # creates a new toolbar with your commands
-        self.appendToolbar("BOM Commands - AppPart", self.list)
-        self.appendMenu("My New Menu", self.list)  # creates a new menu
-        # appends a submenu to an existing menu
-        self.appendMenu(["An existing Menu", "My submenu"], self.list)
+        # # creates a new toolbar with your commands
+        # self.appendToolbar("BOM Commands - AppPart", self.list)
+        self.appendMenu("BOM Commands", self.list)  # creates a new menu
 
         # -----------------------------------------------------------------------------------------------------
         import BoM_Commands_A4
@@ -104,7 +118,9 @@ class BOM_WB(Gui.Workbench):
             "CreateBOM_PartsOnly_Assembly4",
             "CreateBOM_Summary_Assembly4",
         ]
-        self.appendToolbar("BOM Commands - Assembly4", self.list)
+        # # creates a new toolbar with your commands
+        # self.appendToolbar("BOM Commands - Assembly4", self.list)
+        self.appendMenu("BOM Commands", self.list)  # creates a new menu
 
         # -----------------------------------------------------------------------------------------------------
         import BoM_Commands_Internal
@@ -116,7 +132,9 @@ class BOM_WB(Gui.Workbench):
             "CreateBOM_PartsOnly_INTERNAL",
             "CreateBOM_Summary_INTERNAL",
         ]
-        self.appendToolbar("BOM Commands - INTERNAL", self.list)
+        # # creates a new toolbar with your commands
+        # self.appendToolbar("BOM Commands - INTERNAL", self.list)
+        self.appendMenu("BOM Commands", self.list)  # creates a new menu
 
     def Activated(self):
         """This function is executed whenever the workbench is activated"""

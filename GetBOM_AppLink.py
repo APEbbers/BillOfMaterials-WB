@@ -20,7 +20,6 @@
 # *   USA                                                                   *
 # *                                                                         *
 # ***************************************************************************/
-
 import FreeCAD as App
 import General_BOM_Functions as General_BOM
 import Standard_Functions_BOM_WB as Standard_Functions
@@ -306,6 +305,14 @@ class BomFunctions:
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
 
+        # Get the deepest level if Level is set to zero.
+        LevelEnabled = True
+        if Level == 0:
+            for i in range(len(BOMList)):
+                if len(BOMList[i]["ItemNumber"].split(".")) > Level:
+                    Level = len(BOMList[i]["ItemNumber"].split(".")) + 1
+            LevelEnabled = False
+
         # Create an extra temporary list
         TempTemporaryList = []
         # Go through the curent temporary list
@@ -347,7 +354,7 @@ class BomFunctions:
             if flag is True:
                 TempTemporaryList.append(ItemObject)
 
-            # The for statement stops at the second list item, so add the the last item when the statement reaches its end.
+            # The for statement stops at the second last list item, so add the the last item when the statement reaches its end.
             if i == len(BOMList) - 1:
                 # check if the last item is not deeper than level and add it.
                 if (
@@ -357,7 +364,7 @@ class BomFunctions:
                     TempTemporaryList.append(ItemObjectNext)
 
         # if Level is more than zero, remove all rows with itemnumber levels higher than Level
-        if Level > 0:
+        if Level > 0 and LevelEnabled is True:
             # Create an extra temporary list
             TempTempTemporaryList = []
             # if the flag is true, append the itemobject to the second temporary list.
@@ -379,6 +386,22 @@ class BomFunctions:
 
         # Replace the temporary list with the second temporary list.
         BOMList = TempTemporaryList
+
+        return BOMList
+
+    @classmethod
+    def ReplaceLinkedParts(self, BOMList: list) -> list:
+        # Go through the BOMList list
+        for i in range(len(BOMList)):
+            # Define the property objects
+            ItemObject = BOMList[i]
+
+            try:
+                ParentObject = ItemObject["DocumentObject"].getLinkedObject()
+                if ParentObject.TypeId != ItemObject["DocumentObject"].TypeId:
+                    ItemObject["DocumentObject"] = ParentObject
+            except Exception:
+                ItemObject["DocumentObject"] = ItemObject["DocumentObject"]
 
         return BOMList
 
@@ -553,9 +576,9 @@ class BomFunctions:
         if IncludeBodies is False:
             TemporaryList = self.FilterBodies(BOMList=TemporaryList, Level=Level)
 
-        # Correct the itemnumbers if indentation is wanted.
-        if IndentNumbering is True:
-            TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
+        # # Correct the itemnumbers if indentation is wanted.
+        # if IndentNumbering is True:
+        #     TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:
@@ -585,6 +608,10 @@ class BomFunctions:
         # replace the App::Links with the bodies they contain. Including their quantity.
         if IncludeBodies is False:
             CopyMainList = self.FilterBodies(BOMList=CopyMainList)
+
+        # replace linked items for the parts which they are linked from.
+        # This way, the filtering can be done including filtering on TypeId. Not just labels and/or names.
+        CopyMainList = self.ReplaceLinkedParts(BOMList=CopyMainList)
 
         # Create a temporary list
         TemporaryList = []
@@ -772,7 +799,7 @@ class BomFunctions:
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
-    def Start(self, command=""):
+    def Start(self, command="", Level=0):
         try:
             # Clear the mainList to avoid double data
             self.mainList.clear()
@@ -780,23 +807,53 @@ class BomFunctions:
             self.GetTreeObjects()
 
             if len(self.mainList) > 0:
+                IncludeBodiesText = "Do you want to include bodies?"
+
                 if command == "Total":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText,
+                        title="Bill of Materials Workbench",
+                        style=1,
+                    )
+
                     self.CreateTotalBoM(
                         CreateSpreadSheet=True,
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                         IndentNumbering=True,
-                        Level=0,
+                        Level=Level,
                     )
                 if command == "Raw":
-                    General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText,
+                        title="Bill of Materials Workbench",
+                        style=1,
+                    )
+                    if IncludeBodies is True:
+                        General_BOM.createBoMSpreadsheet(
+                            self.FilterBodies(self.mainList)
+                        )
+                    else:
+                        General_BOM.createBoMSpreadsheet(self.mainList)
                 if command == "PartsOnly":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText,
+                        title="Bill of Materials Workbench",
+                        style=1,
+                    )
+
                     self.PartsOnly(
                         CreateSpreadSheet=True,
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                     )
                 if command == "Summarized":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText,
+                        title="Bill of Materials Workbench",
+                        style=1,
+                    )
+
                     self.SummarizedBoM(
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                         CreateSpreadSheet=True,
                     )
         except Exception as e:

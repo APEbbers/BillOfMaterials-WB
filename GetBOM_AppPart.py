@@ -597,7 +597,7 @@ class BomFunctions:
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
-    def Start(self, command=""):
+    def Start(self, command="", Level=0):
         try:
             # Clear the mainList to avoid double data
             self.mainList.clear()
@@ -609,10 +609,10 @@ class BomFunctions:
                     self.CreateTotalBoM(
                         CreateSpreadSheet=True,
                         IndentNumbering=True,
-                        Level=0,
+                        Level=Level,
                     )
                 if command == "Raw":
-                    General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
+                    General_BOM.createBoMSpreadsheet(self.mainList)
                 if command == "PartsOnly":
                     self.PartsOnly(
                         CreateSpreadSheet=True,

@@ -22,7 +22,7 @@
 # ***************************************************************************/
 
 import FreeCAD as App
-import Standard_Functions_BOM_WB as Standard_Function
+import Standard_Functions_BOM_WB as Standard_Functions
 import General_BOM_Functions as General_BOM
 from Standard_Functions_BOM_WB import Print
 
@@ -859,7 +859,7 @@ class BomFunctions:
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
-    def Start(self, command=""):
+    def Start(self, command="", Level=0):
         try:
             # Clear the mainList to avoid double data
             self.mainList.clear()
@@ -867,24 +867,54 @@ class BomFunctions:
             self.GetTreeObjects()
 
             if len(self.mainList) > 0:
+                IncludeBodiesText = "Do you want to include bodies?"
+
                 if command == "Total":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText,
+                        title="Bill of Materials Workbench",
+                        style=1,
+                    )
+
                     self.CreateTotalBoM(
                         CreateSpreadSheet=True,
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                         IndentNumbering=True,
-                        Level=0,
+                        Level=Level,
                     )
                 if command == "Raw":
-                    General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText,
+                        title="Bill of Materials Workbench",
+                        style=1,
+                    )
+                    if IncludeBodies is True:
+                        General_BOM.createBoMSpreadsheet(
+                            self.FilterBodies(self.mainList)
+                        )
+                    else:
+                        General_BOM.createBoMSpreadsheet(self.mainList)
                 if command == "PartsOnly":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText,
+                        title="Bill of Materials Workbench",
+                        style=1,
+                    )
+
                     self.PartsOnly(
                         CreateSpreadSheet=True,
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                         ObjectNameBased=False,
                     )
                 if command == "Summarized":
+                    IncludeBodies = Standard_Functions.Mbox(
+                        text=IncludeBodiesText,
+                        title="Bill of Materials Workbench",
+                        style=1,
+                    )
+
                     self.SummarizedBoM(
-                        IncludeBodies=True,
+                        IncludeBodies=IncludeBodies,
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
