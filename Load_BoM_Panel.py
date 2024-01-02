@@ -51,25 +51,64 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB, "BoM_Panel.ui"))
 
         # This will create a connection between the pushbutton "CreateBOM" and def "on_CreateBOM_clicked"
-        self.form.CreateBOM.connect(self.form.CreateBOM, SIGNAL("pressed()"), self.on_CreateBOM_clicked)
+        self.form.CreateBOM.connect(
+            self.form.CreateBOM, SIGNAL("pressed()"), self.on_CreateBOM_clicked
+        )
 
         # add icons to the assemblytype checkbox
         icon_A2Plus = QIcon()
-        icon_A2Plus.addFile(os.path.join(PATH_TB_ICONS, "A2p_workbench.svg"), QSize(), QIcon.Normal, QIcon.Off)
+        icon_A2Plus.addFile(
+            os.path.join(PATH_TB_ICONS, "A2p_workbench.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         icon_AppLink = QIcon()
-        icon_AppLink.addFile(os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off)
+        icon_AppLink.addFile(
+            os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off
+        )
         icon_Asm3 = QIcon()
-        icon_Asm3.addFile(os.path.join(PATH_TB_ICONS, "Assembly3_workbench_icon.svg"), QSize(), QIcon.Normal, QIcon.Off)
+        icon_Asm3.addFile(
+            os.path.join(PATH_TB_ICONS, "Assembly3_workbench_icon.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         icon_Asm4 = QIcon()
-        icon_Asm4.addFile(os.path.join(PATH_TB_ICONS, "Assembly4_workbench_icon.svg"), QSize(), QIcon.Normal, QIcon.Off)
+        icon_Asm4.addFile(
+            os.path.join(PATH_TB_ICONS, "Assembly4_workbench_icon.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         icon_Asm = QIcon()
-        icon_Asm.addFile(os.path.join(PATH_TB_ICONS, "Geoassembly.svg"), QSize(), QIcon.Normal, QIcon.Off)
+        icon_Asm.addFile(
+            os.path.join(PATH_TB_ICONS, "Geoassembly.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         icon_AppPart = QIcon()
-        icon_AppPart.addFile(os.path.join(PATH_TB_ICONS, "Geofeaturegroup.svg"), QSize(), QIcon.Normal, QIcon.Off)
+        icon_AppPart.addFile(
+            os.path.join(PATH_TB_ICONS, "Geofeaturegroup.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         icon_Arch = QIcon()
-        icon_Arch.addFile(os.path.join(PATH_TB_ICONS, "ArchWorkbench.svg"), QSize(), QIcon.Normal, QIcon.Off)
+        icon_Arch.addFile(
+            os.path.join(PATH_TB_ICONS, "ArchWorkbench.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         icon_MultiBody = QIcon()
-        icon_MultiBody.addFile(os.path.join(PATH_TB_ICONS, "Part_Transformed.svg"), QSize(), QIcon.Normal, QIcon.Off)
+        icon_MultiBody.addFile(
+            os.path.join(PATH_TB_ICONS, "Part_Transformed.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         self.form.AssemblyType.setItemIcon(0, icon_A2Plus)
         self.form.AssemblyType.setItemIcon(1, icon_Asm)
         self.form.AssemblyType.setItemIcon(2, icon_Asm3)
