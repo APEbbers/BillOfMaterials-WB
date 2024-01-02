@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>Resources/Icons/BoM.svg</file>
         <file>Resources/Icons/1stLevel.svg</file>
         <file>Resources/Icons/Parts.svg</file>
         <file>Resources/Icons/Raw.svg</file>
