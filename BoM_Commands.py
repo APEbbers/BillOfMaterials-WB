@@ -24,9 +24,18 @@
 # FreeCAD init script of the Work Features module
 import FreeCAD as App
 import FreeCADGui as Gui
+import os
+from inspect import getsourcefile
 
 
 class CreatePartsOnlyBOM_Class:
+    # get the path of the current python script
+    global PATH_TB_UI
+
+    PATH_TB = file_path = os.path.dirname(getsourcefile(lambda: 0))
+    PATH_TB_RESOURCES = os.path.join(PATH_TB, "Resources").replace("\\", "/")
+    PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI").replace("\\", "/")
+
     def GetResources(self):
         return {
             "Pixmap": "Parts.svg",  # the name of a svg file available in the resources
@@ -261,7 +270,38 @@ class CreateRawBOM_Class:
         return result
 
 
+class LoadPanel_Class:
+    def GetResources(self):
+        return {
+            "Pixmap": "BoM.svg",  # the name of a svg file available in the resources
+            "MenuText": "Create overall BoM",
+            "ToolTip": "Create an Overall Bill of Materials in a spreadsheet",
+        }
+
+    def Activated(self):
+        import Load_BoM_Panel
+
+        Gui.Control.showDialog(Load_BoM_Panel.LoadWidget())
+        return
+
+    def IsActive(self):
+        """Here you can define if the command must be active or not (greyed) if certain conditions
+        are met or not. This function is optional."""
+        # Set the default state
+        result = False
+        # Get for the active document.
+        ActiveDoc = App.activeDocument()
+        if ActiveDoc is not None:
+            # Check if the document has any pages. If so the result is True and the command is activated.
+            pages = App.ActiveDocument.findObjects("TechDraw::DrawPage")
+            if pages is not None:
+                result = True
+
+        return result
+
+
 # Add the commands to the Gui
+Gui.addCommand("CreateBOM_Overall", LoadPanel_Class())
 Gui.addCommand("CreateBOM_PartsOnly", CreatePartsOnlyBOM_Class())
 Gui.addCommand("CreateBOM_Summary", CreateSummarizedBOM_Class())
 Gui.addCommand("CreateBOM_Total", CreateTotalBOM_Class())

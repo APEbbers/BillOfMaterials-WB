@@ -66,6 +66,8 @@ class BOM_WB(Gui.Workbench):
         # a list of command names created in the line above
         self.list = [
             "Separator",
+            "CreateBOM_Overall",
+            "Separator",
             "CreateBOM_Raw",
             "CreateBOM_Total",
             "CreateBOM_PartsOnly",

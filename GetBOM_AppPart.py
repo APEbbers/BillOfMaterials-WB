@@ -597,7 +597,7 @@ class BomFunctions:
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
-    def Start(self, command="", Level=0):
+    def Start(self, command="", Level=0, IncludeBodies=False, IndentNumbering=True):
         try:
             # Clear the mainList to avoid double data
             self.mainList.clear()
@@ -608,7 +608,7 @@ class BomFunctions:
                 if command == "Total":
                     self.CreateTotalBoM(
                         CreateSpreadSheet=True,
-                        IndentNumbering=True,
+                        IndentNumbering=IndentNumbering,
                         Level=Level,
                     )
                 if command == "Raw":

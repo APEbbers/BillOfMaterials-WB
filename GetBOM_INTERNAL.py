@@ -859,7 +859,14 @@ class BomFunctions:
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
-    def Start(self, command="", Level=0):
+    def Start(
+        self,
+        command="",
+        Level=0,
+        IncludeBodies=False,
+        IndentNumbering=True,
+        EnableQuestion=True,
+    ):
         try:
             # Clear the mainList to avoid double data
             self.mainList.clear()
@@ -870,24 +877,25 @@ class BomFunctions:
                 IncludeBodiesText = "Do you want to include bodies?"
 
                 if command == "Total":
-                    IncludeBodies = Standard_Functions.Mbox(
-                        text=IncludeBodiesText,
-                        title="Bill of Materials Workbench",
-                        style=1,
-                    )
-
+                    if EnableQuestion is True:
+                        IncludeBodies = Standard_Functions.Mbox(
+                            text=IncludeBodiesText,
+                            title="Bill of Materials Workbench",
+                            style=1,
+                        )
                     self.CreateTotalBoM(
                         CreateSpreadSheet=True,
                         IncludeBodies=IncludeBodies,
-                        IndentNumbering=True,
+                        IndentNumbering=IndentNumbering,
                         Level=Level,
                     )
                 if command == "Raw":
-                    IncludeBodies = Standard_Functions.Mbox(
-                        text=IncludeBodiesText,
-                        title="Bill of Materials Workbench",
-                        style=1,
-                    )
+                    if EnableQuestion is True:
+                        IncludeBodies = Standard_Functions.Mbox(
+                            text=IncludeBodiesText,
+                            title="Bill of Materials Workbench",
+                            style=1,
+                        )
                     if IncludeBodies is True:
                         General_BOM.createBoMSpreadsheet(
                             self.FilterBodies(self.mainList)
@@ -895,24 +903,25 @@ class BomFunctions:
                     else:
                         General_BOM.createBoMSpreadsheet(self.mainList)
                 if command == "PartsOnly":
-                    IncludeBodies = Standard_Functions.Mbox(
-                        text=IncludeBodiesText,
-                        title="Bill of Materials Workbench",
-                        style=1,
-                    )
-
+                    if EnableQuestion is True:
+                        IncludeBodies = Standard_Functions.Mbox(
+                            text=IncludeBodiesText,
+                            title="Bill of Materials Workbench",
+                            style=1,
+                        )
                     self.PartsOnly(
                         CreateSpreadSheet=True,
                         IncludeBodies=IncludeBodies,
                         ObjectNameBased=False,
                     )
-                if command == "Summarized":
-                    IncludeBodies = Standard_Functions.Mbox(
-                        text=IncludeBodiesText,
-                        title="Bill of Materials Workbench",
-                        style=1,
-                    )
 
+                if command == "Summarized":
+                    if EnableQuestion is True:
+                        IncludeBodies = Standard_Functions.Mbox(
+                            text=IncludeBodiesText,
+                            title="Bill of Materials Workbench",
+                            style=1,
+                        )
                     self.SummarizedBoM(
                         IncludeBodies=IncludeBodies,
                         CreateSpreadSheet=True,
