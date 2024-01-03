@@ -30,12 +30,13 @@ from PySide2.QtWidgets import QDialogButtonBox
 from General_BOM_Functions import CheckAssemblyType
 
 # import graphical created Ui. (With QtDesigner or QtCreator)
-import BoM_Panel_ui
+import BoM_Panel_ui as BoM_Panel_ui
 
 # get the path of the current python script
 PATH_TB = file_path = os.path.dirname(getsourcefile(lambda: 0))
-# Get the paths for the icons
-PATH_TB_ICONS = os.path.join(PATH_TB, "Resources", "Icons")
+# Get the paths for the ,recoures, icons and ui
+PATH_TB_RESOURCES = os.path.join(PATH_TB, "Resources")
+PATH_TB_ICONS = os.path.join(PATH_TB, PATH_TB_RESOURCES, "Icons")
 
 
 # Create a new class with the imported module.class from the graphical created Ui.
@@ -50,10 +51,19 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # this will create a Qt widget from our ui file
         self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB, "BoM_Panel.ui"))
 
-        # This will create a connection between the pushbutton "CreateBOM" and def "on_CreateBOM_clicked"
-        self.form.CreateBOM.connect(
-            self.form.CreateBOM, SIGNAL("pressed()"), self.on_CreateBOM_clicked
+        # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
+        self.form.AssemblyType.currentTextChanged.connect(self.on_AssemblyType_TextChanged)
+
+        # This will create a connection between the pushbutton "currentTextChanged" and def "on_BomType_TextChanged"
+        self.form.BoMType.currentTextChanged.connect(self.on_BomType_TextChanged)
+
+        # This will create a connection between the pushbutton "DectAssemblyType" and def "on_DectAssemblyType_clicked"
+        self.form.DetectAssemblyType.connect(
+            self.form.DetectAssemblyType, SIGNAL("pressed()"), self.on_DetectAssemblyType_clicked
         )
+
+        # This will create a connection between the pushbutton "CreateBOM" and def "on_CreateBOM_clicked"
+        self.form.CreateBOM.connect(self.form.CreateBOM, SIGNAL("pressed()"), self.on_CreateBOM_clicked)
 
         # add icons to the assemblytype checkbox
         icon_A2Plus = QIcon()
@@ -64,9 +74,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             QIcon.Off,
         )
         icon_AppLink = QIcon()
-        icon_AppLink.addFile(
-            os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off
-        )
+        icon_AppLink.addFile(os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off)
         icon_Asm3 = QIcon()
         icon_Asm3.addFile(
             os.path.join(PATH_TB_ICONS, "Assembly3_workbench_icon.svg"),
@@ -137,11 +145,32 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     def getStandardButtons(self):
         return int(QDialogButtonBox.StandardButton.Close)
 
+    # Define Icon. (Not working yet)
+    def getIcon(self):
+        iconPath = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
+        return iconPath
+
     # Code needed when closing the widget.
     def accept(self):
         # close the dialog
         Gui.Control.closeDialog()
         return True
+
+    # Function to detect the assembly type
+    def on_DetectAssemblyType_clicked(self):
+        doc = App.ActiveDocument
+        if CheckAssemblyType(doc) == "A2plus":
+            self.form.AssemblyType.setCurrentText("A2plus")
+        if CheckAssemblyType(doc) == "AppLink":
+            self.form.AssemblyType.setCurrentText("App:LinkGroup")
+        if CheckAssemblyType(doc) == "AppPart":
+            self.form.AssemblyType.setCurrentText("App:Part")
+        if CheckAssemblyType(doc) == "Assembly3":
+            self.form.AssemblyType.setCurrentText("Assembly 3")
+        if CheckAssemblyType(doc) == "Assembly4":
+            self.form.AssemblyType.setCurrentText("Assembly 4")
+        if CheckAssemblyType(doc) == "Internal":
+            self.form.AssemblyType.setCurrentText("Internal assembly")
 
     # A function to execute the BoM scripts based on the input from the controls.
     def on_CreateBOM_clicked(self):
@@ -150,6 +179,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         import GetBOM_AppLink
         import GetBOM_AppPart
         import GetBOM_INTERNAL
+        import GetBOM_A3
 
         # Get the values from the controls
         AssemblyType_Selected = str(self.form.AssemblyType.currentText())
@@ -207,13 +237,33 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         #     IndentNumbering=UseIndent_Checked,
         #     EnableQuestion=False,
         # )
-        # if AssemblyType_Selected == "Assembly 3":
-        #     GetBom_A3.BomFunctions.Start(
-        #     command=Command,
-        #     Level=Level_Value,
-        #     IncludeBodies=IncludeBodies_Checked,
-        #     IndentNumbering=UseIndent_Checked,
-        #     EnableQuestion=False,
-        # )
+        if AssemblyType_Selected == "Assembly 3":
+            GetBOM_A3.BomFunctions.Start(
+                command=Command,
+                Level=Level_Value,
+                IncludeBodies=IncludeBodies_Checked,
+                IndentNumbering=UseIndent_Checked,
+                EnableQuestion=False,
+            )
 
         return
+
+    def on_AssemblyType_TextChanged(self):
+        AssemblyType_Selected = str(self.form.AssemblyType.currentText())
+        if AssemblyType_Selected == "App:Part":
+            self.form.IncludeBodies.setEnabled(False)
+            self.form.label_3.setStyleSheet("""color: #787878;""")
+        else:
+            self.form.IncludeBodies.setEnabled(True)
+            self.form.label_3.setStyleSheet("")
+        self.form.label_3.update()
+
+    def on_BomType_TextChanged(self):
+        TypeOfBoM_Selected = str(self.form.BoMType.currentText())
+        if TypeOfBoM_Selected != "Total BoM":
+            self.form.IndentedNumbering.setEnabled(False)
+            self.form.label_4.setStyleSheet("""color: #787878;""")
+        else:
+            self.form.IndentedNumbering.setEnabled(True)
+            self.form.label_4.setStyleSheet("")
+        self.form.label_4.update()

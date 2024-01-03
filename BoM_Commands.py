@@ -49,6 +49,7 @@ class CreatePartsOnlyBOM_Class:
         import GetBOM_AppLink
         import GetBOM_AppPart
         import GetBOM_INTERNAL
+        import GetBOM_A3
 
         doc = App.ActiveDocument
         # if CheckAssemblyType(doc) == "A2plus":
@@ -59,8 +60,8 @@ class CreatePartsOnlyBOM_Class:
             GetBOM_AppLink.BomFunctions.Start("PartsOnly")
         if CheckAssemblyType(doc) == "AppPart":
             GetBOM_AppPart.BomFunctions.Start("PartsOnly")
-        # if CheckAssemblyType(doc) == "Assembly3":
-        #     GetBom_A3.BomFunctions.Start("PartsOnly")
+        if CheckAssemblyType(doc) == "Assembly3":
+            GetBOM_A3.BomFunctions.Start("PartsOnly")
         if CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("PartsOnly")
 
@@ -96,6 +97,7 @@ class CreateSummarizedBOM_Class:
         import GetBOM_AppLink
         import GetBOM_AppPart
         import GetBOM_INTERNAL
+        import GetBOM_A3
 
         doc = App.ActiveDocument
         # if CheckAssemblyType(doc) == "A2plus":
@@ -106,8 +108,8 @@ class CreateSummarizedBOM_Class:
             GetBOM_AppLink.BomFunctions.Start("Summarized")
         if CheckAssemblyType(doc) == "AppPart":
             GetBOM_AppPart.BomFunctions.Start("Summarized")
-        # if CheckAssemblyType(doc) == "Assembly3":
-        #     GetBom_A3.BomFunctions.Start("Summarized")
+        if CheckAssemblyType(doc) == "Assembly3":
+            GetBOM_A3.BomFunctions.Start("Summarized")
         if CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("Summarized")
 
@@ -143,6 +145,7 @@ class CreateTotalBOM_Class:
         import GetBOM_AppLink
         import GetBOM_AppPart
         import GetBOM_INTERNAL
+        import GetBOM_A3
 
         doc = App.ActiveDocument
         # if CheckAssemblyType(doc) == "A2plus":
@@ -153,8 +156,8 @@ class CreateTotalBOM_Class:
             GetBOM_AppLink.BomFunctions.Start("Total")
         if CheckAssemblyType(doc) == "AppPart":
             GetBOM_AppPart.BomFunctions.Start("Total")
-        # if CheckAssemblyType(doc) == "Assembly3":
-        #     GetBom_A3.BomFunctions.Start("Total")
+        if CheckAssemblyType(doc) == "Assembly3":
+            GetBOM_A3.BomFunctions.Start("Total")
         if CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("Total")
 
@@ -190,6 +193,7 @@ class CreateSingleLevelBOM_Class:
         import GetBOM_AppLink
         import GetBOM_AppPart
         import GetBOM_INTERNAL
+        import GetBOM_A3
 
         doc = App.ActiveDocument
         # if CheckAssemblyType(doc) == "A2plus":
@@ -200,8 +204,8 @@ class CreateSingleLevelBOM_Class:
             GetBOM_AppLink.BomFunctions.Start(command="Total", Level=1)
         if CheckAssemblyType(doc) == "AppPart":
             GetBOM_AppPart.BomFunctions.Start(command="Total", Level=1)
-        # if CheckAssemblyType(doc) == "Assembly3":
-        #     GetBom_A3.BomFunctions.Start(command="Total", Level=1)
+        if CheckAssemblyType(doc) == "Assembly3":
+            GetBOM_A3.BomFunctions.Start(command="Total", Level=1)
         if CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start(command="Total", Level=1)
 
@@ -237,6 +241,7 @@ class CreateRawBOM_Class:
         import GetBOM_AppLink
         import GetBOM_AppPart
         import GetBOM_INTERNAL
+        import GetBOM_A3
 
         doc = App.ActiveDocument
         # if CheckAssemblyType(doc) == "A2plus":
@@ -247,8 +252,8 @@ class CreateRawBOM_Class:
             GetBOM_AppLink.BomFunctions.Start("Raw")
         if CheckAssemblyType(doc) == "AppPart":
             GetBOM_AppPart.BomFunctions.Start("Raw")
-        # if CheckAssemblyType(doc) == "Assembly3":
-        #     GetBom_A3.BomFunctions.Start("Raw")
+        if CheckAssemblyType(doc) == "Assembly3":
+            GetBOM_A3.BomFunctions.Start("Raw")
         if CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("Raw")
 

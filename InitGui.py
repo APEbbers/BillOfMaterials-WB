@@ -35,15 +35,15 @@ global PATH_TB_ICONS
 global PATH_TB_RESOURCES
 global PATH_TB_UI
 
-PATH_TB_ICONS = os.path.join(PATH_TB, "Resources", "Icons").replace("\\", "/")
-PATH_TB_RESOURCES = os.path.join(PATH_TB, "Resources").replace("\\", "/")
-PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI").replace("\\", "/")
+PATH_TB_RESOURCES = os.path.join(PATH_TB, "Resources")
+PATH_TB_ICONS = os.path.join(PATH_TB_RESOURCES, "Icons")
+PATH_TB_UI = os.path.join(PATH_TB_RESOURCES, "UI")
 
 
-class BOM_WB(Gui.Workbench):
+class BillOfMaterialsWB(Gui.Workbench):
     MenuText = "Bill of Materials Workbench"
     ToolTip = "A workbench for creating a Bill of Materials"
-    Icon = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg").replace("\\", "/")
+    Icon = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
 
     Gui.addIconPath(PATH_TB_ICONS)
     # Gui.addPreferencePage(
@@ -125,6 +125,20 @@ class BOM_WB(Gui.Workbench):
         self.appendMenu("BOM Commands", self.list)  # creates a new menu
 
         # -----------------------------------------------------------------------------------------------------
+        import BoM_Commands_A3
+
+        self.list = [
+            "Separator",
+            "CreateBOM_Raw_Assembly3",
+            "CreateBOM_Total_Assembly3",
+            "CreateBOM_PartsOnly_Assembly3",
+            "CreateBOM_Summary_Assembly3",
+        ]
+        # # creates a new toolbar with your commands
+        # self.appendToolbar("BOM Commands - Assembly4", self.list)
+        self.appendMenu("BOM Commands", self.list)  # creates a new menu
+
+        # -----------------------------------------------------------------------------------------------------
         import BoM_Commands_Internal
 
         self.list = [
@@ -153,4 +167,4 @@ class BOM_WB(Gui.Workbench):
         self.appendContextMenu("My commands", self.list)
 
 
-Gui.addWorkbench(BOM_WB())
+Gui.addWorkbench(BillOfMaterialsWB())
