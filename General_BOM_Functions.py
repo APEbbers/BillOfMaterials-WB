@@ -92,9 +92,7 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
         Value = str(Headers[key])
         sheet.set(Cell, Value)
         # set the width based on the headers
-        Standard_Functions.SetColumnWidth_SpreadSheet(
-            sheet=sheet, column=key[:1], cellValue=Value
-        )
+        Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=Value)
 
     # Style the Top row
     sheet.setStyle("A1:H1", "bold")  # \bold|italic|underline'
@@ -115,9 +113,7 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
         Row = i + rowOffset
 
         # Fill the spreadsheet
-        sheet.set(
-            "A" + str(Row), "'" + str(rowList["ItemNumber"])
-        )  # add ' at the beginning to make sure it is text.
+        sheet.set("A" + str(Row), "'" + str(rowList["ItemNumber"]))  # add ' at the beginning to make sure it is text.
         sheet.set("B" + str(Row), str(rowList["Qty"]))
         sheet.set("C" + str(Row), rowList["ObjectLabel"])
         sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
@@ -136,9 +132,7 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
             ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
 
             if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
-                Standard_Functions.SetColumnWidth_SpreadSheet(
-                    sheet=sheet, column=Column, cellValue=Value
-                )
+                Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=Column, cellValue=Value)
 
     # Allign the columns
     if Row > 1:
@@ -295,27 +289,17 @@ def FormatTableColors(
         sheet.setStyle(HeaderRange, HeaderStyle)  # \bold|italic|underline'
     # Set the colors for the header
     sheet.setBackground(HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB))
-    sheet.setForeground(
-        HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB)
-    )  # RGBA
+    sheet.setForeground(HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB))  # RGBA
     # ------------------------------------------------------------------------------------------------------------------
 
     # Format the table -------------------------------------------------------------------------------------------------
     # Get the first column and first row
-    TableRangeColumnStart = Standard_Functions.RemoveNumbersFromString(
-        TableRange.split(":")[0]
-    )
-    TableRangeRowStart = int(
-        Standard_Functions.RemoveLettersFromString(TableRange.split(":")[0])
-    )
+    TableRangeColumnStart = Standard_Functions.RemoveNumbersFromString(TableRange.split(":")[0])
+    TableRangeRowStart = int(Standard_Functions.RemoveLettersFromString(TableRange.split(":")[0]))
 
     # Get the last column and last row
-    TableRangeColumnEnd = Standard_Functions.RemoveNumbersFromString(
-        TableRange.split(":")[1]
-    )
-    TableRangeRowEnd = int(
-        Standard_Functions.RemoveLettersFromString(TableRange.split(":")[1])
-    )
+    TableRangeColumnEnd = Standard_Functions.RemoveNumbersFromString(TableRange.split(":")[1])
+    TableRangeRowEnd = int(Standard_Functions.RemoveLettersFromString(TableRange.split(":")[1]))
 
     # Calculate the delta between the start and end of the table in vertical direction (Rows).
     DeltaRange = TableRangeRowEnd - TableRangeRowStart + 1
@@ -324,25 +308,21 @@ def FormatTableColors(
         # Correct the position
         j = i - 1
         # Define the first row
-        FirstRow = f"{TableRangeColumnStart}{str(j+TableRangeRowStart)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart)}"
+        FirstRow = (
+            f"{TableRangeColumnStart}{str(j+TableRangeRowStart)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart)}"
+        )
         # Define the second row
-        SecondRow = f"{TableRangeColumnStart}{str(j+TableRangeRowStart+1)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart+1)}"
+        SecondRow = (
+            f"{TableRangeColumnStart}{str(j+TableRangeRowStart+1)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart+1)}"
+        )
 
         # if the first and second rows are within the range, set the colors
         if i <= DeltaRange:
-            sheet.setBackground(
-                FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB)
-            )
-            sheet.setForeground(
-                FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable)
-            )
+            sheet.setBackground(FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB))
+            sheet.setForeground(FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable))
         if i + 1 <= DeltaRange:
-            sheet.setBackground(
-                SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB)
-            )
-            sheet.setForeground(
-                SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable)
-            )
+            sheet.setBackground(SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB))
+            sheet.setForeground(SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable))
 
         # Set the font style for the table
         if TableStyle != "":
@@ -471,10 +451,7 @@ def ObjectCounter(
 
             # If the object name and type of the object in the list are equal to that of the DocObject,
             # increase the counter by one
-            if (
-                RowItem[ObjectNameValue] == ObjectName
-                and RowItem["DocumentObject"].TypeId == ObjectType
-            ):
+            if RowItem[ObjectNameValue] == ObjectName and RowItem["DocumentObject"].TypeId == ObjectType:
                 counter = counter + 1
 
     # Return the counter
@@ -525,17 +502,13 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
             # If the previous itemnumber is shorter than the current itemnumber,
             # you have the first item in a subassembly.
             # Add ".1" and you have the itemnumber for this first item. (e.g. 1.1 -> 1.1.1)
-            if len(ItemNumberPreviousOriginal.split(".")) < len(
-                ItemNumberOriginal.split(".")
-            ):
+            if len(ItemNumberPreviousOriginal.split(".")) < len(ItemNumberOriginal.split(".")):
                 # Define the new itemnumber.
                 NewItemNumber = str(ItemNumberPrevious) + ".1"
 
             # If the previous itemnumber is as long as the current itemnumber,
             # you have an item of a subassembly that is not the first item.
-            if len(ItemNumberPreviousOriginal.split(".")) == len(
-                ItemNumberOriginal.split(".")
-            ):
+            if len(ItemNumberPreviousOriginal.split(".")) == len(ItemNumberOriginal.split(".")):
                 # If the current item is a first level item, increase the number by 1.
                 if len(ItemNumberOriginal.split(".")) == 1:
                     NewItemNumber = str(int(ItemNumberPrevious) + 1)
@@ -549,9 +522,7 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
                     NewItemNumber = Part1 + "." + Part2
 
             # If the previous itemnumber is longer than the current itemnumber, you have a new subassembly.
-            if len(ItemNumberPreviousOriginal.split(".")) > len(
-                ItemNumberOriginal.split(".")
-            ):
+            if len(ItemNumberPreviousOriginal.split(".")) > len(ItemNumberOriginal.split(".")):
                 # if the new subassembly is at the first level, split the previous itemnumber in two
                 # to get the first digit and increase this by one.
                 if len(ItemNumberOriginal.split(".")) == 1:
@@ -596,7 +567,7 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
     # If in debug mode, print the resulting list of numbers
     if DebugMode is True:
         for i in range(len(TemporaryList)):
-            print(TemporaryList[i]["ItemNumber"])
+            Standard_Functions.Print(TemporaryList[i]["ItemNumber"], "Log")
 
     # Return the result.
     return TemporaryList
@@ -617,41 +588,42 @@ def CheckAssemblyType(DocObject):
 
     # Go through the root objects. If there is an object type "a2pPart", this is an A2plus assembly.
     # If not, continue.
+    # In the A2plus WB, you have to go through the Objects instead of the RootObjects
     for Object in DocObject.Objects:
         try:
             if Object.objectType == "a2pPart":
                 return "A2plus"
         except Exception:
             pass
-    # If it is not an A2plus assembly, check for the other type of assemblies
-    if (
-        RootObjects[0].Name == "Parts"
-        and RootObjects[0].TypeId == "App::DocumentObjectGroup"
-    ):
-        if RootObjects[1].Name == "Assembly" and RootObjects[1].TypeId == "App::Part":
-            return "Assembly4"
-    elif RootObjects[0].Name == "Assembly" and RootObjects[0].TypeId == "App::Part":
-        if (
-            RootObjects[0].Group[0].Name == "Joints"
-            and RootObjects[0].Group[0].TypeId == "App::DocumentObjectGroup"
-        ):
-            return "Internal"
-    elif (
-        RootObjects[0].Name == "Assembly"
-        and RootObjects[0].TypeId == "Part::FeaturePython"
-    ):
-        if (
-            RootObjects[0].Group[0].Name == "Constraints"
-            and RootObjects[0].Group[0].TypeId == "App::FeaturePython"
-        ):
-            return "Assembly3"
-    else:
-        for RootObject in RootObjects:
-            if (
-                RootObject.TypeId == "App::Link"
-                or RootObject.TypeId == "App::LinkGroup"
-            ):
+
+    # In the other workbenches go through the RootObjects
+    for Object in RootObjects:
+        try:
+            if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
+                return "Assembly4"
+        except Exception:
+            pass
+
+        try:
+            if Object.SolverType == "SolveSpace":
+                return "Assembly3"
+        except Exception:
+            pass
+
+        try:
+            if Object.Type == "Assembly" and Object.TypeId == "App::Part":
+                return "Internal"
+        except Exception:
+            pass
+
+        try:
+            if Object.TypeId == "App::Link" and Object.TypeId == "App::LinkGroup":
                 return "AppLink"
-            if RootObject.TypeId == "App::Part":
+        except Exception:
+            pass
+
+        try:
+            if Object.Type == "" and Object.TypeId == "App::Part":
                 return "AppPart"
-        return "None"
+        except Exception:
+            pass

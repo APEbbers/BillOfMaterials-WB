@@ -180,6 +180,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         import GetBOM_AppPart
         import GetBOM_INTERNAL
         import GetBOM_A3
+        import GetBOM_A2plus
 
         # Get the values from the controls
         AssemblyType_Selected = str(self.form.AssemblyType.currentText())
@@ -229,14 +230,14 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
             )
-        # if AssemblyType_Selected == "A2plus":
-        #     GetBOM_A2Plus.BomFunctions.Start(
-        #     command=Command,
-        #     Level=Level_Value,
-        #     IncludeBodies=IncludeBodies_Checked,
-        #     IndentNumbering=UseIndent_Checked,
-        #     EnableQuestion=False,
-        # )
+        if AssemblyType_Selected == "A2plus":
+            GetBOM_A2plus.BomFunctions.Start(
+                command=Command,
+                Level=Level_Value,
+                IncludeBodies=IncludeBodies_Checked,
+                IndentNumbering=UseIndent_Checked,
+                # EnableQuestion=False,
+            )
         if AssemblyType_Selected == "Assembly 3":
             GetBOM_A3.BomFunctions.Start(
                 command=Command,

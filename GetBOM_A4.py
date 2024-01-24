@@ -57,7 +57,7 @@ class BomFunctions:
         for Part in PartsGroup:
             PartList.append(Part)
 
-        # Get items outside the Assebly group
+        # Get items outside the parts
         for RootObject in RootObjects:
             if RootObject.Name != "Parts":
                 if self.AllowedObjectType(RootObject.TypeId) is True:
@@ -77,7 +77,19 @@ class BomFunctions:
             ParentNumber="",
             Parts=PartList,
         )
+        return
 
+    @classmethod
+    def FindAssemblyInGroups(self, Group, docObjects: list):
+        for GroupObject in Group.Group:
+            try:
+                if GroupObject.AssemblyType == "Part::Link" and GroupObject.Type == "Assembly":
+                    docObjects.append(GroupObject)
+                    break
+            except Exception:
+                pass
+            if GroupObject.TypeId == "App::DocumentObjectGroup":
+                self.FindAssemblyInGroups(GroupObject, docObjects)
         return
 
     # Function to compare an object type with supported object types.
