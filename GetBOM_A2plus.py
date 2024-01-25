@@ -66,7 +66,11 @@ class BomFunctions:
 
         # Go Through all objects
         self.GoThrough_Objects(
-            docObjects=docObjects, ParentDocument=doc, sheet=sheet, ItemNumber=ItemNumber, ParentNumber=""
+            docObjects=docObjects,
+            ParentDocument=doc,
+            sheet=sheet,
+            ItemNumber=ItemNumber,
+            ParentNumber="",
         )
 
         # Activate the document which was active when this command started.
@@ -105,7 +109,9 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, ParentDocument, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(
+        self, ParentDocument, docObjects, sheet, ItemNumber, ParentNumber: str = ""
+    ) -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -159,7 +165,10 @@ class BomFunctions:
                     # If the path starts with ".", it is in the same folder as this document.
                     # Combine the path of this document with the path of the subobject.
                     if FullPath.startswith("."):
-                        FullPath = os.path.join(os.path.dirname(ParentDocument.FileName), os.path.basename(FullPath))
+                        FullPath = os.path.join(
+                            os.path.dirname(ParentDocument.FileName),
+                            os.path.basename(FullPath),
+                        )
                     # Open the sub object. Open it hidden
                     ObjectDocument = App.openDocument(FullPath, True)
                     # Go through the objects of this sub objects
@@ -185,7 +194,12 @@ class BomFunctions:
     # Sub function of GoThrough_Objects.
     @classmethod
     def GoThrough_ChildObjects(
-        self, ParentDocument, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""
+        self,
+        ParentDocument,
+        ChilddocObjects,
+        sheet,
+        ChildItemNumber,
+        ParentNumber: str = "",
     ) -> True:
         """
         Args:
@@ -234,7 +248,10 @@ class BomFunctions:
                     # If the path starts with ".", it is in the same folder as this document.
                     # Combine the path of this document with the path of the subobject.
                     if FullPath.startswith("."):
-                        FullPath = os.path.join(os.path.dirname(ParentDocument.FileName), os.path.basename(FullPath))
+                        FullPath = os.path.join(
+                            os.path.dirname(ParentDocument.FileName),
+                            os.path.basename(FullPath),
+                        )
                     # Open the sub object. Open it hidden
                     childObjectDocument = App.openDocument(FullPath, True)
                     # Go through the objects of this sub objects
@@ -266,7 +283,10 @@ class BomFunctions:
         for i in range(len(CopyMainList)):
             path = CopyMainList[i]["DocumentObject"].sourceFile
             Label = CopyMainList[i]["ObjectLabel"]
-            if Label.rsplit("_", 1)[1].isnumeric() and len(Label.rsplit("_", 1)[1]) == 3:
+            if (
+                Label.rsplit("_", 1)[1].isnumeric()
+                and len(Label.rsplit("_", 1)[1]) == 3
+            ):
                 Label = Label.rsplit("_", 1)[0]
 
             ShadowItem = {
@@ -459,7 +479,9 @@ class BomFunctions:
     # The function CreateBoM can be used to write it the an spreadsheet.
     # The value for 'WB' must be provided. It is used for the correct filtering for each support WB
     @classmethod
-    def SummarizedBoM(self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False):
+    def SummarizedBoM(
+        self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False
+    ):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -548,7 +570,9 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
+            General_BOM.createBoMSpreadsheet(
+                mainList=TemporaryList, Headers=None, Summary=True
+            )
         return
 
     # Function to create a BoM list for a parts only BoM.

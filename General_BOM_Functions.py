@@ -92,7 +92,9 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
         Value = str(Headers[key])
         sheet.set(Cell, Value)
         # set the width based on the headers
-        Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=Value)
+        Standard_Functions.SetColumnWidth_SpreadSheet(
+            sheet=sheet, column=key[:1], cellValue=Value
+        )
 
     # Style the Top row
     sheet.setStyle("A1:H1", "bold")  # \bold|italic|underline'
@@ -113,7 +115,9 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
         Row = i + rowOffset
 
         # Fill the spreadsheet
-        sheet.set("A" + str(Row), "'" + str(rowList["ItemNumber"]))  # add ' at the beginning to make sure it is text.
+        sheet.set(
+            "A" + str(Row), "'" + str(rowList["ItemNumber"])
+        )  # add ' at the beginning to make sure it is text.
         sheet.set("B" + str(Row), str(rowList["Qty"]))
         sheet.set("C" + str(Row), rowList["ObjectLabel"])
         sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
@@ -132,7 +136,9 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
             ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
 
             if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
-                Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=Column, cellValue=Value)
+                Standard_Functions.SetColumnWidth_SpreadSheet(
+                    sheet=sheet, column=Column, cellValue=Value
+                )
 
     # Allign the columns
     if Row > 1:
@@ -289,17 +295,27 @@ def FormatTableColors(
         sheet.setStyle(HeaderRange, HeaderStyle)  # \bold|italic|underline'
     # Set the colors for the header
     sheet.setBackground(HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB))
-    sheet.setForeground(HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB))  # RGBA
+    sheet.setForeground(
+        HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB)
+    )  # RGBA
     # ------------------------------------------------------------------------------------------------------------------
 
     # Format the table -------------------------------------------------------------------------------------------------
     # Get the first column and first row
-    TableRangeColumnStart = Standard_Functions.RemoveNumbersFromString(TableRange.split(":")[0])
-    TableRangeRowStart = int(Standard_Functions.RemoveLettersFromString(TableRange.split(":")[0]))
+    TableRangeColumnStart = Standard_Functions.RemoveNumbersFromString(
+        TableRange.split(":")[0]
+    )
+    TableRangeRowStart = int(
+        Standard_Functions.RemoveLettersFromString(TableRange.split(":")[0])
+    )
 
     # Get the last column and last row
-    TableRangeColumnEnd = Standard_Functions.RemoveNumbersFromString(TableRange.split(":")[1])
-    TableRangeRowEnd = int(Standard_Functions.RemoveLettersFromString(TableRange.split(":")[1]))
+    TableRangeColumnEnd = Standard_Functions.RemoveNumbersFromString(
+        TableRange.split(":")[1]
+    )
+    TableRangeRowEnd = int(
+        Standard_Functions.RemoveLettersFromString(TableRange.split(":")[1])
+    )
 
     # Calculate the delta between the start and end of the table in vertical direction (Rows).
     DeltaRange = TableRangeRowEnd - TableRangeRowStart + 1
@@ -308,21 +324,25 @@ def FormatTableColors(
         # Correct the position
         j = i - 1
         # Define the first row
-        FirstRow = (
-            f"{TableRangeColumnStart}{str(j+TableRangeRowStart)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart)}"
-        )
+        FirstRow = f"{TableRangeColumnStart}{str(j+TableRangeRowStart)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart)}"
         # Define the second row
-        SecondRow = (
-            f"{TableRangeColumnStart}{str(j+TableRangeRowStart+1)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart+1)}"
-        )
+        SecondRow = f"{TableRangeColumnStart}{str(j+TableRangeRowStart+1)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart+1)}"
 
         # if the first and second rows are within the range, set the colors
         if i <= DeltaRange:
-            sheet.setBackground(FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB))
-            sheet.setForeground(FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable))
+            sheet.setBackground(
+                FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB)
+            )
+            sheet.setForeground(
+                FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable)
+            )
         if i + 1 <= DeltaRange:
-            sheet.setBackground(SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB))
-            sheet.setForeground(SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable))
+            sheet.setBackground(
+                SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB)
+            )
+            sheet.setForeground(
+                SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable)
+            )
 
         # Set the font style for the table
         if TableStyle != "":
@@ -333,7 +353,11 @@ def FormatTableColors(
 
 # Functions to count  document objects in a list based on the itemnumber of their parent.
 def ObjectCounter_ItemNumber(
-    ListItem, ItemNumber: str, BomList: list, ObjectBasedPart: bool = True, ObjectBasedAssy: bool = False
+    ListItem,
+    ItemNumber: str,
+    BomList: list,
+    ObjectBasedPart: bool = True,
+    ObjectBasedAssy: bool = False,
 ) -> int:
     """_summary_
 
@@ -363,7 +387,10 @@ def ObjectCounter_ItemNumber(
         # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
         # If the itemnumber is more than one level deep:
         if len(ItemNumber.split(".")) > 1:
-            if BomList[i]["ItemNumber"].rsplit(".", 1)[0] == ItemNumber.rsplit(".", 1)[0]:
+            if (
+                BomList[i]["ItemNumber"].rsplit(".", 1)[0]
+                == ItemNumber.rsplit(".", 1)[0]
+            ):
                 if ListItem["Type"] == "Part":
                     if ObjectNameValuePart == "Object":
                         if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
@@ -381,7 +408,10 @@ def ObjectCounter_ItemNumber(
 
         # If the itemnumber is one level deep:
         if len(ItemNumber.split(".")) == 1 and len(BomList[i]["ItemNumber"]) == 1:
-            if BomList[i]["ItemNumber"].rsplit(".", 1)[0] == ItemNumber.rsplit(".", 1)[0]:
+            if (
+                BomList[i]["ItemNumber"].rsplit(".", 1)[0]
+                == ItemNumber.rsplit(".", 1)[0]
+            ):
                 if ListItem["Type"] == "Part":
                     if ObjectNameValuePart == "Object":
                         if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
@@ -468,7 +498,10 @@ def ObjectCounter(
 
             # If the object name and type of the object in the list are equal to that of the DocObject,
             # increase the counter by one
-            if RowItem[ObjectNameValue] == ObjectName and RowItem["DocumentObject"].TypeId == ObjectType:
+            if (
+                RowItem[ObjectNameValue] == ObjectName
+                and RowItem["DocumentObject"].TypeId == ObjectType
+            ):
                 counter = counter + 1
 
     # Return the counter
@@ -519,13 +552,17 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
             # If the previous itemnumber is shorter than the current itemnumber,
             # you have the first item in a subassembly.
             # Add ".1" and you have the itemnumber for this first item. (e.g. 1.1 -> 1.1.1)
-            if len(ItemNumberPreviousOriginal.split(".")) < len(ItemNumberOriginal.split(".")):
+            if len(ItemNumberPreviousOriginal.split(".")) < len(
+                ItemNumberOriginal.split(".")
+            ):
                 # Define the new itemnumber.
                 NewItemNumber = str(ItemNumberPrevious) + ".1"
 
             # If the previous itemnumber is as long as the current itemnumber,
             # you have an item of a subassembly that is not the first item.
-            if len(ItemNumberPreviousOriginal.split(".")) == len(ItemNumberOriginal.split(".")):
+            if len(ItemNumberPreviousOriginal.split(".")) == len(
+                ItemNumberOriginal.split(".")
+            ):
                 # If the current item is a first level item, increase the number by 1.
                 if len(ItemNumberOriginal.split(".")) == 1:
                     NewItemNumber = str(int(ItemNumberPrevious) + 1)
@@ -539,7 +576,9 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
                     NewItemNumber = Part1 + "." + Part2
 
             # If the previous itemnumber is longer than the current itemnumber, you have a new subassembly.
-            if len(ItemNumberPreviousOriginal.split(".")) > len(ItemNumberOriginal.split(".")):
+            if len(ItemNumberPreviousOriginal.split(".")) > len(
+                ItemNumberOriginal.split(".")
+            ):
                 # if the new subassembly is at the first level, split the previous itemnumber in two
                 # to get the first digit and increase this by one.
                 if len(ItemNumberOriginal.split(".")) == 1:

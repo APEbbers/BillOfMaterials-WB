@@ -52,18 +52,24 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB, "BoM_Panel.ui"))
 
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
-        self.form.AssemblyType.currentTextChanged.connect(self.on_AssemblyType_TextChanged)
+        self.form.AssemblyType.currentTextChanged.connect(
+            self.on_AssemblyType_TextChanged
+        )
 
         # This will create a connection between the pushbutton "currentTextChanged" and def "on_BomType_TextChanged"
         self.form.BoMType.currentTextChanged.connect(self.on_BomType_TextChanged)
 
         # This will create a connection between the pushbutton "DectAssemblyType" and def "on_DectAssemblyType_clicked"
         self.form.DetectAssemblyType.connect(
-            self.form.DetectAssemblyType, SIGNAL("pressed()"), self.on_DetectAssemblyType_clicked
+            self.form.DetectAssemblyType,
+            SIGNAL("pressed()"),
+            self.on_DetectAssemblyType_clicked,
         )
 
         # This will create a connection between the pushbutton "CreateBOM" and def "on_CreateBOM_clicked"
-        self.form.CreateBOM.connect(self.form.CreateBOM, SIGNAL("pressed()"), self.on_CreateBOM_clicked)
+        self.form.CreateBOM.connect(
+            self.form.CreateBOM, SIGNAL("pressed()"), self.on_CreateBOM_clicked
+        )
 
         # add icons to the assemblytype checkbox
         icon_A2Plus = QIcon()
@@ -74,7 +80,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             QIcon.Off,
         )
         icon_AppLink = QIcon()
-        icon_AppLink.addFile(os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off)
+        icon_AppLink.addFile(
+            os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off
+        )
         icon_Asm3 = QIcon()
         icon_Asm3.addFile(
             os.path.join(PATH_TB_ICONS, "Assembly3_workbench_icon.svg"),
