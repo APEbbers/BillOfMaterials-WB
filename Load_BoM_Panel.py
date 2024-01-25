@@ -246,7 +246,6 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
             )
-
         return
 
     def on_AssemblyType_TextChanged(self):

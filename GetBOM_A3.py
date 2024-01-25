@@ -148,6 +148,13 @@ class BomFunctions:
                 if ParentNumber != "":
                     ItemNumberString = str(ParentNumber)
 
+                Type = "Part"
+                try:
+                    if docObject.SolverType == "SolveSpace":
+                        Type = "Assembly"
+                except Exception:
+                    pass
+
                 # Create a rowList
                 rowList = {
                     "ItemNumber": ItemNumberString,
@@ -155,7 +162,7 @@ class BomFunctions:
                     "ObjectLabel": docObject.Label,
                     "ObjectName": docObject.Name,
                     "Qty": 1,
-                    "Type": "Part",
+                    "Type": Type,
                 }
 
                 # Add the rowList to the mainList
@@ -216,6 +223,13 @@ class BomFunctions:
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
 
+                Type = "Part"
+                try:
+                    if childObject.SolverType == "SolveSpace":
+                        Type = "Assembly"
+                except Exception:
+                    pass
+
                 # Create a rowList
                 rowList = {
                     "ItemNumber": ItemNumberString,
@@ -223,7 +237,7 @@ class BomFunctions:
                     "ObjectLabel": childObject.Label,
                     "ObjectName": childObject.Name,
                     "Qty": 1,
-                    "Type": "Part",
+                    "Type": Type,
                 }
 
                 # add the rowList to the mainList
@@ -298,13 +312,67 @@ class BomFunctions:
     @classmethod
     def ReturnLinkedObject(self, RowItem: dict) -> App.DocumentObject:
         # Use an try-except statement incase there is no linked object.
+        OriginalRowItem = RowItem
         docObject = RowItem["DocumentObject"]
         try:
+            # RowItem["DocumentObject"] = docObject.LinkedObject
             RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[0]
             RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
             return RowItem
         except Exception:
-            return docObject
+            return OriginalRowItem
+
+    # Functions to count  document objects in a list based on the itemnumber of their parent.
+    @classmethod
+    def ObjectCounter_ItemNumber(
+        self,
+        ListItem,
+        ItemNumber: str,
+        BomList: list,
+        ObjectBased: bool = True,
+    ) -> int:
+        """_summary_
+
+        Args:
+            ListItem (dict): Item from main list.
+            ItemNumber (str): Item number of document object.
+            BomList (list): complete main list.
+            ObjectBased (bool, optional): Compare objects (True) or object.labels (False) Defaults to True.
+
+        Returns:
+            int: number of document number in item number range.
+        """
+        ObjectNameValue = "Object"
+        if ObjectBased is False:
+            ObjectNameValue = "ObjectLabel"
+
+        # Set the counter
+        counter = 0
+
+        # Go Through the objectList
+        for i in range(len(BomList)):
+            # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
+            # If the itemnumber is more than one level deep:
+            if len(ItemNumber.split(".")) > 1:
+                if BomList[i]["ItemNumber"].rsplit(".", 1)[0] == ItemNumber.rsplit(".", 1)[0]:
+                    # If the document object  in the list is equal to DocObject, increase the counter by one.
+                    if ObjectNameValue == "Object":
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                            counter = counter + 1
+                    if ObjectNameValue == "ObjectLabel":
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                            counter = counter + 1
+            # If the itemnumber is one level deep:
+            if len(ItemNumber.split(".")) == 1 and len(BomList[i]["ItemNumber"]) == 1:
+                # If the document object  in the list is equal to DocObject, increase the counter by one.
+                if ObjectNameValue == "Object":
+                    if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                        counter = counter + 1
+                if ObjectNameValue == "ObjectLabel":
+                    if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                        counter = counter + 1
+        # Return the counter
+        return counter
 
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
@@ -380,11 +448,11 @@ class BomFunctions:
                 # Find the quantity for the item
                 QtyValue = str(
                     General_BOM.ObjectCounter_ItemNumber(
-                        DocObject=rowList["DocumentObject"],
+                        ListItem=rowList,
                         ItemNumber=itemNumber,
-                        ObjectList=ObjectDocumentList,
-                        ItemNumberList=ItemNumberList,
-                        ObjectBased=False,
+                        BomList=CopyMainList,
+                        ObjectBasedPart=False,
+                        ObjectBasedAssy=False,
                     )
                 )
 
@@ -431,11 +499,11 @@ class BomFunctions:
                 # Find the quantity for the item
                 QtyValue = str(
                     General_BOM.ObjectCounter_ItemNumber(
-                        DocObject=rowList["DocumentObject"],
-                        ItemNumber=shadowItemNumber,
-                        ObjectList=ObjectDocumentList,
-                        ItemNumberList=ItemNumberList,
-                        ObjectBased=False,
+                        ListItem=rowList,
+                        ItemNumber=itemNumber,
+                        BomList=CopyMainList,
+                        ObjectBasedPart=False,
+                        ObjectBasedAssy=False,
                     )
                 )
 

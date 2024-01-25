@@ -448,13 +448,14 @@ class BomFunctions:
                 # Find the quantity for the item
                 QtyValue = str(
                     General_BOM.ObjectCounter_ItemNumber(
-                        DocObject=rowList["DocumentObject"],
+                        ListItem=rowList,
                         ItemNumber=itemNumber,
-                        ObjectList=ObjectDocumentList,
-                        ItemNumberList=ItemNumberList,
-                        ObjectBased=False,
+                        BomList=CopyMainList,
+                        ObjectBasedPart=False,
+                        ObjectBasedAssy=False,
                     )
                 )
+
                 # Create a new row item for the temporary row.
                 rowListNew = {
                     "ItemNumber": itemNumber,
@@ -507,13 +508,14 @@ class BomFunctions:
                 # Find the quantity for the item
                 QtyValue = str(
                     General_BOM.ObjectCounter_ItemNumber(
-                        DocObject=rowList["DocumentObject"],
-                        ItemNumber=shadowItemNumber,
-                        ObjectList=ObjectDocumentList,
-                        ItemNumberList=ItemNumberList,
-                        ObjectBased=False,
+                        ListItem=rowList,
+                        ItemNumber=itemNumber,
+                        BomList=CopyMainList,
+                        ObjectBasedPart=False,
+                        ObjectBasedAssy=False,
                     )
                 )
+
                 if TypeListParts.__contains__(rowList["DocumentObject"].TypeId) is False:
                     QtyValue = "1"
                 # Create a new row item for the temporary row.

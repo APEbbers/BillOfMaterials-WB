@@ -545,14 +545,15 @@ class BomFunctions:
                     "Item2": shadowObject,
                     "Item3": shadowType,
                 }
+
                 # Find the quantity for the item
                 QtyValue = str(
                     General_BOM.ObjectCounter_ItemNumber(
-                        DocObject=rowList["DocumentObject"],
+                        ListItem=rowList,
                         ItemNumber=itemNumber,
-                        ObjectList=ObjectDocumentList,
-                        ItemNumberList=ItemNumberList,
-                        ObjectBased=True,
+                        BomList=CopyMainList,
+                        ObjectBasedPart=False,
+                        ObjectBasedAssy=False,
                     )
                 )
 
@@ -601,11 +602,11 @@ class BomFunctions:
                 # Find the quantity for the item
                 QtyValue = str(
                     General_BOM.ObjectCounter_ItemNumber(
-                        DocObject=rowList["DocumentObject"],
-                        ItemNumber=shadowItemNumber,
-                        ObjectList=ObjectDocumentList,
-                        ItemNumberList=ItemNumberList,
-                        ObjectBased=True,
+                        ListItem=rowList,
+                        ItemNumber=itemNumber,
+                        BomList=CopyMainList,
+                        ObjectBasedPart=False,
+                        ObjectBasedAssy=False,
                     )
                 )
 

@@ -137,8 +137,8 @@ class CreateTotalBOM_Class:
     def GetResources(self):
         return {
             "Pixmap": "Total.svg",  # the name of a svg file available in the resources
-            "MenuText": "Create a overall BoM",
-            "ToolTip": "Create a Bill of Materials in a spreadsheet",
+            "MenuText": "Create a BoM",
+            "ToolTip": "Create a Bill of Materials in a spreadsheet.",
         }
 
     def Activated(self):
