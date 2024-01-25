@@ -74,9 +74,19 @@ class BillOfMaterialsWB(Gui.Workbench):
             "CreateBOM_Summary",
             "CreateBOM_1stLevel",
         ]
+        self.appendMenu("BOM Commands", self.list)  # creates a new menu
+
+        # a list of command names created in the line above
+        self.list = [
+            "CreateBOM_Overall",
+            "Separator",
+            "CreateBOM_Raw",
+            "Separator",
+            "CreateBOM_1stLevel",
+        ]
+
         # creates a new toolbar with your commands
         self.appendToolbar("BOM Commands", self.list)
-        self.appendMenu("BOM Commands", self.list)  # creates a new menu
         # # appends a submenu to an existing menu
         # self.appendMenu(["An existing Menu", "My submenu"], self.list)
 

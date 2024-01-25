@@ -353,53 +353,80 @@ def FormatTableColors(
 
 # Functions to count  document objects in a list based on the itemnumber of their parent.
 def ObjectCounter_ItemNumber(
-    DocObject,
+    ListItem,
     ItemNumber: str,
-    ObjectList: list,
-    ItemNumberList: list,
-    ObjectBased: bool = True,
+    BomList: list,
+    ObjectBasedPart: bool = True,
+    ObjectBasedAssy: bool = False,
 ) -> int:
     """_summary_
 
     Args:
-        DocObject (FreeCAD.DocumentObject): Document object to search for.
+        ListItem (dict): Item from main list.
         ItemNumber (str): Item number of document object.
-        ObjectList (list): List of document objects
-        ItemNumberList (list): List of item numbers.
+        BomList (list): complete main list.
         ObjectBased (bool, optional): Compare objects (True) or object.labels (False) Defaults to True.
+        CompareAssy (bool, optional): Compare objects when they are an assembly.(ObjectBased must be False)) Defaults to False.
 
     Returns:
         int: number of document number in item number range.
     """
-    ObjectNameValue = "Object"
-    if ObjectBased is False:
-        ObjectNameValue = "ObjectLabel"
+    ObjectNameValuePart = "Object"
+    if ObjectBasedPart is False:
+        ObjectNameValuePart = "ObjectLabel"
+
+    ObjectNameValueAssy = "Object"
+    if ObjectBasedAssy is False:
+        ObjectNameValueAssy = "ObjectLabel"
 
     # Set the counter
     counter = 0
 
     # Go Through the objectList
-    for i in range(len(ObjectList)):
+    for i in range(len(BomList)):
         # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
         # If the itemnumber is more than one level deep:
         if len(ItemNumber.split(".")) > 1:
-            if ItemNumberList[i].rsplit(".", 1)[0] == ItemNumber.rsplit(".", 1)[0]:
-                # If the document object  in the list is equal to DocObject, increase the counter by one.
-                if ObjectNameValue == "Object":
-                    if ObjectList[i] == DocObject:
-                        counter = counter + 1
-                if ObjectNameValue == "ObjectLabel":
-                    if ObjectList[i].Label == DocObject.Label:
-                        counter = counter + 1
+            if (
+                BomList[i]["ItemNumber"].rsplit(".", 1)[0]
+                == ItemNumber.rsplit(".", 1)[0]
+            ):
+                if ListItem["Type"] == "Part":
+                    if ObjectNameValuePart == "Object":
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                            counter = counter + 1
+                    if ObjectNameValuePart == "ObjectLabel":
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                            counter = counter + 1
+                if ListItem["Type"] == "Assembly":
+                    if ObjectNameValueAssy == "Object":
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                            counter = counter + 1
+                    if ObjectNameValueAssy == "ObjectLabel":
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                            counter = counter + 1
+
         # If the itemnumber is one level deep:
-        if len(ItemNumber.split(".")) == 1 and len(ItemNumberList[i]) == 1:
-            # If the document object  in the list is equal to DocObject, increase the counter by one.
-            if ObjectNameValue == "Object":
-                if ObjectList[i] == DocObject:
-                    counter = counter + 1
-            if ObjectNameValue == "ObjectLabel":
-                if ObjectList[i].Label == DocObject.Label:
-                    counter = counter + 1
+        if len(ItemNumber.split(".")) == 1 and len(BomList[i]["ItemNumber"]) == 1:
+            if (
+                BomList[i]["ItemNumber"].rsplit(".", 1)[0]
+                == ItemNumber.rsplit(".", 1)[0]
+            ):
+                if ListItem["Type"] == "Part":
+                    if ObjectNameValuePart == "Object":
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                            counter = counter + 1
+                    if ObjectNameValuePart == "ObjectLabel":
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                            counter = counter + 1
+                if ListItem["Type"] == "Assembly":
+                    if ObjectNameValueAssy == "Object":
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                            counter = counter + 1
+                    if ObjectNameValueAssy == "ObjectLabel":
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                            counter = counter + 1
+
     # Return the counter
     return counter
 
@@ -596,7 +623,7 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
     # If in debug mode, print the resulting list of numbers
     if DebugMode is True:
         for i in range(len(TemporaryList)):
-            print(TemporaryList[i]["ItemNumber"])
+            Standard_Functions.Print(TemporaryList[i]["ItemNumber"], "Log")
 
     # Return the result.
     return TemporaryList
@@ -617,41 +644,42 @@ def CheckAssemblyType(DocObject):
 
     # Go through the root objects. If there is an object type "a2pPart", this is an A2plus assembly.
     # If not, continue.
+    # In the A2plus WB, you have to go through the Objects instead of the RootObjects
     for Object in DocObject.Objects:
         try:
             if Object.objectType == "a2pPart":
                 return "A2plus"
         except Exception:
             pass
-    # If it is not an A2plus assembly, check for the other type of assemblies
-    if (
-        RootObjects[0].Name == "Parts"
-        and RootObjects[0].TypeId == "App::DocumentObjectGroup"
-    ):
-        if RootObjects[1].Name == "Assembly" and RootObjects[1].TypeId == "App::Part":
-            return "Assembly4"
-    elif RootObjects[0].Name == "Assembly" and RootObjects[0].TypeId == "App::Part":
-        if (
-            RootObjects[0].Group[0].Name == "Joints"
-            and RootObjects[0].Group[0].TypeId == "App::DocumentObjectGroup"
-        ):
-            return "Internal"
-    elif (
-        RootObjects[0].Name == "Assembly"
-        and RootObjects[0].TypeId == "Part::FeaturePython"
-    ):
-        if (
-            RootObjects[0].Group[0].Name == "Constraints"
-            and RootObjects[0].Group[0].TypeId == "App::FeaturePython"
-        ):
-            return "Assembly3"
-    else:
-        for RootObject in RootObjects:
-            if (
-                RootObject.TypeId == "App::Link"
-                or RootObject.TypeId == "App::LinkGroup"
-            ):
+
+    # In the other workbenches go through the RootObjects
+    for Object in RootObjects:
+        try:
+            if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
+                return "Assembly4"
+        except Exception:
+            pass
+
+        try:
+            if Object.SolverType == "SolveSpace":
+                return "Assembly3"
+        except Exception:
+            pass
+
+        try:
+            if Object.Type == "Assembly" and Object.TypeId == "App::Part":
+                return "Internal"
+        except Exception:
+            pass
+
+        try:
+            if Object.TypeId == "App::Link" or Object.TypeId == "App::LinkGroup":
                 return "AppLink"
-            if RootObject.TypeId == "App::Part":
+        except Exception:
+            pass
+
+        try:
+            if Object.Type == "" and Object.TypeId == "App::Part":
                 return "AppPart"
-        return "None"
+        except Exception:
+            pass
