@@ -27,6 +27,9 @@ import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
 
+# Define the translation
+translate = App.Qt.translate
+
 
 class CreatePartsOnlyBOM_Class:
     # get the path of the current python script
@@ -310,6 +313,36 @@ class LoadPanel_Class:
         return result
 
 
+class LoadColumnsDialog_Class:
+    def GetResources(self):
+        return {
+            "Pixmap": "BoM.svg",  # the name of a svg file available in the resources
+            "MenuText": "Add or remove columns",
+            "ToolTip": "Add or remove columns",
+        }
+
+    def Activated(self):
+        import BoM_ManageColumns
+
+        BoM_ManageColumns.main()
+        return
+
+    def IsActive(self):
+        """Here you can define if the command must be active or not (greyed) if certain conditions
+        are met or not. This function is optional."""
+        # Set the default state
+        result = False
+        # Get for the active document.
+        ActiveDoc = App.activeDocument()
+        if ActiveDoc is not None:
+            # Check if the document has any pages. If so the result is True and the command is activated.
+            pages = App.ActiveDocument.findObjects("TechDraw::DrawPage")
+            if pages is not None:
+                result = True
+
+        return result
+
+
 # Add the commands to the Gui
 Gui.addCommand("CreateBOM_Overall", LoadPanel_Class())
 Gui.addCommand("CreateBOM_PartsOnly", CreatePartsOnlyBOM_Class())
@@ -317,3 +350,4 @@ Gui.addCommand("CreateBOM_Summary", CreateSummarizedBOM_Class())
 Gui.addCommand("CreateBOM_Total", CreateTotalBOM_Class())
 Gui.addCommand("CreateBOM_1stLevel", CreateSingleLevelBOM_Class())
 Gui.addCommand("CreateBOM_Raw", CreateRawBOM_Class())
+Gui.addCommand("SetColumns", LoadColumnsDialog_Class())

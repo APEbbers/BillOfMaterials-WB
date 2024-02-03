@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1296</width>
+    <height>1049</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>350</y>
+     <width>421</width>
+     <height>56</height>
+    </rect>
+   </property>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>5</y>
+      <width>401</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <italic>true</italic>
+     </font>
+    </property>
+    <property name="text">
+     <string>FreeCAD needs to be restarted before changes become active.</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>399</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="Gui::PrefCheckBox" name="EnableDebug_2">
+       <property name="text">
+        <string>Debug mode</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="prefEntry" stdset="0">
+        <cstring>EnableDebug</cstring>
+       </property>
+       <property name="prefPath" stdset="0">
+        <cstring>Mod/BoM Workbench</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;(If enabled, extra information will be shown in the report view.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>471</width>
+     <height>341</height>
+    </rect>
+   </property>
+   <property name="tabPosition">
+    <enum>QTabWidget::North</enum>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <property name="elideMode">
+    <enum>Qt::ElideLeft</enum>
+   </property>
+   <widget class="QWidget" name="tab">
+    <attribute name="title">
+     <string>General settings</string>
+    </attribute>
+    <widget class="QFrame" name="frame_6">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>10</y>
+       <width>456</width>
+       <height>291</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <widget class="Gui::PrefCheckBox" name="EnableDebugColumns">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>181</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Enable extra columns for debug</string>
+      </property>
+      <property name="prefEntry" stdset="0">
+       <cstring>EnableDebugColumns</cstring>
+      </property>
+      <property name="prefPath" stdset="0">
+       <cstring>Mod/BoM Workbench</cstring>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_2">
+    <attribute name="title">
+     <string>UI Settings</string>
+    </attribute>
+    <widget class="QFrame" name="Spreadsheet_Layout_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>10</y>
+       <width>456</width>
+       <height>291</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <widget class="QWidget" name="layoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>17</x>
+        <y>27</y>
+        <width>301</width>
+        <height>248</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout_5">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_13">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_45">
+           <property name="text">
+            <string>Header background       </string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Gui::PrefColorButton" name="SprHeaderBackGround_3">
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+           <property name="default">
+            <bool>true</bool>
+           </property>
+           <property name="color">
+            <color>
+             <red>243</red>
+             <green>202</green>
+             <blue>98</blue>
+            </color>
+           </property>
+           <property name="allowTransparency">
+            <bool>false</bool>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadSheetHeaderBackGround</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_46">
+           <property name="text">
+            <string>Header foreground</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="Gui::PrefColorButton" name="SprHeaderForeGround_3">
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+           <property name="default">
+            <bool>false</bool>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+           <property name="color">
+            <color>
+             <red>0</red>
+             <green>0</green>
+             <blue>0</blue>
+            </color>
+           </property>
+           <property name="allowTransparency">
+            <bool>false</bool>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadSheetHeaderForeGround</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <layout class="QGridLayout" name="gridLayout_14">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_47">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>40</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Header font style</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Gui::PrefCheckBox" name="SprHeaderFontStyle_Bold_3">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Bold</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadsheetHeaderFontStyle_Bold</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="Gui::PrefCheckBox" name="SprHeaderFontStyle_Italic_3">
+           <property name="font">
+            <font>
+             <italic>true</italic>
+            </font>
+           </property>
+           <property name="text">
+            <string>Italic</string>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadsheetHeaderFontStyle_Italic</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="Gui::PrefCheckBox" name="SprHeaderFontStyle_Underline_3">
+           <property name="font">
+            <font>
+             <underline>true</underline>
+            </font>
+           </property>
+           <property name="text">
+            <string>Underline</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadsheetHeaderFontStyle_Underline</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <layout class="QGridLayout" name="gridLayout_15">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_48">
+           <property name="text">
+            <string>Table foreground</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Gui::PrefColorButton" name="SprTableBackGround_5">
+           <property name="color">
+            <color>
+             <red>169</red>
+             <green>169</green>
+             <blue>169</blue>
+            </color>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadSheetTableBackGround_1</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_49">
+           <property name="text">
+            <string>Table background 1       </string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="Gui::PrefColorButton" name="SprTableForeGround_3">
+           <property name="color">
+            <color>
+             <red>0</red>
+             <green>0</green>
+             <blue>0</blue>
+            </color>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadSheetTableForeGround</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_50">
+           <property name="text">
+            <string>Table background 2</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="Gui::PrefColorButton" name="SprTableBackGround_6">
+           <property name="color">
+            <color>
+             <red>128</red>
+             <green>128</green>
+             <blue>128</blue>
+            </color>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadSheetTableBackGround_2</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <layout class="QGridLayout" name="gridLayout_16">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_51">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>40</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Table font style</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Gui::PrefCheckBox" name="SprTableFontStyle_Bold_3">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Bold</string>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadsheetTableFontStyle_Bold</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="Gui::PrefCheckBox" name="SprTableFontStyle_Italic_3">
+           <property name="font">
+            <font>
+             <italic>true</italic>
+            </font>
+           </property>
+           <property name="text">
+            <string>Italic</string>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadsheetTableFontStyle_Italic</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="Gui::PrefCheckBox" name="SprTableFontStyle_Underline_3">
+           <property name="font">
+            <font>
+             <underline>true</underline>
+            </font>
+           </property>
+           <property name="text">
+            <string>Underline</string>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadsheetTableFontStyle_Underline</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <layout class="QGridLayout" name="gridLayout_17">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
+         </property>
+         <property name="horizontalSpacing">
+          <number>6</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_52">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>40</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>1st column font style</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Gui::PrefCheckBox" name="SprColumnFontStyle_Bold_3">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Bold</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadsheetColumnFontStyle_Bold</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="Gui::PrefCheckBox" name="SprColumnFontStyle_Italic_3">
+           <property name="font">
+            <font>
+             <italic>true</italic>
+            </font>
+           </property>
+           <property name="text">
+            <string>Italic</string>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadsheetColumnFontStyle_Italic</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="Gui::PrefCheckBox" name="SprColumnFontStyle_Underline_3">
+           <property name="font">
+            <font>
+             <underline>true</underline>
+            </font>
+           </property>
+           <property name="text">
+            <string>Underline</string>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>SpreadsheetColumnFontStyle_Underline</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="5" column="0">
+        <layout class="QFormLayout" name="formLayout_6">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_53">
+           <property name="text">
+            <string>Width factor for AutoFit</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Gui::PrefDoubleSpinBox" name="AutoFitFactor_3">
+           <property name="singleStep">
+            <double>0.500000000000000</double>
+           </property>
+           <property name="value">
+            <double>7.500000000000000</double>
+           </property>
+           <property name="prefEntry" stdset="0">
+            <cstring>AutoFitFactor</cstring>
+           </property>
+           <property name="prefPath" stdset="0">
+            <cstring>Mod/BoM Workbench</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Gui::ColorButton</class>
+   <extends>QPushButton</extends>
+   <header>Gui/Widgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Gui::PrefColorButton</class>
+   <extends>Gui::ColorButton</extends>
+   <header>Gui/PrefWidgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Gui::PrefCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>Gui/PrefWidgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Gui::PrefDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>Gui/PrefWidgets.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

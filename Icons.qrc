@@ -31,6 +31,6 @@
         <file>Resources/Icons/AssemblyInternal-Summary.svg</file>
         <file>Resources/Icons/AssemblyInternal-Total.svg</file>
         <file>Resources/Icons/BillOfMaterialsWB.svg</file>
-        <file>Resources/Icons/preferences-bill_of_materials_wb.svg</file>
+        <file>Resources/Icons/preferences-Bill_of_Materials.svg</file>
     </qresource>
 </RCC>

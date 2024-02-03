@@ -25,6 +25,9 @@
 import FreeCAD as App
 import FreeCADGui as Gui
 
+# Define the translation
+translate = App.Qt.translate
+
 
 class CreatePartsOnlyBOM_A4_Class:
     def GetResources(self):
