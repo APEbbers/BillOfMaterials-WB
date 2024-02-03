@@ -80,7 +80,7 @@ class Ui_Dialog(object):
         Dialog.setModal(True)
         self.layoutWidget = QWidget(Dialog)
         self.layoutWidget.setObjectName("layoutWidget")
-        self.layoutWidget.setGeometry(QRect(0, 0, 248, 291))
+        self.layoutWidget.setGeometry(QRect(0, 0, 268, 291))
         self.gridLayout = QGridLayout(self.layoutWidget)
         self.gridLayout.setSpacing(10)
         self.gridLayout.setObjectName("gridLayout")
@@ -107,10 +107,11 @@ class Ui_Dialog(object):
         sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(
-            self.DetectAssemblyType.sizePolicy().hasHeightForWidth()
-        )
+        sizePolicy2.setHeightForWidth(self.DetectAssemblyType.sizePolicy().hasHeightForWidth())
         self.DetectAssemblyType.setSizePolicy(sizePolicy2)
+        icon = QIcon()
+        icon.addFile("../Icons/BillOfMaterialsWB.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.DetectAssemblyType.setIcon(icon)
 
         self.gridLayout.addWidget(self.DetectAssemblyType, 9, 0, 1, 2)
 
@@ -217,27 +218,15 @@ class Ui_Dialog(object):
     # setupUi
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(
-            QCoreApplication.translate("Dialog", "Bill of Materials workbench", None)
-        )
+        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", "Bill of Materials workbench", None))
         self.label.setText(QCoreApplication.translate("Dialog", "Type of BoM:", None))
         self.label_5.setText(
-            QCoreApplication.translate(
-                "Dialog", "<html><head/><body><p>Maximum level:</p></body></html>", None
-            )
+            QCoreApplication.translate("Dialog", "<html><head/><body><p>Maximum level:</p></body></html>", None)
         )
-        self.DetectAssemblyType.setText(
-            QCoreApplication.translate("Dialog", " Detect assembly type ", None)
-        )
-        self.label_2.setText(
-            QCoreApplication.translate("Dialog", "Assembly type:", None)
-        )
-        self.label_4.setText(
-            QCoreApplication.translate("Dialog", "Use indented numbering:", None)
-        )
-        self.label_3.setText(
-            QCoreApplication.translate("Dialog", "Include bodies:", None)
-        )
+        self.DetectAssemblyType.setText(QCoreApplication.translate("Dialog", " Detect assembly type ", None))
+        self.label_2.setText(QCoreApplication.translate("Dialog", "Assembly type:", None))
+        self.label_4.setText(QCoreApplication.translate("Dialog", "Use indented numbering:", None))
+        self.label_3.setText(QCoreApplication.translate("Dialog", "Include bodies:", None))
         self.label_6.setText(
             QCoreApplication.translate(
                 "Dialog",
@@ -245,44 +234,20 @@ class Ui_Dialog(object):
                 None,
             )
         )
-        self.SetColumns.setText(
-            QCoreApplication.translate("Dialog", " Set extra columns ", None)
-        )
+        self.SetColumns.setText(QCoreApplication.translate("Dialog", " Set extra columns ", None))
         self.CreateBOM.setText(QCoreApplication.translate("Dialog", "Create BoM", None))
-        self.AssemblyType.setItemText(
-            0, QCoreApplication.translate("Dialog", "A2plus", None)
-        )
-        self.AssemblyType.setItemText(
-            1, QCoreApplication.translate("Dialog", "Internal assembly", None)
-        )
-        self.AssemblyType.setItemText(
-            2, QCoreApplication.translate("Dialog", "Assembly 3", None)
-        )
-        self.AssemblyType.setItemText(
-            3, QCoreApplication.translate("Dialog", "Assembly 4", None)
-        )
-        self.AssemblyType.setItemText(
-            4, QCoreApplication.translate("Dialog", "App:LinkGroup", None)
-        )
-        self.AssemblyType.setItemText(
-            5, QCoreApplication.translate("Dialog", "App:Part", None)
-        )
-        self.AssemblyType.setItemText(
-            6, QCoreApplication.translate("Dialog", "Multibody", None)
-        )
-        self.AssemblyType.setItemText(
-            7, QCoreApplication.translate("Dialog", "Arch", None)
-        )
+        self.AssemblyType.setItemText(0, QCoreApplication.translate("Dialog", "A2plus", None))
+        self.AssemblyType.setItemText(1, QCoreApplication.translate("Dialog", "Internal assembly", None))
+        self.AssemblyType.setItemText(2, QCoreApplication.translate("Dialog", "Assembly 3", None))
+        self.AssemblyType.setItemText(3, QCoreApplication.translate("Dialog", "Assembly 4", None))
+        self.AssemblyType.setItemText(4, QCoreApplication.translate("Dialog", "App:LinkGroup", None))
+        self.AssemblyType.setItemText(5, QCoreApplication.translate("Dialog", "App:Part", None))
+        self.AssemblyType.setItemText(6, QCoreApplication.translate("Dialog", "Multibody", None))
+        self.AssemblyType.setItemText(7, QCoreApplication.translate("Dialog", "Arch", None))
 
-        self.BoMType.setItemText(
-            0, QCoreApplication.translate("Dialog", "Total BoM", None)
-        )
-        self.BoMType.setItemText(
-            1, QCoreApplication.translate("Dialog", "Parts only BoM", None)
-        )
-        self.BoMType.setItemText(
-            2, QCoreApplication.translate("Dialog", "Summary BoM", None)
-        )
+        self.BoMType.setItemText(0, QCoreApplication.translate("Dialog", "Total BoM", None))
+        self.BoMType.setItemText(1, QCoreApplication.translate("Dialog", "Parts only BoM", None))
+        self.BoMType.setItemText(2, QCoreApplication.translate("Dialog", "Summary BoM", None))
 
         # if QT_CONFIG(tooltip)
         self.MaxLevel.setToolTip(

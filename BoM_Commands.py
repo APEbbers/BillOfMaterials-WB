@@ -316,7 +316,7 @@ class LoadPanel_Class:
 class LoadColumnsDialog_Class:
     def GetResources(self):
         return {
-            "Pixmap": "BoM.svg",  # the name of a svg file available in the resources
+            "Pixmap": "SetColumns.svg",  # the name of a svg file available in the resources
             "MenuText": "Add or remove columns",
             "ToolTip": "Add or remove columns",
         }

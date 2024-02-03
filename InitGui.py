@@ -79,17 +79,27 @@ class BillOfMaterialsWB(Gui.Workbench):
         Settings_BoM.SetDebugHeaders()
 
         # a list of command names created in the line above
-        self.list = [
+        MainList = [
             "Separator",
             "CreateBOM_Overall",
             "Separator",
+        ]
+        SeparateFunctionsList = [
             "CreateBOM_Raw",
             "CreateBOM_Total",
             "CreateBOM_PartsOnly",
             "CreateBOM_Summary",
             "CreateBOM_1stLevel",
         ]
-        self.appendMenu("BOM Commands", self.list)  # creates a new menu
+        SettingsList = [
+            "SetColumns",
+        ]
+        self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList)  # creates a new menu
+        self.appendMenu(
+            QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Separate commands "]), SeparateFunctionsList
+        )
+
+        self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Settings "]), SettingsList)
 
         # a list of command names created in the line above
         self.list = [
@@ -106,78 +116,6 @@ class BillOfMaterialsWB(Gui.Workbench):
         self.appendToolbar("BOM Commands", self.list)
         # # appends a submenu to an existing menu
         # self.appendMenu(["An existing Menu", "My submenu"], self.list)
-
-        # -----------------------------------------------------------------------------------------------------
-        import BoM_Commands_AppLink  # import here all the needed files that create your FreeCAD commands
-
-        # a list of command names created in the line above
-        self.list = [
-            "Separator",
-            "CreateBOM_Raw_AppLink",
-            "CreateBOM_Total_AppLink",
-            "CreateBOM_PartsOnly_AppLink",
-            "CreateBOM_Summary_AppLink",
-        ]
-        # # creates a new toolbar with your commands
-        # self.appendToolbar("BOM Commands - AppLink", self.list)
-        self.appendMenu("BOM Commands", self.list)  # creates a new menu
-
-        # -----------------------------------------------------------------------------------------------------
-        import BoM_Commands_AppParts  # import here all the needed files that create your FreeCAD commands
-
-        # a list of command names created in the line above
-        self.list = [
-            "Separator",
-            "CreateBOM_Raw_AppPart",
-            "CreateBOM_Total_AppPart",
-            "CreateBOM_PartsOnly_AppPart",
-            "CreateBOM_Summary_AppPart",
-        ]
-        # # creates a new toolbar with your commands
-        # self.appendToolbar("BOM Commands - AppPart", self.list)
-        self.appendMenu("BOM Commands", self.list)  # creates a new menu
-
-        # -----------------------------------------------------------------------------------------------------
-        import BoM_Commands_A4
-
-        self.list = [
-            "Separator",
-            "CreateBOM_Raw_Assembly4",
-            "CreateBOM_Total_Assembly4",
-            "CreateBOM_PartsOnly_Assembly4",
-            "CreateBOM_Summary_Assembly4",
-        ]
-        # # creates a new toolbar with your commands
-        # self.appendToolbar("BOM Commands - Assembly4", self.list)
-        self.appendMenu("BOM Commands", self.list)  # creates a new menu
-
-        # -----------------------------------------------------------------------------------------------------
-        import BoM_Commands_A3
-
-        self.list = [
-            "Separator",
-            "CreateBOM_Raw_Assembly3",
-            "CreateBOM_Total_Assembly3",
-            "CreateBOM_PartsOnly_Assembly3",
-            "CreateBOM_Summary_Assembly3",
-        ]
-        # # creates a new toolbar with your commands
-        # self.appendToolbar("BOM Commands - Assembly4", self.list)
-        self.appendMenu("BOM Commands", self.list)  # creates a new menu
-
-        # -----------------------------------------------------------------------------------------------------
-        import BoM_Commands_Internal
-
-        self.list = [
-            "Separator",
-            "CreateBOM_Raw_INTERNAL",
-            "CreateBOM_Total_INTERNAL",
-            "CreateBOM_PartsOnly_INTERNAL",
-            "CreateBOM_Summary_INTERNAL",
-        ]
-        # # creates a new toolbar with your commands
-        # self.appendToolbar("BOM Commands - INTERNAL", self.list)
-        self.appendMenu("BOM Commands", self.list)  # creates a new menu
 
     def Activated(self):
         """This function is executed whenever the workbench is activated"""
