@@ -56,6 +56,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # this will create a Qt widget from our ui file
         self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB_UI, "BoM_Panel.ui"))
 
+        self.form.setWindowIcon(QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")))
+
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
         self.form.AssemblyType.currentTextChanged.connect(self.on_AssemblyType_TextChanged)
 

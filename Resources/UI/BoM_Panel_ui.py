@@ -43,7 +43,7 @@ class Ui_Dialog(object):
         Dialog.setModal(True)
         self.layoutWidget = QWidget(Dialog)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(0, 0, 248, 291))
+        self.layoutWidget.setGeometry(QRect(0, 0, 268, 291))
         self.gridLayout = QGridLayout(self.layoutWidget)
         self.gridLayout.setSpacing(10)
         self.gridLayout.setObjectName(u"gridLayout")
@@ -72,6 +72,9 @@ class Ui_Dialog(object):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.DetectAssemblyType.sizePolicy().hasHeightForWidth())
         self.DetectAssemblyType.setSizePolicy(sizePolicy2)
+        icon = QIcon()
+        icon.addFile(u"../Icons/BillOfMaterialsWB.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.DetectAssemblyType.setIcon(icon)
 
         self.gridLayout.addWidget(self.DetectAssemblyType, 9, 0, 1, 2)
 
