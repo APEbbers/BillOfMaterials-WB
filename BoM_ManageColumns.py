@@ -77,6 +77,14 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
 
         # -----------------------------------------------------------------------------------------
         #
+        # AddManual ------------------------------------------------------------------------------
+        def AddManual():
+            self.on_AddManual_clicked(self)
+
+        self.form.AddManual.connect(self.form.AddManual, SIGNAL("clicked()"), AddManual)
+
+        # -----------------------------------------------------------------------------------------
+        #
         # SortAZ ------------------------------------------------------------------------------
         def SortAZ():
             self.on_Sort_AZ_clicked(self)
@@ -149,6 +157,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             # Add/Remove buttons
             self.form.AddItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "+ sign.svg")))
             self.form.RemoveItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg")))
+            self.form.AddManual.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg")))
             # Sort buttons
             self.form.Sort_AZ.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Light.png")))
             self.form.Sort_ZA.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Light.png")))
@@ -159,6 +168,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             # Add/Remove buttons
             self.form.AddItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "+ sign.svg")))
             self.form.RemoveItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg")))
+            self.form.AddManual.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg")))
             # Sort buttons
             self.form.Sort_AZ.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Dark.png")))
             self.form.Sort_ZA.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Dark.png")))
@@ -194,6 +204,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
                     break
             if IsInList is False:
                 self.form.Columns_To_Add.addItem(Property)
+
         return
 
     @staticmethod
@@ -260,6 +271,13 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.RemoveItem.clearFocus()
 
         return
+
+    @staticmethod
+    def on_AddManual_clicked(self):
+        Value = self.form.ManualProperty.text()
+
+        if Value != "":
+            self.form.Columns_Present.addItem(Value)
 
     @staticmethod
     def on_Sort_AZ_clicked(self):
