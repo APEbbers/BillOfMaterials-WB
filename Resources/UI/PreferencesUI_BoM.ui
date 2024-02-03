@@ -85,6 +85,9 @@
      <height>341</height>
     </rect>
    </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
    <property name="tabPosition">
     <enum>QTabWidget::North</enum>
    </property>

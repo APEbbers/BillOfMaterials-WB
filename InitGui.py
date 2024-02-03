@@ -79,17 +79,27 @@ class BillOfMaterialsWB(Gui.Workbench):
         Settings_BoM.SetDebugHeaders()
 
         # a list of command names created in the line above
-        self.list = [
+        MainList = [
             "Separator",
             "CreateBOM_Overall",
             "Separator",
+        ]
+        SeparateFunctionsList = [
             "CreateBOM_Raw",
             "CreateBOM_Total",
             "CreateBOM_PartsOnly",
             "CreateBOM_Summary",
             "CreateBOM_1stLevel",
         ]
-        self.appendMenu("BOM Commands", self.list)  # creates a new menu
+        SettingsList = [
+            "SetColumns",
+        ]
+        self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList)  # creates a new menu
+        self.appendMenu(
+            QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Separate commands "]), SeparateFunctionsList
+        )
+
+        self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Settings "]), SettingsList)
 
         # a list of command names created in the line above
         self.list = [
