@@ -23,189 +23,208 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
+from Settings_BoM import CUSTOM_HEADERS
+from Settings_BoM import DEBUG_HEADERS
 from datetime import datetime
 import os
+import Settings_BoM
+
+# Define the translation
+translate = App.Qt.translate
 
 
-# Function to create BoM. standard, a raw BoM will befrom the main list.
-# If a modified list is created, this function can be used to write it the a spreadsheet.
-# You can add a dict for the headers of this list
-def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = False):
-    """_summary_
+class General_BOM:
+    customHeaders = CUSTOM_HEADERS
+    if customHeaders[:1] == ";":
+        customHeaders = customHeaders[1:]
 
-    Args:
-    List (list, optional): PartList.\n
-    Defaults to None.
-    Headers (dict, optional): {\n
-    "A1": "Number",\n
-    "B1": "Name",\n
-    "C1": "Description",\n
-    "D1": "Type",\n
-    "E1": "Qty",\n
-    },\n
-    . Defaults to None.
-    """
-    # If the Mainlist is empty, return.
-    if mainList is None:
-        print("No list available!!")
-        return
+    # Function to create BoM. standard, a raw BoM will befrom the main list.
+    # If a modified list is created, this function can be used to write it the a spreadsheet.
+    # You can add a dict for the headers of this list
+    @classmethod
+    def createBoMSpreadsheet(
+        self, mainList: list, Headers: dict = None, Summary: bool = False
+    ):
+        # If the Mainlist is empty, return.
+        if mainList is None:
+            Text = translate("BoM Workbench", "No list available!!")
+            Standard_Functions.Print(Input=Text, Type="Warning")
+            return
 
-    # Get the active document
-    doc = App.ActiveDocument
+        # Get the active document
+        doc = App.ActiveDocument
 
-    # Get or create the spreadsheet.
-    sheet = App.ActiveDocument.getObject("BoM")
-    if sheet is not None:
-        for i in range(1, 16384):  # 16384 is the maximum rows of the spreadsheet module
-            doc.BoM.splitCell("A" + str(i))
-        sheet.clearAll()
-    if sheet is None:
-        sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
+        # Get or create the spreadsheet.
+        sheet = App.ActiveDocument.getObject("BoM")
+        if sheet is not None:
+            for i in range(
+                1, 16384
+            ):  # 16384 is the maximum rows of the spreadsheet module
+                doc.BoM.splitCell("A" + str(i))
+            sheet.clearAll()
+        if sheet is None:
+            sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
 
-    # Define CopyMainList and Header
-    CopyMainList = []
+        # Define CopyMainList and Header
+        CopyMainList = []
 
-    # Copy the main list
-    CopyMainList = mainList
+        # Copy the main list
+        CopyMainList = mainList
 
-    # Set the colors for the table
-    HeaderColorRGB = [243, 202, 98]
-    FirstColorRGB = [169, 169, 169]
-    SecondColorRGB = [128, 128, 128]
+        # Set the colors for the table
+        HeaderColorRGB = [243, 202, 98]
+        FirstColorRGB = [169, 169, 169]
+        SecondColorRGB = [128, 128, 128]
 
-    # Set the headers in the spreadsheet
-    if Headers is None:
-        Headers = {
-            "A1": "Number",
-            "B1": "Qty",
-            "C1": "Label",
-            "D1": "Description",
-            "E1": "Type",
-            "F1": "Name",
-            "G1": "Fullname",
-            "H1": "TypeId",
-        }
+        # region -  Set the headers in the spreadsheet
+        # If Headers is None, Set the default headers
+        if Headers is None:
+            Headers = Settings_BoM.ReturnHeaders()
 
-    # Set the cell width based on the headers as default
-    for key in Headers:
-        Cell = str(key)
-        Value = str(Headers[key])
-        sheet.set(Cell, Value)
-        # set the width based on the headers
-        Standard_Functions.SetColumnWidth_SpreadSheet(
-            sheet=sheet, column=key[:1], cellValue=Value
+        # Create a empty dict for the aditional headers
+        DebugHeadersDict = {}
+        CustomHeadersDict = {}
+
+        # Go through the debug headers
+        if DEBUG_HEADERS is not None:
+            DebugHeaderList = DEBUG_HEADERS.split(";")
+            for i in range(len(DebugHeaderList)):
+                # Set the header
+                Header = DebugHeaderList[i]
+                # Set the column
+                Column = Standard_Functions.GetLetterFromNumber(len(Headers) + i + 1)
+                # Set the cell
+                Cell = f"{Column}1"
+                # Add the cell and header as a dict item to the dict AdditionalHeaders
+                DebugHeadersDict[Cell] = Header
+        # Set the headers with additional headers
+        Headers = Settings_BoM.ReturnHeaders(
+            Headers=Headers, AdditionalHeaders=DebugHeadersDict
         )
 
-    # Style the Top row
-    sheet.setStyle("A1:H1", "bold")  # \bold|italic|underline'
+        # Go through the debug headers
+        if CustomHeadersDict is not None:
+            CustomHeaderList = self.customHeaders.split(";")
+            for i in range(len(CustomHeaderList)):
+                # Set the header
+                Header = CustomHeaderList[i]
+                # Set the column
+                Column = Standard_Functions.GetLetterFromNumber(len(Headers) + i + 1)
+                # Set the cell
+                Cell = f"{Column}1"
+                # Add the cell and header as a dict item to the dict AdditionalHeaders
+                CustomHeadersDict[Cell] = Header
+        # Set the headers with additional headers
+        Headers = Settings_BoM.ReturnHeaders(
+            Headers=Headers, AdditionalHeaders=CustomHeadersDict
+        )
 
-    # Go through the main list and add every rowList to the spreadsheet.
-    # Define a row counter
-    Row = 0
-    Column = ""
-    Value = ""
-    ValuePrevious = ""
-    TotalNoItems = 0
-    # Go through the CopyMainlist
-    for i in range(len(CopyMainList)):
-        rowList = CopyMainList[i]
-        # Set the row offset to 2. otherwise the headers will be overwritten
-        rowOffset = 2
-        # Increase the row
-        Row = i + rowOffset
+        # Define the header range based on Headers
+        HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers))}1"
 
-        # Fill the spreadsheet
-        sheet.set(
-            "A" + str(Row), "'" + str(rowList["ItemNumber"])
-        )  # add ' at the beginning to make sure it is text.
-        sheet.set("B" + str(Row), str(rowList["Qty"]))
-        sheet.set("C" + str(Row), rowList["ObjectLabel"])
-        sheet.set("D" + str(Row), rowList["DocumentObject"].Label2)
-        sheet.set("E" + str(Row), rowList["Type"])
-        sheet.set("F" + str(Row), rowList["DocumentObject"].Name)
-        sheet.set("G" + str(Row), rowList["DocumentObject"].FullName)
-        sheet.set("H" + str(Row), rowList["DocumentObject"].TypeId)
-
-        # Create the total number of items for the summary
-        TotalNoItems = TotalNoItems + int(rowList["Qty"])
-
-        # Set the column widht
+        # Set the cell width based on the headers as default
         for key in Headers:
-            Column = key[:1]
-            Value = str(sheet.getContents(Column + str(Row)))
-            ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
+            Cell = str(key)
+            Value = str(Headers[key])
+            sheet.set(Cell, Value)
+            # set the width based on the headers
+            Standard_Functions.SetColumnWidth_SpreadSheet(
+                sheet=sheet, column=key[:1], cellValue=Value
+            )
 
-            if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
-                Standard_Functions.SetColumnWidth_SpreadSheet(
-                    sheet=sheet, column=Column, cellValue=Value
-                )
+        # Style the Top row
+        sheet.setStyle(HeaderRange, "bold")  # \bold|italic|underline'
 
-    # Allign the columns
-    if Row > 1:
-        sheet.setAlignment("A1:E" + str(Row), "center", "keep")
-
-    # Style the table
-    RangeStyleHeader = "A1:H1"
-    RangeStyleTable = "A2:H" + str(Row)
-    FormatTableColors(
-        sheet=sheet,
-        HeaderRange=RangeStyleHeader,
-        TableRange=RangeStyleTable,
-        HeaderColorRGB=HeaderColorRGB,
-        FirstColorRGB=FirstColorRGB,
-        SecondColorRGB=SecondColorRGB,
-    )
-
-    # Define NoRows. This is needed for the next functions
-    NoRows = 0
-    # If a summary is requested, create a summary
-    if Summary is True:
-        # Define the counters
-        AssemblyCounter = 0
-        PartCounter = 0
-        TotalCounter = 0
-
-        # Go through the list. If it is an assembly, increase the AssemblyCounter by 1.
-        # If it is an Part, increase the PartCounter by 1. Always increase the TotalCounter.
+        # Go through the main list and add every rowList to the spreadsheet.
+        # Define a row counter
+        Row = 0
+        Column = ""
+        Value = ""
+        ValuePrevious = ""
+        TotalNoItems = 0
+        # Go through the CopyMainlist
         for i in range(len(CopyMainList)):
             rowList = CopyMainList[i]
+            # Set the row offset to 2. otherwise the headers will be overwritten
+            rowOffset = 2
+            # Increase the row
+            Row = i + rowOffset
 
-            if rowList["Type"] == "Assembly":
-                AssemblyCounter = AssemblyCounter + 1
-                TotalCounter = TotalCounter + 1
-            if rowList["Type"] == "Part":
-                PartCounter = PartCounter + 1
-                TotalCounter = TotalCounter + 1
+            # Fill the spreadsheet
+            # The standard headers
+            sheet.set(
+                "A" + str(Row), "'" + str(rowList["ItemNumber"])
+            )  # add ' at the beginning to make sure it is text.
+            sheet.set("B" + str(Row), str(rowList["Qty"]))
+            sheet.set("C" + str(Row), rowList["ObjectLabel"])
+            sheet.set(
+                "D" + str(Row),
+                self.ReturnDocProperty(rowList["DocumentObject"], "Label2"),
+            )  # This will be the description
 
-        # Define the row above which extra rows will be added.
-        RowNumber = "1"
-        # Set the number of rows to be added.
-        NoRows = 6
-        # Insert the rows and merge for each row the first three cells
-        for i in range(NoRows):
-            sheet.insertRows(RowNumber, 1)
-            sheet.mergeCells("A1:C1")
-        sheet.mergeCells("A1:D1")
+            # The debug headers
+            for i in range(4, len(Headers) + 1):
+                Column = Standard_Functions.GetLetterFromNumber(i)
+                if Headers[Column + "1"] == "Type":
+                    sheet.set(Column + str(Row), rowList["Type"])
+                elif Headers[Column + "1"].lower() == "label":
+                    sheet.set(
+                        Column + str(Row),
+                        self.ReturnDocProperty(rowList["DocumentObject"], "Label"),
+                    )
+                elif Headers[Column + "1"].lower() == "name":
+                    sheet.set(
+                        Column + str(Row),
+                        self.ReturnDocProperty(rowList["DocumentObject"], "Name"),
+                    )
+                elif Headers[Column + "1"].lower() == "fullname":
+                    sheet.set(
+                        Column + str(Row),
+                        self.ReturnDocProperty(rowList["DocumentObject"], "FullName"),
+                    )
+                elif Headers[Column + "1"].lower() == "typeid":
+                    sheet.set(
+                        Column + str(Row),
+                        self.ReturnDocProperty(rowList["DocumentObject"], "TypeId"),
+                    )
+                else:
+                    sheet.set(
+                        Column + str(Row),
+                        self.ReturnViewProperty(
+                            rowList["DocumentObject"], Headers[Column + "1"]
+                        ),
+                    )
 
-        # Fill in the cells
-        sheet.set("A1", "Summary")
-        sheet.set("A2", "The total number of items:")
-        sheet.set("A3", "Number of unique parts:")
-        sheet.set("A4", "Number of unique assemblies:")
-        sheet.set("A5", "The total number of unique items:")
-        sheet.set("D2", str(TotalNoItems))
-        sheet.set("D3", str(PartCounter))
-        sheet.set("D4", str(AssemblyCounter))
-        sheet.set("D5", str(TotalCounter))
+            # Create the total number of items for the summary
+            TotalNoItems = TotalNoItems + int(rowList["Qty"])
 
-        # Align the cells
-        sheet.setAlignment("A1:C5", "left", "keep")
-        sheet.setAlignment("D1:D5", "center", "keep")
+            # Set the column widht
+            for key in Headers:
+                Column = key[:1]
+                Value = str(sheet.getContents(Column + str(Row)))
+                ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
+
+                if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
+                    Standard_Functions.SetColumnWidth_SpreadSheet(
+                        sheet=sheet, column=Column, cellValue=Value
+                    )
+
+        # Allign the columns
+        if Row > 1:
+            sheet.setAlignment(
+                "A1:"
+                + str(Standard_Functions.GetLetterFromNumber(len(Headers)))
+                + str(Row),
+                "center",
+                "keep",
+            )
 
         # Style the table
-        RangeStyleHeader = "A1:D1"
-        RangeStyleTable = "A2:D5"
-        FormatTableColors(
+        RangeStyleHeader = HeaderRange
+        RangeStyleTable = (
+            "A2:" + str(Standard_Functions.GetLetterFromNumber(len(Headers))) + str(Row)
+        )
+        self.FormatTableColors(
             sheet=sheet,
             HeaderRange=RangeStyleHeader,
             TableRange=RangeStyleTable,
@@ -214,472 +233,628 @@ def createBoMSpreadsheet(mainList: list, Headers: dict = None, Summary: bool = F
             SecondColorRGB=SecondColorRGB,
         )
 
-    # Add the end of the BoM add indentifaction data
-    # Set the row to start from
-    Row = Row + NoRows + 2
+        # Define NoRows. This is needed for the next functions
+        NoRows = 0
+        # If a summary is requested, create a summary
+        if Summary is True:
+            # Define the counters
+            AssemblyCounter = 0
+            PartCounter = 0
+            TotalCounter = 0
 
-    # Merge cells for the next four rows
-    sheet.mergeCells(f"A{str(Row)}:D{str(Row)}")
-    sheet.mergeCells(f"A{str(Row+1)}:D{str(Row+1)}")
-    sheet.mergeCells(f"A{str(Row+2)}:D{str(Row+2)}")
-    sheet.mergeCells(f"A{str(Row+3)}:D{str(Row+3)}")
+            # Go through the list. If it is an assembly, increase the AssemblyCounter by 1.
+            # If it is an Part, increase the PartCounter by 1. Always increase the TotalCounter.
+            for i in range(len(CopyMainList)):
+                rowList = CopyMainList[i]
 
-    # Define the created by value. If no document information is available, use the OS account info.
-    CreatedBy = doc.LastModifiedBy
-    if CreatedBy == "":
-        CreatedBy = os.getlogin()
+                if rowList["Type"] == "Assembly":
+                    AssemblyCounter = AssemblyCounter + 1
+                    TotalCounter = TotalCounter + 1
+                if rowList["Type"] == "Part":
+                    PartCounter = PartCounter + 1
+                    TotalCounter = TotalCounter + 1
 
-    # Fill in the cells with Date, time, created by and for which file.
-    sheet.set("A" + str(Row), "File information")
-    sheet.set(
-        "A" + str(Row + 1),
-        f"BoM created at:   {datetime.today().strftime('%Y-%m-%d %H:%M:%S')}",
-    )
-    sheet.set("A" + str(Row + 2), f"BoM created by:   {CreatedBy}")
-    sheet.set(
-        "A" + str(Row + 3),
-        f"BoM created for file:   ../{os.path.basename(doc.FileName)}",
-    )
+            # Define the row above which extra rows will be added.
+            RowNumber = "1"
+            # Set the number of rows to be added.
+            NoRows = 6
+            # Insert the rows and merge for each row the first three cells
+            for i in range(NoRows):
+                sheet.insertRows(RowNumber, 1)
+                sheet.mergeCells("A1:C1")
+            sheet.mergeCells("A1:D1")
 
-    # Align the cells
-    sheet.setAlignment(f"A{str(Row)}:C{str(Row + 3)}", "left", "keep")
-
-    # Style the table
-    RangeStyleHeader = f"A{str(Row)}:D{str(Row)}"
-    RangeStyleTable = f"A{str(Row+1)}:D{str(Row+3)}"
-    FormatTableColors(
-        sheet=sheet,
-        HeaderRange=RangeStyleHeader,
-        TableRange=RangeStyleTable,
-        HeaderColorRGB=HeaderColorRGB,
-        FirstColorRGB=FirstColorRGB,
-        SecondColorRGB=SecondColorRGB,
-    )
-
-    # Recompute the document
-    doc.recompute(None, True, True)
-
-    return
-
-
-def FormatTableColors(
-    sheet,
-    HeaderRange,
-    TableRange,
-    HeaderColorRGB,
-    FirstColorRGB,
-    SecondColorRGB,
-    ForeGroundHeaderRGB=[0, 0, 0],
-    ForeGroundTable=[0, 0, 0],
-    HeaderStyle="bold",
-    TableStyle="",
-):
-    """_summary_
-
-    Args:
-        sheet (object): FreeCAD sheet object
-        HeaderRange (string): Range for the header.
-        TableRange (string): Range for the table
-        HeaderColorRGB (List): RGB color for the header. (e.g. [255, 255, 255])
-        FirstColorRGB (list): RGB color for every 1st row. (e.g. [255, 255, 255])
-        SecondColorRGB (list): RGB color for every 2nd row. (e.g. [255, 255, 255])
-        ForeGroundHeaderRGB (list, optional): _description_. Defaults to [0, 0, 0].
-        ForeGroundTable (list, optional): _description_. Defaults to [0, 0, 0].
-        HeaderStyle (str, optional): Font style for the header. (bold|italic|underline) Defaults to "bold".
-        TableStyle (str, optional): Font style for the table. (bold|italic|underline) Defaults to "".
-    """
-
-    # Format the header ------------------------------------------------------------------------------------------------
-    # Set the font style for the header
-    if HeaderStyle != "":
-        sheet.setStyle(HeaderRange, HeaderStyle)  # \bold|italic|underline'
-    # Set the colors for the header
-    sheet.setBackground(HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB))
-    sheet.setForeground(
-        HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB)
-    )  # RGBA
-    # ------------------------------------------------------------------------------------------------------------------
-
-    # Format the table -------------------------------------------------------------------------------------------------
-    # Get the first column and first row
-    TableRangeColumnStart = Standard_Functions.RemoveNumbersFromString(
-        TableRange.split(":")[0]
-    )
-    TableRangeRowStart = int(
-        Standard_Functions.RemoveLettersFromString(TableRange.split(":")[0])
-    )
-
-    # Get the last column and last row
-    TableRangeColumnEnd = Standard_Functions.RemoveNumbersFromString(
-        TableRange.split(":")[1]
-    )
-    TableRangeRowEnd = int(
-        Standard_Functions.RemoveLettersFromString(TableRange.split(":")[1])
-    )
-
-    # Calculate the delta between the start and end of the table in vertical direction (Rows).
-    DeltaRange = TableRangeRowEnd - TableRangeRowStart + 1
-    # Go through the range
-    for i in range(1, DeltaRange + 2, 2):
-        # Correct the position
-        j = i - 1
-        # Define the first row
-        FirstRow = f"{TableRangeColumnStart}{str(j+TableRangeRowStart)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart)}"
-        # Define the second row
-        SecondRow = f"{TableRangeColumnStart}{str(j+TableRangeRowStart+1)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart+1)}"
-
-        # if the first and second rows are within the range, set the colors
-        if i <= DeltaRange:
-            sheet.setBackground(
-                FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB)
+            # Fill in the cells
+            sheet.set("A1", translate("BoM Workbench", "Summary"))
+            sheet.set("A2", translate("BoM Workbench", "The total number of items:"))
+            sheet.set("A3", translate("BoM Workbench", "Number of unique parts:"))
+            sheet.set("A4", translate("BoM Workbench", "Number of unique assemblies:"))
+            sheet.set(
+                "A5", translate("BoM Workbench", "The total number of unique items:")
             )
-            sheet.setForeground(
-                FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable)
-            )
-        if i + 1 <= DeltaRange:
-            sheet.setBackground(
-                SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB)
-            )
-            sheet.setForeground(
-                SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable)
+            sheet.set("D2", str(TotalNoItems))
+            sheet.set("D3", str(PartCounter))
+            sheet.set("D4", str(AssemblyCounter))
+            sheet.set("D5", str(TotalCounter))
+
+            # Align the cells
+            sheet.setAlignment("A1:C5", "left", "keep")
+            sheet.setAlignment("D1:D5", "center", "keep")
+
+            # Style the table
+            RangeStyleHeader = "A1:D1"
+            RangeStyleTable = "A2:D5"
+            self.FormatTableColors(
+                sheet=sheet,
+                HeaderRange=RangeStyleHeader,
+                TableRange=RangeStyleTable,
+                HeaderColorRGB=HeaderColorRGB,
+                FirstColorRGB=FirstColorRGB,
+                SecondColorRGB=SecondColorRGB,
             )
 
-        # Set the font style for the table
-        if TableStyle != "":
-            sheet.setStyle(TableRange, TableStyle)  # \bold|italic|underline'
-    # ------------------------------------------------------------------------------------------------------------------
-    return
+        # Add the end of the BoM add indentifaction data
+        # Set the row to start from
+        Row = Row + NoRows + 2
 
+        # Merge cells for the next four rows
+        sheet.mergeCells(f"A{str(Row)}:D{str(Row)}")
+        sheet.mergeCells(f"A{str(Row+1)}:D{str(Row+1)}")
+        sheet.mergeCells(f"A{str(Row+2)}:D{str(Row+2)}")
+        sheet.mergeCells(f"A{str(Row+3)}:D{str(Row+3)}")
 
-# Functions to count  document objects in a list based on the itemnumber of their parent.
-def ObjectCounter_ItemNumber(
-    ListItem,
-    ItemNumber: str,
-    BomList: list,
-    ObjectBasedPart: bool = True,
-    ObjectBasedAssy: bool = False,
-) -> int:
-    """_summary_
+        # Define the created by value. If no document information is available, use the OS account info.
+        CreatedBy = doc.LastModifiedBy
+        if CreatedBy == "":
+            CreatedBy = os.getlogin()
 
-    Args:
-        ListItem (dict): Item from main list.
-        ItemNumber (str): Item number of document object.
-        BomList (list): complete main list.
-        ObjectBased (bool, optional): Compare objects (True) or object.labels (False) Defaults to True.
-        CompareAssy (bool, optional): Compare objects when they are an assembly.(ObjectBased must be False)) Defaults to False.
+        # Fill in the cells with Date, time, created by and for which file.
+        sheet.set("A" + str(Row), translate("BoM Workbench", "File information"))
+        sheet.set(
+            "A" + str(Row + 1),
+            f"{translate('BoM Workbench', 'BoM created at')}:   {datetime.today().strftime('%Y-%m-%d %H:%M:%S')}",
+        )
+        sheet.set(
+            "A" + str(Row + 2),
+            f"{translate('BoM Workbench', 'BoM created by')}:   {CreatedBy}",
+        )
+        sheet.set(
+            "A" + str(Row + 3),
+            f"{translate('BoM Workbench', 'BoM created for file')}:   ../{os.path.basename(doc.FileName)}",
+        )
 
-    Returns:
-        int: number of document number in item number range.
-    """
-    ObjectNameValuePart = "Object"
-    if ObjectBasedPart is False:
-        ObjectNameValuePart = "ObjectLabel"
+        # Align the cells
+        sheet.setAlignment(f"A{str(Row)}:C{str(Row + 3)}", "left", "keep")
 
-    ObjectNameValueAssy = "Object"
-    if ObjectBasedAssy is False:
-        ObjectNameValueAssy = "ObjectLabel"
+        # Style the table
+        RangeStyleHeader = f"A{str(Row)}:D{str(Row)}"
+        RangeStyleTable = f"A{str(Row+1)}:D{str(Row+3)}"
+        self.FormatTableColors(
+            sheet=sheet,
+            HeaderRange=RangeStyleHeader,
+            TableRange=RangeStyleTable,
+            HeaderColorRGB=HeaderColorRGB,
+            FirstColorRGB=FirstColorRGB,
+            SecondColorRGB=SecondColorRGB,
+        )
 
-    # Set the counter
-    counter = 0
+        # Recompute the document
+        doc.recompute(None, True, True)
 
-    # Go Through the objectList
-    for i in range(len(BomList)):
-        # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
-        # If the itemnumber is more than one level deep:
-        if len(ItemNumber.split(".")) > 1:
-            if (
-                BomList[i]["ItemNumber"].rsplit(".", 1)[0]
-                == ItemNumber.rsplit(".", 1)[0]
-            ):
-                if ListItem["Type"] == "Part":
-                    if ObjectNameValuePart == "Object":
-                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
-                            counter = counter + 1
-                    if ObjectNameValuePart == "ObjectLabel":
-                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
-                            counter = counter + 1
-                if ListItem["Type"] == "Assembly":
-                    if ObjectNameValueAssy == "Object":
-                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
-                            counter = counter + 1
-                    if ObjectNameValueAssy == "ObjectLabel":
-                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
-                            counter = counter + 1
+        return
 
-        # If the itemnumber is one level deep:
-        if len(ItemNumber.split(".")) == 1 and len(BomList[i]["ItemNumber"]) == 1:
-            if (
-                BomList[i]["ItemNumber"].rsplit(".", 1)[0]
-                == ItemNumber.rsplit(".", 1)[0]
-            ):
-                if ListItem["Type"] == "Part":
-                    if ObjectNameValuePart == "Object":
-                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
-                            counter = counter + 1
-                    if ObjectNameValuePart == "ObjectLabel":
-                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
-                            counter = counter + 1
-                if ListItem["Type"] == "Assembly":
-                    if ObjectNameValueAssy == "Object":
-                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
-                            counter = counter + 1
-                    if ObjectNameValueAssy == "ObjectLabel":
-                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
-                            counter = counter + 1
+    @classmethod
+    def FormatTableColors(
+        self,
+        sheet,
+        HeaderRange,
+        TableRange,
+        HeaderColorRGB,
+        FirstColorRGB,
+        SecondColorRGB,
+        ForeGroundHeaderRGB=[0, 0, 0],
+        ForeGroundTable=[0, 0, 0],
+        HeaderStyle="bold",
+        TableStyle="",
+    ):
+        """_summary_
 
-    # Return the counter
-    return counter
+        Args:
+            sheet (object): FreeCAD sheet object
+            HeaderRange (string): Range for the header.
+            TableRange (string): Range for the table
+            HeaderColorRGB (List): RGB color for the header. (e.g. [255, 255, 255])
+            FirstColorRGB (list): RGB color for every 1st row. (e.g. [255, 255, 255])
+            SecondColorRGB (list): RGB color for every 2nd row. (e.g. [255, 255, 255])
+            ForeGroundHeaderRGB (list, optional): _description_. Defaults to [0, 0, 0].
+            ForeGroundTable (list, optional): _description_. Defaults to [0, 0, 0].
+            HeaderStyle (str, optional): Font style for the header. (bold|italic|underline) Defaults to "bold".
+            TableStyle (str, optional): Font style for the table. (bold|italic|underline) Defaults to "".
+        """
 
+        # Format the header ------------------------------------------------------------------------------------------------
+        # Set the font style for the header
+        if HeaderStyle != "":
+            sheet.setStyle(HeaderRange, HeaderStyle)  # \bold|italic|underline'
+        # Set the colors for the header
+        sheet.setBackground(
+            HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB)
+        )
+        sheet.setForeground(
+            HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB)
+        )  # RGBA
+        # ------------------------------------------------------------------------------------------------------------------
 
-def ListContainsCheck(List: list, Item1, Item2, Item3) -> bool:
-    for i in range(len(List)):
-        rowItem = List[i]
-        ListItem1 = rowItem["Item1"]
-        ListItem2 = rowItem["Item2"]
-        ListItem3 = rowItem["Item3"]
+        # Format the table -------------------------------------------------------------------------------------------------
+        # Get the first column and first row
+        TableRangeColumnStart = Standard_Functions.RemoveNumbersFromString(
+            TableRange.split(":")[0]
+        )
+        TableRangeRowStart = int(
+            Standard_Functions.RemoveLettersFromString(TableRange.split(":")[0])
+        )
 
-        if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
-            return True
+        # Get the last column and last row
+        TableRangeColumnEnd = Standard_Functions.RemoveNumbersFromString(
+            TableRange.split(":")[1]
+        )
+        TableRangeRowEnd = int(
+            Standard_Functions.RemoveLettersFromString(TableRange.split(":")[1])
+        )
 
-    return False
+        # Calculate the delta between the start and end of the table in vertical direction (Rows).
+        DeltaRange = TableRangeRowEnd - TableRangeRowStart + 1
+        # Go through the range
+        for i in range(1, DeltaRange + 2, 2):
+            # Correct the position
+            j = i - 1
+            # Define the first row
+            FirstRow = f"{TableRangeColumnStart}{str(j+TableRangeRowStart)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart)}"
+            # Define the second row
+            SecondRow = f"{TableRangeColumnStart}{str(j+TableRangeRowStart+1)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart+1)}"
 
+            # if the first and second rows are within the range, set the colors
+            if i <= DeltaRange:
+                sheet.setBackground(
+                    FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB)
+                )
+                sheet.setForeground(
+                    FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable)
+                )
+            if i + 1 <= DeltaRange:
+                sheet.setBackground(
+                    SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB)
+                )
+                sheet.setForeground(
+                    SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable)
+                )
 
-# Functions to count  document objects in a list. Can be object based or List row based comparison
-def ObjectCounter(
-    DocObject=None,
-    RowItem: dict = None,
-    mainList: list = None,
-    ObjectNameBased: bool = True,
-) -> int:
-    """_summary_
-    Use this function only two ways:\n
-    1. Enter an DocumentObject (DocObject) and a BoM list with a tuples as items (mainList). RowItem must be None.
-    2. Enter an RowItem from a BoM List (RowItem), a BoM list with tuples as items (mainList) and set ObjectNameBased to True or False.\n
-       DocObject must be None.\n
+            # Set the font style for the table
+            if TableStyle != "":
+                sheet.setStyle(TableRange, TableStyle)  # \bold|italic|underline'
+        # ------------------------------------------------------------------------------------------------------------------
+        return
 
-    Args:
-        DocObject (FreeCAD.DocumentObject, optional): DocumentObject to search for. Defaults to None.
-        RowItem (dict, optional): List item to search for. Defaults to None.
-        ItemList (list, optional): The item or Document object list. Defaults to None.
-        ObjectNameType (bool, optional): Set to true if the counter must be Name based or False if the counter must be Label based.
+    # Functions to count  document objects in a list based on the itemnumber of their parent.
+    @classmethod
+    def ObjectCounter_ItemNumber(
+        self,
+        ListItem,
+        ItemNumber: str,
+        BomList: list,
+        ObjectBasedPart: bool = True,
+        ObjectBasedAssy: bool = False,
+    ) -> int:
+        """_summary_
 
-    Returns:
-        int: _description_
-    """
-    ObjectBased = False
-    ListRowBased = False
-    if DocObject is not None and RowItem is None:
-        ObjectBased = True
-    if DocObject is None and RowItem is not None:
-        ListRowBased = True
-    else:
-        return 0
+        Args:
+            ListItem (dict): Item from main list.
+            ItemNumber (str): Item number of document object.
+            BomList (list): complete main list.
+            ObjectBased (bool, optional): Compare objects (True) or object.labels (False) Defaults to True.
+            CompareAssy (bool, optional): Compare objects when they are an assembly.(ObjectBased must be False)) Defaults to False.
 
-    ObjectNameValue = "ObjectName"
-    if ObjectNameBased is False:
-        ObjectNameValue = "ObjectLabel"
+        Returns:
+            int: number of document number in item number range.
+        """
+        ObjectNameValuePart = "Object"
+        if ObjectBasedPart is False:
+            ObjectNameValuePart = "ObjectLabel"
 
-    # Set the counter
-    counter = 0
+        ObjectNameValueAssy = "Object"
+        if ObjectBasedAssy is False:
+            ObjectNameValueAssy = "ObjectLabel"
 
-    # Go Through the mainList
-    # If ObjectBased is True, compare the objects
-    if ObjectBased is True:
-        for i in range(len(mainList)):
-            # If the document object  in the list is equal to DocObject, increase the counter by one.
-            if mainList[i]["DocumentObject"] == DocObject:
-                counter = counter + 1
+        # Set the counter
+        counter = 0
 
-    # If ListRowBased is True, compare the name and type of the objects. These are stored in the list items.
-    if ListRowBased is True:
-        for i in range(len(mainList)):
-            ObjectName = mainList[i][ObjectNameValue]
-            ObjectType = mainList[i]["DocumentObject"].TypeId
+        # Go Through the objectList
+        for i in range(len(BomList)):
+            # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
+            # If the itemnumber is more than one level deep:
+            if len(ItemNumber.split(".")) > 1:
+                if (
+                    BomList[i]["ItemNumber"].rsplit(".", 1)[0]
+                    == ItemNumber.rsplit(".", 1)[0]
+                ):
+                    if ListItem["Type"] == "Part":
+                        if ObjectNameValuePart == "Object":
+                            if (
+                                BomList[i]["DocumentObject"]
+                                == ListItem["DocumentObject"]
+                            ):
+                                counter = counter + 1
+                        if ObjectNameValuePart == "ObjectLabel":
+                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                                counter = counter + 1
+                    if ListItem["Type"] == "Assembly":
+                        if ObjectNameValueAssy == "Object":
+                            if (
+                                BomList[i]["DocumentObject"]
+                                == ListItem["DocumentObject"]
+                            ):
+                                counter = counter + 1
+                        if ObjectNameValueAssy == "ObjectLabel":
+                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                                counter = counter + 1
 
-            # If the object name and type of the object in the list are equal to that of the DocObject,
-            # increase the counter by one
-            if (
-                RowItem[ObjectNameValue] == ObjectName
-                and RowItem["DocumentObject"].TypeId == ObjectType
-            ):
-                counter = counter + 1
+            # If the itemnumber is one level deep:
+            if len(ItemNumber.split(".")) == 1 and len(BomList[i]["ItemNumber"]) == 1:
+                if (
+                    BomList[i]["ItemNumber"].rsplit(".", 1)[0]
+                    == ItemNumber.rsplit(".", 1)[0]
+                ):
+                    if ListItem["Type"] == "Part":
+                        if ObjectNameValuePart == "Object":
+                            if (
+                                BomList[i]["DocumentObject"]
+                                == ListItem["DocumentObject"]
+                            ):
+                                counter = counter + 1
+                        if ObjectNameValuePart == "ObjectLabel":
+                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                                counter = counter + 1
+                    if ListItem["Type"] == "Assembly":
+                        if ObjectNameValueAssy == "Object":
+                            if (
+                                BomList[i]["DocumentObject"]
+                                == ListItem["DocumentObject"]
+                            ):
+                                counter = counter + 1
+                        if ObjectNameValueAssy == "ObjectLabel":
+                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                                counter = counter + 1
 
-    # Return the counter
-    return counter
+        # Return the counter
+        return counter
 
+    @classmethod
+    def ListContainsCheck(self, List: list, Item1, Item2, Item3) -> bool:
+        for i in range(len(List)):
+            rowItem = List[i]
+            ListItem1 = rowItem["Item1"]
+            ListItem2 = rowItem["Item2"]
+            ListItem3 = rowItem["Item3"]
 
-# Function to correct the items of the BoM after filtering has taken place.
-def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
-    """_summary_
+            if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
+                return True
 
-    Args:
-        BoMList (list): The list that needs correction.
-        DebugMode (bool, optional): If set to True, all itemnumber will be reported. Defaults to False.
+        return False
 
-    Returns:
-        list: The corrected list.
-    """
-    TemporaryList = []
-    # Go throug the list
-    for i in range(len(BoMList)):
-        TemporaryList.append(BoMList[i])
+    # Functions to count  document objects in a list. Can be object based or List row based comparison.
+    @classmethod
+    def ObjectCounter(
+        self,
+        DocObject=None,
+        RowItem: dict = None,
+        mainList: list = None,
+        ObjectNameBased: bool = True,
+    ) -> int:
+        """_summary_
+        Use this function only two ways:\n
+        1. Enter an DocumentObject (DocObject) and a BoM list with a tuples as items (mainList). RowItem must be None.
+        2. Enter an RowItem from a BoM List (RowItem), a BoM list with tuples as items (mainList) and set ObjectNameBased to True or False.\n
+        DocObject must be None.\n
 
-        if i > 1:
-            # Get the list item from the new temporary list
-            rowItem = TemporaryList[i]
+        Args:
+            DocObject (FreeCAD.DocumentObject, optional): DocumentObject to search for. Defaults to None.
+            RowItem (dict, optional): List item to search for. Defaults to None.
+            ItemList (list, optional): The item or Document object list. Defaults to None.
+            ObjectNameType (bool, optional): Set to true if the counter must be Name based or False if the counter must be Label based.
 
-            # Get the item and define the current itemnumber from the original list
-            rowItemOriginal = BoMList[i]
-            ItemNumberOriginal = str(rowItemOriginal["ItemNumber"])
+        Returns:
+            int: _description_
+        """
+        ObjectBased = False
+        ListRowBased = False
+        if DocObject is not None and RowItem is None:
+            ObjectBased = True
+        if DocObject is None and RowItem is not None:
+            ListRowBased = True
+        else:
+            return 0
 
-            # Get the previous item from the new temporary list and define the itemnumber
-            RowItemPrevious = TemporaryList[i - 1]
-            ItemNumberPrevious = str(RowItemPrevious["ItemNumber"])
+        ObjectNameValue = "ObjectName"
+        if ObjectNameBased is False:
+            ObjectNameValue = "ObjectLabel"
 
-            # create a new empty itemnumber as a placeholder
-            NewItemNumber = ""
+        # Set the counter
+        counter = 0
 
-            # Get the previous item from the original list and define the itemnumber
-            RowItemPreviousOriginal = BoMList[i - 1]
-            ItemNumberPreviousOriginal = str(RowItemPreviousOriginal["ItemNumber"])
+        # Go Through the mainList
+        # If ObjectBased is True, compare the objects
+        if ObjectBased is True:
+            for i in range(len(mainList)):
+                # If the document object  in the list is equal to DocObject, increase the counter by one.
+                if mainList[i]["DocumentObject"] == DocObject:
+                    counter = counter + 1
 
-            # Create a new row item for the temporary row.
-            # The comparison is done with the items from the original list.
-            # This way you are certain the comparison is not done on a changing list.
-            # The term longer, shorter, equal means the times the splitter "." is present.
-            # ----------------------------------------------------------------------------------------------------------
-            #
-            # If the previous itemnumber is shorter than the current itemnumber,
-            # you have the first item in a subassembly.
-            # Add ".1" and you have the itemnumber for this first item. (e.g. 1.1 -> 1.1.1)
-            if len(ItemNumberPreviousOriginal.split(".")) < len(
-                ItemNumberOriginal.split(".")
-            ):
-                # Define the new itemnumber.
-                NewItemNumber = str(ItemNumberPrevious) + ".1"
+        # If ListRowBased is True, compare the name and type of the objects. These are stored in the list items.
+        if ListRowBased is True:
+            for i in range(len(mainList)):
+                ObjectName = mainList[i][ObjectNameValue]
+                ObjectType = mainList[i]["DocumentObject"].TypeId
 
-            # If the previous itemnumber is as long as the current itemnumber,
-            # you have an item of a subassembly that is not the first item.
-            if len(ItemNumberPreviousOriginal.split(".")) == len(
-                ItemNumberOriginal.split(".")
-            ):
-                # If the current item is a first level item, increase the number by 1.
-                if len(ItemNumberOriginal.split(".")) == 1:
-                    NewItemNumber = str(int(ItemNumberPrevious) + 1)
-                # If the current item is a level deeper then one, split the itemnumber in two parts.
-                # The first part is the number without the last digit. This won't change.
-                # The second part is the last digit. Increase this by one.
-                # The new itemnumber is the combined string of part 1 and modified part 2.
-                if len(ItemNumberOriginal.split(".")) > 1:
-                    Part1 = str(ItemNumberPrevious.rsplit(".", 1)[0])
-                    Part2 = str(int(ItemNumberPrevious.rsplit(".", 1)[1]) + 1)
-                    NewItemNumber = Part1 + "." + Part2
+                # If the object name and type of the object in the list are equal to that of the DocObject,
+                # increase the counter by one
+                if (
+                    RowItem[ObjectNameValue] == ObjectName
+                    and RowItem["DocumentObject"].TypeId == ObjectType
+                ):
+                    counter = counter + 1
 
-            # If the previous itemnumber is longer than the current itemnumber, you have a new subassembly.
-            if len(ItemNumberPreviousOriginal.split(".")) > len(
-                ItemNumberOriginal.split(".")
-            ):
-                # if the new subassembly is at the first level, split the previous itemnumber in two
-                # to get the first digit and increase this by one.
-                if len(ItemNumberOriginal.split(".")) == 1:
-                    NewItemNumber = str(int(ItemNumberPrevious.split(".")[0]) + 1)
-                # If the current item is a level deeper then one, determine the length of the current item.
-                # Use this to create a new itemnumber from the previous itemnumber but based on the current number.
-                # Simply removing the last digit won't always work because it is not garuanteed that the new subassembly
-                # is just one level higher in the order. (e.g., you can go from 1.2.4.5 to the next assembly at 1.3)
-                if len(ItemNumberOriginal.split(".")) > 1:
-                    # Get the length for the new itemnumber
-                    Length = len(ItemNumberOriginal.split("."))
-                    # Create a list of all the numbers from the previous itemnumber.
-                    ItemNumberSplit = ItemNumberPrevious.split(".")
-                    # Define a temporary itemnumber. Then add the next part from the list to it.
-                    # Do this until the  temporary itemnumber has correct length.
-                    Part0 = str(ItemNumberSplit[0])
-                    for j in range(1, len(ItemNumberSplit) - 1):
-                        if j <= Length:
-                            Part0 = Part0 + "." + str(ItemNumberSplit[j])
-                    # Split the temporary itemnumber into two parts.
+        # Return the counter
+        return counter
+
+    # Function to correct the items of the BoM after filtering has taken place.
+    @classmethod
+    def CorrectItemNumbers(self, BoMList: list, DebugMode: bool = False) -> list:
+        """_summary_
+
+        Args:
+            BoMList (list): The list that needs correction.
+            DebugMode (bool, optional): If set to True, all itemnumber will be reported. Defaults to False.
+
+        Returns:
+            list: The corrected list.
+        """
+        TemporaryList = []
+        # Go throug the list
+        for i in range(len(BoMList)):
+            TemporaryList.append(BoMList[i])
+
+            if i > 1:
+                # Get the list item from the new temporary list
+                rowItem = TemporaryList[i]
+
+                # Get the item and define the current itemnumber from the original list
+                rowItemOriginal = BoMList[i]
+                ItemNumberOriginal = str(rowItemOriginal["ItemNumber"])
+
+                # Get the previous item from the new temporary list and define the itemnumber
+                RowItemPrevious = TemporaryList[i - 1]
+                ItemNumberPrevious = str(RowItemPrevious["ItemNumber"])
+
+                # create a new empty itemnumber as a placeholder
+                NewItemNumber = ""
+
+                # Get the previous item from the original list and define the itemnumber
+                RowItemPreviousOriginal = BoMList[i - 1]
+                ItemNumberPreviousOriginal = str(RowItemPreviousOriginal["ItemNumber"])
+
+                # Create a new row item for the temporary row.
+                # The comparison is done with the items from the original list.
+                # This way you are certain the comparison is not done on a changing list.
+                # The term longer, shorter, equal means the times the splitter "." is present.
+                # ----------------------------------------------------------------------------------------------------------
+                #
+                # If the previous itemnumber is shorter than the current itemnumber,
+                # you have the first item in a subassembly.
+                # Add ".1" and you have the itemnumber for this first item. (e.g. 1.1 -> 1.1.1)
+                if len(ItemNumberPreviousOriginal.split(".")) < len(
+                    ItemNumberOriginal.split(".")
+                ):
+                    # Define the new itemnumber.
+                    NewItemNumber = str(ItemNumberPrevious) + ".1"
+
+                # If the previous itemnumber is as long as the current itemnumber,
+                # you have an item of a subassembly that is not the first item.
+                if len(ItemNumberPreviousOriginal.split(".")) == len(
+                    ItemNumberOriginal.split(".")
+                ):
+                    # If the current item is a first level item, increase the number by 1.
+                    if len(ItemNumberOriginal.split(".")) == 1:
+                        NewItemNumber = str(int(ItemNumberPrevious) + 1)
+                    # If the current item is a level deeper then one, split the itemnumber in two parts.
                     # The first part is the number without the last digit. This won't change.
                     # The second part is the last digit. Increase this by one.
                     # The new itemnumber is the combined string of part 1 and modified part 2.
-                    Part1 = str(Part0.rsplit(".", 1)[0])
-                    Part2 = str(int(Part0.rsplit(".", 1)[1]) + 1)
-                    NewItemNumber = Part1 + "." + Part2
-            # ----------------------------------------------------------------------------------------------------------
+                    if len(ItemNumberOriginal.split(".")) > 1:
+                        Part1 = str(ItemNumberPrevious.rsplit(".", 1)[0])
+                        Part2 = str(int(ItemNumberPrevious.rsplit(".", 1)[1]) + 1)
+                        NewItemNumber = Part1 + "." + Part2
 
-            # Define the new rowList item.
-            rowListNew = {
-                "ItemNumber": NewItemNumber,
-                "DocumentObject": rowItem["DocumentObject"],
-                "ObjectLabel": rowItem["ObjectLabel"],
-                "ObjectName": rowItem["ObjectName"],
-                "Qty": rowItem["Qty"],
-                "Type": rowItem["Type"],
-            }
-            # Replace the last item in the temporary list with this new one.
-            TemporaryList.pop()
-            TemporaryList.append(rowListNew)
+                # If the previous itemnumber is longer than the current itemnumber, you have a new subassembly.
+                if len(ItemNumberPreviousOriginal.split(".")) > len(
+                    ItemNumberOriginal.split(".")
+                ):
+                    # if the new subassembly is at the first level, split the previous itemnumber in two
+                    # to get the first digit and increase this by one.
+                    if len(ItemNumberOriginal.split(".")) == 1:
+                        NewItemNumber = str(int(ItemNumberPrevious.split(".")[0]) + 1)
+                    # If the current item is a level deeper then one, determine the length of the current item.
+                    # Use this to create a new itemnumber from the previous itemnumber but based on the current number.
+                    # Simply removing the last digit won't always work because it is not garuanteed that the new subassembly
+                    # is just one level higher in the order. (e.g., you can go from 1.2.4.5 to the next assembly at 1.3)
+                    if len(ItemNumberOriginal.split(".")) > 1:
+                        # Get the length for the new itemnumber
+                        Length = len(ItemNumberOriginal.split("."))
+                        # Create a list of all the numbers from the previous itemnumber.
+                        ItemNumberSplit = ItemNumberPrevious.split(".")
+                        # Define a temporary itemnumber. Then add the next part from the list to it.
+                        # Do this until the  temporary itemnumber has correct length.
+                        Part0 = str(ItemNumberSplit[0])
+                        for j in range(1, len(ItemNumberSplit) - 1):
+                            if j <= Length:
+                                Part0 = Part0 + "." + str(ItemNumberSplit[j])
+                        # Split the temporary itemnumber into two parts.
+                        # The first part is the number without the last digit. This won't change.
+                        # The second part is the last digit. Increase this by one.
+                        # The new itemnumber is the combined string of part 1 and modified part 2.
+                        Part1 = str(Part0.rsplit(".", 1)[0])
+                        Part2 = str(int(Part0.rsplit(".", 1)[1]) + 1)
+                        NewItemNumber = Part1 + "." + Part2
+                # ----------------------------------------------------------------------------------------------------------
 
-    # If in debug mode, print the resulting list of numbers
-    if DebugMode is True:
-        for i in range(len(TemporaryList)):
-            Standard_Functions.Print(TemporaryList[i]["ItemNumber"], "Log")
+                # Define the new rowList item.
+                rowListNew = {
+                    "ItemNumber": NewItemNumber,
+                    "DocumentObject": rowItem["DocumentObject"],
+                    "ObjectLabel": rowItem["ObjectLabel"],
+                    "ObjectName": rowItem["ObjectName"],
+                    "Qty": rowItem["Qty"],
+                    "Type": rowItem["Type"],
+                }
+                # Replace the last item in the temporary list with this new one.
+                TemporaryList.pop()
+                TemporaryList.append(rowListNew)
 
-    # Return the result.
-    return TemporaryList
+        # If in debug mode, print the resulting list of numbers
+        if DebugMode is True:
+            for i in range(len(TemporaryList)):
+                Standard_Functions.Print(TemporaryList[i]["ItemNumber"], "Log")
 
+        # Return the result.
+        return TemporaryList
 
-# Function to check the type of workbench
-def CheckAssemblyType(DocObject):
-    """_summary_
+    # Function to check the type of workbench
+    @classmethod
+    def CheckAssemblyType(self, DocObject):
+        """_summary_
 
-    Args:
-        DocObject (App.DocumentObject): The DocumentObject
+        Args:
+            DocObject (App.DocumentObject): The DocumentObject
 
-    Returns:
-        string: The assembly type as a string
-    """
-    # Get the list with rootobjects
-    RootObjects = DocObject.RootObjects
+        Returns:
+            string: The assembly type as a string
+        """
+        # Get the list with rootobjects
+        RootObjects = DocObject.RootObjects
 
-    # Go through the root objects. If there is an object type "a2pPart", this is an A2plus assembly.
-    # If not, continue.
-    # In the A2plus WB, you have to go through the Objects instead of the RootObjects
-    for Object in DocObject.Objects:
+        # Go through the root objects. If there is an object type "a2pPart", this is an A2plus assembly.
+        # If not, continue.
+        # In the A2plus WB, you have to go through the Objects instead of the RootObjects
+        for Object in DocObject.Objects:
+            try:
+                if Object.objectType == "a2pPart":
+                    return "A2plus"
+            except Exception:
+                pass
+
+        # In the other workbenches go through the RootObjects
+        for Object in RootObjects:
+            try:
+                if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
+                    return "Assembly4"
+            except Exception:
+                pass
+
+            try:
+                if Object.SolverType == "SolveSpace":
+                    return "Assembly3"
+            except Exception:
+                pass
+
+            try:
+                if Object.Type == "Assembly" and Object.TypeId == "App::Part":
+                    return "Internal"
+            except Exception:
+                pass
+
+            try:
+                if Object.TypeId == "App::Link" or Object.TypeId == "App::LinkGroup":
+                    return "AppLink"
+            except Exception:
+                pass
+
+            try:
+                if Object.Type == "" and Object.TypeId == "App::Part":
+                    return "AppPart"
+            except Exception:
+                pass
+
+    @classmethod
+    def ReturnDocProperty(self, DocObject, PropertyName) -> str:
+        result = ""
         try:
-            if Object.objectType == "a2pPart":
-                return "A2plus"
-        except Exception:
-            pass
+            if PropertyName == "FullName":
+                result = DocObject.Fullname
+            if PropertyName == "Label":
+                result = DocObject.Label
+            if PropertyName == "Label2":
+                result = DocObject.Label2
+            if PropertyName == "TypeId":
+                result = DocObject.TypeId
+            if PropertyName == "Name":
+                result = DocObject.Name
 
-    # In the other workbenches go through the RootObjects
-    for Object in RootObjects:
-        try:
-            if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
-                return "Assembly4"
+            return result
         except Exception:
-            pass
+            return ""
 
+    @classmethod
+    def ReturnViewProperty(self, DocObject, PropertyName):
+        result: object
         try:
-            if Object.SolverType == "SolveSpace":
-                return "Assembly3"
-        except Exception:
-            pass
+            try:
+                result = DocObject.getPropertyByName(PropertyName)
+            except Exception:
+                result = None
 
-        try:
-            if Object.Type == "Assembly" and Object.TypeId == "App::Part":
-                return "Internal"
-        except Exception:
-            pass
+            if isinstance(result, int):
+                result = str(result)
+            elif isinstance(result, list):
+                resultString = ""
+                for item in result:
+                    resultString = resultString + self.ObjectToString(item) + ", "
+                result = str(result)
+            elif isinstance(result, dict):
+                resultString = ""
+                for item in result:
+                    resultString = resultString + self.ObjectToString(item) + ", "
+                result = str(result)
+            else:
+                result = str(result)
 
-        try:
-            if Object.TypeId == "App::Link" or Object.TypeId == "App::LinkGroup":
-                return "AppLink"
-        except Exception:
-            pass
+            if result is None or result == "None":
+                result = ""
 
-        try:
-            if Object.Type == "" and Object.TypeId == "App::Part":
-                return "AppPart"
+            return result
         except Exception:
-            pass
+            return ""
+
+    @classmethod
+    def ObjectToString(self, item):
+        result: object
+        try:
+            if isinstance(item, int):
+                result = str(item)
+            elif isinstance(item, list):
+                resultString = ""
+                for item in result:
+                    resultString = resultString + self.ObjectToString(item) + ", "
+                result = str(result)
+            elif isinstance(item, dict):
+                resultString = ""
+                for item in result:
+                    resultString = resultString + self.ObjectToString(item) + ", "
+                result = str(result)
+            else:
+                result = str(result)
+
+            if result is None or result == "None":
+                result = ""
+
+            return result
+        except Exception:
+            return ""

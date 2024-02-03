@@ -80,94 +80,27 @@ class Ui_Dialog(object):
         Dialog.setModal(True)
         self.layoutWidget = QWidget(Dialog)
         self.layoutWidget.setObjectName("layoutWidget")
-        self.layoutWidget.setGeometry(QRect(0, 0, 221, 291))
+        self.layoutWidget.setGeometry(QRect(0, 0, 248, 291))
         self.gridLayout = QGridLayout(self.layoutWidget)
         self.gridLayout.setSpacing(10)
         self.gridLayout.setObjectName("gridLayout")
         self.gridLayout.setSizeConstraint(QLayout.SetNoConstraint)
         self.gridLayout.setContentsMargins(10, 10, 10, 10)
-        self.label_6 = QLabel(self.layoutWidget)
-        self.label_6.setObjectName("label_6")
-        self.label_6.setAlignment(Qt.AlignLeading | Qt.AlignLeft | Qt.AlignTop)
-        self.label_6.setWordWrap(True)
-
-        self.gridLayout.addWidget(self.label_6, 6, 0, 2, 1)
-
-        self.AssemblyType = QComboBox(self.layoutWidget)
-        self.AssemblyType.addItem("")
-        self.AssemblyType.addItem("")
-        self.AssemblyType.addItem("")
-        self.AssemblyType.addItem("")
-        self.AssemblyType.addItem("")
-        self.AssemblyType.addItem("")
-        self.AssemblyType.addItem("")
-        self.AssemblyType.addItem("")
-        self.AssemblyType.setObjectName("AssemblyType")
-
-        self.gridLayout.addWidget(self.AssemblyType, 0, 1, 1, 1)
-
-        self.label_3 = QLabel(self.layoutWidget)
-        self.label_3.setObjectName("label_3")
-        self.label_3.setEnabled(True)
-
-        self.gridLayout.addWidget(self.label_3, 2, 0, 1, 1)
-
-        self.IndentedNumbering = QCheckBox(self.layoutWidget)
-        self.IndentedNumbering.setObjectName("IndentedNumbering")
-        self.IndentedNumbering.setChecked(True)
-
-        self.gridLayout.addWidget(self.IndentedNumbering, 3, 1, 1, 1)
-
-        self.label_2 = QLabel(self.layoutWidget)
-        self.label_2.setObjectName("label_2")
-
-        self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
-
-        self.BoMType = QComboBox(self.layoutWidget)
-        self.BoMType.addItem("")
-        self.BoMType.addItem("")
-        self.BoMType.addItem("")
-        self.BoMType.setObjectName("BoMType")
-
-        self.gridLayout.addWidget(self.BoMType, 1, 1, 1, 1)
-
-        self.IncludeBodies = QCheckBox(self.layoutWidget)
-        self.IncludeBodies.setObjectName("IncludeBodies")
-
-        self.gridLayout.addWidget(self.IncludeBodies, 2, 1, 1, 1)
-
-        self.MaxLevel = QSpinBox(self.layoutWidget)
-        self.MaxLevel.setObjectName("MaxLevel")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Ignored)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.MaxLevel.sizePolicy().hasHeightForWidth())
-        self.MaxLevel.setSizePolicy(sizePolicy1)
-        self.MaxLevel.setMinimumSize(QSize(0, 0))
-        self.MaxLevel.setMaximumSize(QSize(16777215, 25))
-        self.MaxLevel.setBaseSize(QSize(0, 0))
-        self.MaxLevel.setMinimum(0)
-        self.MaxLevel.setValue(0)
-
-        self.gridLayout.addWidget(self.MaxLevel, 4, 1, 4, 1)
-
         self.label = QLabel(self.layoutWidget)
         self.label.setObjectName("label")
 
         self.gridLayout.addWidget(self.label, 1, 0, 1, 1)
 
-        self.label_4 = QLabel(self.layoutWidget)
-        self.label_4.setObjectName("label_4")
-        self.label_4.setWordWrap(True)
+        self.label_5 = QLabel(self.layoutWidget)
+        self.label_5.setObjectName("label_5")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
+        self.label_5.setSizePolicy(sizePolicy1)
+        self.label_5.setWordWrap(True)
 
-        self.gridLayout.addWidget(self.label_4, 3, 0, 1, 1)
-
-        self.CreateBOM = QPushButton(self.layoutWidget)
-        self.CreateBOM.setObjectName("CreateBOM")
-        sizePolicy.setHeightForWidth(self.CreateBOM.sizePolicy().hasHeightForWidth())
-        self.CreateBOM.setSizePolicy(sizePolicy)
-
-        self.gridLayout.addWidget(self.CreateBOM, 10, 0, 1, 2)
+        self.gridLayout.addWidget(self.label_5, 4, 0, 2, 1)
 
         self.DetectAssemblyType = QPushButton(self.layoutWidget)
         self.DetectAssemblyType.setObjectName("DetectAssemblyType")
@@ -181,16 +114,93 @@ class Ui_Dialog(object):
 
         self.gridLayout.addWidget(self.DetectAssemblyType, 9, 0, 1, 2)
 
-        self.label_5 = QLabel(self.layoutWidget)
-        self.label_5.setObjectName("label_5")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.label_2 = QLabel(self.layoutWidget)
+        self.label_2.setObjectName("label_2")
+
+        self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
+
+        self.label_4 = QLabel(self.layoutWidget)
+        self.label_4.setObjectName("label_4")
+        self.label_4.setWordWrap(True)
+
+        self.gridLayout.addWidget(self.label_4, 3, 0, 1, 1)
+
+        self.label_3 = QLabel(self.layoutWidget)
+        self.label_3.setObjectName("label_3")
+        self.label_3.setEnabled(True)
+
+        self.gridLayout.addWidget(self.label_3, 2, 0, 1, 1)
+
+        self.label_6 = QLabel(self.layoutWidget)
+        self.label_6.setObjectName("label_6")
+        self.label_6.setAlignment(Qt.AlignLeading | Qt.AlignLeft | Qt.AlignTop)
+        self.label_6.setWordWrap(True)
+
+        self.gridLayout.addWidget(self.label_6, 6, 0, 2, 1)
+
+        self.SetColumns = QPushButton(self.layoutWidget)
+        self.SetColumns.setObjectName("SetColumns")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
-        self.label_5.setSizePolicy(sizePolicy3)
-        self.label_5.setWordWrap(True)
+        sizePolicy3.setHeightForWidth(self.SetColumns.sizePolicy().hasHeightForWidth())
+        self.SetColumns.setSizePolicy(sizePolicy3)
 
-        self.gridLayout.addWidget(self.label_5, 4, 0, 2, 1)
+        self.gridLayout.addWidget(self.SetColumns, 9, 2, 1, 1)
+
+        self.CreateBOM = QPushButton(self.layoutWidget)
+        self.CreateBOM.setObjectName("CreateBOM")
+        sizePolicy.setHeightForWidth(self.CreateBOM.sizePolicy().hasHeightForWidth())
+        self.CreateBOM.setSizePolicy(sizePolicy)
+
+        self.gridLayout.addWidget(self.CreateBOM, 10, 0, 1, 3)
+
+        self.AssemblyType = QComboBox(self.layoutWidget)
+        self.AssemblyType.addItem("")
+        self.AssemblyType.addItem("")
+        self.AssemblyType.addItem("")
+        self.AssemblyType.addItem("")
+        self.AssemblyType.addItem("")
+        self.AssemblyType.addItem("")
+        self.AssemblyType.addItem("")
+        self.AssemblyType.addItem("")
+        self.AssemblyType.setObjectName("AssemblyType")
+
+        self.gridLayout.addWidget(self.AssemblyType, 0, 1, 1, 2)
+
+        self.BoMType = QComboBox(self.layoutWidget)
+        self.BoMType.addItem("")
+        self.BoMType.addItem("")
+        self.BoMType.addItem("")
+        self.BoMType.setObjectName("BoMType")
+
+        self.gridLayout.addWidget(self.BoMType, 1, 1, 1, 2)
+
+        self.MaxLevel = QSpinBox(self.layoutWidget)
+        self.MaxLevel.setObjectName("MaxLevel")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Ignored)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.MaxLevel.sizePolicy().hasHeightForWidth())
+        self.MaxLevel.setSizePolicy(sizePolicy4)
+        self.MaxLevel.setMinimumSize(QSize(0, 0))
+        self.MaxLevel.setMaximumSize(QSize(16777215, 25))
+        self.MaxLevel.setBaseSize(QSize(0, 0))
+        self.MaxLevel.setMinimum(0)
+        self.MaxLevel.setValue(0)
+
+        self.gridLayout.addWidget(self.MaxLevel, 4, 1, 4, 2)
+
+        self.IndentedNumbering = QCheckBox(self.layoutWidget)
+        self.IndentedNumbering.setObjectName("IndentedNumbering")
+        self.IndentedNumbering.setChecked(True)
+
+        self.gridLayout.addWidget(self.IndentedNumbering, 3, 1, 1, 2)
+
+        self.IncludeBodies = QCheckBox(self.layoutWidget)
+        self.IncludeBodies.setObjectName("IncludeBodies")
+
+        self.gridLayout.addWidget(self.IncludeBodies, 2, 1, 1, 2)
 
         self.line = QFrame(self.layoutWidget)
         self.line.setObjectName("line")
@@ -198,7 +208,7 @@ class Ui_Dialog(object):
         self.line.setLineWidth(2)
         self.line.setFrameShape(QFrame.HLine)
 
-        self.gridLayout.addWidget(self.line, 8, 0, 1, 2)
+        self.gridLayout.addWidget(self.line, 8, 0, 1, 3)
 
         self.retranslateUi(Dialog)
 
@@ -210,6 +220,24 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(
             QCoreApplication.translate("Dialog", "Bill of Materials workbench", None)
         )
+        self.label.setText(QCoreApplication.translate("Dialog", "Type of BoM:", None))
+        self.label_5.setText(
+            QCoreApplication.translate(
+                "Dialog", "<html><head/><body><p>Maximum level:</p></body></html>", None
+            )
+        )
+        self.DetectAssemblyType.setText(
+            QCoreApplication.translate("Dialog", " Detect assembly type ", None)
+        )
+        self.label_2.setText(
+            QCoreApplication.translate("Dialog", "Assembly type:", None)
+        )
+        self.label_4.setText(
+            QCoreApplication.translate("Dialog", "Use indented numbering:", None)
+        )
+        self.label_3.setText(
+            QCoreApplication.translate("Dialog", "Include bodies:", None)
+        )
         self.label_6.setText(
             QCoreApplication.translate(
                 "Dialog",
@@ -217,6 +245,10 @@ class Ui_Dialog(object):
                 None,
             )
         )
+        self.SetColumns.setText(
+            QCoreApplication.translate("Dialog", " Set extra columns ", None)
+        )
+        self.CreateBOM.setText(QCoreApplication.translate("Dialog", "Create BoM", None))
         self.AssemblyType.setItemText(
             0, QCoreApplication.translate("Dialog", "A2plus", None)
         )
@@ -242,13 +274,6 @@ class Ui_Dialog(object):
             7, QCoreApplication.translate("Dialog", "Arch", None)
         )
 
-        self.label_3.setText(
-            QCoreApplication.translate("Dialog", "Include bodies:", None)
-        )
-        self.IndentedNumbering.setText("")
-        self.label_2.setText(
-            QCoreApplication.translate("Dialog", "Assembly type:", None)
-        )
         self.BoMType.setItemText(
             0, QCoreApplication.translate("Dialog", "Total BoM", None)
         )
@@ -259,7 +284,6 @@ class Ui_Dialog(object):
             2, QCoreApplication.translate("Dialog", "Summary BoM", None)
         )
 
-        self.IncludeBodies.setText("")
         # if QT_CONFIG(tooltip)
         self.MaxLevel.setToolTip(
             QCoreApplication.translate(
@@ -269,18 +293,7 @@ class Ui_Dialog(object):
             )
         )
         # endif // QT_CONFIG(tooltip)
-        self.label.setText(QCoreApplication.translate("Dialog", "Type of BoM:", None))
-        self.label_4.setText(
-            QCoreApplication.translate("Dialog", "Use indented numbering:", None)
-        )
-        self.CreateBOM.setText(QCoreApplication.translate("Dialog", "Create BoM", None))
-        self.DetectAssemblyType.setText(
-            QCoreApplication.translate("Dialog", "Detect assembly type", None)
-        )
-        self.label_5.setText(
-            QCoreApplication.translate(
-                "Dialog", "<html><head/><body><p>Maximum level:</p></body></html>", None
-            )
-        )
+        self.IndentedNumbering.setText("")
+        self.IncludeBodies.setText("")
 
     # retranslateUi

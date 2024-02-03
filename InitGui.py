@@ -21,15 +21,27 @@
 # *                                                                         *
 # ***************************************************************************/
 import os
+import FreeCAD as App
 import FreeCADGui as Gui
 from inspect import getsourcefile
+
 
 __title__ = "Bill of Materials Workbench"
 __author__ = "A.P. Ebbers"
 __url__ = "https://github.com/APEbbers/BillOfMaterials-WB.git"
 
+
+# region - Translations
+def QT_TRANSLATE_NOOP(context, text):
+    return text
+
+
+# Define the translation
+translate = App.Qt.translate
+# endregion
+
 # get the path of the current python script
-PATH_TB = file_path = os.path.dirname(getsourcefile(lambda: 0))
+PATH_TB = os.path.dirname(getsourcefile(lambda: 0))
 
 global PATH_TB_ICONS
 global PATH_TB_RESOURCES
@@ -46,10 +58,10 @@ class BillOfMaterialsWB(Gui.Workbench):
     Icon = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
 
     Gui.addIconPath(PATH_TB_ICONS)
-    # Gui.addPreferencePage(
-    #     os.path.join(PATH_TB_UI, "PreferenceUI.ui"),
-    #     "Bill of Materiala Workbench",
-    # )
+    Gui.addPreferencePage(
+        os.path.join(PATH_TB_UI, "PreferencesUI_BoM.ui"),
+        "Bill of Materials",
+    )
 
     def GetClassName(self):
         # This function is mandatory if this is a full Python workbench
@@ -62,6 +74,9 @@ class BillOfMaterialsWB(Gui.Workbench):
         """
         # -----------------------------------------------------------------------------------------------------
         import BoM_Commands  # import here all the needed files that create your FreeCAD commands
+        import Settings_BoM
+
+        Settings_BoM.SetDebugHeaders()
 
         # a list of command names created in the line above
         self.list = [
@@ -83,6 +98,8 @@ class BillOfMaterialsWB(Gui.Workbench):
             "CreateBOM_Raw",
             "Separator",
             "CreateBOM_1stLevel",
+            "Separator",
+            "SetColumns",
         ]
 
         # creates a new toolbar with your commands
@@ -174,7 +191,10 @@ class BillOfMaterialsWB(Gui.Workbench):
         """This function is executed whenever the user right-clicks on screen"""
         # "recipient" will be either "view" or "tree"
         # add commands to the context menu
-        self.appendContextMenu("My commands", self.list)
+        self.list = [
+            "SetColumns",
+        ]
+        self.appendContextMenu("Bill of Materials", self.list)
 
 
 Gui.addWorkbench(BillOfMaterialsWB())

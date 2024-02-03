@@ -22,10 +22,13 @@
 # ***************************************************************************/
 
 import FreeCAD as App
-import General_BOM_Functions as General_BOM
+from General_BOM_Functions import General_BOM
 import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
 import os
+
+# Define the translation
+translate = App.Qt.translate
 
 
 class BomFunctions:

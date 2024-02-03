@@ -21,14 +21,22 @@
 # *                                                                         *
 # ***************************************************************************/
 
+import FreeCAD as App
+import math
+
+# Define the translation
+translate = App.Qt.translate
+
 
 def Mbox(text, title="", style=0, IconType="Information", default="", stringList="[,]"):
     """
     Message Styles:\n
     0 : OK                          (text, title, style)\n
     1 : Yes | No                    (text, title, style)\n
-    20 : Inputbox                    (text, title, style, default)\n
-    21 : Inputbox with dropdown      (text, title, style, default, stringlist)\n
+    2 : Ok | Cancel                 (text, title, style)\n
+    20 : Inputbox                   (text, title, style, default)\n
+    21 : Inputbox with dropdown     (text, title, style, default, stringlist)\n
+    Icontype:                       string: NoIcon, Question, Warning, Critical. Default Information
     """
     from PySide2.QtWidgets import QMessageBox, QInputDialog
 
@@ -50,7 +58,8 @@ def Mbox(text, title="", style=0, IconType="Information", default="", stringList
         msgBox.setWindowTitle(title)
 
         reply = msgBox.exec_()
-        return reply
+        if reply == QMessageBox.Ok:
+            return "ok"
     if style == 1:
         # Set the messagebox
         msgBox = QMessageBox()
@@ -63,11 +72,31 @@ def Mbox(text, title="", style=0, IconType="Information", default="", stringList
 
         reply = msgBox.exec_()
         if reply == QMessageBox.Yes:
-            return True
+            return "yes"
         if reply == QMessageBox.No:
-            return False
+            return "no"
+    if style == 2:
+        # Set the messagebox
+        msgBox = QMessageBox()
+        msgBox.setIcon(Icon)
+        msgBox.setText(text)
+        msgBox.setWindowTitle(title)
+        # Set the buttons and default button
+        msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msgBox.setDefaultButton(QMessageBox.Ok)
+
+        reply = msgBox.exec_()
+        if reply == QMessageBox.Ok:
+            return "ok"
+        if reply == QMessageBox.Cancel:
+            return "cancel"
     if style == 20:
-        reply = QInputDialog.getText(parent=None, title=title, label=text, text=default)
+        reply = QInputDialog.getText(
+            None,
+            title,
+            text,
+            text=default,
+        )
         if reply[1]:
             # user clicked OK
             replyText = reply[0]
@@ -77,12 +106,12 @@ def Mbox(text, title="", style=0, IconType="Information", default="", stringList
         return str(replyText)
     if style == 21:
         reply = QInputDialog.getItem(
-            parent=None,
-            title=title,
-            label=text,
-            items=stringList,
-            current=1,
-            editable=True,
+            None,
+            title,
+            text,
+            stringList,
+            0,
+            True,
         )
         if reply[1]:
             # user clicked OK
@@ -314,3 +343,12 @@ def Print(Input: str, Type: str = ""):
         App.Console.PrintLog(Input + "\n")
     else:
         App.Console.PrintMessage(Input + "\n")
+
+
+def LightOrDark(rgbColor=[0, 128, 255, 255]):
+    [r, g, b, a] = rgbColor
+    hsp = math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
+    if hsp > 127.5:
+        return "light"
+    else:
+        return "dark"
