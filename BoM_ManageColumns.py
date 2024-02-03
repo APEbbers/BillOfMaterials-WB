@@ -55,7 +55,9 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         super(LoadDialog, self).__init__()
 
         # # this will create a Qt widget from our ui file
-        self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB_UI, "Add_RemoveColumns.ui"))
+        self.form = Gui.PySideUic.loadUi(
+            os.path.join(PATH_TB_UI, "Add_RemoveColumns.ui")
+        )
 
         self.form.setWindowIcon(QIcon(os.path.join(PATH_TB_ICONS, "SetColumns.svg")))
 
@@ -73,7 +75,17 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         def RemoveItem():
             self.on_RemoveItem_clicked(self)
 
-        self.form.RemoveItem.connect(self.form.RemoveItem, SIGNAL("clicked()"), RemoveItem)
+        self.form.RemoveItem.connect(
+            self.form.RemoveItem, SIGNAL("clicked()"), RemoveItem
+        )
+
+        # -----------------------------------------------------------------------------------------
+        #
+        # AddManual ------------------------------------------------------------------------------
+        def AddManual():
+            self.on_AddManual_clicked(self)
+
+        self.form.AddManual.connect(self.form.AddManual, SIGNAL("clicked()"), AddManual)
 
         # -----------------------------------------------------------------------------------------
         #
@@ -144,27 +156,55 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         # endregion
 
         # region - Set the correct icons depending on the color of the main window
-        BackGround_AddAll = Gui.getMainWindow().palette().color(QPalette.Background).getRgb()
+        BackGround_AddAll = (
+            Gui.getMainWindow().palette().color(QPalette.Background).getRgb()
+        )
         if Standard_Functions.LightOrDark(rgbColor=BackGround_AddAll) == "dark":
             # Add/Remove buttons
             self.form.AddItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "+ sign.svg")))
-            self.form.RemoveItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg")))
+            self.form.RemoveItem.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg"))
+            )
+            self.form.AddManual.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg"))
+            )
             # Sort buttons
-            self.form.Sort_AZ.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Light.png")))
-            self.form.Sort_ZA.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Light.png")))
+            self.form.Sort_AZ.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Light.png"))
+            )
+            self.form.Sort_ZA.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Light.png"))
+            )
             # Move up/down buttons
-            self.form.Move_Up.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg")))
-            self.form.Move_Down.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Light.svg")))
+            self.form.Move_Up.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg"))
+            )
+            self.form.Move_Down.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Light.svg"))
+            )
         if Standard_Functions.LightOrDark(rgbColor=BackGround_AddAll) != "dark":
             # Add/Remove buttons
             self.form.AddItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "+ sign.svg")))
-            self.form.RemoveItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg")))
+            self.form.RemoveItem.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg"))
+            )
+            self.form.AddManual.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg"))
+            )
             # Sort buttons
-            self.form.Sort_AZ.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Dark.png")))
-            self.form.Sort_ZA.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Dark.png")))
+            self.form.Sort_AZ.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Dark.png"))
+            )
+            self.form.Sort_ZA.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Dark.png"))
+            )
             # Move up/down buttons
-            self.form.Move_Up.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg")))
-            self.form.Move_Down.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Dark.svg")))
+            self.form.Move_Up.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg"))
+            )
+            self.form.Move_Down.setIcon(
+                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Dark.svg"))
+            )
         # endregion
 
         # Get the properties from the active document
@@ -194,6 +234,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
                     break
             if IsInList is False:
                 self.form.Columns_To_Add.addItem(Property)
+
         return
 
     @staticmethod
@@ -242,7 +283,9 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
 
             # If debug is enabled, log the action.
             if ENABLE_DEBUG is True:
-                Text = translate("BoM Workbench", f"{itemText} removed from the columns.")
+                Text = translate(
+                    "BoM Workbench", f"{itemText} removed from the columns."
+                )
 
                 Standard_Functions.Print(Text, "Log")
 
@@ -260,6 +303,13 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.RemoveItem.clearFocus()
 
         return
+
+    @staticmethod
+    def on_AddManual_clicked(self):
+        Value = self.form.ManualProperty.text()
+
+        if Value != "":
+            self.form.Columns_Present.addItem(Value)
 
     @staticmethod
     def on_Sort_AZ_clicked(self):
@@ -333,7 +383,9 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         if ENABLE_DEBUG is True:
             if result == "":
                 result = "None"
-            Text = translate("BoM Workbench", f"The extra columns are:{result.replace(';', ', ')}.")
+            Text = translate(
+                "BoM Workbench", f"The extra columns are:{result.replace(';', ', ')}."
+            )
             Standard_Functions.Print(Text, "Log")
 
         # Close the form
@@ -358,7 +410,9 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         if ENABLE_DEBUG is True:
             if result == "":
                 result = "None"
-            Text = translate("BoM Workbench", f"The extra columns are: {result.replace(';', ', ')}.")
+            Text = translate(
+                "BoM Workbench", f"The extra columns are: {result.replace(';', ', ')}."
+            )
             Standard_Functions.Print(Text, "Log")
 
         # Remove the focus from the control
