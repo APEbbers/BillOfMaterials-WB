@@ -34,7 +34,15 @@ For debugging the option "Enable extra columns for debug" can be enabled. This o
 - AppPart assemblies
 <br/>
 
-This workbench is still under development. The support for the following assemblies, workbenches and futures are planned:
+This workbench is still under development. Therefore there are some limitations.<br/>
+For the following assembly types the assembly cannot be placed inside a group. Otherwise the assembly type detection doesn't work as expected.
+- Assembly 4
+- Internal assembly  
+It is best avoid placing assemblies in a group for now.
+<br/>
+
+The support for the following assemblies, workbenches and futures are planned:
+- Improvement on assembly type detection, so assemblies can be placed in groups.
 - support for the Arch WB
 - support for multi-body parts (Part WB)
 - One function to support a mixed structure of all assembly workbenches
