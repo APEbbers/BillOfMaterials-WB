@@ -8,7 +8,7 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (
+from PySide2.QtCore import (
     QCoreApplication,
     QDate,
     QDateTime,
@@ -22,7 +22,7 @@ from PySide6.QtCore import (
     QUrl,
     Qt,
 )
-from PySide6.QtGui import (
+from PySide2.QtGui import (
     QBrush,
     QColor,
     QConicalGradient,
@@ -40,7 +40,7 @@ from PySide6.QtGui import (
     QRadialGradient,
     QTransform,
 )
-from PySide6.QtWidgets import (
+from PySide2.QtWidgets import (
     QApplication,
     QFormLayout,
     QFrame,
@@ -136,9 +136,7 @@ class Ui_Form(object):
         self.SprHeaderBackGround_3.setAutoDefault(False)
         self.SprHeaderBackGround_3.setColor(QColor(243, 202, 98))
         self.SprHeaderBackGround_3.setAllowTransparency(False)
-        self.SprHeaderBackGround_3.setProperty(
-            "prefEntry", "SpreadSheetHeaderBackGround"
-        )
+        self.SprHeaderBackGround_3.setProperty("prefEntry", "SpreadSheetHeaderBackGround")
         self.SprHeaderBackGround_3.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_13.addWidget(self.SprHeaderBackGround_3, 0, 1, 1, 1)
@@ -156,9 +154,7 @@ class Ui_Form(object):
         self.SprHeaderForeGround_3.setFlat(False)
         self.SprHeaderForeGround_3.setColor(QColor(0, 0, 0))
         self.SprHeaderForeGround_3.setAllowTransparency(False)
-        self.SprHeaderForeGround_3.setProperty(
-            "prefEntry", "SpreadSheetHeaderForeGround"
-        )
+        self.SprHeaderForeGround_3.setProperty("prefEntry", "SpreadSheetHeaderForeGround")
         self.SprHeaderForeGround_3.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_13.addWidget(self.SprHeaderForeGround_3, 1, 1, 1, 1)
@@ -183,9 +179,7 @@ class Ui_Form(object):
         font1.setBold(True)
         self.SprHeaderFontStyle_Bold_3.setFont(font1)
         self.SprHeaderFontStyle_Bold_3.setChecked(True)
-        self.SprHeaderFontStyle_Bold_3.setProperty(
-            "prefEntry", "SpreadsheetHeaderFontStyle_Bold"
-        )
+        self.SprHeaderFontStyle_Bold_3.setProperty("prefEntry", "SpreadsheetHeaderFontStyle_Bold")
         self.SprHeaderFontStyle_Bold_3.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_14.addWidget(self.SprHeaderFontStyle_Bold_3, 0, 1, 1, 1)
@@ -193,24 +187,18 @@ class Ui_Form(object):
         self.SprHeaderFontStyle_Italic_3 = Gui_PrefCheckBox(self.layoutWidget_2)
         self.SprHeaderFontStyle_Italic_3.setObjectName("SprHeaderFontStyle_Italic_3")
         self.SprHeaderFontStyle_Italic_3.setFont(font)
-        self.SprHeaderFontStyle_Italic_3.setProperty(
-            "prefEntry", "SpreadsheetHeaderFontStyle_Italic"
-        )
+        self.SprHeaderFontStyle_Italic_3.setProperty("prefEntry", "SpreadsheetHeaderFontStyle_Italic")
         self.SprHeaderFontStyle_Italic_3.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_14.addWidget(self.SprHeaderFontStyle_Italic_3, 0, 2, 1, 1)
 
         self.SprHeaderFontStyle_Underline_3 = Gui_PrefCheckBox(self.layoutWidget_2)
-        self.SprHeaderFontStyle_Underline_3.setObjectName(
-            "SprHeaderFontStyle_Underline_3"
-        )
+        self.SprHeaderFontStyle_Underline_3.setObjectName("SprHeaderFontStyle_Underline_3")
         font2 = QFont()
         font2.setUnderline(True)
         self.SprHeaderFontStyle_Underline_3.setFont(font2)
         self.SprHeaderFontStyle_Underline_3.setChecked(True)
-        self.SprHeaderFontStyle_Underline_3.setProperty(
-            "prefEntry", "SpreadsheetHeaderFontStyle_Underline"
-        )
+        self.SprHeaderFontStyle_Underline_3.setProperty("prefEntry", "SpreadsheetHeaderFontStyle_Underline")
         self.SprHeaderFontStyle_Underline_3.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_14.addWidget(self.SprHeaderFontStyle_Underline_3, 0, 3, 1, 1)
@@ -227,9 +215,7 @@ class Ui_Form(object):
         self.SprTableBackGround_5 = Gui_PrefColorButton(self.layoutWidget_2)
         self.SprTableBackGround_5.setObjectName("SprTableBackGround_5")
         self.SprTableBackGround_5.setColor(QColor(169, 169, 169))
-        self.SprTableBackGround_5.setProperty(
-            "prefEntry", "SpreadSheetTableBackGround_1"
-        )
+        self.SprTableBackGround_5.setProperty("prefEntry", "SpreadSheetTableBackGround_1")
         self.SprTableBackGround_5.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_15.addWidget(self.SprTableBackGround_5, 0, 1, 1, 1)
@@ -255,9 +241,7 @@ class Ui_Form(object):
         self.SprTableBackGround_6 = Gui_PrefColorButton(self.layoutWidget_2)
         self.SprTableBackGround_6.setObjectName("SprTableBackGround_6")
         self.SprTableBackGround_6.setColor(QColor(128, 128, 128))
-        self.SprTableBackGround_6.setProperty(
-            "prefEntry", "SpreadSheetTableBackGround_2"
-        )
+        self.SprTableBackGround_6.setProperty("prefEntry", "SpreadSheetTableBackGround_2")
         self.SprTableBackGround_6.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_15.addWidget(self.SprTableBackGround_6, 1, 1, 1, 1)
@@ -276,9 +260,7 @@ class Ui_Form(object):
         self.SprTableFontStyle_Bold_3 = Gui_PrefCheckBox(self.layoutWidget_2)
         self.SprTableFontStyle_Bold_3.setObjectName("SprTableFontStyle_Bold_3")
         self.SprTableFontStyle_Bold_3.setFont(font1)
-        self.SprTableFontStyle_Bold_3.setProperty(
-            "prefEntry", "SpreadsheetTableFontStyle_Bold"
-        )
+        self.SprTableFontStyle_Bold_3.setProperty("prefEntry", "SpreadsheetTableFontStyle_Bold")
         self.SprTableFontStyle_Bold_3.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_16.addWidget(self.SprTableFontStyle_Bold_3, 0, 1, 1, 1)
@@ -286,21 +268,15 @@ class Ui_Form(object):
         self.SprTableFontStyle_Italic_3 = Gui_PrefCheckBox(self.layoutWidget_2)
         self.SprTableFontStyle_Italic_3.setObjectName("SprTableFontStyle_Italic_3")
         self.SprTableFontStyle_Italic_3.setFont(font)
-        self.SprTableFontStyle_Italic_3.setProperty(
-            "prefEntry", "SpreadsheetTableFontStyle_Italic"
-        )
+        self.SprTableFontStyle_Italic_3.setProperty("prefEntry", "SpreadsheetTableFontStyle_Italic")
         self.SprTableFontStyle_Italic_3.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_16.addWidget(self.SprTableFontStyle_Italic_3, 0, 2, 1, 1)
 
         self.SprTableFontStyle_Underline_3 = Gui_PrefCheckBox(self.layoutWidget_2)
-        self.SprTableFontStyle_Underline_3.setObjectName(
-            "SprTableFontStyle_Underline_3"
-        )
+        self.SprTableFontStyle_Underline_3.setObjectName("SprTableFontStyle_Underline_3")
         self.SprTableFontStyle_Underline_3.setFont(font2)
-        self.SprTableFontStyle_Underline_3.setProperty(
-            "prefEntry", "SpreadsheetTableFontStyle_Underline"
-        )
+        self.SprTableFontStyle_Underline_3.setProperty("prefEntry", "SpreadsheetTableFontStyle_Underline")
         self.SprTableFontStyle_Underline_3.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_16.addWidget(self.SprTableFontStyle_Underline_3, 0, 3, 1, 1)
@@ -322,9 +298,7 @@ class Ui_Form(object):
         self.SprColumnFontStyle_Bold_3.setObjectName("SprColumnFontStyle_Bold_3")
         self.SprColumnFontStyle_Bold_3.setFont(font1)
         self.SprColumnFontStyle_Bold_3.setChecked(True)
-        self.SprColumnFontStyle_Bold_3.setProperty(
-            "prefEntry", "SpreadsheetColumnFontStyle_Bold"
-        )
+        self.SprColumnFontStyle_Bold_3.setProperty("prefEntry", "SpreadsheetColumnFontStyle_Bold")
         self.SprColumnFontStyle_Bold_3.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_17.addWidget(self.SprColumnFontStyle_Bold_3, 0, 1, 1, 1)
@@ -332,21 +306,15 @@ class Ui_Form(object):
         self.SprColumnFontStyle_Italic_3 = Gui_PrefCheckBox(self.layoutWidget_2)
         self.SprColumnFontStyle_Italic_3.setObjectName("SprColumnFontStyle_Italic_3")
         self.SprColumnFontStyle_Italic_3.setFont(font)
-        self.SprColumnFontStyle_Italic_3.setProperty(
-            "prefEntry", "SpreadsheetColumnFontStyle_Italic"
-        )
+        self.SprColumnFontStyle_Italic_3.setProperty("prefEntry", "SpreadsheetColumnFontStyle_Italic")
         self.SprColumnFontStyle_Italic_3.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_17.addWidget(self.SprColumnFontStyle_Italic_3, 0, 2, 1, 1)
 
         self.SprColumnFontStyle_Underline_3 = Gui_PrefCheckBox(self.layoutWidget_2)
-        self.SprColumnFontStyle_Underline_3.setObjectName(
-            "SprColumnFontStyle_Underline_3"
-        )
+        self.SprColumnFontStyle_Underline_3.setObjectName("SprColumnFontStyle_Underline_3")
         self.SprColumnFontStyle_Underline_3.setFont(font2)
-        self.SprColumnFontStyle_Underline_3.setProperty(
-            "prefEntry", "SpreadsheetColumnFontStyle_Underline"
-        )
+        self.SprColumnFontStyle_Underline_3.setProperty("prefEntry", "SpreadsheetColumnFontStyle_Underline")
         self.SprColumnFontStyle_Underline_3.setProperty("prefPath", "Mod/BoM Workbench")
 
         self.gridLayout_17.addWidget(self.SprColumnFontStyle_Underline_3, 0, 3, 1, 1)
@@ -392,9 +360,7 @@ class Ui_Form(object):
                 None,
             )
         )
-        self.EnableDebug_2.setText(
-            QCoreApplication.translate("Form", "Debug mode", None)
-        )
+        self.EnableDebug_2.setText(QCoreApplication.translate("Form", "Debug mode", None))
         self.label_12.setText(
             QCoreApplication.translate(
                 "Form",
@@ -402,67 +368,29 @@ class Ui_Form(object):
                 None,
             )
         )
-        self.EnableDebugColumns.setText(
-            QCoreApplication.translate("Form", "Enable extra columns for debug", None)
-        )
+        self.EnableDebugColumns.setText(QCoreApplication.translate("Form", "Enable extra columns for debug", None))
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.tab),
             QCoreApplication.translate("Form", "General settings", None),
         )
-        self.label_45.setText(
-            QCoreApplication.translate("Form", "Header background       ", None)
-        )
-        self.label_46.setText(
-            QCoreApplication.translate("Form", "Header foreground", None)
-        )
-        self.label_47.setText(
-            QCoreApplication.translate("Form", "Header font style", None)
-        )
-        self.SprHeaderFontStyle_Bold_3.setText(
-            QCoreApplication.translate("Form", "Bold", None)
-        )
-        self.SprHeaderFontStyle_Italic_3.setText(
-            QCoreApplication.translate("Form", "Italic", None)
-        )
-        self.SprHeaderFontStyle_Underline_3.setText(
-            QCoreApplication.translate("Form", "Underline", None)
-        )
-        self.label_48.setText(
-            QCoreApplication.translate("Form", "Table foreground", None)
-        )
-        self.label_49.setText(
-            QCoreApplication.translate("Form", "Table background 1       ", None)
-        )
-        self.label_50.setText(
-            QCoreApplication.translate("Form", "Table background 2", None)
-        )
-        self.label_51.setText(
-            QCoreApplication.translate("Form", "Table font style", None)
-        )
-        self.SprTableFontStyle_Bold_3.setText(
-            QCoreApplication.translate("Form", "Bold", None)
-        )
-        self.SprTableFontStyle_Italic_3.setText(
-            QCoreApplication.translate("Form", "Italic", None)
-        )
-        self.SprTableFontStyle_Underline_3.setText(
-            QCoreApplication.translate("Form", "Underline", None)
-        )
-        self.label_52.setText(
-            QCoreApplication.translate("Form", "1st column font style", None)
-        )
-        self.SprColumnFontStyle_Bold_3.setText(
-            QCoreApplication.translate("Form", "Bold", None)
-        )
-        self.SprColumnFontStyle_Italic_3.setText(
-            QCoreApplication.translate("Form", "Italic", None)
-        )
-        self.SprColumnFontStyle_Underline_3.setText(
-            QCoreApplication.translate("Form", "Underline", None)
-        )
-        self.label_53.setText(
-            QCoreApplication.translate("Form", "Width factor for AutoFit", None)
-        )
+        self.label_45.setText(QCoreApplication.translate("Form", "Header background       ", None))
+        self.label_46.setText(QCoreApplication.translate("Form", "Header foreground", None))
+        self.label_47.setText(QCoreApplication.translate("Form", "Header font style", None))
+        self.SprHeaderFontStyle_Bold_3.setText(QCoreApplication.translate("Form", "Bold", None))
+        self.SprHeaderFontStyle_Italic_3.setText(QCoreApplication.translate("Form", "Italic", None))
+        self.SprHeaderFontStyle_Underline_3.setText(QCoreApplication.translate("Form", "Underline", None))
+        self.label_48.setText(QCoreApplication.translate("Form", "Table foreground", None))
+        self.label_49.setText(QCoreApplication.translate("Form", "Table background 1       ", None))
+        self.label_50.setText(QCoreApplication.translate("Form", "Table background 2", None))
+        self.label_51.setText(QCoreApplication.translate("Form", "Table font style", None))
+        self.SprTableFontStyle_Bold_3.setText(QCoreApplication.translate("Form", "Bold", None))
+        self.SprTableFontStyle_Italic_3.setText(QCoreApplication.translate("Form", "Italic", None))
+        self.SprTableFontStyle_Underline_3.setText(QCoreApplication.translate("Form", "Underline", None))
+        self.label_52.setText(QCoreApplication.translate("Form", "1st column font style", None))
+        self.SprColumnFontStyle_Bold_3.setText(QCoreApplication.translate("Form", "Bold", None))
+        self.SprColumnFontStyle_Italic_3.setText(QCoreApplication.translate("Form", "Italic", None))
+        self.SprColumnFontStyle_Underline_3.setText(QCoreApplication.translate("Form", "Underline", None))
+        self.label_53.setText(QCoreApplication.translate("Form", "Width factor for AutoFit", None))
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.tab_2),
             QCoreApplication.translate("Form", "UI Settings", None),

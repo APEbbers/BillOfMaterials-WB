@@ -24,6 +24,7 @@ import os
 import FreeCAD as App
 import FreeCADGui as Gui
 from inspect import getsourcefile
+import BoM_WB_Locator
 
 
 __title__ = "Bill of Materials Workbench"
@@ -41,7 +42,7 @@ translate = App.Qt.translate
 # endregion
 
 # get the path of the current python script
-PATH_TB = os.path.dirname(getsourcefile(lambda: 0))
+PATH_TB = os.path.dirname(BoM_WB_Locator.__file__)
 
 global PATH_TB_ICONS
 global PATH_TB_RESOURCES
@@ -94,13 +95,9 @@ class BillOfMaterialsWB(Gui.Workbench):
         SettingsList = [
             "SetColumns",
         ]
+        self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList)  # creates a new menu
         self.appendMenu(
-            QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList
-        )  # creates a new menu
-        self.appendMenu(
-            QT_TRANSLATE_NOOP(
-                "BoM Workbench", ["Bill of Materials", "Separate commands "]
-            ),
+            QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Separate commands "]),
             SeparateFunctionsList,
         )
 

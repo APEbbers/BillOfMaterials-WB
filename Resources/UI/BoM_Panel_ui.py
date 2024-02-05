@@ -8,14 +8,14 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
+from PySide2.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
     QGridLayout, QLabel, QLayout, QPushButton,
     QSizePolicy, QSpacerItem, QSpinBox, QWidget)
 
@@ -147,9 +147,6 @@ class Ui_Dialog(object):
         sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(self.DetectAssemblyType.sizePolicy().hasHeightForWidth())
         self.DetectAssemblyType.setSizePolicy(sizePolicy4)
-        icon = QIcon()
-        icon.addFile(u"../Icons/BillOfMaterialsWB.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.DetectAssemblyType.setIcon(icon)
 
         self.gridLayout.addWidget(self.DetectAssemblyType, 9, 0, 1, 2)
 
