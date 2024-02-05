@@ -8,7 +8,7 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import (
+from PySide.QtCore import (
     QCoreApplication,
     QDate,
     QDateTime,
@@ -22,7 +22,7 @@ from PySide2.QtCore import (
     QUrl,
     Qt,
 )
-from PySide2.QtGui import (
+from PySide.QtGui import (
     QBrush,
     QColor,
     QConicalGradient,
@@ -40,7 +40,7 @@ from PySide2.QtGui import (
     QRadialGradient,
     QTransform,
 )
-from PySide2.QtWidgets import (
+from PySide.QtWidgets import (
     QApplication,
     QFormLayout,
     QFrame,
