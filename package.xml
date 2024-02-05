@@ -5,7 +5,7 @@
 
   <description>An extension for the TechDraw workbench to fill a TitleBlock with the aid of the Spreadsheet workbench.</description>
 
-  <version>0.0.1</version>
+  <version>0.0.2</version>
 
   <date>2024-01-03</date>
 
@@ -31,8 +31,7 @@
       <depend optional="False" type="python">inspect</depend>
       <depend optional="False" type="python">tkinter</depend>
       <depend optional="False" type="python">matplotlib</depend>
-      <depend optional="False" type="python">PySide6</depend>
-      <depend optional="False" type="python">shiboken6</depend>
+      <depend optional="False" type="python">math</depend>
       <classname>BillOfMaterialsWB</classname>
       <subdirectory>./</subdirectory>
     </workbench>
