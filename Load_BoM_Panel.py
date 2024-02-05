@@ -24,11 +24,12 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide2.QtCore import SIGNAL, QSize
-from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QDialogButtonBox
+from PySide.QtCore import SIGNAL, QSize
+from PySide.QtGui import QIcon
+from PySide.QtWidgets import QDialogButtonBox
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
+import BoM_WB_Locator
 
 # import graphical created Ui. (With QtDesigner or QtCreator)
 import Resources.UI.BoM_Panel_ui as BoM_Panel_ui
@@ -37,7 +38,7 @@ import Resources.UI.BoM_Panel_ui as BoM_Panel_ui
 translate = App.Qt.translate
 
 # get the path of the current python script
-PATH_TB = file_path = os.path.dirname(getsourcefile(lambda: 0))
+PATH_TB = os.path.dirname(BoM_WB_Locator.__file__)
 # Get the paths for the ,recoures, icons and ui
 PATH_TB_RESOURCES = os.path.join(PATH_TB, "Resources")
 PATH_TB_ICONS = os.path.join(PATH_TB, PATH_TB_RESOURCES, "Icons")
