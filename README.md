@@ -35,16 +35,10 @@ For debugging the option "Enable extra columns for debug" can be enabled. This o
 <br/>
 
 This workbench is still under development. Therefore there are some limitations.<br/>
-For the following assembly types the assembly cannot be placed inside a group. Otherwise the assembly type detection doesn't work as expected.
-- Assembly 4
-- Internal assembly  
-It is best avoid placing assemblies in a group for now.
-<br/>
-
-The support for the following assemblies, workbenches and futures are planned:
-- Improvement on assembly type detection, so assemblies can be placed in groups.
-- support for the Arch WB
-- support for multi-body parts (Part WB)
+Support for the following assemblies, workbenches and futures are planned:
+- Improvement on assembly type detection, so assemblies can be placed in groups. -> Done. Ready for testing
+- Support for the Arch WB
+- Support for multi-body parts (Part WB)
 - One function to support a mixed structure of all assembly workbenches
 - A function to add the BoM to a TechDraw page template
 - Mass calculation based on shape and material
