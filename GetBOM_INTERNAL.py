@@ -52,6 +52,11 @@ class BomFunctions:
         # Get the list with rootobjects
         docObjects = doc.RootObjects
 
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for docObject in docObjects:
+            if docObject.TypeId == "App::DocumentObjectGroup":
+                docObjects.extend(General_BOM.GetObjectsFromGroups(docObject))
+
         # Check if there are parts which are duplicates.
         # Threat them as identical parts and replace the copies with the original
         for docObject in docObjects:
