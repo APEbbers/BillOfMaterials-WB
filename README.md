@@ -18,7 +18,7 @@ Standard the following columns are added to the (BoM):
 
 Optionally, every property from the property view can be added from either the assembly document or a document selected in the tree.
 For debugging the option "Enable extra columns for debug" can be enabled. This option will add the following columns:
-- Original label. -> The original name in the assembly. For example in an assembly 3 assembly this will be "Link001", "Link002", etc. 
+- Original label. -> The original name in the assembly. For example in an assembly 3 assembly this will be "Link001", "Link002", etc.
 - Type. -> Part or Assembly
 - Internal name.
 - Fullname.
