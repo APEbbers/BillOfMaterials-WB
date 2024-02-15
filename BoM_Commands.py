@@ -26,6 +26,7 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
+import BoM_WB_Locator
 
 # Define the translation
 translate = App.Qt.translate
@@ -35,7 +36,7 @@ class CreatePartsOnlyBOM_Class:
     # get the path of the current python script
     global PATH_TB_UI
 
-    PATH_TB = file_path = os.path.dirname(getsourcefile(lambda: 0))
+    PATH_TB = file_path = os.path.dirname(BoM_WB_Locator.__file__)
     PATH_TB_RESOURCES = os.path.join(PATH_TB, "Resources").replace("\\", "/")
     PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI").replace("\\", "/")
 

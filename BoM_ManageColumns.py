@@ -34,7 +34,7 @@ from Settings_BoM import ENABLE_DEBUG
 import BoM_WB_Locator
 
 # import graphical created Ui. (With QtDesigner or QtCreator)
-import Add_RemoveColumns_ui
+import Resources.UI.Add_RemoveColumns_ui as Add_RemoveColumns_ui
 
 # Define the translation
 translate = App.Qt.translate
