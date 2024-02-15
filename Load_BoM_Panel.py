@@ -32,7 +32,7 @@ import BoM_ManageColumns
 import BoM_WB_Locator
 
 # import graphical created Ui. (With QtDesigner or QtCreator)
-import Resources.UI.BoM_Panel_ui as BoM_Panel_ui
+import BillOfMaterials.Resources.UI.BoM_Panel_ui as BoM_Panel_ui
 
 # Define the translation
 translate = App.Qt.translate
