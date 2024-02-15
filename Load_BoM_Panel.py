@@ -45,7 +45,7 @@ PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI")
 sys.path.append(PATH_TB_UI)
 
 # import graphical created Ui. (With QtDesigner or QtCreator)
-import Resources.UI.BoM_Panel_ui as BoM_Panel_ui
+import BoM_Panel_ui as BoM_Panel_ui
 
 
 # Create a new class with the imported module.class from the graphical created Ui.

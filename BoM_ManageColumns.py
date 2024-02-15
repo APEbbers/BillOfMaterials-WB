@@ -44,7 +44,7 @@ PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI")
 sys.path.append(PATH_TB_UI)
 
 # import graphical created Ui. (With QtDesigner or QtCreator)
-import Resources.UI.Add_RemoveColumns_ui as Add_RemoveColumns_ui
+import Add_RemoveColumns_ui as Add_RemoveColumns_ui
 
 # Define the translation
 translate = App.Qt.translate
