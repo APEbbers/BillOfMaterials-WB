@@ -30,9 +30,7 @@ from PySide.QtWidgets import QDialogButtonBox
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
-
-# import graphical created Ui. (With QtDesigner or QtCreator)
-import BillOfMaterials.Resources.UI.BoM_Panel_ui as BoM_Panel_ui
+import sys
 
 # Define the translation
 translate = App.Qt.translate
@@ -43,6 +41,11 @@ PATH_TB = os.path.dirname(BoM_WB_Locator.__file__)
 PATH_TB_RESOURCES = os.path.join(PATH_TB, "Resources")
 PATH_TB_ICONS = os.path.join(PATH_TB, PATH_TB_RESOURCES, "Icons")
 PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI")
+
+sys.path.append(PATH_TB_UI)
+
+# import graphical created Ui. (With QtDesigner or QtCreator)
+import Resources.UI.BoM_Panel_ui as BoM_Panel_ui
 
 
 # Create a new class with the imported module.class from the graphical created Ui.

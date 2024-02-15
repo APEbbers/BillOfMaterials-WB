@@ -32,6 +32,16 @@ from PySide.QtCore import SIGNAL, Qt
 import Settings_BoM
 from Settings_BoM import ENABLE_DEBUG
 import BoM_WB_Locator
+import sys
+
+# get the path of the current python script
+PATH_TB = os.path.dirname(BoM_WB_Locator.__file__)
+# Get the paths for the ,recoures, icons and ui
+PATH_TB_RESOURCES = os.path.join(PATH_TB, "Resources")
+PATH_TB_ICONS = os.path.join(PATH_TB, PATH_TB_RESOURCES, "Icons")
+PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI")
+
+sys.path.append(PATH_TB_UI)
 
 # import graphical created Ui. (With QtDesigner or QtCreator)
 import Resources.UI.Add_RemoveColumns_ui as Add_RemoveColumns_ui
