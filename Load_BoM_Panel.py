@@ -45,7 +45,7 @@ PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI")
 sys.path.append(PATH_TB_UI)
 
 # import graphical created Ui. (With QtDesigner or QtCreator)
-import Resources.UI.BoM_Panel_ui as BoM_Panel_ui
+import BoM_Panel_ui as BoM_Panel_ui
 
 
 # Create a new class with the imported module.class from the graphical created Ui.
@@ -60,10 +60,14 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # this will create a Qt widget from our ui file
         self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB_UI, "BoM_Panel.ui"))
 
-        self.form.setWindowIcon(QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")))
+        self.form.setWindowIcon(
+            QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg"))
+        )
 
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
-        self.form.AssemblyType.currentTextChanged.connect(self.on_AssemblyType_TextChanged)
+        self.form.AssemblyType.currentTextChanged.connect(
+            self.on_AssemblyType_TextChanged
+        )
 
         # This will create a connection between the pushbutton "currentTextChanged" and def "on_BomType_TextChanged"
         self.form.BoMType.currentTextChanged.connect(self.on_BomType_TextChanged)
@@ -76,10 +80,14 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         )
 
         # This will create a connection between the pushbutton "Set extra columns" and def "on_SetColumns_clicked"
-        self.form.SetColumns.connect(self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked)
+        self.form.SetColumns.connect(
+            self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked
+        )
 
         # This will create a connection between the pushbutton "CreateBOM" and def "on_CreateBOM_clicked"
-        self.form.CreateBOM.connect(self.form.CreateBOM, SIGNAL("pressed()"), self.on_CreateBOM_clicked)
+        self.form.CreateBOM.connect(
+            self.form.CreateBOM, SIGNAL("pressed()"), self.on_CreateBOM_clicked
+        )
 
         # region - add icons to the assemblytype checkbox
         icon_A2Plus = QIcon()
@@ -90,7 +98,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             QIcon.Off,
         )
         icon_AppLink = QIcon()
-        icon_AppLink.addFile(os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off)
+        icon_AppLink.addFile(
+            os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off
+        )
         icon_Asm3 = QIcon()
         icon_Asm3.addFile(
             os.path.join(PATH_TB_ICONS, "Assembly3_workbench_icon.svg"),
