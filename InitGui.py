@@ -76,51 +76,41 @@ class BillOfMaterialsWB(Gui.Workbench):
         # -----------------------------------------------------------------------------------------------------
         import BoM_Commands  # import here all the needed files that create your FreeCAD commands
         import Settings_BoM
+        import BoM_CreateUI
 
         Settings_BoM.SetDebugHeaders()
 
+        # region - Create the menu -------------------------------------------------------------------------------------
         # a list of command names created in the line above
-        MainList = [
-            "Separator",
-            "CreateBOM_Overall",
-            "Separator",
-        ]
-        SeparateFunctionsList = [
-            "CreateBOM_Raw",
-            "CreateBOM_Total",
-            "CreateBOM_PartsOnly",
-            "CreateBOM_Summary",
-            "CreateBOM_1stLevel",
-        ]
-        SettingsList = [
-            "SetColumns",
-        ]
+        MainList = BoM_CreateUI.DefineMenus()["MainMenu"]
+        SeparateFunctionsList = BoM_CreateUI.DefineMenus()["SeparateFunctionsMenu"]
+        SettingsList = BoM_CreateUI.DefineMenus()["SettingsMenu"]
+
+        # Append the menues
         self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList)  # creates a new menu
         self.appendMenu(
             QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Separate commands "]),
             SeparateFunctionsList,
         )
-
         self.appendMenu(
             QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Settings "]),
             SettingsList,
         )
+        # endregion ----------------------------------------------------------------------------------------------------
 
+        # region - Create the toolbars ---------------------------------------------------------------------------------
         # a list of command names created in the line above
-        self.list = [
-            "CreateBOM_Overall",
-            "Separator",
-            "CreateBOM_Raw",
-            "Separator",
-            "CreateBOM_1stLevel",
-            "Separator",
-            "SetColumns",
-        ]
+        MainToolbar = BoM_CreateUI.DefineToolbars()["ToolbarListMain"]
 
         # creates a new toolbar with your commands
-        self.appendToolbar("BOM Commands", self.list)
-        # # appends a submenu to an existing menu
-        # self.appendMenu(["An existing Menu", "My submenu"], self.list)
+        self.appendToolbar("BOM Commands", MainToolbar)
+        # endregion ----------------------------------------------------------------------------------------------------
+
+        # region - Create the toolbar for other workbenches ------------------------------------------------------------
+        # a list of command names created in the line above
+        WorkbenchToolbar = BoM_CreateUI.DefineToolbars()["ToolbarListWorkbenches"]
+
+        # endregion ----------------------------------------------------------------------------------------------------
 
     def Activated(self):
         """This function is executed whenever the workbench is activated"""
