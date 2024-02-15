@@ -23,6 +23,7 @@
 
 import FreeCAD as App
 import math
+import openpyxl
 
 # Define the translation
 translate = App.Qt.translate
@@ -297,9 +298,7 @@ def OpenFile(FileName: str):
         raise e
 
 
-def SetColumnWidth_SpreadSheet(
-    sheet, column: str, cellValue: str, factor: int = 10
-) -> bool:
+def SetColumnWidth_SpreadSheet(sheet, column: str, cellValue: str, factor: int = 10) -> bool:
     """_summary_
 
     Args:
@@ -346,9 +345,53 @@ def Print(Input: str, Type: str = ""):
 
 
 def LightOrDark(rgbColor=[0, 128, 255, 255]):
+    """_summary_
+    reference: https://alienryderflex.com/hsp.html
+    Args:
+        rgbColor (list, optional): RGB color. Defaults to [0, 128, 255, 255].\n
+        note: The alpha value is added for completeness, but us ignored in the equation.
+
+    Returns:
+        string: "light or dark"
+    """
     [r, g, b, a] = rgbColor
     hsp = math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
     if hsp > 127.5:
         return "light"
     else:
         return "dark"
+
+
+def toggleToolbars(ToolbarName: str, WorkBench: str = ""):
+    import FreeCADGui as Gui
+    from PySide2.QtWidgets import QToolBar
+
+    # Get the active workbench
+    if WorkBench == "":
+        WB = Gui.activeWorkbench()
+    if WorkBench != "":
+        WB = Gui.getWorkbench(WorkBench)
+
+    # Get the list of toolbars present.
+    ListToolbars = WB.listToolbars()
+    # Go through the list. If the toolbar exists set ToolbarExists to True
+    ToolbarExists = False
+    for i in range(len(ListToolbars)):
+        if ListToolbars[i] == ToolbarName:
+            ToolbarExists = True
+
+    # If ToolbarExists is True continue. Otherwise return.
+    if ToolbarExists is True:
+        # Get the main window
+        mainWindow = Gui.getMainWindow()
+        # Get the toolbar
+        ToolBar = mainWindow.findChild(QToolBar, ToolbarName)
+        # If the toolbar is not hidden, hide it and return.
+        if ToolBar.isHidden() is False:
+            ToolBar.setHidden(True)
+            return
+        # If the toolbar is hidden, set visible and return.
+        if ToolBar.isHidden() is True:
+            ToolBar.setVisible(True)
+            return
+    return
