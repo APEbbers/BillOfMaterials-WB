@@ -7,12 +7,9 @@ repos:
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
     -   id: search-and-replace
-        args: [
-            - search: PySide6
-            replacement:PySide
-            - search: PySide2
-            replacement:PySide
-            ]
+        args: [--search, 'PySide6', --replacement, 'PySide']
+    -   id: search-and-replace
+        args: [--search, 'PySide2', --replacement, 'PySide']
 -   repo: https://github.com/psf/black
     rev: 24.2.0
     hooks:
