@@ -62,7 +62,7 @@ def GetBoolSetting(settingName: str) -> bool:
 
 
 def GetColorSetting(settingName: str) -> object:
-    from PySide2.QtGui import QColor
+    from PySide.QtGui import QColor
 
     # Create a tuple from the int value of the color
     result = QColor.fromRgba(preferences.GetUnsigned(settingName)).toTuple()
