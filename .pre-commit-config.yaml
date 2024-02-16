@@ -1,18 +1,15 @@
 # .pre-commit-config.yaml
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0  # this is optional, use `pre-commit autoupdate` to get the latest rev!
+    rev: pre-commit autoupdate  # this is optional, use `pre-commit autoupdate` to get the latest rev!
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
     -   id: search-and-replace
-        args: [
-            - search: PySide6
-            replacement:PySide
-            - search: PySide2
-            replacement:PySide
-            ]
+        args: [--search, 'PySide6', --replacement, 'PySide']
+    -   id: search-and-replace
+        args: [--search, 'PySide2', --replacement, 'PySide']
 -   repo: https://github.com/psf/black
     rev: 24.2.0
     hooks:
