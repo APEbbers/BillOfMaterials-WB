@@ -682,7 +682,17 @@ class General_BOM:
             if RootObject.TypeId == "App::DocumentObjectGroup":
                 RootObjects.extend(General_BOM.GetObjectsFromGroups(RootObject))
 
+        # Define the result list.
         resultList = []
+
+        # Check if the document is an arch or multibody document
+        try:
+            test = self.CheckMultiBodyType(DocObject)
+            if test != "":
+                resultList.append(test)
+        except Exception:
+            pass
+
         # Go through the root objects. If there is an object type "a2pPart", this is an A2plus assembly.
         # If not, continue.
         # In the A2plus WB, you have to go through the Objects instead of the RootObjects
@@ -725,13 +735,6 @@ class General_BOM:
             except Exception:
                 pass
 
-            try:
-                test = self.CheckMultiBodyType(Object)
-                if test != "":
-                    resultList.append(test)
-            except Exception:
-                pass
-
         check_AppPart = False
         for result in resultList:
             if result == "Assembly3":
@@ -742,12 +745,12 @@ class General_BOM:
                 return "Internal"
             if result == "AppLink":
                 return "AppLink"
-            if result == "AppPart":
-                check_AppPart = True
             if result == "Arch":
                 return "Arch"
-            if result == "MultBody":
-                return "MultBody"
+            if result == "MultiBody":
+                return "MultiBody"
+            if result == "AppPart":
+                check_AppPart = True
 
         if check_AppPart is True:
             result = "AppPart"
@@ -756,13 +759,15 @@ class General_BOM:
 
     @classmethod
     def CheckMultiBodyType(self, DocObject):
-        listObjecttypes = [
+        # Define the list with allowed types
+        ListObjecttypes = [
             "Part::FeaturePython",
             "Part::Feature",
             "App::Part",
             "PartDesign::Body",
         ]
 
+        # Define the list with not allowed types. (aka all assembly types)
         ListBlockedTypes = [
             "App::Part",
             "App::LinkGroup",
@@ -770,7 +775,9 @@ class General_BOM:
             "Part::Link",
         ]
 
+        # Define the result
         result = ""
+
         # Get the list with rootobjects
         RootObjects = DocObject.RootObjects
 
@@ -779,22 +786,22 @@ class General_BOM:
             if RootObject.TypeId == "App::DocumentObjectGroup":
                 RootObjects.extend(General_BOM.GetObjectsFromGroups(RootObject))
 
-        IsPart = False
+        # define a boolan for the Arch item check
         isArchItem = False
 
-        # Get the list with rootobjects
-        RootObjects = DocObject.RootObjects
-
+        # Go through the rootobjects. If it is a blocked type, return.
         for RootObject in RootObjects:
-            if ListBlockedTypes.__contains__(RootObject.TypeId) is True:
-                IsPart = True
-                break
+            for type in ListBlockedTypes:
+                if type == RootObject.TypeId:
+                    return
 
-        if IsPart is True:
-            result = ""
-        if IsPart is False:
-            for RootObject in RootObjects:
-                if listObjecttypes.__contains__(RootObject.TypeId) is True:
+        # not returned, go through the obects in rootobjects
+        for RootObject in RootObjects:
+            # go through the allowed types
+            for type in ListObjecttypes:
+                # If the type is allowed, check if the object has BIM properties.
+                # If so, it is an Arch document.
+                if type == RootObject.TypeId:
                     try:
                         PropertyList = RootObject.PropertiesList
                         for Property in PropertyList:
@@ -807,10 +814,11 @@ class General_BOM:
                     except Exception:
                         pass
 
+        # set the result to the correct string.
         if isArchItem is True:
             result = "Arch"
         if isArchItem is False:
-            result = "MultBody"
+            result = "MultiBody"
 
         return result
 

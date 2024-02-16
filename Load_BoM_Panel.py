@@ -159,8 +159,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.AssemblyType.setCurrentText("Internal assembly")
         if General_BOM.CheckAssemblyType(doc) == "Arch":
             self.form.AssemblyType.setCurrentText("Arch")
-        if General_BOM.CheckAssemblyType(doc) == "MultBody":
-            self.form.AssemblyType.setCurrentText("MultBody")
+        if General_BOM.CheckAssemblyType(doc) == "MultiBody":
+            self.form.AssemblyType.setCurrentText("MultiBody")
         # Set the correct assembly as default
         return
 
@@ -196,8 +196,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.AssemblyType.setCurrentText("Internal assembly")
         if General_BOM.CheckAssemblyType(doc) == "Arch":
             self.form.AssemblyType.setCurrentText("Arch")
-        if General_BOM.CheckAssemblyType(doc) == "MultBody":
-            self.form.AssemblyType.setCurrentText("MultBody")
+        if General_BOM.CheckAssemblyType(doc) == "MultiBody":
+            self.form.AssemblyType.setCurrentText("MultiBody")
 
         return
 
