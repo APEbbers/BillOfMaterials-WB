@@ -39,7 +39,7 @@ def Mbox(text, title="", style=0, IconType="Information", default="", stringList
     21 : Inputbox with dropdown     (text, title, style, default, stringlist)\n
     Icontype:                       string: NoIcon, Question, Warning, Critical. Default Information
     """
-    from PySide2.QtWidgets import QMessageBox, QInputDialog
+    from PySide.QtWidgets import QMessageBox, QInputDialog
 
     Icon = QMessageBox.Information
     if IconType == "NoIcon":
@@ -366,7 +366,7 @@ def LightOrDark(rgbColor=[0, 128, 255, 255]):
 
 def toggleToolbars(ToolbarName: str, WorkBench: str = ""):
     import FreeCADGui as Gui
-    from PySide2.QtWidgets import QToolBar
+    from PySide.QtWidgets import QToolBar
 
     # Get the active workbench
     if WorkBench == "":
