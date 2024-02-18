@@ -42,7 +42,7 @@ class General_BOM:
     # If a modified list is created, this function can be used to write it the a spreadsheet.
     # You can add a dict for the headers of this list
     @classmethod
-    def createBoMSpreadsheet(self, mainList: list, Headers: dict = None, Summary: bool = False):
+    def createBoMSpreadsheet(self, mainList: list, Headers: dict = None, Summary: bool = False, IFCData=None):
         # If the Mainlist is empty, return.
         if mainList is None:
             Text = translate("BoM Workbench", "No list available!!")
@@ -97,7 +97,7 @@ class General_BOM:
         Headers = Settings_BoM.ReturnHeaders(Headers=Headers, AdditionalHeaders=DebugHeadersDict)
 
         # Go through the debug headers
-        if CustomHeadersDict is not None:
+        if CustomHeadersDict is not None and IFCData is None:
             CustomHeaderList = self.customHeaders.split(";")
             for i in range(len(CustomHeaderList)):
                 # Set the header
@@ -763,7 +763,6 @@ class General_BOM:
         ListObjecttypes = [
             "Part::FeaturePython",
             "Part::Feature",
-            "App::Part",
             "PartDesign::Body",
         ]
 
@@ -896,6 +895,37 @@ class General_BOM:
                     resultString = resultString + self.ObjectToString(item) + ", "
                 result = str(result)
             elif isinstance(item, dict):
+                resultString = ""
+                for item in result:
+                    resultString = resultString + self.ObjectToString(item) + ", "
+                result = str(result)
+            else:
+                result = str(result)
+
+            if result is None or result == "None":
+                result = ""
+
+            return result
+        except Exception:
+            return ""
+
+    @classmethod
+    def ReturnViewProperty_IFC(self, DocObject):
+        result: object
+        try:
+            try:
+                result = DocObject.IfcData
+            except Exception:
+                result = None
+
+            if isinstance(result, int):
+                result = str(result)
+            elif isinstance(result, list):
+                resultString = ""
+                for item in result:
+                    resultString = resultString + self.ObjectToString(item) + ", "
+                result = str(result)
+            elif isinstance(result, dict):
                 resultString = ""
                 for item in result:
                     resultString = resultString + self.ObjectToString(item) + ", "

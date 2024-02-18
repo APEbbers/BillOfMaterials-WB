@@ -168,7 +168,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     def getStandardButtons(self):
         return int(QDialogButtonBox.StandardButton.Close)
 
-    # Define Icon. (Not working yet)
+    # Define Icon.
     def getIcon(self):
         iconPath = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
         return iconPath
@@ -285,7 +285,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
     def on_AssemblyType_TextChanged(self):
         AssemblyType_Selected = str(self.form.AssemblyType.currentText())
-        if AssemblyType_Selected == "App:Part":
+        if AssemblyType_Selected == "App:Part" or AssemblyType_Selected == "App:LinkGroup":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
         else:
