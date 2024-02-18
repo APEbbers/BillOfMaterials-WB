@@ -169,6 +169,7 @@ class BomFunctions:
                 Value_1 = round(List_1[i], 6)
                 Value_2 = round(List_2[i], 6)
 
+                print(f"{Value_1}, {Value_2}")
                 if Value_1 == Value_2:
                     if Shape_1_HasMaterial is True and Shape_2_HasMaterial is True:
                         if Material_1 != Material_2:
@@ -180,6 +181,7 @@ class BomFunctions:
         except Exception:
             return False
 
+    @classmethod
     def CreateTotalBoM(self, CreateSpreadSheet: bool = True, Headers=""):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:

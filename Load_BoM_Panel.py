@@ -298,6 +298,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.label.setStyleSheet("""color: #787878;""")
             self.form.BoMType.setCurrentText("Total BoM")
             self.form.BoMType.setEnabled(False)
+            self.form.IndentedNumbering.setEnabled(False)
+            self.form.label_4.setStyleSheet("""color: #787878;""")
         else:
             self.form.IncludeBodies.setEnabled(True)
             self.form.label_3.setStyleSheet("")
