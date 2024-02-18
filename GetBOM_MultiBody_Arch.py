@@ -53,12 +53,7 @@ class BomFunctions:
             self.Type = "Arch"
 
         # Get the list with rootobjects
-        docObjects = doc.RootObjects
-
-        # Check if there are groups with items. create a list from it and add it to the docObjects.
-        for docObject in docObjects:
-            if docObject.TypeId == "App::DocumentObjectGroup":
-                docObjects.extend(General_BOM.GetObjectsFromGroups(docObject))
+        docObjects = doc.Objects
 
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
@@ -80,7 +75,12 @@ class BomFunctions:
         # Define and set the result to false.
         result = False
         # The list of object type ID's that are allowed.
-        listObjecttypes = ["Part::FeaturePython", "Part::Feature", "PartDesign::Body", "Part::PartFeature"]
+        listObjecttypes = [
+            "Part::FeaturePython",
+            "Part::Feature",
+            "PartDesign::Body",
+            "Part::PartFeature",
+        ]
 
         # Go through the list and compare the object ID's in the list with the ObjectId.
         # If they are the same, the result is true. Exit the for statement.
@@ -98,9 +98,10 @@ class BomFunctions:
         for i in range(len(docObjects)):
             # Get the documentObject
             object = docObjects[i]
+            print(object.TypeId)
 
             # If the documentObject is one of the allowed types, continue
-            if self.AllowedObjectType(object.TypeId) is True:
+            if self.AllowedObjectType(object.TypeId) is True and object.Visibility is True:
                 # Increase the itemnumber
                 ItemNumber = ItemNumber + 1
 
@@ -126,7 +127,7 @@ class BomFunctions:
 
                 # add the rowList to the mainList
                 self.mainList.append(rowList)
-
+                print(rowList["ObjectLabel"])
         return
 
     # Function to compare bodies
