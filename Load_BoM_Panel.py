@@ -214,6 +214,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         import GetBOM_INTERNAL
         import GetBOM_A3
         import GetBOM_A2plus
+        import GetBOM_MultiBody_Arch
 
         # Get the values from the controls
         AssemblyType_Selected = str(self.form.AssemblyType.currentText())
@@ -279,6 +280,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
             )
+        if AssemblyType_Selected == "Arch":
+            GetBOM_MultiBody_Arch.BomFunctions.Start()
+        if AssemblyType_Selected == "MultiBody":
+            GetBOM_MultiBody_Arch.BomFunctions.Start()
 
         self.form.CreateBOM.clearFocus()
         return
@@ -288,6 +293,11 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if AssemblyType_Selected == "App:Part" or AssemblyType_Selected == "App:LinkGroup":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
+        elif AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
+            self.form.IncludeBodies.setEnabled(False)
+            self.form.label.setStyleSheet("""color: #787878;""")
+            self.form.BoMType.setCurrentText("Total BoM")
+            self.form.BoMType.setEnabled(False)
         else:
             self.form.IncludeBodies.setEnabled(True)
             self.form.label_3.setStyleSheet("")

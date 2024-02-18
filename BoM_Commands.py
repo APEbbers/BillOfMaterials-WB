@@ -55,6 +55,7 @@ class CreatePartsOnlyBOM_Class:
         import GetBOM_INTERNAL
         import GetBOM_A3
         import GetBOM_A2plus
+        import GetBOM_MultiBody_Arch
 
         doc = App.ActiveDocument
         if CheckAssemblyType(doc) == "A2plus":
@@ -69,6 +70,10 @@ class CreatePartsOnlyBOM_Class:
             GetBOM_A3.BomFunctions.Start("PartsOnly")
         if CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("PartsOnly")
+        if CheckAssemblyType(doc) == "Arch":
+            GetBOM_MultiBody_Arch.BomFunctions.Start()
+        if CheckAssemblyType(doc) == "MultiBody":
+            GetBOM_MultiBody_Arch.BomFunctions.Start()
 
         return
 
