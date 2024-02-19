@@ -48,27 +48,32 @@ class CreatePartsOnlyBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import CheckAssemblyType
+        from General_BOM_Functions import General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
         import GetBOM_INTERNAL
         import GetBOM_A3
         import GetBOM_A2plus
+        import GetBOM_MultiBody_Arch
 
         doc = App.ActiveDocument
-        if CheckAssemblyType(doc) == "A2plus":
+        if General_BOM.CheckAssemblyType(doc) == "A2plus":
             GetBOM_A2plus.BomFunctions.Start("PartsOnly")
-        if CheckAssemblyType(doc) == "Assembly4":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly4":
             GetBOM_A4.BomFunctions.Start("PartsOnly")
-        if CheckAssemblyType(doc) == "AppLink":
+        if General_BOM.CheckAssemblyType(doc) == "AppLink":
             GetBOM_AppLink.BomFunctions.Start("PartsOnly")
-        if CheckAssemblyType(doc) == "AppPart":
+        if General_BOM.CheckAssemblyType(doc) == "AppPart":
             GetBOM_AppPart.BomFunctions.Start("PartsOnly")
-        if CheckAssemblyType(doc) == "Assembly3":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly3":
             GetBOM_A3.BomFunctions.Start("PartsOnly")
-        if CheckAssemblyType(doc) == "Internal":
+        if General_BOM.CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("PartsOnly")
+        if General_BOM.CheckAssemblyType(doc) == "Arch":
+            GetBOM_MultiBody_Arch.BomFunctions.Start()
+        if General_BOM.CheckAssemblyType(doc) == "MultiBody":
+            GetBOM_MultiBody_Arch.BomFunctions.Start()
 
         return
 
@@ -97,7 +102,7 @@ class CreateSummarizedBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import CheckAssemblyType
+        from General_BOM_Functions import General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
@@ -106,17 +111,17 @@ class CreateSummarizedBOM_Class:
         import GetBOM_A2plus
 
         doc = App.ActiveDocument
-        if CheckAssemblyType(doc) == "A2plus":
+        if General_BOM.CheckAssemblyType(doc) == "A2plus":
             GetBOM_A2plus.BomFunctions.Start("Summarized")
-        if CheckAssemblyType(doc) == "Assembly4":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly4":
             GetBOM_A4.BomFunctions.Start("Summarized")
-        if CheckAssemblyType(doc) == "AppLink":
+        if General_BOM.CheckAssemblyType(doc) == "AppLink":
             GetBOM_AppLink.BomFunctions.Start("Summarized")
-        if CheckAssemblyType(doc) == "AppPart":
+        if General_BOM.CheckAssemblyType(doc) == "AppPart":
             GetBOM_AppPart.BomFunctions.Start("Summarized")
-        if CheckAssemblyType(doc) == "Assembly3":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly3":
             GetBOM_A3.BomFunctions.Start("Summarized")
-        if CheckAssemblyType(doc) == "Internal":
+        if General_BOM.CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("Summarized")
 
         return
@@ -146,7 +151,7 @@ class CreateTotalBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import CheckAssemblyType
+        from General_BOM_Functions import General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
@@ -155,17 +160,17 @@ class CreateTotalBOM_Class:
         import GetBOM_A2plus
 
         doc = App.ActiveDocument
-        if CheckAssemblyType(doc) == "A2plus":
+        if General_BOM.CheckAssemblyType(doc) == "A2plus":
             GetBOM_A2plus.BomFunctions.Start("Total")
-        if CheckAssemblyType(doc) == "Assembly4":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly4":
             GetBOM_A4.BomFunctions.Start("Total")
-        if CheckAssemblyType(doc) == "AppLink":
+        if General_BOM.CheckAssemblyType(doc) == "AppLink":
             GetBOM_AppLink.BomFunctions.Start("Total")
-        if CheckAssemblyType(doc) == "AppPart":
+        if General_BOM.CheckAssemblyType(doc) == "AppPart":
             GetBOM_AppPart.BomFunctions.Start("Total")
-        if CheckAssemblyType(doc) == "Assembly3":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly3":
             GetBOM_A3.BomFunctions.Start("Total")
-        if CheckAssemblyType(doc) == "Internal":
+        if General_BOM.CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("Total")
 
         return
@@ -195,7 +200,7 @@ class CreateSingleLevelBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import CheckAssemblyType
+        from General_BOM_Functions import General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
@@ -204,17 +209,17 @@ class CreateSingleLevelBOM_Class:
         import GetBOM_A2plus
 
         doc = App.ActiveDocument
-        if CheckAssemblyType(doc) == "A2plus":
+        if General_BOM.CheckAssemblyType(doc) == "A2plus":
             GetBOM_A2plus.BomFunctions.Start("Total")
-        if CheckAssemblyType(doc) == "Assembly4":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly4":
             GetBOM_A4.BomFunctions.Start(command="Total", Level=1)
-        if CheckAssemblyType(doc) == "AppLink":
+        if General_BOM.CheckAssemblyType(doc) == "AppLink":
             GetBOM_AppLink.BomFunctions.Start(command="Total", Level=1)
-        if CheckAssemblyType(doc) == "AppPart":
+        if General_BOM.CheckAssemblyType(doc) == "AppPart":
             GetBOM_AppPart.BomFunctions.Start(command="Total", Level=1)
-        if CheckAssemblyType(doc) == "Assembly3":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly3":
             GetBOM_A3.BomFunctions.Start(command="Total", Level=1)
-        if CheckAssemblyType(doc) == "Internal":
+        if General_BOM.CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start(command="Total", Level=1)
 
         return
@@ -244,7 +249,7 @@ class CreateRawBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import CheckAssemblyType
+        from General_BOM_Functions import General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
@@ -253,17 +258,17 @@ class CreateRawBOM_Class:
         import GetBOM_A2plus
 
         doc = App.ActiveDocument
-        if CheckAssemblyType(doc) == "A2plus":
+        if General_BOM.CheckAssemblyType(doc) == "A2plus":
             GetBOM_A2plus.BomFunctions.Start("Raw")
-        if CheckAssemblyType(doc) == "Assembly4":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly4":
             GetBOM_A4.BomFunctions.Start("Raw")
-        if CheckAssemblyType(doc) == "AppLink":
+        if General_BOM.CheckAssemblyType(doc) == "AppLink":
             GetBOM_AppLink.BomFunctions.Start("Raw")
-        if CheckAssemblyType(doc) == "AppPart":
+        if General_BOM.CheckAssemblyType(doc) == "AppPart":
             GetBOM_AppPart.BomFunctions.Start("Raw")
-        if CheckAssemblyType(doc) == "Assembly3":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly3":
             GetBOM_A3.BomFunctions.Start("Raw")
-        if CheckAssemblyType(doc) == "Internal":
+        if General_BOM.CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("Raw")
 
         return
