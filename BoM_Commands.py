@@ -54,8 +54,6 @@ class CreatePartsOnlyBOM_Class:
         import GetBOM_AppPart
         import GetBOM_INTERNAL
         import GetBOM_A3
-        import GetBOM_A2plus
-        import GetBOM_MultiBody_Arch
 
         doc = App.ActiveDocument
         if General_BOM.CheckAssemblyType(doc) == "A2plus":
