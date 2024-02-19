@@ -583,7 +583,7 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        if IncludeBodies is False:
+        if IncludeBodies is False and Level > 1:
             TemporaryList = self.FilterBodies(BOMList=TemporaryList, Level=Level)
 
         # # Correct the itemnumbers if indentation is wanted.
