@@ -225,8 +225,9 @@ class BomFunctions:
                 if Quantity == 1:
                     TemporaryList.append(rowListNew)
                 if Quantity > 1:
-                    TemporaryList.pop()
-                    TemporaryList.append(rowListNew)
+                    # TemporaryList.pop()
+                    # TemporaryList.append(rowListNew)
+                    TemporaryList[i]["Qty"] = Quantity
 
         # Create the spreadsheet
         if Headers == "":
