@@ -44,7 +44,9 @@ class BomFunctions:
         # Check the assembly type
         AssemblyType = General_BOM.CheckAssemblyType(doc)
         if AssemblyType != "Internal":
-            Print(f"Not the internal assembly but an {AssemblyType} Assembly!!", "Error")
+            Print(
+                f"Not the internal assembly but an {AssemblyType} Assembly!!", "Error"
+            )
             return
 
         # Get the list with rootobjects
@@ -59,7 +61,9 @@ class BomFunctions:
         # Threat them as identical parts and replace the copies with the original
         for docObject in docObjects:
             if self.AllowedObjectType(docObject.TypeId) is True:
-                docObjects = self.ReturnEquealPart(docObject=docObject, ObjectList=docObjects)
+                docObjects = self.ReturnEquealPart(
+                    docObject=docObject, ObjectList=docObjects
+                )
 
         # Check if a App::LinkGroup is copied. this will appear as an App::Link.
         # Replace the App::LinkGroup with a second App::Link. (other way around doesn't work!)
@@ -81,7 +85,9 @@ class BomFunctions:
         ItemNumber = 0
 
         # Go Through all objects
-        self.GoThrough_Objects(docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber)
+        self.GoThrough_Objects(
+            docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber
+        )
 
         return
 
@@ -124,7 +130,10 @@ class BomFunctions:
             if ObjectList[j].Label[-3].isnumeric() is True:
                 # go through the same list and replace all objects with similar labels with the replace item.
                 for k in range(len(ObjectList)):
-                    if ObjectList[j].Label == ObjectList[k].Label and ObjectList[j].Label[:-3] == replaceItem.Label:
+                    if (
+                        ObjectList[j].Label == ObjectList[k].Label
+                        and ObjectList[j].Label[:-3] == replaceItem.Label
+                    ):
                         ObjectList.remove(ObjectList[j])
                         ObjectList.append(replaceItem)
 
@@ -161,7 +170,9 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(
+        self, docObjects, sheet, ItemNumber, ParentNumber: str = ""
+    ) -> True:
         """
         Args:
             docObjects (_type_):    list[DocumentObjects]\n
@@ -204,16 +215,27 @@ class BomFunctions:
                 self.mainList.append(rowList)
 
                 # If the object is an container, go through the sub items, (a.k.a child objects)
-                if object.TypeId == "App::LinkGroup" or object.TypeId == "App::Link" or object.TypeId == "App::Part":
+                if (
+                    object.TypeId == "App::LinkGroup"
+                    or object.TypeId == "App::Link"
+                    or object.TypeId == "App::Part"
+                ):
                     # Create a list with child objects as DocumentObjects
                     childObjects = []
                     # Make sure that the list is empty. (probally overkill)
                     childObjects.clear()
                     # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                     for j in range(len(object.getSubObjects())):
-                        if object.getSubObject(subname=object.getSubObjects()[j], retType=1) is not None:
+                        if (
+                            object.getSubObject(
+                                subname=object.getSubObjects()[j], retType=1
+                            )
+                            is not None
+                        ):
                             childObjects.append(
-                                object.getSubObject(subname=object.getSubObjects()[j], retType=1),
+                                object.getSubObject(
+                                    subname=object.getSubObjects()[j], retType=1
+                                ),
                             )
                     if len(childObjects) > 0:
                         self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -229,7 +251,9 @@ class BomFunctions:
 
     # Sub function of GoThrough_Objects.
     @classmethod
-    def GoThrough_ChildObjects(self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_ChildObjects(
+        self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""
+    ) -> True:
         """
         Args:
             ChilddocObjects (_type_):       list[DocumentObjects]\n
@@ -279,9 +303,16 @@ class BomFunctions:
                     subChildObjects.clear()
                     # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
                     for j in range(len(childObject.getSubObjects())):
-                        if childObject.getSubObject(subname=childObject.getSubObjects()[j], retType=1) is not None:
+                        if (
+                            childObject.getSubObject(
+                                subname=childObject.getSubObjects()[j], retType=1
+                            )
+                            is not None
+                        ):
                             subChildObjects.append(
-                                childObject.getSubObject(childObject.getSubObjects()[j], 1),
+                                childObject.getSubObject(
+                                    childObject.getSubObjects()[j], 1
+                                ),
                             )
                     if len(subChildObjects) > 0:
                         self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -338,7 +369,12 @@ class BomFunctions:
             # Test the object. If the parent is an assembly, the object is allowed.
             testResult = False
             try:
-                if ItemObject["DocumentObject"].getParent().getPropertyByName("Type", 2)[1] == "Assembly":
+                if (
+                    ItemObject["DocumentObject"]
+                    .getParent()
+                    .getPropertyByName("Type", 2)[1]
+                    == "Assembly"
+                ):
                     testResult = True
                 if len(ItemObject["ItemNumber"].split(".")) == 1:
                     testResult = True
@@ -370,7 +406,12 @@ class BomFunctions:
                 # Test the next object. If the parent is an assembly, the object is allowed.
                 testResult = False
                 try:
-                    if ItemObjectNext["DocumentObject"].getParent().getPropertyByName("Type", 2)[1] == "Assembly":
+                    if (
+                        ItemObjectNext["DocumentObject"]
+                        .getParent()
+                        .getPropertyByName("Type", 2)[1]
+                        == "Assembly"
+                    ):
                         testResult = True
                     if len(ItemObjectNext["ItemNumber"].split(".")) == 1:
                         testResult = True
@@ -557,7 +598,10 @@ class BomFunctions:
                     )
                 )
 
-                if TypeListParts.__contains__(rowList["DocumentObject"].TypeId) is False:
+                if (
+                    TypeListParts.__contains__(rowList["DocumentObject"].TypeId)
+                    is False
+                ):
                     QtyValue = "1"
                 # Create a new row item for the temporary row.
                 rowListNew = {
@@ -586,7 +630,9 @@ class BomFunctions:
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
         if Level > 1:
-            TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
+            TemporaryList = self.FilterBodies(
+                BOMList=TemporaryList, AllowAllBodies=IncludeBodies
+            )
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
@@ -698,7 +744,9 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
+        TemporaryList = self.FilterBodies(
+            BOMList=TemporaryList, AllowAllBodies=IncludeBodies
+        )
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):
@@ -707,7 +755,9 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
+            General_BOM.createBoMSpreadsheet(
+                mainList=TemporaryList, Headers=None, Summary=True
+            )
         return
 
     # Function to create a BoM list for a parts only BoM.
@@ -802,7 +852,9 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
+        TemporaryList = self.FilterBodies(
+            BOMList=TemporaryList, AllowAllBodies=IncludeBodies
+        )
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):
@@ -856,7 +908,9 @@ class BomFunctions:
                             style=1,
                         )
                     if IncludeBodies is True:
-                        General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
+                        General_BOM.createBoMSpreadsheet(
+                            self.FilterBodies(self.mainList)
+                        )
                     else:
                         General_BOM.createBoMSpreadsheet(self.mainList)
                 if command == "PartsOnly":
