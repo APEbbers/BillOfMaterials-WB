@@ -62,7 +62,9 @@ class BomFunctions:
         ItemNumber = 0
 
         # Go Through all objects
-        self.GoThrough_Objects(docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber)
+        self.GoThrough_Objects(
+            docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber
+        )
 
         return
 
@@ -94,14 +96,19 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(
+        self, docObjects, sheet, ItemNumber, ParentNumber: str = ""
+    ) -> True:
         for i in range(len(docObjects)):
             # Get the documentObject
             object = docObjects[i]
             print(object.TypeId)
 
             # If the documentObject is one of the allowed types, continue
-            if self.AllowedObjectType(object.TypeId) is True and object.Visibility is True:
+            if (
+                self.AllowedObjectType(object.TypeId) is True
+                and object.Visibility is True
+            ):
                 # Increase the itemnumber
                 ItemNumber = ItemNumber + 1
 
@@ -208,7 +215,9 @@ class BomFunctions:
             Quantity = 1
             for j in range(len(ShadowList)):
                 shadowItem = ShadowList[j]
-                test = self.CompareBodies(rowList["DocumentObject"], shadowItem["DocumentObject"])
+                test = self.CompareBodies(
+                    rowList["DocumentObject"], shadowItem["DocumentObject"]
+                )
                 if test is True:
                     Quantity = Quantity + 1
 
