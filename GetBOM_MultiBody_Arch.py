@@ -81,6 +81,8 @@ class BomFunctions:
             "PartDesign::Body",
             "Part::PartFeature",
         ]
+        listObjecttypes.extend(Standard_Functions.PartFeatureList())
+        listObjecttypes.extend(Standard_Functions.PartDesingFeatureList())
 
         # Go through the list and compare the object ID's in the list with the ObjectId.
         # If they are the same, the result is true. Exit the for statement.
@@ -224,10 +226,10 @@ class BomFunctions:
             if i > 0:
                 if Quantity == 1:
                     TemporaryList.append(rowListNew)
+                    ShadowList.append(rowList)
                 if Quantity > 1:
-                    # TemporaryList.pop()
-                    # TemporaryList.append(rowListNew)
-                    TemporaryList[i]["Qty"] = Quantity
+                    TemporaryList.pop()
+                    TemporaryList.append(rowListNew)
 
         # Create the spreadsheet
         if Headers == "":

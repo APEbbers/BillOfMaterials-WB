@@ -295,15 +295,31 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.label_3.setStyleSheet("""color: #787878;""")
         elif AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
             self.form.IncludeBodies.setEnabled(False)
-            self.form.label.setStyleSheet("""color: #787878;""")
-            self.form.BoMType.setCurrentText("Total BoM")
+            self.form.label_3.setStyleSheet("""color: #787878;""")
+
             self.form.BoMType.setEnabled(False)
+            self.form.BoMType.setCurrentText("Total BoM")
+            self.form.label.setStyleSheet("""color: #787878;""")
+
             self.form.IndentedNumbering.setEnabled(False)
             self.form.label_4.setStyleSheet("""color: #787878;""")
+
+            self.form.MaxLevel.setEnabled(False)
+            self.form.label_5.setStyleSheet("""color: #787878;""")
+            self.form.label_6.setStyleSheet("""color: #787878;""")
         else:
             self.form.IncludeBodies.setEnabled(True)
             self.form.label_3.setStyleSheet("")
-        self.form.label_3.update()
+
+            self.form.BoMType.setEnabled(True)
+            self.form.label.setStyleSheet("")
+
+            self.form.IndentedNumbering.setEnabled(True)
+            self.form.label_4.setStyleSheet("")
+
+            self.form.MaxLevel.setEnabled(True)
+            self.form.label_5.setStyleSheet("")
+            self.form.label_6.setStyleSheet("")
 
         return
 
