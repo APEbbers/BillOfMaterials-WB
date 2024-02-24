@@ -86,9 +86,13 @@ class BillOfMaterialsWB(Gui.Workbench):
         SettingsList = BoM_CreateUI.DefineMenus()["SettingsMenu"]
 
         # Append the menues
-        self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList)  # creates a new menu
         self.appendMenu(
-            QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Separate commands "]),
+            QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList
+        )  # creates a new menu
+        self.appendMenu(
+            QT_TRANSLATE_NOOP(
+                "BoM Workbench", ["Bill of Materials", "Separate commands "]
+            ),
             SeparateFunctionsList,
         )
         self.appendMenu(
