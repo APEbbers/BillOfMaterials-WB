@@ -5,7 +5,7 @@
 
   <description>An extension for the TechDraw workbench to fill a TitleBlock with the aid of the Spreadsheet workbench.</description>
 
-  <version>0.0.5.5</version>
+  <version>0.0.5.6</version>
 
   <date>2024-01-03</date>
 
@@ -15,16 +15,18 @@
 
   <pythonmin>3.8.0</pythonmin>
 
+  <url type="website">https://github.com/APEbbers/BillOfMaterials-WB/wiki</url>
+
   <url branch="main" type="repository">https://github.com/APEbbers/BillOfMaterials-WB</url>
 
   <url type="readme">https://github.com/APEbbers/BillOfMaterials-WB/blob/main/README.md</url>
-
-  <url type="wiki">https://github.com/APEbbers/BillOfMaterials-WB/wiki</url>
 
   <icon>Resources/Icons/BillOfMaterialsWB.svg</icon>
 
   <content>
     <workbench>
+      <freecadmin>0.21.0</freecadmin>
+      <icon>Resources/Icons/BillOfMaterialsWB.svg</icon>
       <depend optional="False" type="automatic">Spreadsheet</depend>
       <depend optional="False" type="automatic">TechDraw</depend>
       <depend optional="False" type="python">openpyxl</depend>

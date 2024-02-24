@@ -43,7 +43,7 @@ class General_BOM:
     # You can add a dict for the headers of this list
     @classmethod
     def createBoMSpreadsheet(
-        self, mainList: list, Headers: dict = None, Summary: bool = False
+        self, mainList: list, Headers: dict = None, Summary: bool = False, IFCData=None
     ):
         # If the Mainlist is empty, return.
         if mainList is None:
@@ -103,7 +103,7 @@ class General_BOM:
         )
 
         # Go through the debug headers
-        if CustomHeadersDict is not None:
+        if CustomHeadersDict is not None and IFCData is None:
             CustomHeaderList = self.customHeaders.split(";")
             for i in range(len(CustomHeaderList)):
                 # Set the header
@@ -747,7 +747,17 @@ class General_BOM:
             if RootObject.TypeId == "App::DocumentObjectGroup":
                 RootObjects.extend(General_BOM.GetObjectsFromGroups(RootObject))
 
+        # Define the result list.
         resultList = []
+
+        # Check if the document is an arch or multibody document
+        try:
+            test = self.CheckMultiBodyType(DocObject)
+            if test != "":
+                resultList.append(test)
+        except Exception:
+            pass
+
         # Go through the root objects. If there is an object type "a2pPart", this is an A2plus assembly.
         # If not, continue.
         # In the A2plus WB, you have to go through the Objects instead of the RootObjects
@@ -800,6 +810,10 @@ class General_BOM:
                 return "Internal"
             if result == "AppLink":
                 return "AppLink"
+            if result == "Arch":
+                return "Arch"
+            if result == "MultiBody":
+                return "MultiBody"
             if result == "AppPart":
                 check_AppPart = True
 
@@ -810,8 +824,67 @@ class General_BOM:
 
     @classmethod
     def CheckMultiBodyType(self, DocObject):
+        # Define the list with allowed types
+        ListObjecttypes = [
+            "Part::FeaturePython",
+            "Part::Feature",
+            "PartDesign::Body",
+        ]
+
+        # Define the list with not allowed types. (aka all assembly types)
+        ListBlockedTypes = [
+            "App::Part",
+            "App::LinkGroup",
+            "App::Link",
+            "Part::Link",
+        ]
+
+        # Define the result
+        result = ""
+
         # Get the list with rootobjects
         RootObjects = DocObject.RootObjects
+
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for RootObject in RootObjects:
+            if RootObject.TypeId == "App::DocumentObjectGroup":
+                RootObjects.extend(General_BOM.GetObjectsFromGroups(RootObject))
+
+        # define a boolan for the Arch item check
+        isArchItem = False
+
+        # Go through the rootobjects. If it is a blocked type, return.
+        for RootObject in RootObjects:
+            for type in ListBlockedTypes:
+                if type == RootObject.TypeId:
+                    return
+
+        # not returned, go through the obects in rootobjects
+        for RootObject in RootObjects:
+            # go through the allowed types
+            for type in ListObjecttypes:
+                # If the type is allowed, check if the object has BIM properties.
+                # If so, it is an Arch document.
+                if type == RootObject.TypeId:
+                    try:
+                        PropertyList = RootObject.PropertiesList
+                        for Property in PropertyList:
+                            if Property == "IfcType":
+                                isArchItem = True
+                            if Property == "IfcData":
+                                isArchItem = True
+                            if Property == "IfcProperties":
+                                isArchItem = True
+                    except Exception:
+                        pass
+
+        # set the result to the correct string.
+        if isArchItem is True:
+            result = "Arch"
+        if isArchItem is False:
+            result = "MultiBody"
+
+        return result
 
     @classmethod
     def GetObjectsFromGroups(self, Group):
@@ -887,6 +960,37 @@ class General_BOM:
                     resultString = resultString + self.ObjectToString(item) + ", "
                 result = str(result)
             elif isinstance(item, dict):
+                resultString = ""
+                for item in result:
+                    resultString = resultString + self.ObjectToString(item) + ", "
+                result = str(result)
+            else:
+                result = str(result)
+
+            if result is None or result == "None":
+                result = ""
+
+            return result
+        except Exception:
+            return ""
+
+    @classmethod
+    def ReturnViewProperty_IFC(self, DocObject):
+        result: object
+        try:
+            try:
+                result = DocObject.IfcData
+            except Exception:
+                result = None
+
+            if isinstance(result, int):
+                result = str(result)
+            elif isinstance(result, list):
+                resultString = ""
+                for item in result:
+                    resultString = resultString + self.ObjectToString(item) + ", "
+                result = str(result)
+            elif isinstance(result, dict):
                 resultString = ""
                 for item in result:
                     resultString = resultString + self.ObjectToString(item) + ", "

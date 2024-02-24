@@ -250,7 +250,7 @@ class Ui_Dialog(object):
             5, QCoreApplication.translate("Dialog", "App:Part", None)
         )
         self.AssemblyType.setItemText(
-            6, QCoreApplication.translate("Dialog", "Multibody", None)
+            6, QCoreApplication.translate("Dialog", "MultiBody", None)
         )
         self.AssemblyType.setItemText(
             7, QCoreApplication.translate("Dialog", "Arch", None)
