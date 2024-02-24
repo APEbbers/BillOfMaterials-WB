@@ -76,7 +76,9 @@ class Ui_Dialog(object):
         self.gridLayout_3 = QGridLayout(self.layoutWidget)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.horizontalSpacer_7 = QSpacerItem(5, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.horizontalSpacer_7 = QSpacerItem(
+            5, 20, QSizePolicy.Fixed, QSizePolicy.Minimum
+        )
 
         self.gridLayout_3.addItem(self.horizontalSpacer_7, 4, 0, 1, 1)
 
@@ -99,7 +101,9 @@ class Ui_Dialog(object):
         self.Move_Up = QPushButton(self.layoutWidget)
         self.Move_Up.setObjectName("Move_Up")
         icon = QIcon()
-        icon.addFile("../Icons/SingleArrow_Up_Dark.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(
+            "../Icons/SingleArrow_Up_Dark.svg", QSize(), QIcon.Normal, QIcon.Off
+        )
         self.Move_Up.setIcon(icon)
 
         self.gridLayout_2.addWidget(self.Move_Up, 2, 9, 1, 1)
@@ -112,19 +116,25 @@ class Ui_Dialog(object):
 
         self.gridLayout_2.addWidget(self.AddItem, 2, 1, 1, 1)
 
-        self.horizontalSpacer_3 = QSpacerItem(5, 5, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(
+            5, 5, QSizePolicy.Fixed, QSizePolicy.Minimum
+        )
 
         self.gridLayout_2.addItem(self.horizontalSpacer_3, 2, 2, 1, 2)
 
         self.Move_Down = QPushButton(self.layoutWidget)
         self.Move_Down.setObjectName("Move_Down")
         icon2 = QIcon()
-        icon2.addFile("../Icons/SingleArrow_Down_Dark.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon2.addFile(
+            "../Icons/SingleArrow_Down_Dark.svg", QSize(), QIcon.Normal, QIcon.Off
+        )
         self.Move_Down.setIcon(icon2)
 
         self.gridLayout_2.addWidget(self.Move_Down, 2, 10, 1, 1)
 
-        self.horizontalSpacer_4 = QSpacerItem(5, 5, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.horizontalSpacer_4 = QSpacerItem(
+            5, 5, QSizePolicy.Fixed, QSizePolicy.Minimum
+        )
 
         self.gridLayout_2.addItem(self.horizontalSpacer_4, 2, 5, 1, 1)
 
@@ -140,13 +150,17 @@ class Ui_Dialog(object):
 
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
-        self.verticalSpacer = QSpacerItem(10, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer = QSpacerItem(
+            10, 40, QSizePolicy.Minimum, QSizePolicy.Expanding
+        )
 
         self.gridLayout.addItem(self.verticalSpacer, 3, 0, 1, 1)
 
         self.gridLayout_2.addLayout(self.gridLayout, 1, 4, 1, 1)
 
-        self.horizontalSpacer_2 = QSpacerItem(5, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(
+            5, 20, QSizePolicy.Expanding, QSizePolicy.Minimum
+        )
 
         self.gridLayout_2.addItem(self.horizontalSpacer_2, 2, 7, 1, 1)
 
@@ -163,14 +177,21 @@ class Ui_Dialog(object):
 
         self.gridLayout_2.addWidget(self.RemoveItem, 2, 6, 1, 1)
 
-        self.horizontalSpacer_6 = QSpacerItem(5, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.horizontalSpacer_6 = QSpacerItem(
+            5, 20, QSizePolicy.Fixed, QSizePolicy.Minimum
+        )
 
         self.gridLayout_2.addItem(self.horizontalSpacer_6, 2, 11, 1, 1)
 
         self.Sort_AZ = QPushButton(self.layoutWidget)
         self.Sort_AZ.setObjectName("Sort_AZ")
         icon4 = QIcon()
-        icon4.addFile("../../../../../Icons/General icons/Sort_AZ_Dark.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon4.addFile(
+            "../../../../../Icons/General icons/Sort_AZ_Dark.png",
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         self.Sort_AZ.setIcon(icon4)
 
         self.gridLayout_2.addWidget(self.Sort_AZ, 2, 12, 1, 2)
@@ -184,7 +205,9 @@ class Ui_Dialog(object):
 
         self.gridLayout_2.addWidget(self.Columns_To_Add, 1, 0, 1, 4)
 
-        self.horizontalSpacer = QSpacerItem(50, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(
+            50, 20, QSizePolicy.Expanding, QSizePolicy.Minimum
+        )
 
         self.gridLayout_2.addItem(self.horizontalSpacer, 2, 0, 1, 1)
 
@@ -201,13 +224,18 @@ class Ui_Dialog(object):
         self.buttonBox = QDialogButtonBox(self.layoutWidget)
         self.buttonBox.setObjectName("buttonBox")
         self.buttonBox.setStandardButtons(
-            QDialogButtonBox.Apply | QDialogButtonBox.Cancel | QDialogButtonBox.Ok | QDialogButtonBox.Reset
+            QDialogButtonBox.Apply
+            | QDialogButtonBox.Cancel
+            | QDialogButtonBox.Ok
+            | QDialogButtonBox.Reset
         )
         self.buttonBox.setCenterButtons(False)
 
         self.gridLayout_3.addWidget(self.buttonBox, 4, 1, 1, 1)
 
-        self.horizontalSpacer_8 = QSpacerItem(5, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.horizontalSpacer_8 = QSpacerItem(
+            5, 20, QSizePolicy.Fixed, QSizePolicy.Minimum
+        )
 
         self.gridLayout_3.addItem(self.horizontalSpacer_8, 4, 2, 1, 1)
 
@@ -232,7 +260,9 @@ class Ui_Dialog(object):
 
         self.gridLayout_3.addLayout(self.gridLayout_4, 2, 1, 1, 1)
 
-        self.horizontalSpacer_5 = QSpacerItem(40, 5, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_5 = QSpacerItem(
+            40, 5, QSizePolicy.Expanding, QSizePolicy.Minimum
+        )
 
         self.gridLayout_3.addItem(self.horizontalSpacer_5, 3, 2, 1, 1)
 
@@ -243,20 +273,30 @@ class Ui_Dialog(object):
     # setupUi
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", "Add or remove columns", None))
+        Dialog.setWindowTitle(
+            QCoreApplication.translate("Dialog", "Add or remove columns", None)
+        )
         self.Move_Up.setText("")
         self.AddItem.setText("")
         self.Move_Down.setText("")
-        self.label_2.setText(QCoreApplication.translate("Dialog", "Selected columns:", None))
-        self.label.setText(QCoreApplication.translate("Dialog", "Available columns:", None))
+        self.label_2.setText(
+            QCoreApplication.translate("Dialog", "Selected columns:", None)
+        )
+        self.label.setText(
+            QCoreApplication.translate("Dialog", "Available columns:", None)
+        )
         self.RemoveItem.setText("")
         self.Sort_AZ.setText("")
         self.Sort_ZA.setText("")
-        self.ManualProperty.setPlaceholderText(QCoreApplication.translate("Dialog", "Enter column name here...", None))
+        self.ManualProperty.setPlaceholderText(
+            QCoreApplication.translate("Dialog", "Enter column name here...", None)
+        )
         self.AddManual.setText("")
         self.label_3.setText(
             QCoreApplication.translate(
-                "Dialog", "<html><head/><body><p>Enter property manually: </p></body></html>", None
+                "Dialog",
+                "<html><head/><body><p>Enter property manually: </p></body></html>",
+                None,
             )
         )
 
