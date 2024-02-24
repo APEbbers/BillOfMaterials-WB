@@ -32,11 +32,6 @@ __author__ = "A.P. Ebbers"
 __url__ = "https://github.com/APEbbers/BillOfMaterials-WB.git"
 
 
-# region - Translations
-def QT_TRANSLATE_NOOP(context, text):
-    return text
-
-
 # Define the translation
 translate = App.Qt.translate
 # endregion
@@ -78,6 +73,10 @@ class BillOfMaterialsWB(Gui.Workbench):
         import Settings_BoM
         import BoM_CreateUI
 
+        # region - Translations
+        def QT_TRANSLATE_NOOP(context, text):
+            return text
+
         Settings_BoM.SetDebugHeaders()
 
         # region - Create the menu -------------------------------------------------------------------------------------
@@ -87,13 +86,9 @@ class BillOfMaterialsWB(Gui.Workbench):
         SettingsList = BoM_CreateUI.DefineMenus()["SettingsMenu"]
 
         # Append the menues
+        self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList)  # creates a new menu
         self.appendMenu(
-            QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList
-        )  # creates a new menu
-        self.appendMenu(
-            QT_TRANSLATE_NOOP(
-                "BoM Workbench", ["Bill of Materials", "Separate commands "]
-            ),
+            QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Separate commands "]),
             SeparateFunctionsList,
         )
         self.appendMenu(
