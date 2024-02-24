@@ -32,11 +32,6 @@ __author__ = "A.P. Ebbers"
 __url__ = "https://github.com/APEbbers/BillOfMaterials-WB.git"
 
 
-# region - Translations
-def QT_TRANSLATE_NOOP(context, text):
-    return text
-
-
 # Define the translation
 translate = App.Qt.translate
 # endregion
@@ -77,6 +72,10 @@ class BillOfMaterialsWB(Gui.Workbench):
         import BoM_Commands  # import here all the needed files that create your FreeCAD commands
         import Settings_BoM
         import BoM_CreateUI
+
+        # region - Translations
+        def QT_TRANSLATE_NOOP(context, text):
+            return text
 
         Settings_BoM.SetDebugHeaders()
 
