@@ -56,7 +56,7 @@ class BillOfMaterialsWB(Gui.Workbench):
     Gui.addIconPath(PATH_TB_ICONS)
     Gui.addPreferencePage(
         os.path.join(PATH_TB_UI, "PreferencesUI_BoM.ui"),
-        "Bill of Materials",
+        "bill of materials",
     )
 
     def GetClassName(self):
