@@ -38,16 +38,18 @@ class BomFunctions:
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
-    def GetTreeObjects(self) -> True:
+    def GetTreeObjects(self, checkAssemblyType=True) -> True:
         # Get the active document
         doc = App.ActiveDocument
 
         # Check the assembly type
-        AssemblyType = General_BOM.CheckAssemblyType(doc)
-        if AssemblyType != "MultiBody" and AssemblyType != "Arch":
-            Print(f"Not a multibody part but an {AssemblyType} Assembly!!", "Error")
-            return
-        if AssemblyType == "MultiBody":
+        AssemblyType = ""
+        if checkAssemblyType is True:
+            AssemblyType = General_BOM.CheckAssemblyType(doc)
+            if AssemblyType != "MultiBody" and AssemblyType != "Arch":
+                Print(f"Not a multibody part but an {AssemblyType} Assembly!!", "Error")
+                return
+        if AssemblyType == "MultiBody" or AssemblyType == "":
             self.Type = "MultiBody"
         if AssemblyType == "Arch":
             self.Type = "Arch"
@@ -238,12 +240,12 @@ class BomFunctions:
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
-    def Start(self, command=""):
+    def Start(self, command="", CheckAssemblyType=True):
         try:
             # Clear the mainList to avoid double data
             self.mainList.clear()
             # create the mainList
-            self.GetTreeObjects()
+            self.GetTreeObjects(checkAssemblyType=CheckAssemblyType)
 
             self.CreateTotalBoM()
 

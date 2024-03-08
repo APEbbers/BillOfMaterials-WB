@@ -451,8 +451,8 @@ class General_BOM:
             ListItem (dict): Item from main list.
             ItemNumber (str): Item number of document object.
             BomList (list): complete main list.
-            ObjectBased (bool, optional): Compare objects (True) or object.labels (False) Defaults to True.
-            CompareAssy (bool, optional): Compare objects when they are an assembly.(ObjectBased must be False)) Defaults to False.
+            ObjectBasedPart (bool, optional): Compare objects (True) or object.labels (False) Defaults to True.
+            ObjectBasedAssy (bool, optional): Compare objects when they are an assembly.(ObjectBased must be False)) Defaults to False.
 
         Returns:
             int: number of document number in item number range.
@@ -499,31 +499,25 @@ class General_BOM:
                                 counter = counter + 1
 
             # If the itemnumber is one level deep:
-            if len(ItemNumber.split(".")) == 1 and len(BomList[i]["ItemNumber"]) == 1:
-                if (
-                    BomList[i]["ItemNumber"].rsplit(".", 1)[0]
-                    == ItemNumber.rsplit(".", 1)[0]
-                ):
-                    if ListItem["Type"] == "Part":
-                        if ObjectNameValuePart == "Object":
-                            if (
-                                BomList[i]["DocumentObject"]
-                                == ListItem["DocumentObject"]
-                            ):
-                                counter = counter + 1
-                        if ObjectNameValuePart == "ObjectLabel":
-                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
-                                counter = counter + 1
-                    if ListItem["Type"] == "Assembly":
-                        if ObjectNameValueAssy == "Object":
-                            if (
-                                BomList[i]["DocumentObject"]
-                                == ListItem["DocumentObject"]
-                            ):
-                                counter = counter + 1
-                        if ObjectNameValueAssy == "ObjectLabel":
-                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
-                                counter = counter + 1
+            if (
+                len(ItemNumber.split(".")) == 1
+                and len(BomList[i]["ItemNumber"].split(".")) == 1
+            ):
+                # if BomList[i]["ItemNumber"].rsplit(".", 1)[0] == ItemNumber.rsplit(".", 1)[0]:
+                if ListItem["Type"] == "Part":
+                    if ObjectNameValuePart == "Object":
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                            counter = counter + 1
+                    if ObjectNameValuePart == "ObjectLabel":
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                            counter = counter + 1
+                if ListItem["Type"] == "Assembly":
+                    if ObjectNameValueAssy == "Object":
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                            counter = counter + 1
+                    if ObjectNameValueAssy == "ObjectLabel":
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                            counter = counter + 1
 
         # Return the counter
         return counter
@@ -750,18 +744,10 @@ class General_BOM:
         # Define the result list.
         resultList = []
 
-        # Check if the document is an arch or multibody document
-        try:
-            test = self.CheckMultiBodyType(DocObject)
-            if test != "":
-                resultList.append(test)
-        except Exception:
-            pass
-
         # Go through the root objects. If there is an object type "a2pPart", this is an A2plus assembly.
         # If not, continue.
         # In the A2plus WB, you have to go through the Objects instead of the RootObjects
-        for Object in RootObjects:
+        for Object in DocObject.Objects:
             try:
                 if Object.objectType == "a2pPart":
                     return "A2plus"
@@ -799,6 +785,14 @@ class General_BOM:
                     resultList.append("AppPart")
             except Exception:
                 pass
+
+        # Check if the document is an arch or multibody document
+        try:
+            test = self.CheckMultiBodyType(DocObject)
+            if test != "":
+                resultList.append(test)
+        except Exception:
+            pass
 
         check_AppPart = False
         for result in resultList:
