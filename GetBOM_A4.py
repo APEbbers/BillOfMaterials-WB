@@ -37,17 +37,19 @@ class BomFunctions:
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
-    def GetTreeObjects(self) -> True:
+    def GetTreeObjects(self, checkAssemblyType=True) -> True:
         # Get the active document
         doc = App.ActiveDocument
 
         # Check the assembly type
-        AssemblyType = General_BOM.CheckAssemblyType(doc)
-        if AssemblyType != "Assembly4":
-            Print(
-                f"Not an Assembly4 assembly but an {AssemblyType} assembly!!", "Error"
-            )
-            return
+        if checkAssemblyType is True:
+            AssemblyType = General_BOM.CheckAssemblyType(doc)
+            if AssemblyType != "Assembly4":
+                Print(
+                    f"Not an Assembly4 assembly but an {AssemblyType} assembly!!",
+                    "Error",
+                )
+                return
 
         # Get the list with rootobjects
         RootObjects = doc.RootObjects
@@ -933,12 +935,13 @@ class BomFunctions:
         IncludeBodies=False,
         IndentNumbering=True,
         EnableQuestion=True,
+        CheckAssemblyType=True,
     ):
         try:
             # Clear the mainList to avoid double data
             self.mainList.clear()
             # create the mainList
-            self.GetTreeObjects()
+            self.GetTreeObjects(checkAssemblyType=CheckAssemblyType)
 
             if len(self.mainList) > 0:
                 IncludeBodiesText = "Do you want to include bodies?"

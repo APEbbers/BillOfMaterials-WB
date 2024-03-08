@@ -53,6 +53,9 @@ import BoM_Panel_ui as BoM_Panel_ui
 # Add in your commands module the line "Gui.Control.showDialog(Load_BoM_Panel.LoadWidget())".
 # Not directly in this class otherwise the taskpanel will only show once!!
 class LoadWidget(BoM_Panel_ui.Ui_Dialog):
+
+    manualChange = False
+
     def __init__(self):
         # Makes "self.on_CreateBOM_clicked" listen to the changed control values instead initial values
         super(LoadWidget, self).__init__()
@@ -191,6 +194,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
     # Function to detect the assembly type
     def on_DetectAssemblyType_clicked(self):
+        self.manualChange = False
         doc = App.ActiveDocument
         if General_BOM.CheckAssemblyType(doc) == "A2plus":
             self.form.AssemblyType.setCurrentText("A2plus")
@@ -250,6 +254,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "App:LinkGroup":
             GetBOM_AppLink.BomFunctions.Start(
@@ -258,6 +263,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "App:Part":
             GetBOM_AppPart.BomFunctions.Start(
@@ -265,6 +271,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 Level=Level_Value,
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Internal assembly":
             GetBOM_INTERNAL.BomFunctions.Start(
@@ -273,6 +280,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "A2plus":
             GetBOM_A2plus.BomFunctions.Start(
@@ -281,6 +289,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 # EnableQuestion=False,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Assembly 3":
             GetBOM_A3.BomFunctions.Start(
@@ -289,16 +298,22 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Arch":
-            GetBOM_MultiBody_Arch.BomFunctions.Start()
+            GetBOM_MultiBody_Arch.BomFunctions.Start(
+                CheckAssemblyType=not self.manualChange
+            )
         if AssemblyType_Selected == "MultiBody":
-            GetBOM_MultiBody_Arch.BomFunctions.Start()
+            GetBOM_MultiBody_Arch.BomFunctions.Start(
+                CheckAssemblyType=not self.manualChange
+            )
 
         self.form.CreateBOM.clearFocus()
         return
 
     def on_AssemblyType_TextChanged(self):
+        self.manualChange = True
         AssemblyType_Selected = str(self.form.AssemblyType.currentText())
         if (
             AssemblyType_Selected == "App:Part"
