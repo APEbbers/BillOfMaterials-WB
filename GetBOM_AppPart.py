@@ -597,12 +597,12 @@ class BomFunctions:
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
-    def Start(self, command="", Level=0, IncludeBodies=False, IndentNumbering=True, CheckAssembly=True):
+    def Start(self, command="", Level=0, IncludeBodies=False, IndentNumbering=True, CheckAssemblyType=True):
         try:
             # Clear the mainList to avoid double data
             self.mainList.clear()
             # create the mainList
-            self.GetTreeObjects(checkAssemblyType=CheckAssembly)
+            self.GetTreeObjects(checkAssemblyType=CheckAssemblyType)
 
             if len(self.mainList) > 0:
                 if command == "Total":
