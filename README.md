@@ -42,6 +42,7 @@ Support for the following assemblies, workbenches and futures are planned:
 - One function to support a mixed structure of all assembly workbenches
 - A function to add the BoM to a TechDraw page template
 - Mass calculation based on shape and material
+- outer dimensions of items
 
 ## License:
 LGPL2.+
