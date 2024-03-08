@@ -37,15 +37,16 @@ class BomFunctions:
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
-    def GetTreeObjects(self) -> True:
+    def GetTreeObjects(self, checkAssemblyType=True) -> True:
         # Get the active document
         doc = App.ActiveDocument
 
         # Check the assembly type
-        AssemblyType = General_BOM.CheckAssemblyType(doc)
-        if AssemblyType != "AppPart":
-            Print(f"Not an AppPart assembly but an {AssemblyType} assembly!!", "Error")
-            return
+        if checkAssemblyType is True:
+            AssemblyType = General_BOM.CheckAssemblyType(doc)
+            if AssemblyType != "AppPart":
+                Print(f"Not an AppPart assembly but an {AssemblyType} assembly!!", "Error")
+                return
 
         # Get the list with rootobjects
         docObjects = doc.RootObjects
@@ -62,9 +63,7 @@ class BomFunctions:
         ItemNumber = 0
 
         # Go Through all objects
-        self.GoThrough_Objects(
-            docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber, ParentNumber=""
-        )
+        self.GoThrough_Objects(docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber, ParentNumber="")
 
         return
 
@@ -96,9 +95,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(
-        self, docObjects, sheet, ItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_Objects(self, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -168,9 +165,7 @@ class BomFunctions:
 
     # Sub function of GoThrough_Objects.
     @classmethod
-    def GoThrough_ChildObjects(
-        self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_ChildObjects(self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
                 ChilddocObjects (_type_):       list[DocumentObjects]\n
@@ -407,9 +402,7 @@ class BomFunctions:
     # The function CreateBoM can be used to write it the an spreadsheet.
     # The value for 'WB' must be provided. It is used for the correct filtering for each support WB
     @classmethod
-    def SummarizedBoM(
-        self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False
-    ):
+    def SummarizedBoM(self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -495,9 +488,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(
-                mainList=TemporaryList, Headers=None, Summary=True
-            )
+            General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
         return
 
     # Function to create a BoM list for a parts only BoM.
@@ -606,12 +597,12 @@ class BomFunctions:
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
-    def Start(self, command="", Level=0, IncludeBodies=False, IndentNumbering=True):
+    def Start(self, command="", Level=0, IncludeBodies=False, IndentNumbering=True, CheckAssembly=True):
         try:
             # Clear the mainList to avoid double data
             self.mainList.clear()
             # create the mainList
-            self.GetTreeObjects()
+            self.GetTreeObjects(checkAssemblyType=CheckAssembly)
 
             if len(self.mainList) > 0:
                 if command == "Total":

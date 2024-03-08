@@ -53,6 +53,9 @@ import BoM_Panel_ui as BoM_Panel_ui
 # Add in your commands module the line "Gui.Control.showDialog(Load_BoM_Panel.LoadWidget())".
 # Not directly in this class otherwise the taskpanel will only show once!!
 class LoadWidget(BoM_Panel_ui.Ui_Dialog):
+
+    manualChange = False
+
     def __init__(self):
         # Makes "self.on_CreateBOM_clicked" listen to the changed control values instead initial values
         super(LoadWidget, self).__init__()
@@ -60,14 +63,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # this will create a Qt widget from our ui file
         self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB_UI, "BoM_Panel.ui"))
 
-        self.form.setWindowIcon(
-            QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg"))
-        )
+        self.form.setWindowIcon(QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")))
 
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
-        self.form.AssemblyType.currentTextChanged.connect(
-            self.on_AssemblyType_TextChanged
-        )
+        self.form.AssemblyType.currentTextChanged.connect(self.on_AssemblyType_TextChanged)
 
         # This will create a connection between the pushbutton "currentTextChanged" and def "on_BomType_TextChanged"
         self.form.BoMType.currentTextChanged.connect(self.on_BomType_TextChanged)
@@ -80,14 +79,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         )
 
         # This will create a connection between the pushbutton "Set extra columns" and def "on_SetColumns_clicked"
-        self.form.SetColumns.connect(
-            self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked
-        )
+        self.form.SetColumns.connect(self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked)
 
         # This will create a connection between the pushbutton "CreateBOM" and def "on_CreateBOM_clicked"
-        self.form.CreateBOM.connect(
-            self.form.CreateBOM, SIGNAL("pressed()"), self.on_CreateBOM_clicked
-        )
+        self.form.CreateBOM.connect(self.form.CreateBOM, SIGNAL("pressed()"), self.on_CreateBOM_clicked)
 
         # region - add icons to the assemblytype checkbox
         icon_A2Plus = QIcon()
@@ -98,9 +93,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             QIcon.Off,
         )
         icon_AppLink = QIcon()
-        icon_AppLink.addFile(
-            os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off
-        )
+        icon_AppLink.addFile(os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off)
         icon_Asm3 = QIcon()
         icon_Asm3.addFile(
             os.path.join(PATH_TB_ICONS, "Assembly3_workbench_icon.svg"),
@@ -191,6 +184,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
     # Function to detect the assembly type
     def on_DetectAssemblyType_clicked(self):
+        self.manualChange = False
         doc = App.ActiveDocument
         if General_BOM.CheckAssemblyType(doc) == "A2plus":
             self.form.AssemblyType.setCurrentText("A2plus")
@@ -250,6 +244,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
+                CheckAssemblyType=self.manualChange,
             )
         if AssemblyType_Selected == "App:LinkGroup":
             GetBOM_AppLink.BomFunctions.Start(
@@ -258,6 +253,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
+                CheckAssemblyType=self.manualChange,
             )
         if AssemblyType_Selected == "App:Part":
             GetBOM_AppPart.BomFunctions.Start(
@@ -265,6 +261,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 Level=Level_Value,
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
+                CheckAssemblyType=self.manualChange,
             )
         if AssemblyType_Selected == "Internal assembly":
             GetBOM_INTERNAL.BomFunctions.Start(
@@ -273,6 +270,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
+                CheckAssemblyType=self.manualChange,
             )
         if AssemblyType_Selected == "A2plus":
             GetBOM_A2plus.BomFunctions.Start(
@@ -281,6 +279,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 # EnableQuestion=False,
+                CheckAssemblyType=self.manualChange,
             )
         if AssemblyType_Selected == "Assembly 3":
             GetBOM_A3.BomFunctions.Start(
@@ -289,21 +288,20 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
+                CheckAssemblyType=self.manualChange,
             )
         if AssemblyType_Selected == "Arch":
-            GetBOM_MultiBody_Arch.BomFunctions.Start()
+            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=self.manualChange)
         if AssemblyType_Selected == "MultiBody":
-            GetBOM_MultiBody_Arch.BomFunctions.Start()
+            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=self.manualChange)
 
         self.form.CreateBOM.clearFocus()
         return
 
     def on_AssemblyType_TextChanged(self):
+        self.manualChange = True
         AssemblyType_Selected = str(self.form.AssemblyType.currentText())
-        if (
-            AssemblyType_Selected == "App:Part"
-            or AssemblyType_Selected == "App:LinkGroup"
-        ):
+        if AssemblyType_Selected == "App:Part" or AssemblyType_Selected == "App:LinkGroup":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
         elif AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
