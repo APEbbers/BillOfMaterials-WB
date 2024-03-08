@@ -244,7 +244,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
-                CheckAssemblyType=self.manualChange,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "App:LinkGroup":
             GetBOM_AppLink.BomFunctions.Start(
@@ -253,7 +253,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
-                CheckAssemblyType=self.manualChange,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "App:Part":
             GetBOM_AppPart.BomFunctions.Start(
@@ -261,7 +261,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 Level=Level_Value,
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
-                CheckAssemblyType=self.manualChange,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Internal assembly":
             GetBOM_INTERNAL.BomFunctions.Start(
@@ -270,7 +270,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
-                CheckAssemblyType=self.manualChange,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "A2plus":
             GetBOM_A2plus.BomFunctions.Start(
@@ -279,7 +279,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 # EnableQuestion=False,
-                CheckAssemblyType=self.manualChange,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Assembly 3":
             GetBOM_A3.BomFunctions.Start(
@@ -288,12 +288,12 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 EnableQuestion=False,
-                CheckAssemblyType=self.manualChange,
+                CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Arch":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=self.manualChange)
+            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=not self.manualChange)
         if AssemblyType_Selected == "MultiBody":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=self.manualChange)
+            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=not self.manualChange)
 
         self.form.CreateBOM.clearFocus()
         return
