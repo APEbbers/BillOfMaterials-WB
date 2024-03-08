@@ -21,16 +21,25 @@
 # *                                                                         *
 # ***************************************************************************/
 
+import FreeCAD as App
+import math
+import openpyxl
+
+# Define the translation
+translate = App.Qt.translate
+
 
 def Mbox(text, title="", style=0, IconType="Information", default="", stringList="[,]"):
     """
     Message Styles:\n
     0 : OK                          (text, title, style)\n
     1 : Yes | No                    (text, title, style)\n
-    20 : Inputbox                    (text, title, style, default)\n
-    21 : Inputbox with dropdown      (text, title, style, default, stringlist)\n
+    2 : Ok | Cancel                 (text, title, style)\n
+    20 : Inputbox                   (text, title, style, default)\n
+    21 : Inputbox with dropdown     (text, title, style, default, stringlist)\n
+    Icontype:                       string: NoIcon, Question, Warning, Critical. Default Information
     """
-    from PySide2.QtWidgets import QMessageBox, QInputDialog
+    from PySide.QtWidgets import QMessageBox, QInputDialog
 
     Icon = QMessageBox.Information
     if IconType == "NoIcon":
@@ -50,7 +59,8 @@ def Mbox(text, title="", style=0, IconType="Information", default="", stringList
         msgBox.setWindowTitle(title)
 
         reply = msgBox.exec_()
-        return reply
+        if reply == QMessageBox.Ok:
+            return "ok"
     if style == 1:
         # Set the messagebox
         msgBox = QMessageBox()
@@ -66,8 +76,28 @@ def Mbox(text, title="", style=0, IconType="Information", default="", stringList
             return "yes"
         if reply == QMessageBox.No:
             return "no"
+    if style == 2:
+        # Set the messagebox
+        msgBox = QMessageBox()
+        msgBox.setIcon(Icon)
+        msgBox.setText(text)
+        msgBox.setWindowTitle(title)
+        # Set the buttons and default button
+        msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msgBox.setDefaultButton(QMessageBox.Ok)
+
+        reply = msgBox.exec_()
+        if reply == QMessageBox.Ok:
+            return "ok"
+        if reply == QMessageBox.Cancel:
+            return "cancel"
     if style == 20:
-        reply = QInputDialog.getText(parent=None, title=title, label=text, text=default)
+        reply = QInputDialog.getText(
+            None,
+            title,
+            text,
+            text=default,
+        )
         if reply[1]:
             # user clicked OK
             replyText = reply[0]
@@ -76,7 +106,14 @@ def Mbox(text, title="", style=0, IconType="Information", default="", stringList
             replyText = reply[0]  # which will be "" if they clicked Cancel
         return str(replyText)
     if style == 21:
-        reply = QInputDialog.getItem(parent=None, title=title, label=text, items=stringList, current=1, editable=True)
+        reply = QInputDialog.getItem(
+            None,
+            title,
+            text,
+            stringList,
+            0,
+            True,
+        )
         if reply[1]:
             # user clicked OK
             replyText = reply[0]
@@ -152,6 +189,36 @@ def GetA1fromR1C1(input: str) -> str:
         return str(ColumnLetter + str(RowNumber))
     except Exception:
         return ""
+
+
+def RemoveNumbersFromString(string: str) -> str:
+    no_digits = []
+
+    # Iterate through the string, adding non-numbers to the no_digits list
+    for i in string:
+        if not i.isdigit():
+            no_digits.append(i)
+
+    # Now join all elements of the list with '',
+    # which puts all of the characters together.
+    result = "".join(no_digits)
+
+    return result
+
+
+def RemoveLettersFromString(string: str) -> str:
+    no_chars = []
+
+    # Iterate through the string, adding non-numbers to the no_digits list
+    for i in string:
+        if i.isdigit():
+            no_chars.append(i)
+
+    # Now join all elements of the list with '',
+    # which puts all of the characters together.
+    result = "".join(no_chars)
+
+    return result
 
 
 def CheckIfWorkbookExists(FullFileName: str, CreateIfNone: bool = True):
@@ -231,7 +298,9 @@ def OpenFile(FileName: str):
         raise e
 
 
-def SetColumnWidth_SpreadSheet(sheet, column: str, cellValue: str, factor: int = 10) -> bool:
+def SetColumnWidth_SpreadSheet(
+    sheet, column: str, cellValue: str, factor: int = 10
+) -> bool:
     """_summary_
 
     Args:
@@ -275,3 +344,231 @@ def Print(Input: str, Type: str = ""):
         App.Console.PrintLog(Input + "\n")
     else:
         App.Console.PrintMessage(Input + "\n")
+
+
+def LightOrDark(rgbColor=[0, 128, 255, 255]):
+    """_summary_
+    reference: https://alienryderflex.com/hsp.html
+    Args:
+        rgbColor (list, optional): RGB color. Defaults to [0, 128, 255, 255].\n
+        note: The alpha value is added for completeness, but us ignored in the equation.
+
+    Returns:
+        string: "light or dark"
+    """
+    [r, g, b, a] = rgbColor
+    hsp = math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
+    if hsp > 127.5:
+        return "light"
+    else:
+        return "dark"
+
+
+def toggleToolbars(ToolbarName: str, WorkBench: str = ""):
+    import FreeCADGui as Gui
+    from PySide.QtWidgets import QToolBar
+
+    # Get the active workbench
+    if WorkBench == "":
+        WB = Gui.activeWorkbench()
+    if WorkBench != "":
+        WB = Gui.getWorkbench(WorkBench)
+
+    # Get the list of toolbars present.
+    ListToolbars = WB.listToolbars()
+    # Go through the list. If the toolbar exists set ToolbarExists to True
+    ToolbarExists = False
+    for i in range(len(ListToolbars)):
+        if ListToolbars[i] == ToolbarName:
+            ToolbarExists = True
+
+    # If ToolbarExists is True continue. Otherwise return.
+    if ToolbarExists is True:
+        # Get the main window
+        mainWindow = Gui.getMainWindow()
+        # Get the toolbar
+        ToolBar = mainWindow.findChild(QToolBar, ToolbarName)
+        # If the toolbar is not hidden, hide it and return.
+        if ToolBar.isHidden() is False:
+            ToolBar.setHidden(True)
+            return
+        # If the toolbar is hidden, set visible and return.
+        if ToolBar.isHidden() is True:
+            ToolBar.setVisible(True)
+            return
+    return
+
+
+def PartFeatureList():
+    result = [
+        "Part::PartFeature",
+        "Part::Extrusion",
+        "Part::CustomFeature",
+        "Part::Chamfer",
+        "Part::Compound",
+        "Part::Fillet",
+        "Part::FeatureGeometrySet",
+        "Part::Mirroring",
+        "Part::Boolean",
+        "Part::Box",
+        "Part::Circle",
+        "Part::MultiCommon",
+        "Part::CurveNet",
+        "Part::MultiFuse",
+        "Part::ImportBrep",
+        "Part::ImportIges",
+        "Part::ImportStep",
+        "Part::Polygon",
+        "Part::RuledSurface",
+        "Part::Loft",
+        "Part::Sweep",
+        "Part::Thickness",
+        "Part::Refine",
+        "Part::Reverse",
+        "Part::Vertex",
+        "Part::Line",
+        "Part::Plane",
+        "Part::Sphere",
+        "Part::Ellipsoid",
+        "Part::Cylinder",
+        "Part::Prism",
+        "Part::RegularPolygon",
+        "Part::Cone",
+        "Part::Torus",
+        "Part::Helix",
+        "Part::Spiral",
+        "Part::Wedge",
+        "Part::Ellipse",
+        "Part::Extrusion",
+        "Part::Face",
+        "Part::Offset",
+        "Part::Offset2D",
+        "Part::Revolution",
+        "Part::Part2DObject",
+        "Part::Primitive",
+    ]
+
+    return result
+
+
+def PartDesingFeatureList():
+    result = [
+        "PartDesign::Pad",
+        "PartDesign::Pocket",
+        "PartDesign::FeaturePrimitive",
+        "PartDesign::FeatureBase",
+        "PartDesign::Draft",
+        "PartDesign::Fillet",
+        "PartDesign::Groove",
+        "PartDesign::Helix",
+        "PartDesign::Hole",
+        "PartDesign::Loft",
+        "PartDesign::Pipe",
+        "PartDesign::Box",
+        "PartDesign::Cylinder",
+        "PartDesign::Sphere",
+        "PartDesign::Cone",
+        "PartDesign::Ellipsoid",
+        "PartDesign::Torus",
+        "PartDesign::Prism",
+        "PartDesign::Wedge",
+        "PartDesign::Revolution",
+        "PartDesign::Thickness",
+        "PartDesign::Transformed",
+        "PartDesign::Body",
+        "PartDesign::Boolean",
+        "PartDesign::Chamfer",
+        "PartDesign::ShapeBinder",
+        "PartDesign::SubShapeBinder",
+    ]
+
+    return result
+
+
+def AllFeaturesList():
+    result = [
+        "PartDesign::Pad",
+        "PartDesign::Pocket",
+        "PartDesign::FeaturePrimitive",
+        "Drawing::FeatureProjection",
+        "Part::CustomFeature",
+        "Part::Chamfer",
+        "Part::Compound",
+        "Part::Fillet",
+        "Part::FeatureGeometrySet",
+        "Part::Mirroring",
+        "Part::Boolean",
+        "Part::Box",
+        "Part::Circle",
+        "Part::MultiCommon",
+        "Part::CurveNet",
+        "Part::MultiFuse",
+        "Part::ImportBrep",
+        "Part::ImportIges",
+        "Part::ImportStep",
+        "Part::Polygon",
+        "Part::RuledSurface",
+        "Part::Loft",
+        "Part::Sweep",
+        "Part::Thickness",
+        "Part::Refine",
+        "Part::Reverse",
+        "Part::Vertex",
+        "Part::Line",
+        "Part::Plane",
+        "Part::Sphere",
+        "Part::Ellipsoid",
+        "Part::Cylinder",
+        "Part::Prism",
+        "Part::RegularPolygon",
+        "Part::Cone",
+        "Part::Torus",
+        "Part::Helix",
+        "Part::Spiral",
+        "Part::Wedge",
+        "Part::Ellipse",
+        "PartDesign::FeatureBase",
+        "PartDesign::Draft",
+        "PartDesign::Fillet",
+        "PartDesign::Groove",
+        "PartDesign::Helix",
+        "PartDesign::Hole",
+        "PartDesign::Loft",
+        "PartDesign::Pipe",
+        "PartDesign::Box",
+        "PartDesign::Cylinder",
+        "PartDesign::Sphere",
+        "PartDesign::Cone",
+        "PartDesign::Ellipsoid",
+        "PartDesign::Torus",
+        "PartDesign::Prism",
+        "PartDesign::Wedge",
+        "PartDesign::Revolution",
+        "PartDesign::Thickness",
+        "PartDesign::Transformed",
+        "Path::FeatureArea",
+        "Path::FeatureAreaView",
+        "Sketcher::SketchObjectSF",
+        "Surface::Cut",
+        "Surface::Filling",
+        "Surface::GeomFillSurface",
+        "Surface::Sewing",
+        "TechDraw::FeatureProjection",
+        "Part::Extrusion",
+        "Part::Face",
+        "Part::Offset",
+        "Part::Offset2D",
+        "Part::Revolution",
+        "Part::Part2DObject",
+        "Part::Primitive",
+        "PartDesign::Body",
+        "PartDesign::Boolean",
+        "PartDesign::Chamfer",
+        "PartDesign::ShapeBinder",
+        "PartDesign::SubShapeBinder",
+        "Sketcher::SketchObject",
+        "Surface::Extend",
+        "Surface::Sections.",
+    ]
+
+    return result

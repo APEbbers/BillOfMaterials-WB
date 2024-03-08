@@ -1,30 +1,32 @@
 <RCC>
     <qresource prefix="/">
-        <file>Resources/Icons/A2plus-Parts.svg</file>
-        <file>Resources/Icons/A2plus-Raw.svg</file>
-        <file>Resources/Icons/A2plus-Summary.svg</file>
-        <file>Resources/Icons/A2plus-Total.svg</file>
-        <file>Resources/Icons/AppPart-Parts.svg</file>
-        <file>Resources/Icons/AppPart-Raw.svg</file>
-        <file>Resources/Icons/AppPart-Summary.svg</file>
-        <file>Resources/Icons/AppPart-Total.svg</file>
-        <file>Resources/Icons/AppLink-Parts.svg</file>
-        <file>Resources/Icons/AppLink-Raw.svg</file>
-        <file>Resources/Icons/AppLink-Summary.svg</file>
-        <file>Resources/Icons/AppLink-Total.svg</file>
-        <file>Resources/Icons/Assembly3-Parts.svg</file>
-        <file>Resources/Icons/Assembly3-Raw.svg</file>
-        <file>Resources/Icons/Assembly3-Summary.svg</file>
-        <file>Resources/Icons/Assembly3-Total.svg</file>
-        <file>Resources/Icons/Assembly4-Parts.svg</file>
-        <file>Resources/Icons/Assembly4-Raw.svg</file>
-        <file>Resources/Icons/Assembly4-Summary.svg</file>
-        <file>Resources/Icons/Assembly4-Total.svg</file>
-        <file>Resources/Icons/AssemblyInternal-Parts.svg</file>
-        <file>Resources/Icons/AssemblyInternal-Raw.svg</file>
-        <file>Resources/Icons/AssemblyInternal-Summary.svg</file>
-        <file>Resources/Icons/AssemblyInternal-Total.svg</file>
+        <file>Resources/Icons/+ sign.svg</file>
+        <file>Resources/Icons/- sign.svg</file>
+        <file>Resources/Icons/1stLevel.svg</file>
+        <file>Resources/Icons/A2p_workbench.svg</file>
+        <file>Resources/Icons/ArchWorkbench.svg</file>
+        <file>Resources/Icons/Assembly3_workbench_icon.svg</file>
+        <file>Resources/Icons/Assembly4_workbench_icon.svg</file>
         <file>Resources/Icons/BillOfMaterialsWB.svg</file>
-        <file>Resources/Icons/preferences-bill_of_materials_wb.svg</file>    
+        <file>Resources/Icons/BoM.svg</file>
+        <file>Resources/Icons/DoubleArrow_Right_Light.svg</file>
+        <file>Resources/Icons/Geoassembly.svg</file>
+        <file>Resources/Icons/Geofeaturegroup.svg</file>
+        <file>Resources/Icons/Link.svg</file>
+        <file>Resources/Icons/Parts.svg</file>
+        <file>Resources/Icons/Part_Transformed.svg</file>
+        <file>Resources/Icons/preferences-Bill_of_Materials.svg</file>
+        <file>Resources/Icons/Raw.svg</file>
+        <file>Resources/Icons/SetColumns.svg</file>
+        <file>Resources/Icons/SingleArrow_Down_Dark.svg</file>
+        <file>Resources/Icons/SingleArrow_Down_Light.svg</file>
+        <file>Resources/Icons/SingleArrow_Up_Dark.svg</file>
+        <file>Resources/Icons/SingleArrow_Up_Light.svg</file>
+        <file>Resources/Icons/Sort_AZ_Dark.png</file>
+        <file>Resources/Icons/Sort_AZ_Light.png</file>
+        <file>Resources/Icons/Sort_ZA_Dark.png</file>
+        <file>Resources/Icons/Sort_ZA_Light.png</file>
+        <file>Resources/Icons/Summary.svg</file>
+        <file>Resources/Icons/Total.svg</file>
     </qresource>
 </RCC>

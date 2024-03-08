@@ -21,35 +21,43 @@
 # *                                                                         *
 # ***************************************************************************/
 import os
+import FreeCAD as App
 import FreeCADGui as Gui
 from inspect import getsourcefile
+import BoM_WB_Locator
+
 
 __title__ = "Bill of Materials Workbench"
 __author__ = "A.P. Ebbers"
 __url__ = "https://github.com/APEbbers/BillOfMaterials-WB.git"
 
+
+# Define the translation
+translate = App.Qt.translate
+# endregion
+
 # get the path of the current python script
-PATH_TB = file_path = os.path.dirname(getsourcefile(lambda: 0))
+PATH_TB = os.path.dirname(BoM_WB_Locator.__file__)
 
 global PATH_TB_ICONS
 global PATH_TB_RESOURCES
 global PATH_TB_UI
 
-PATH_TB_ICONS = os.path.join(PATH_TB, "Resources", "Icons").replace("\\", "/")
-PATH_TB_RESOURCES = os.path.join(PATH_TB, "Resources").replace("\\", "/")
-PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI").replace("\\", "/")
+PATH_TB_RESOURCES = os.path.join(PATH_TB, "Resources")
+PATH_TB_ICONS = os.path.join(PATH_TB_RESOURCES, "Icons")
+PATH_TB_UI = os.path.join(PATH_TB_RESOURCES, "UI")
 
 
-class BOM_WB(Gui.Workbench):
+class BillOfMaterialsWB(Gui.Workbench):
     MenuText = "Bill of Materials Workbench"
     ToolTip = "A workbench for creating a Bill of Materials"
-    Icon = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg").replace("\\", "/")
+    Icon = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
 
     Gui.addIconPath(PATH_TB_ICONS)
-    # Gui.addPreferencePage(
-    #     os.path.join(PATH_TB_UI, "PreferenceUI.ui"),
-    #     "Bill of Materiala Workbench",
-    # )
+    Gui.addPreferencePage(
+        os.path.join(PATH_TB_UI, "PreferencesUI_BoM.ui"),
+        "bill of materials",
+    )
 
     def GetClassName(self):
         # This function is mandatory if this is a full Python workbench
@@ -61,62 +69,51 @@ class BOM_WB(Gui.Workbench):
         It is executed once in a FreeCAD session followed by the Activated function.
         """
         # -----------------------------------------------------------------------------------------------------
-        import BoM_Commands_AppLink  # import here all the needed files that create your FreeCAD commands
+        import BoM_Commands  # import here all the needed files that create your FreeCAD commands
+        import Settings_BoM
+        import BoM_CreateUI
 
+        # region - Translations
+        def QT_TRANSLATE_NOOP(context, text):
+            return text
+
+        Settings_BoM.SetDebugHeaders()
+
+        # region - Create the menu -------------------------------------------------------------------------------------
         # a list of command names created in the line above
-        self.list = [
-            "Separator",
-            "CreateBOM_Raw_AppLink",
-            "CreateBOM_Total_AppLink",
-            "CreateBOM_PartsOnly_AppLink",
-            "CreateBOM_Summary_AppLink",
-        ]
-        # creates a new toolbar with your commands
-        self.appendToolbar("BOM Commands - AppLink", self.list)
-        self.appendMenu("My New Menu", self.list)  # creates a new menu
-        # appends a submenu to an existing menu
-        self.appendMenu(["An existing Menu", "My submenu"], self.list)
+        MainList = BoM_CreateUI.DefineMenus()["MainMenu"]
+        SeparateFunctionsList = BoM_CreateUI.DefineMenus()["SeparateFunctionsMenu"]
+        SettingsList = BoM_CreateUI.DefineMenus()["SettingsMenu"]
 
-        # -----------------------------------------------------------------------------------------------------
-        import BoM_Commands_AppParts  # import here all the needed files that create your FreeCAD commands
+        # Append the menues
+        self.appendMenu(
+            QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList
+        )  # creates a new menu
+        self.appendMenu(
+            QT_TRANSLATE_NOOP(
+                "BoM Workbench", ["Bill of Materials", "Separate commands "]
+            ),
+            SeparateFunctionsList,
+        )
+        self.appendMenu(
+            QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Settings "]),
+            SettingsList,
+        )
+        # endregion ----------------------------------------------------------------------------------------------------
 
+        # region - Create the toolbars ---------------------------------------------------------------------------------
         # a list of command names created in the line above
-        self.list = [
-            "Separator",
-            "CreateBOM_Raw_AppPart",
-            "CreateBOM_Total_AppPart",
-            "CreateBOM_PartsOnly_AppPart",
-            "CreateBOM_Summary_AppPart",
-        ]
+        MainToolbar = BoM_CreateUI.DefineToolbars()["ToolbarListMain"]
+
         # creates a new toolbar with your commands
-        self.appendToolbar("BOM Commands - AppPart", self.list)
-        self.appendMenu("My New Menu", self.list)  # creates a new menu
-        # appends a submenu to an existing menu
-        self.appendMenu(["An existing Menu", "My submenu"], self.list)
+        self.appendToolbar("BOM Commands", MainToolbar)
+        # endregion ----------------------------------------------------------------------------------------------------
 
-        # -----------------------------------------------------------------------------------------------------
-        import BoM_Commands_A4
+        # region - Create the toolbar for other workbenches ------------------------------------------------------------
+        # a list of command names created in the line above
+        WorkbenchToolbar = BoM_CreateUI.DefineToolbars()["ToolbarListWorkbenches"]
 
-        self.list = [
-            "Separator",
-            "CreateBOM_Raw_Assembly4",
-            "CreateBOM_Total_Assembly4",
-            "CreateBOM_PartsOnly_Assembly4",
-            "CreateBOM_Summary_Assembly4",
-        ]
-        self.appendToolbar("BOM Commands - Assembly4", self.list)
-
-        # -----------------------------------------------------------------------------------------------------
-        import BoM_Commands_Internal
-
-        self.list = [
-            "Separator",
-            "CreateBOM_Raw_INTERNAL",
-            "CreateBOM_Total_INTERNAL",
-            "CreateBOM_PartsOnly_INTERNAL",
-            "CreateBOM_Summary_INTERNAL",
-        ]
-        self.appendToolbar("BOM Commands - INTERNAL", self.list)
+        # endregion ----------------------------------------------------------------------------------------------------
 
     def Activated(self):
         """This function is executed whenever the workbench is activated"""
@@ -130,7 +127,10 @@ class BOM_WB(Gui.Workbench):
         """This function is executed whenever the user right-clicks on screen"""
         # "recipient" will be either "view" or "tree"
         # add commands to the context menu
-        self.appendContextMenu("My commands", self.list)
+        self.list = [
+            "SetColumns",
+        ]
+        self.appendContextMenu("Bill of Materials", self.list)
 
 
-Gui.addWorkbench(BOM_WB())
+Gui.addWorkbench(BillOfMaterialsWB())

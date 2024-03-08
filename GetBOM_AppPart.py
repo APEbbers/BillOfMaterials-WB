@@ -22,9 +22,12 @@
 # ***************************************************************************/
 
 import FreeCAD as App
-import General_BOM_Functions as General_BOM
+from General_BOM_Functions import General_BOM
 import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
+
+# Define the translation
+translate = App.Qt.translate
 
 
 class BomFunctions:
@@ -47,6 +50,11 @@ class BomFunctions:
         # Get the list with rootobjects
         docObjects = doc.RootObjects
 
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for docObject in docObjects:
+            if docObject.TypeId == "App::DocumentObjectGroup":
+                docObjects.extend(General_BOM.GetObjectsFromGroups(docObject))
+
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
 
@@ -54,7 +62,9 @@ class BomFunctions:
         ItemNumber = 0
 
         # Go Through all objects
-        self.GoThrough_Objects(docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber, ParentNumber="")
+        self.GoThrough_Objects(
+            docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber, ParentNumber=""
+        )
 
         return
 
@@ -86,7 +96,9 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(
+        self, docObjects, sheet, ItemNumber, ParentNumber: str = ""
+    ) -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -138,9 +150,9 @@ class BomFunctions:
                     childObjects.clear()
 
                     # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                    for i in range(len(Object.Group)):
-                        if self.AllowedObjectType(Object.Group[i].TypeId) is True:
-                            childObjects.append(Object.Group[i])
+                    for j in range(len(Object.Group)):
+                        if self.AllowedObjectType(Object.Group[j].TypeId) is True:
+                            childObjects.append(Object.Group[j])
 
                     if len(childObjects) > 0:
                         self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -156,7 +168,9 @@ class BomFunctions:
 
     # Sub function of GoThrough_Objects.
     @classmethod
-    def GoThrough_ChildObjects(self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_ChildObjects(
+        self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""
+    ) -> True:
         """
         Args:
                 ChilddocObjects (_type_):       list[DocumentObjects]\n
@@ -199,9 +213,9 @@ class BomFunctions:
                     # Make sure that the list is empty. (probally overkill)
                     subChildObjects.clear()
                     # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
-                    for i in range(len(childObject.Group)):
-                        if self.AllowedObjectType(childObject.Group[i].TypeId) is True:
-                            subChildObjects.append(childObject.Group[i])
+                    for j in range(len(childObject.Group)):
+                        if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
+                            subChildObjects.append(childObject.Group[j])
 
                     if len(subChildObjects) > 0:
                         self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -220,7 +234,12 @@ class BomFunctions:
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
-    def CreateTotalBoM(self, Level: int = 0, CreateSpreadSheet: bool = True, IndentNumbering: bool = True) -> list:
+    def CreateTotalBoM(
+        self,
+        Level: int = 0,
+        CreateSpreadSheet: bool = True,
+        IndentNumbering: bool = True,
+    ) -> list:
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -272,16 +291,20 @@ class BomFunctions:
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Create the row item for the shadow list.
-                shadowRow = {"Item1": shadowItemNumber, "Item2": shadowLabel, "Item3": shadowType}
+                shadowRow = {
+                    "Item1": shadowItemNumber,
+                    "Item2": shadowLabel,
+                    "Item3": shadowType,
+                }
 
                 # Find the quantity for the item
                 QtyValue = str(
                     General_BOM.ObjectCounter_ItemNumber(
-                        DocObject=rowList["DocumentObject"],
+                        ListItem=rowList,
                         ItemNumber=itemNumber,
-                        ObjectList=ObjectDocumentList,
-                        ItemNumberList=ItemNumberList,
-                        ObjectBased=False,
+                        BomList=CopyMainList,
+                        ObjectBasedPart=False,
+                        ObjectBasedAssy=False,
                     )
                 )
 
@@ -299,7 +322,10 @@ class BomFunctions:
                 # Add it to the temporary list.
                 if (
                     General_BOM.ListContainsCheck(
-                        List=ShadowList, Item1=shadowRow["Item1"], Item2=shadowRow["Item2"], Item3=shadowRow["Item3"]
+                        List=ShadowList,
+                        Item1=shadowRow["Item1"],
+                        Item2=shadowRow["Item2"],
+                        Item3=shadowRow["Item3"],
                     )
                     is False
                 ):
@@ -320,18 +346,23 @@ class BomFunctions:
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Create the row item for the shadow list.
-                shadowRow = {"Item1": shadowItemNumber, "Item2": shadowLabel, "Item3": shadowType}
+                shadowRow = {
+                    "Item1": shadowItemNumber,
+                    "Item2": shadowLabel,
+                    "Item3": shadowType,
+                }
 
                 # Find the quantity for the item
                 QtyValue = str(
                     General_BOM.ObjectCounter_ItemNumber(
-                        DocObject=rowList["DocumentObject"],
-                        ItemNumber=shadowItemNumber,
-                        ObjectList=ObjectDocumentList,
-                        ItemNumberList=ItemNumberList,
-                        ObjectBased=False,
+                        ListItem=rowList,
+                        ItemNumber=itemNumber,
+                        BomList=CopyMainList,
+                        ObjectBasedPart=False,
+                        ObjectBasedAssy=False,
                     )
                 )
+
                 # Create a new row item for the temporary row.
                 rowListNew = {
                     "ItemNumber": itemNumber,
@@ -346,7 +377,10 @@ class BomFunctions:
                 # Add it to the temporary list.
                 if (
                     General_BOM.ListContainsCheck(
-                        List=ShadowList, Item1=shadowRow["Item1"], Item2=shadowRow["Item2"], Item3=shadowRow["Item3"]
+                        List=ShadowList,
+                        Item1=shadowRow["Item1"],
+                        Item2=shadowRow["Item2"],
+                        Item3=shadowRow["Item3"],
                     )
                     is False
                 ):
@@ -373,7 +407,9 @@ class BomFunctions:
     # The function CreateBoM can be used to write it the an spreadsheet.
     # The value for 'WB' must be provided. It is used for the correct filtering for each support WB
     @classmethod
-    def SummarizedBoM(self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False):
+    def SummarizedBoM(
+        self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False
+    ):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -415,7 +451,10 @@ class BomFunctions:
             # Find the quantity for the item
             QtyValue = str(
                 General_BOM.ObjectCounter(
-                    DocObject=None, RowItem=rowList, mainList=CopyMainList, ObjectNameBased=ObjectNameBased
+                    DocObject=None,
+                    RowItem=rowList,
+                    mainList=CopyMainList,
+                    ObjectNameBased=ObjectNameBased,
                 )
             )
 
@@ -438,7 +477,10 @@ class BomFunctions:
             # Add the rowItem if it is not in the shadow list.
             if (
                 General_BOM.ListContainsCheck(
-                    List=ShadowList, Item1=shadowRow["Item1"], Item2=shadowRow["Item2"], Item3=shadowRow["Item3"]
+                    List=ShadowList,
+                    Item1=shadowRow["Item1"],
+                    Item2=shadowRow["Item2"],
+                    Item3=shadowRow["Item3"],
                 )
                 is False
             ):
@@ -453,7 +495,9 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList)
+            General_BOM.createBoMSpreadsheet(
+                mainList=TemporaryList, Headers=None, Summary=True
+            )
         return
 
     # Function to create a BoM list for a parts only BoM.
@@ -509,7 +553,10 @@ class BomFunctions:
                 # Find the quantity for the item
                 QtyValue = str(
                     General_BOM.ObjectCounter(
-                        DocObject=None, RowItem=rowList, mainList=CopyMainList, ObjectNameBased=ObjectNameBased
+                        DocObject=None,
+                        RowItem=rowList,
+                        mainList=CopyMainList,
+                        ObjectNameBased=ObjectNameBased,
                     )
                 )
 
@@ -534,7 +581,10 @@ class BomFunctions:
                 # Add the rowItem if it is not in the shadow list.
                 if (
                     General_BOM.ListContainsCheck(
-                        List=ShadowList, Item1=shadowRow["Item1"], Item2=shadowRow["Item2"], Item3=shadowRow["Item3"]
+                        List=ShadowList,
+                        Item1=shadowRow["Item1"],
+                        Item2=shadowRow["Item2"],
+                        Item3=shadowRow["Item3"],
                     )
                     is False
                 ):
@@ -556,7 +606,7 @@ class BomFunctions:
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
-    def Start(self, command=""):
+    def Start(self, command="", Level=0, IncludeBodies=False, IndentNumbering=True):
         try:
             # Clear the mainList to avoid double data
             self.mainList.clear()
@@ -564,34 +614,24 @@ class BomFunctions:
             self.GetTreeObjects()
 
             if len(self.mainList) > 0:
-                sheet = App.ActiveDocument.getObject("BoM")
-                # check if the result is not empty
-                if sheet is not None:
-                    # clear the sspreadsheet
-                    sheet.clearAll()
-
-                    # Proceed with the macro.
-                    if command == "Total":
-                        self.CreateTotalBoM(CreateSpreadSheet=True, IndentNumbering=True, Level=0)
-                    if command == "Raw":
-                        General_BOM.createBoMSpreadsheet(self.mainList)
-                    if command == "PartsOnly":
-                        self.PartsOnly(CreateSpreadSheet=True, ObjectNameBased=False)
-                    if command == "Summarized":
-                        self.SummarizedBoM(CreateSpreadSheet=True, ObjectNameBased=False)
-                # if the result is empty, create a new spreadsheet
-                if sheet is None:
-                    sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
-
-                    # Proceed with the macro.
-                    if command == "Total":
-                        self.CreateTotalBoM(CreateSpreadSheet=True, IndentNumbering=True, Level=0)
-                    if command == "Raw":
-                        General_BOM.createBoMSpreadsheet(self.mainList)
-                    if command == "PartsOnly":
-                        self.PartsOnly(CreateSpreadSheet=True, ObjectNameBased=False)
-                    if command == "Summarized":
-                        self.SummarizedBoM(CreateSpreadSheet=True, ObjectNameBased=False)
+                if command == "Total":
+                    self.CreateTotalBoM(
+                        CreateSpreadSheet=True,
+                        IndentNumbering=IndentNumbering,
+                        Level=Level,
+                    )
+                if command == "Raw":
+                    General_BOM.createBoMSpreadsheet(self.mainList)
+                if command == "PartsOnly":
+                    self.PartsOnly(
+                        CreateSpreadSheet=True,
+                        ObjectNameBased=False,
+                    )
+                if command == "Summarized":
+                    self.SummarizedBoM(
+                        CreateSpreadSheet=True,
+                        ObjectNameBased=False,
+                    )
         except Exception as e:
             raise e
         return

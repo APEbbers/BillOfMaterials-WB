@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<package format="1" xmlns="https://wiki.freecad.org/Package_Metadata">
+
+  <name>Bill of Materials Workbench</name>
+
+  <description>An extension for the TechDraw workbench to fill a TitleBlock with the aid of the Spreadsheet workbench.</description>
+
+  <version>0.0.5.7</version>
+
+  <date>2024-01-03</date>
+
+  <maintainer email="paul.ebbers@gmail.com">Paul Ebbers</maintainer>
+
+  <license file="LICENSE">LGPL-2.1-or-later</license>
+
+  <pythonmin>3.8.0</pythonmin>
+
+  <url type="website">https://github.com/APEbbers/BillOfMaterials-WB/wiki</url>
+
+  <url branch="main" type="repository">https://github.com/APEbbers/BillOfMaterials-WB</url>
+
+  <url type="readme">https://github.com/APEbbers/BillOfMaterials-WB/blob/main/README.md</url>
+
+  <icon>Resources/Icons/BillOfMaterialsWB.svg</icon>
+
+  <content>
+    <workbench>
+      <freecadmin>0.21.0</freecadmin>
+      <icon>Resources/Icons/BillOfMaterialsWB.svg</icon>
+      <depend optional="False" type="automatic">Spreadsheet</depend>
+      <depend optional="False" type="automatic">TechDraw</depend>
+      <depend optional="False" type="python">openpyxl</depend>
+      <depend optional="False" type="python">inspect</depend>
+      <depend optional="False" type="python">tkinter</depend>
+      <depend optional="False" type="python">matplotlib</depend>
+      <depend optional="False" type="python">math</depend>
+      <classname>BillOfMaterialsWB</classname>
+      <subdirectory>./</subdirectory>
+    </workbench>
+  </content>
+
+</package>
