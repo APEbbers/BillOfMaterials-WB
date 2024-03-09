@@ -23,7 +23,6 @@
 
 import FreeCAD as App
 import math
-import openpyxl
 
 # Define the translation
 translate = App.Qt.translate
@@ -156,23 +155,32 @@ def SaveDialog(files, OverWrite: bool = True):
 
 
 def GetLetterFromNumber(number: int, UCase: bool = True):
-    from openpyxl.utils import get_column_letter
+    # from openpyxl.utils import get_column_letter
 
-    Letter = get_column_letter(number)
+    # Letter = get_column_letter(number)
 
-    # If UCase is true, convert to upper case
-    if UCase is True:
-        Letter = Letter.upper()
+    # # If UCase is true, convert to upper case
+    # if UCase is True:
+    #     Letter = Letter.upper()
 
+    """Number to Excel-style column name, e.g., 1 = A, 26 = Z, 27 = AA, 703 = AAA."""
+    Letter = ""
+    while number > 0:
+        number, r = divmod(number - 1, 26)
+        Letter = chr(r + ord("A")) + Letter
     return Letter
 
 
 def GetNumberFromLetter(Letter):
-    from openpyxl.utils import column_index_from_string
+    # from openpyxl.utils import column_index_from_string
 
-    Number = column_index_from_string(Letter)
+    # Number = column_index_from_string(Letter)
 
-    return Number
+    """Excel-style column name to number, e.g., A = 1, Z = 26, AA = 27, AAA = 703."""
+    number = 0
+    for c in Letter:
+        number = number * 26 + 1 + ord(c) - ord("A")
+    return number
 
 
 def GetA1fromR1C1(input: str) -> str:
@@ -223,7 +231,11 @@ def RemoveLettersFromString(string: str) -> str:
 
 def CheckIfWorkbookExists(FullFileName: str, CreateIfNone: bool = True):
     import os
-    from openpyxl import Workbook
+
+    try:
+        from openpyxl import Workbook
+    except Exception:
+        return False
 
     result = False
     try:
@@ -298,9 +310,7 @@ def OpenFile(FileName: str):
         raise e
 
 
-def SetColumnWidth_SpreadSheet(
-    sheet, column: str, cellValue: str, factor: int = 10
-) -> bool:
+def SetColumnWidth_SpreadSheet(sheet, column: str, cellValue: str, factor: int = 10) -> bool:
     """_summary_
 
     Args:
