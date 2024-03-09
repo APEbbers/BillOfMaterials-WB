@@ -23,7 +23,7 @@ For debugging the option "Enable extra columns for debug" can be enabled. This o
 - Internal name.
 - Fullname.
 - TypeId.
-<br/><br/>
+<br/>
 
 ## Supported assembly types:
 - a2plus
