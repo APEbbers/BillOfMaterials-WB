@@ -5,7 +5,7 @@
 
   <description>An extension for the TechDraw workbench to fill a TitleBlock with the aid of the Spreadsheet workbench.</description>
 
-  <version>0.0.5.8</version>
+  <version>0.0.5.9</version>
 
   <date>2024-01-03</date>
 
@@ -29,7 +29,7 @@
       <icon>Resources/Icons/BillOfMaterialsWB.svg</icon>
       <depend optional="False" type="automatic">Spreadsheet</depend>
       <depend optional="False" type="automatic">TechDraw</depend>
-      <depend optional="False" type="python">openpyxl</depend>
+      <depend optional="True" type="python">openpyxl</depend>
       <depend optional="False" type="python">inspect</depend>
       <depend optional="False" type="python">tkinter</depend>
       <depend optional="False" type="python">matplotlib</depend>
