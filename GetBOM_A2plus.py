@@ -170,10 +170,10 @@ class BomFunctions:
                     FullPath = Object.sourceFile
                     # If the path starts with ".", it is in the same folder as this document.
                     # Combine the path of this document with the path of the subobject.
-                    if FullPath.startswith("."):
+                    if FullPath.startswith(".\\") or FullPath.startswith("./"):
                         FullPath = os.path.join(
                             os.path.dirname(ParentDocument.FileName),
-                            os.path.basename(FullPath),
+                            FullPath,
                         )
                     # Open the sub object. Open it hidden
                     ObjectDocument = App.openDocument(FullPath, True)
@@ -253,10 +253,10 @@ class BomFunctions:
                     FullPath = childObject.sourceFile
                     # If the path starts with ".", it is in the same folder as this document.
                     # Combine the path of this document with the path of the subobject.
-                    if FullPath.startswith("."):
+                    if FullPath.startswith(".\\") or FullPath.startswith("./"):
                         FullPath = os.path.join(
                             os.path.dirname(ParentDocument.FileName),
-                            os.path.basename(FullPath),
+                            FullPath,
                         )
                     # Open the sub object. Open it hidden
                     childObjectDocument = App.openDocument(FullPath, True)
