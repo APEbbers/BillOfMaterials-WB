@@ -297,8 +297,9 @@ class BomFunctions:
         for i in range(len(CopyMainList)):
             path = CopyMainList[i]["DocumentObject"].sourceFile
             Label = CopyMainList[i]["ObjectLabel"]
-            if Label.rsplit("_", 1)[1].isnumeric() and len(Label.rsplit("_", 1)[1]) == 3:
-                Label = Label.rsplit("_", 1)[0]
+            if len(Label.split("_")) > 1:
+                if Label.rsplit("_", 1)[1].isnumeric() and len(Label.rsplit("_", 1)[1]) == 3:
+                    Label = Label.rsplit("_", 1)[0]
 
             ShadowItem = {
                 "Path": path,
