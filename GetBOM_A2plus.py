@@ -47,7 +47,9 @@ class BomFunctions:
         if checkAssemblyType is True:
             AssemblyType = General_BOM.CheckAssemblyType(doc)
             if AssemblyType != "A2plus":
-                Print(f"Not an A2plus assembly but an {AssemblyType} assembly!!", "Error")
+                Print(
+                    f"Not an A2plus assembly but an {AssemblyType} assembly!!", "Error"
+                )
                 return
 
         # Get the list with rootobjects
@@ -113,7 +115,9 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, ParentDocument, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(
+        self, ParentDocument, docObjects, sheet, ItemNumber, ParentNumber: str = ""
+    ) -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -297,7 +301,10 @@ class BomFunctions:
         for i in range(len(CopyMainList)):
             path = CopyMainList[i]["DocumentObject"].sourceFile
             Label = CopyMainList[i]["ObjectLabel"]
-            if Label.rsplit("_", 1)[1].isnumeric() and len(Label.rsplit("_", 1)[1]) == 3:
+            if (
+                Label.rsplit("_", 1)[1].isnumeric()
+                and len(Label.rsplit("_", 1)[1]) == 3
+            ):
                 Label = Label.rsplit("_", 1)[0]
 
             ShadowItem = {
@@ -487,7 +494,9 @@ class BomFunctions:
     # The function CreateBoM can be used to write it the an spreadsheet.
     # The value for 'WB' must be provided. It is used for the correct filtering for each support WB
     @classmethod
-    def SummarizedBoM(self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False):
+    def SummarizedBoM(
+        self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False
+    ):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -576,7 +585,9 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
+            General_BOM.createBoMSpreadsheet(
+                mainList=TemporaryList, Headers=None, Summary=True
+            )
         return
 
     # Function to create a BoM list for a parts only BoM.
