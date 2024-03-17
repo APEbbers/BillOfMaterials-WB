@@ -903,11 +903,11 @@ class General_BOM:
             try:
                 shapeObject = DocObject.Shape
                 if PropertyName.rsplit(" - ", 1) == "Length":
-                    result = str(shapeObject.Length)
+                    result = str(shapeObject.BoundingBox.Length)
                 if PropertyName.rsplit(" - ", 1) == "Width":
-                    result = str(shapeObject.Width)
+                    result = str(shapeObject.BoundingBox.Width)
                 if PropertyName.rsplit(" - ", 1) == "Height":
-                    result = str(shapeObject.Height)
+                    result = str(shapeObject.BoundingBox.Height)
                 if PropertyName.rsplit(" - ", 1) == "Volume":
                     result = str(shapeObject.Volume)
                 if PropertyName.rsplit(" - ", 1) == "Area":

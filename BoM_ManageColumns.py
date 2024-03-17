@@ -33,7 +33,6 @@ import Settings_BoM
 from Settings_BoM import ENABLE_DEBUG
 import BoM_WB_Locator
 import sys
-import BoM_ManageColumns_Object
 
 # get the path of the current python script
 PATH_TB = os.path.dirname(BoM_WB_Locator.__file__)
