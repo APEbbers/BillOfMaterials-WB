@@ -856,16 +856,6 @@ class General_BOM:
     def ReturnViewProperty(self, DocObject, PropertyName):
         result: object
 
-        ShapePropList = [
-            "Shape - Length",
-            "Shape - Width",
-            "Shape - Height",
-            "Shape - Volume",
-            "Shape - Area",
-            "Shape - CenterOfGravity",
-            "Shape - Mass",
-        ]
-
         isShapeProperty = False
         if PropertyName.startswith("Shape - ") is True:
             isShapeProperty = True
@@ -902,20 +892,30 @@ class General_BOM:
         if isShapeProperty is True:
             try:
                 shapeObject = DocObject.Shape
-                if PropertyName.rsplit(" - ", 1) == "Length":
-                    result = str(shapeObject.BoundingBox.Length)
-                if PropertyName.rsplit(" - ", 1) == "Width":
-                    result = str(shapeObject.BoundingBox.Width)
-                if PropertyName.rsplit(" - ", 1) == "Height":
-                    result = str(shapeObject.BoundingBox.Height)
-                if PropertyName.rsplit(" - ", 1) == "Volume":
+
+                # Get the value from the shape
+                #
+                # Get the boundingbox from the item as if it is not transformed
+                BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
+                # Get the dimensions
+                if PropertyName.split(" - ", 1)[1] == "Length":
+                    result = str(BoundingBox.XLength)
+                if PropertyName.split(" - ", 1)[1] == "Width":
+                    result = str(BoundingBox.YLength)
+                if PropertyName.split(" - ", 1)[1] == "Height":
+                    result = str(BoundingBox.ZLength)
+
+                # Get the other properties
+                if PropertyName.split(" - ", 1)[1] == "Volume":
                     result = str(shapeObject.Volume)
-                if PropertyName.rsplit(" - ", 1) == "Area":
+                if PropertyName.split(" - ", 1)[1] == "Area":
                     result = str(shapeObject.Area)
-                if PropertyName.rsplit(" - ", 1) == "CenterOfGravity":
+                if PropertyName.split(" - ", 1)[1] == "CenterOfGravity":
                     result = str(shapeObject.CenterOfGravity)
-                if PropertyName.rsplit(" - ", 1) == "Mass":
+                if PropertyName.split(" - ", 1)[1] == "Mass":
                     result = str(shapeObject.Mass)
+
+                return result
             except Exception:
                 return ""
 
