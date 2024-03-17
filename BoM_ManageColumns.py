@@ -215,7 +215,16 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
                     IsInList = True
                     break
             if IsInList is False:
-                self.form.Columns_To_Add.addItem(Property)
+                if Property != "Shape":
+                    self.form.Columns_To_Add.addItem(Property)
+                if Property == "Shape":
+                    self.form.Columns_To_Add.addItem("Shape - Length")
+                    self.form.Columns_To_Add.addItem("Shape - Width")
+                    self.form.Columns_To_Add.addItem("Shape - Height")
+                    self.form.Columns_To_Add.addItem("Shape - Volume")
+                    self.form.Columns_To_Add.addItem("Shape - Area")
+                    self.form.Columns_To_Add.addItem("Shape - CenterOfGravity")
+                    self.form.Columns_To_Add.addItem("Shape - Mass")
 
         return
 
@@ -226,35 +235,27 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
 
         # Go through the items
         for Value in Values:
-            if Value != "Shape":
-                # Get the item text
-                itemText = QListWidgetItem(Value).text()
-                # Add the item to the list with current items
-                self.form.Columns_Present.addItem(itemText)
+            # Get the item text
+            itemText = QListWidgetItem(Value).text()
 
-                # If debug is enabled, log the action.
-                if ENABLE_DEBUG is True:
-                    Text = translate("BoM Workbench", f"{itemText} added to the columns.")
+            # Add the item to the list with current items
+            self.form.Columns_Present.addItem(itemText)
 
-                    Standard_Functions.Print(Text, "Log")
+            # If debug is enabled, log the action.
+            if ENABLE_DEBUG is True:
+                Text = translate("BoM Workbench", f"{itemText} added to the columns.")
 
-                # Go through the items on the list with items to add.
-                for i in range(self.form.Columns_To_Add.count()):
-                    # Get the item
-                    item = self.form.Columns_To_Add.item(i)
-                    # If the item is not none and the item text is equeal to itemText,
-                    # remove it from the columns to add list.
-                    if item is not None:
-                        if item.text() == itemText:
-                            self.form.Columns_To_Add.takeItem(i)
+                Standard_Functions.Print(Text, "Log")
 
-            if Value == "Shape":
-                ItemString = BoM_ManageColumns_Object.main("Shape")
-
-                for i in range(len(ItemString.split(";"))):
-                    itemText = ItemString.split(";")[i]
-                    # Add the item to the list with current items
-                    self.form.Columns_Present.addItem(itemText)
+            # Go through the items on the list with items to add.
+            for i in range(self.form.Columns_To_Add.count()):
+                # Get the item
+                item = self.form.Columns_To_Add.item(i)
+                # If the item is not none and the item text is equeal to itemText,
+                # remove it from the columns to add list.
+                if item is not None:
+                    if item.text() == itemText:
+                        self.form.Columns_To_Add.takeItem(i)
 
         # Remove the focus from the control
         self.form.AddItem.clearFocus()
