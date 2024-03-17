@@ -102,7 +102,7 @@ class General_BOM:
             Headers=Headers, AdditionalHeaders=DebugHeadersDict
         )
 
-        # Go through the debug headers
+        # Go through the custom headers
         if CustomHeadersDict is not None and IFCData is None:
             CustomHeaderList = self.customHeaders.split(";")
             for i in range(len(CustomHeaderList)):
@@ -914,33 +914,69 @@ class General_BOM:
     @classmethod
     def ReturnViewProperty(self, DocObject, PropertyName):
         result: object
-        try:
+
+        isShapeProperty = False
+        if PropertyName.startswith("Shape - ") is True:
+            isShapeProperty = True
+
+        if isShapeProperty is False:
             try:
-                result = DocObject.getPropertyByName(PropertyName)
+                try:
+                    result = DocObject.getPropertyByName(PropertyName)
+                except Exception:
+                    result = None
+
+                if isinstance(result, int):
+                    result = str(result)
+                elif isinstance(result, list):
+                    resultString = ""
+                    for item in result:
+                        resultString = resultString + self.ObjectToString(item) + ", "
+                    result = str(result)
+                elif isinstance(result, dict):
+                    resultString = ""
+                    for item in result:
+                        resultString = resultString + self.ObjectToString(item) + ", "
+                    result = str(result)
+                else:
+                    result = str(result)
+
+                if result is None or result == "None":
+                    result = ""
+
+                return result
             except Exception:
-                result = None
+                return ""
 
-            if isinstance(result, int):
-                result = str(result)
-            elif isinstance(result, list):
-                resultString = ""
-                for item in result:
-                    resultString = resultString + self.ObjectToString(item) + ", "
-                result = str(result)
-            elif isinstance(result, dict):
-                resultString = ""
-                for item in result:
-                    resultString = resultString + self.ObjectToString(item) + ", "
-                result = str(result)
-            else:
-                result = str(result)
+        if isShapeProperty is True:
+            try:
+                shapeObject = DocObject.Shape
 
-            if result is None or result == "None":
-                result = ""
+                # Get the value from the shape
+                #
+                # Get the boundingbox from the item as if it is not transformed
+                BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
+                # Get the dimensions
+                if PropertyName.split(" - ", 1)[1] == "Length":
+                    result = str(BoundingBox.XLength)
+                if PropertyName.split(" - ", 1)[1] == "Width":
+                    result = str(BoundingBox.YLength)
+                if PropertyName.split(" - ", 1)[1] == "Height":
+                    result = str(BoundingBox.ZLength)
 
-            return result
-        except Exception:
-            return ""
+                # Get the other properties
+                if PropertyName.split(" - ", 1)[1] == "Volume":
+                    result = str(shapeObject.Volume)
+                if PropertyName.split(" - ", 1)[1] == "Area":
+                    result = str(shapeObject.Area)
+                if PropertyName.split(" - ", 1)[1] == "CenterOfGravity":
+                    result = str(shapeObject.CenterOfGravity)
+                if PropertyName.split(" - ", 1)[1] == "Mass":
+                    result = str(shapeObject.Mass)
+
+                return result
+            except Exception:
+                return ""
 
     @classmethod
     def ObjectToString(self, item):
