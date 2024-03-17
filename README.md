@@ -1,4 +1,5 @@
-<img src="https://github.com/APEbbers/BillOfMaterials-WB/assets/10145631/bda087ef-d360-4278-a071-93f42ee5612b" height=150px width=150px>
+[<img src="https://github.com/APEbbers/BillOfMaterials-WB/blob/main/Resources/Icons/BillOfMaterialsWB.svg" width="250"/>](https://github.com/APEbbers/BillOfMaterials-WB/blob/main/Resources/Icons/BillOfMaterialsWB.svg)
+
 # Bill of Materials-WB
 
 A workbench to create Bill of Materials (BoM) independent of the assembly workbench of your choice.
