@@ -158,6 +158,7 @@ class BomFunctions:
             "Part::Feature",
             "PartDesign::Body",
             "App::Part",
+            "Assembly::AssemblyObject",
         ]
 
         # Go through the list and compare the object ID's in the list with the ObjectId.
@@ -221,6 +222,7 @@ class BomFunctions:
                     object.TypeId == "App::LinkGroup"
                     or object.TypeId == "App::Link"
                     or object.TypeId == "App::Part"
+                    or object.TypeId == "Assembly::AssemblyObject"
                 ):
                     # Create a list with child objects as DocumentObjects
                     childObjects = []
@@ -298,6 +300,7 @@ class BomFunctions:
                     childObject.TypeId == "App::LinkGroup"
                     or childObject.TypeId == "App::Link"
                     or childObject.TypeId == "App::Part"
+                    or childObject.TypeId == "Assembly::AssemblyObject"
                 ):
                     # Create a list with sub child objects as DocumentObjects
                     subChildObjects = []

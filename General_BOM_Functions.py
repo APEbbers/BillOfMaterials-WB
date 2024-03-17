@@ -769,7 +769,10 @@ class General_BOM:
                 pass
 
             try:
-                if Object.Type == "Assembly" and Object.TypeId == "App::Part":
+                if (
+                    Object.Type == "Assembly"
+                    and Object.TypeId == "Assembly::AssemblyObject"
+                ):
                     resultList.append("Internal")
             except Exception:
                 pass
