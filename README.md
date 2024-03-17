@@ -1,4 +1,4 @@
-[<img src="https://github.com/APEbbers/BillOfMaterials-WB/blob/main/Resources/Icons/BillOfMaterialsWB.svg" width="250"/>](https://github.com/APEbbers/BillOfMaterials-WB/blob/main/Resources/Icons/BillOfMaterialsWB.svg)
+<img src="./Resources/Icons/BillOfMaterialsWB.svg" width="200">
 
 # Bill of Materials-WB
 
@@ -46,3 +46,4 @@ Support for the following assemblies, workbenches and futures are planned:
 
 ## License:
 LGPL2.+
+
