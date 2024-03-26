@@ -28,6 +28,7 @@ from Settings_BoM import DEBUG_HEADERS
 from datetime import datetime
 import os
 import Settings_BoM
+import getpass
 
 # Define the translation
 translate = App.Qt.translate
@@ -114,6 +115,7 @@ class General_BOM:
                 Cell = f"{Column}1"
                 # Add the cell and header as a dict item to the dict AdditionalHeaders
                 CustomHeadersDict[Cell] = Header
+
         # Set the headers with additional headers
         Headers = Settings_BoM.ReturnHeaders(
             Headers=Headers, AdditionalHeaders=CustomHeadersDict
@@ -306,7 +308,10 @@ class General_BOM:
         # Define the created by value. If no document information is available, use the OS account info.
         CreatedBy = doc.LastModifiedBy
         if CreatedBy == "":
-            CreatedBy = os.getlogin()
+            try:
+                CreatedBy = getpass.getuser()
+            except Exception:
+                pass
 
         # Fill in the cells with Date, time, created by and for which file.
         sheet.set("A" + str(Row), translate("BoM Workbench", "File information"))

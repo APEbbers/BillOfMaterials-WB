@@ -1,4 +1,4 @@
-<img src="./Resources/Icons/BillOfMaterialsWB.svg" width="200">
+<img src="./Resources/Icons/BillOfMaterialsWB.svg" width="200" alt="Alternate text"/>
 
 # Bill of Materials-WB
 
