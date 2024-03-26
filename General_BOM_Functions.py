@@ -311,7 +311,7 @@ class General_BOM:
                 CreatedBy = getpass.getuser()
             except Exception:
                 pass
-                
+
         # Fill in the cells with Date, time, created by and for which file.
         sheet.set("A" + str(Row), translate("BoM Workbench", "File information"))
         sheet.set(
