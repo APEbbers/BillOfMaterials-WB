@@ -115,6 +115,7 @@ class General_BOM:
                 Cell = f"{Column}1"
                 # Add the cell and header as a dict item to the dict AdditionalHeaders
                 CustomHeadersDict[Cell] = Header
+
         # Set the headers with additional headers
         Headers = Settings_BoM.ReturnHeaders(
             Headers=Headers, AdditionalHeaders=CustomHeadersDict
