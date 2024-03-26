@@ -32,6 +32,7 @@
       <depend optional="True" type="python">openpyxl</depend>
       <depend optional="False" type="python">inspect</depend>
       <depend optional="False" type="python">tkinter</depend>
+      <depend optional="False" type="python">getpass</depend>
       <depend optional="False" type="python">matplotlib</depend>
       <depend optional="False" type="python">math</depend>
       <classname>BillOfMaterialsWB</classname>
