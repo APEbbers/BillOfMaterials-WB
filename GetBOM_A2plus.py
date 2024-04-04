@@ -47,9 +47,7 @@ class BomFunctions:
         if checkAssemblyType is True:
             AssemblyType = General_BOM.CheckAssemblyType(doc)
             if AssemblyType != "A2plus":
-                Print(
-                    f"Not an A2plus assembly but an {AssemblyType} assembly!!", "Error"
-                )
+                Print(f"Not an A2plus assembly but an {AssemblyType} assembly!!", "Error")
                 return
 
         # Get the list with rootobjects
@@ -115,9 +113,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(
-        self, ParentDocument, docObjects, sheet, ItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_Objects(self, ParentDocument, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -302,10 +298,7 @@ class BomFunctions:
             path = CopyMainList[i]["DocumentObject"].sourceFile
             Label = CopyMainList[i]["ObjectLabel"]
             if len(Label.split("_")) > 1:
-                if (
-                    Label.rsplit("_", 1)[1].isnumeric()
-                    and len(Label.rsplit("_", 1)[1]) == 3
-                ):
+                if Label.rsplit("_", 1)[1].isnumeric() and len(Label.rsplit("_", 1)[1]) == 3:
                     Label = Label.rsplit("_", 1)[0]
 
             ShadowItem = {
@@ -333,7 +326,6 @@ class BomFunctions:
     def CreateTotalBoM(
         self,
         Level: int = 0,
-        CreateSpreadSheet: bool = True,
         IndentNumbering: bool = True,
     ) -> list:
         # If the Mainlist is empty, return.
@@ -486,17 +478,16 @@ class BomFunctions:
                 tempItem = TemporaryList[k]
                 tempItem["ItemNumber"] = k + 1
 
-        # Create the spreadsheet
-        if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList)
-        return
+        return TemporaryList
 
     # Function to create a summary list of all assemblies and their parts.
     # The function CreateBoM can be used to write it the an spreadsheet.
     # The value for 'WB' must be provided. It is used for the correct filtering for each support WB
     @classmethod
     def SummarizedBoM(
-        self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False
+        self,
+        CreateSpreadSheet: bool = True,
+        ObjectNameBased: bool = False,
     ):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
@@ -584,16 +575,14 @@ class BomFunctions:
             tempItem = TemporaryList[k]
             tempItem["ItemNumber"] = k + 1
 
-        # Create the spreadsheet
-        if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(
-                mainList=TemporaryList, Headers=None, Summary=True
-            )
-        return
+        return TemporaryList
 
     # Function to create a BoM list for a parts only BoM.
     @classmethod
-    def PartsOnly(self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False):
+    def PartsOnly(
+        self,
+        ObjectNameBased: bool = False,
+    ):
         """_summary_
 
         Args:
@@ -690,10 +679,7 @@ class BomFunctions:
             tempItem = TemporaryList[k]
             tempItem["ItemNumber"] = k + 1
 
-        # Create the spreadsheet
-        if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList)
-        return
+        return TemporaryList
 
     # endregion
 
@@ -703,7 +689,6 @@ class BomFunctions:
         self,
         command="",
         Level=0,
-        IncludeBodies=False,
         IndentNumbering=True,
         CheckAssemblyType=True,
     ):
@@ -715,23 +700,26 @@ class BomFunctions:
 
             if len(self.mainList) > 0:
                 if command == "Total":
-                    self.CreateTotalBoM(
+                    TemporaryList = self.CreateTotalBoM(
                         CreateSpreadSheet=True,
                         IndentNumbering=IndentNumbering,
                         Level=Level,
                     )
+                General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
                 if command == "Raw":
                     General_BOM.createBoMSpreadsheet(self.mainList)
                 if command == "PartsOnly":
-                    self.PartsOnly(
+                    TemporaryList = self.PartsOnly(
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
+                General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
                 if command == "Summarized":
-                    self.SummarizedBoM(
+                    TemporaryList = self.SummarizedBoM(
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
+                General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
         except Exception as e:
             raise e
         return
