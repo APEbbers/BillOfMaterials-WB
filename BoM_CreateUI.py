@@ -52,7 +52,6 @@ def DefineToolbars() -> dict:
         "CreateBOM_1stLevel",
         "Separator",
         "SetColumns",
-        "CreateBOM_Raw_MIXED",
     ]
 
     ToolbarListWorkbenches = [
@@ -83,7 +82,6 @@ def DefineMenus() -> dict:
         "Separator",
         "CreateBOM_Overall",
         "Separator",
-        "CreateBOM_Raw_MIXED",
     ]
     SeparateFunctionsList = [
         "CreateBOM_Raw",
