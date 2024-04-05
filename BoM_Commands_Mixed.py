@@ -123,7 +123,7 @@ class CreateRawBOM_MIXED_Class:
     def GetResources(self):
         return {
             "Pixmap": "AssemblyInternal-Raw.svg",  # the name of a svg file available in the resources
-            "MenuText": "Create the raw BoM",
+            "MenuText": "Create the raw BoM - Mixed",
             "ToolTip": "Create a Bill of Materials in a spreadsheet, as is.",
         }
 
