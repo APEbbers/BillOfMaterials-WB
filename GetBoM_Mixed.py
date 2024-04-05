@@ -141,6 +141,8 @@ class BomFunctions:
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
 
+        print(len(docObjects))
+
         # Go Through all objects
         self.GoThrough_Objects(
             docObjects=docObjects,
@@ -295,6 +297,7 @@ class BomFunctions:
             try:
                 # Check if the docObject is an assembly and which type.
                 AssemblyType = General_BOM.CheckAssemblyType(docObject)
+                print(AssemblyType)
 
                 # If the documentObject is one of the allowed types, continue
                 if self.AllowedObjectType(objectID=docObject.TypeId, AssemblyType=AssemblyType) is True:
@@ -520,7 +523,8 @@ class BomFunctions:
                                     ParentNumber=ItemNumberString,
                                     Parts=Parts,
                                 )
-            except Exception:
+            except Exception as e:
+                print(e)
                 pass
         return
 
@@ -1001,6 +1005,7 @@ class BomFunctions:
             # create the mainList
             self.GetTreeObjects()
 
+            print(len(self.mainList))
             if len(self.mainList) > 0:
                 IncludeBodiesText = "Do you want to include bodies?"
 

@@ -825,7 +825,7 @@ class BomFunctions:
             # Clear the mainList to avoid double data
             self.mainList.clear()
             # create the mainList
-            self.GetTreeObjects(checkAssembly=CheckAssemblyType)
+            self.GetTreeObjects(CheckAssemblyType=CheckAssemblyType)
 
             if len(self.mainList) > 0:
                 IncludeBodiesText = "Do you want to include bodies?"
