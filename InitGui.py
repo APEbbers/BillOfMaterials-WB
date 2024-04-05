@@ -70,6 +70,7 @@ class BillOfMaterialsWB(Gui.Workbench):
         """
         # -----------------------------------------------------------------------------------------------------
         import BoM_Commands  # import here all the needed files that create your FreeCAD commands
+        import BoM_Commands_Mixed
         import Settings_BoM
         import BoM_CreateUI
 
