@@ -83,6 +83,7 @@ def DefineMenus() -> dict:
         "Separator",
         "CreateBOM_Overall",
         "Separator",
+        "CreateBOM_Raw_MIXED",
     ]
     SeparateFunctionsList = [
         "CreateBOM_Raw",
