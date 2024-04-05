@@ -103,7 +103,10 @@ class BillOfMaterialsWB(Gui.Workbench):
 
         # creates a new toolbar with your commands
         self.appendToolbar("BOM Commands", MainToolbar)
-        self.appendToolbar("BoM_Commands_Mixed", "CreateBOM_Raw_MIXED")
+        self.list = [
+            "CreateBOM_Raw_MIXED",
+        ]
+        self.appendToolbar("BoM_Commands_Mixed", self.list)
         # endregion ----------------------------------------------------------------------------------------------------
 
         # region - Create the toolbar for other workbenches ------------------------------------------------------------
