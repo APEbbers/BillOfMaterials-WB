@@ -78,14 +78,11 @@ class BomFunctions:
         docObjects.extend(docObjectsTemp)
         docObjects.reverse()
 
-        # Get the spreadsheet.
-        sheet = App.ActiveDocument.getObject("BoM")
-
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
 
         # Go Through all objects
-        self.GoThrough_Objects(docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber)
+        self.GoThrough_Objects(docObjects=docObjects, ItemNumber=ItemNumber)
 
         return
 
@@ -166,7 +163,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(self, docObjects, ItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
             docObjects (_type_):    list[DocumentObjects]\n
@@ -178,10 +175,10 @@ class BomFunctions:
         """
         for i in range(len(docObjects)):
             # Get the documentObject
-            object = docObjects[i]
+            docObject = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
-            if self.AllowedObjectType(object.TypeId) is True:
+            if self.AllowedObjectType(docObject.TypeId) is True:
                 # Increase the itemnumber
                 ItemNumber = ItemNumber + 1
 
@@ -198,9 +195,9 @@ class BomFunctions:
                 # Create a rowList
                 rowList = {
                     "ItemNumber": ItemNumberString,
-                    "DocumentObject": object,
-                    "ObjectLabel": object.Label,
-                    "ObjectName": object.FullName,
+                    "DocumentObject": docObject,
+                    "ObjectLabel": docObject.Label,
+                    "ObjectName": docObject.FullName,
                     "Qty": 1,
                     "Type": "Part",
                 }
@@ -210,20 +207,20 @@ class BomFunctions:
 
                 # If the object is an container, go through the sub items, (a.k.a child objects)
                 if (
-                    object.TypeId == "App::LinkGroup"
-                    or object.TypeId == "App::Link"
-                    or object.TypeId == "App::Part"
-                    or object.TypeId == "Assembly::AssemblyObject"
+                    docObject.TypeId == "App::LinkGroup"
+                    or docObject.TypeId == "App::Link"
+                    or docObject.TypeId == "App::Part"
+                    or docObject.TypeId == "Assembly::AssemblyObject"
                 ):
                     # Create a list with child objects as DocumentObjects
                     childObjects = []
                     # Make sure that the list is empty. (probally overkill)
                     childObjects.clear()
                     # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                    for j in range(len(object.getSubObjects())):
-                        if object.getSubObject(subname=object.getSubObjects()[j], retType=1) is not None:
+                    for j in range(len(docObject.getSubObjects())):
+                        if docObject.getSubObject(subname=docObject.getSubObjects()[j], retType=1) is not None:
                             childObjects.append(
-                                object.getSubObject(subname=object.getSubObjects()[j], retType=1),
+                                docObject.getSubObject(subname=docObject.getSubObjects()[j], retType=1),
                             )
                     if len(childObjects) > 0:
                         self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -231,7 +228,6 @@ class BomFunctions:
                         # This way you can go through multiple levels
                         self.GoThrough_ChildObjects(
                             ChilddocObjects=childObjects,
-                            sheet=sheet,
                             ChildItemNumber=0,
                             ParentNumber=ItemNumberString,
                         )
@@ -239,7 +235,7 @@ class BomFunctions:
 
     # Sub function of GoThrough_Objects.
     @classmethod
-    def GoThrough_ChildObjects(self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_ChildObjects(self, ChilddocObjects, ChildItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
             ChilddocObjects (_type_):       list[DocumentObjects]\n
@@ -299,7 +295,6 @@ class BomFunctions:
                         # Go the the sub child objects with this same function
                         self.GoThrough_ChildObjects(
                             ChilddocObjects=subChildObjects,
-                            sheet=sheet,
                             ChildItemNumber=0,
                             ParentNumber=ItemNumberString,
                         )

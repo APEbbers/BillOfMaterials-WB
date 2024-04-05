@@ -71,16 +71,12 @@ class BomFunctions:
                 if self.AllowedObjectType(RootObject.TypeId) is True:
                     docObjects.append(RootObject)
 
-        # Get the spreadsheet.
-        sheet = App.ActiveDocument.getObject("BoM")
-
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
 
         # Go Through all objects
         self.GoThrough_Objects(
             docObjects=docObjects,
-            sheet=sheet,
             ItemNumber=ItemNumber,
             ParentNumber="",
         )
@@ -131,7 +127,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(self, docObjects, ItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -196,7 +192,6 @@ class BomFunctions:
                     # This way you can go through multiple levels
                     self.GoThrough_ChildObjects(
                         ChilddocObjects=childObjects,
-                        sheet=sheet,
                         ChildItemNumber=0,
                         ParentNumber=ItemNumberString,
                     )
@@ -207,7 +202,6 @@ class BomFunctions:
     def GoThrough_ChildObjects(
         self,
         ChilddocObjects,
-        sheet,
         ChildItemNumber,
         ParentNumber: str = "",
     ) -> True:
@@ -270,7 +264,6 @@ class BomFunctions:
                     # Go the the sub child objects with this same function
                     self.GoThrough_ChildObjects(
                         ChilddocObjects=subChildObjects,
-                        sheet=sheet,
                         ChildItemNumber=0,
                         ParentNumber=ItemNumberString,
                     )

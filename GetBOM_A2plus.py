@@ -62,9 +62,6 @@ class BomFunctions:
             except Exception:
                 pass
 
-        # Get the spreadsheet.
-        sheet = App.ActiveDocument.getObject("BoM")
-
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
 
@@ -72,7 +69,6 @@ class BomFunctions:
         self.GoThrough_Objects(
             docObjects=docObjects,
             ParentDocument=doc,
-            sheet=sheet,
             ItemNumber=ItemNumber,
             ParentNumber="",
         )
@@ -113,7 +109,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, ParentDocument, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(self, ParentDocument, docObjects, ItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -191,7 +187,6 @@ class BomFunctions:
                             self.GoThrough_ChildObjects(
                                 ChilddocObjects=childObjects,
                                 ParentDocument=ParentDocument,
-                                sheet=sheet,
                                 ChildItemNumber=0,
                                 ParentNumber=ItemNumberString,
                             )
@@ -205,7 +200,6 @@ class BomFunctions:
         self,
         ParentDocument,
         ChilddocObjects,
-        sheet,
         ChildItemNumber,
         ParentNumber: str = "",
     ) -> True:
@@ -278,7 +272,6 @@ class BomFunctions:
                             # Go the the sub child objects with this same function
                             self.GoThrough_ChildObjects(
                                 ChilddocObjects=subChildObjects,
-                                sheet=sheet,
                                 ChildItemNumber=0,
                                 ParentNumber=ItemNumberString,
                             )

@@ -75,16 +75,12 @@ class BomFunctions:
                 if self.AllowedObjectType(RootObject.TypeId) is True:
                     docObjects.append(RootObject)
 
-        # Get the spreadsheet.
-        sheet = App.ActiveDocument.getObject("BoM")
-
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
 
         # Go Through all objects
         self.GoThrough_Objects(
             docObjects=docObjects,
-            sheet=sheet,
             ItemNumber=ItemNumber,
             ParentNumber="",
             Parts=PartList,
@@ -154,7 +150,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, docObjects, sheet, Parts: list, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(self, docObjects, Parts: list, ItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -166,10 +162,10 @@ class BomFunctions:
         """
         for i in range(len(docObjects)):
             # Get the documentObject
-            object = docObjects[i]
+            docObject = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
-            if self.AllowedObjectType(objectID=object.TypeId) is True:
+            if self.AllowedObjectType(objectID=docObject.TypeId) is True:
                 # Increase the itemnumber
                 ItemNumber = int(ItemNumber) + 1
 
@@ -188,9 +184,9 @@ class BomFunctions:
                 # Create a rowList
                 rowList = {
                     "ItemNumber": ItemNumberString,
-                    "DocumentObject": object,
-                    "ObjectLabel": object.Label,
-                    "ObjectName": object.Name,
+                    "DocumentObject": docObject,
+                    "ObjectLabel": docObject.Label,
+                    "ObjectName": docObject.Name,
                     "Qty": 1,
                     "Type": "Part",
                 }
@@ -199,33 +195,37 @@ class BomFunctions:
                 self.mainList.append(rowList)
 
                 # If the object is an container, go through the sub items, (a.k.a child objects)
-                if object.TypeId == "App::LinkGroup" or object.TypeId == "App::Link" or object.TypeId == "App::Part":
+                if (
+                    docObject.TypeId == "App::LinkGroup"
+                    or docObject.TypeId == "App::Link"
+                    or docObject.TypeId == "App::Part"
+                ):
                     # Create a list with child objects as DocumentObjects
                     childObjects = []
                     # Make sure that the list is empty. (probally overkill)
                     childObjects.clear()
                     # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                    for j in range(len(object.getSubObjects())):
-                        if object.getSubObject(subname=object.getSubObjects()[j], retType=1) is not None:
+                    for j in range(len(docObject.getSubObjects())):
+                        if docObject.getSubObject(subname=docObject.getSubObjects()[j], retType=1) is not None:
                             # Go through the parts folder and compare the parts with the subobjects.
                             for k in range(len(Parts)):
                                 # If filtering with the parts in the part folder results in an document object,
                                 # this is a part. Add it the the child object list.
                                 if (
                                     self.FilterLinkedParts(
-                                        ObjectDocument=object.getSubObject(
-                                            subname=object.getSubObjects()[j], retType=1
+                                        ObjectDocument=docObject.getSubObject(
+                                            subname=docObject.getSubObjects()[j], retType=1
                                         ),
                                         objectComparison=Parts[k],
                                     )
                                     is not None
                                 ):
                                     if self.AllowedObjectType(
-                                        object.getSubObject(subname=object.getSubObjects()[j], retType=1).TypeId
+                                        docObject.getSubObject(subname=docObject.getSubObjects()[j], retType=1).TypeId
                                     ):
                                         childObjects.append(
-                                            object.getSubObject(
-                                                subname=object.getSubObjects()[j],
+                                            docObject.getSubObject(
+                                                subname=docObject.getSubObjects()[j],
                                                 retType=1,
                                             )
                                         )
@@ -235,7 +235,6 @@ class BomFunctions:
                         # This way you can go through multiple levels
                         self.GoThrough_ChildObjects(
                             ChilddocObjects=childObjects,
-                            sheet=sheet,
                             ChildItemNumber=0,
                             ParentNumber=ItemNumberString,
                             Parts=Parts,
@@ -247,7 +246,6 @@ class BomFunctions:
     def GoThrough_ChildObjects(
         self,
         ChilddocObjects,
-        sheet,
         Parts: list,
         ChildItemNumber,
         ParentNumber: str = "",
@@ -331,7 +329,6 @@ class BomFunctions:
                         # Go the the sub child objects with this same function
                         self.GoThrough_ChildObjects(
                             ChilddocObjects=subChildObjects,
-                            sheet=sheet,
                             ChildItemNumber=0,
                             ParentNumber=ItemNumberString,
                             Parts=Parts,
@@ -461,7 +458,7 @@ class BomFunctions:
                 RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
                 return RowItem
         except Exception:
-            return None
+            return RowItem
 
     @classmethod
     def CheckObject(self, docObject) -> bool:
