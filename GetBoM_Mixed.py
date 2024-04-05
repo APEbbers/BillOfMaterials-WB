@@ -144,6 +144,7 @@ class BomFunctions:
         # Go Through all objects
         self.GoThrough_Objects(
             docObjects=docObjects,
+            ParentDocument=doc,
             ItemNumber=ItemNumber,
             ParentNumber="",
             Parts=PartList,
