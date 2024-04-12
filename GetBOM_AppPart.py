@@ -607,7 +607,7 @@ class BomFunctions:
                         IndentNumbering=IndentNumbering,
                         Level=Level,
                     )
-                General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
+                    General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
                 if command == "Raw":
                     General_BOM.createBoMSpreadsheet(self.mainList)
                 if command == "PartsOnly":
@@ -615,13 +615,13 @@ class BomFunctions:
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
-                General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
+                    General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
                 if command == "Summarized":
                     TemporaryList = self.SummarizedBoM(
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
-                General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
+                    General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
         except Exception as e:
             raise e
         return

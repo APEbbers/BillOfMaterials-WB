@@ -37,12 +37,12 @@ class BomFunctions:
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
-    def GetTreeObjects(self, checkAssembly=True) -> True:
+    def GetTreeObjects(self, CheckAssemblyType=True) -> True:
         # Get the active document
         doc = App.ActiveDocument
 
         # Check the assembly type
-        if checkAssembly is True:
+        if CheckAssemblyType is True:
             AssemblyType = General_BOM.CheckAssemblyType(doc)
             if AssemblyType != "Internal":
                 Print(
