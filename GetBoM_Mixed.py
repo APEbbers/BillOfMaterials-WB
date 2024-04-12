@@ -378,7 +378,6 @@ class BomFunctions:
                 print(docObject.Label + ", " + docObject.TypeId)
                 # Check if the docObject is an assembly and which type.
                 AssemblyType = self.CheckSubAssemblyType(docObject)
-                print("2, " + AssemblyType)
 
                 # If the documentObject is one of the allowed types, continue
                 if self.AllowedObjectType(objectID=docObject.TypeId, AssemblyType=AssemblyType) is True:
@@ -475,12 +474,7 @@ class BomFunctions:
                             )
 
                     if AssemblyType == "Assembly4":
-                        # If the object is an container, go through the sub items, (a.k.a child objects)
-                        if (
-                            docObject.TypeId == "App::LinkGroup"
-                            or docObject.TypeId == "App::Link"
-                            or docObject.TypeId == "App::Part"
-                        ):
+                        if self.AllowedObjectType(objectID=docObject.TypeId, AssemblyType=AssemblyType):
                             # Create a list with child objects as DocumentObjects
                             childObjects = []
                             # Make sure that the list is empty. (probally overkill)
@@ -640,7 +634,6 @@ class BomFunctions:
             try:
                 # Check if the childObject is an assembly and which type.
                 AssemblyType = self.CheckSubAssemblyType(childObject)
-                print("3, " + AssemblyType)
 
                 # Increase the global startrow to make sure the data ends up in the next row
                 self.StartRow = self.StartRow + 1
@@ -921,7 +914,7 @@ class BomFunctions:
 
     # Function to filter out bodies
     @classmethod
-    def FilterBodies(self, BOMList: list, AllowAllBodies: bool = True) -> list:
+    def FilterBodies(self, BOMList: list, AllowBodies: bool = True, AllowFeaturePython=True) -> list:
         # Create an extra temporary list
         TempTemporaryList = []
 
@@ -939,18 +932,26 @@ class BomFunctions:
             flag = True
 
             # If the next object is an body or feature, set the flag to False.
-            if (
-                ItemObjectTypeNext == "Part::Feature"
-                or ItemObjectTypeNext == "PartDesign::Body"
-                or ItemObjectTypeNext == "Part::FeaturePython"
-            ):
+            if ItemObjectTypeNext == "Part::Feature" or ItemObjectTypeNext == "PartDesign::Body":
                 # Filter out all type of bodies
-                if AllowAllBodies is False:
+                if AllowBodies is False:
                     ItemObject["Type"] = "Part"
                     # set the flag to false.
                     flag = False
                 # Allow all bodies that are part of an assembly.
-                if AllowAllBodies is True:
+                if AllowBodies is True:
+                    ItemObject["Assembly"] = "Part"
+                    flag = True
+
+            # If the next object is an body or feature, set the flag to False.
+            if ItemObjectTypeNext == "Part::FeaturePython":
+                # Filter out all type of bodies
+                if AllowFeaturePython is False:
+                    ItemObject["Type"] = "Part"
+                    # set the flag to false.
+                    flag = False
+                # Allow all bodies that are part of an assembly.
+                if AllowFeaturePython is True:
                     ItemObject["Assembly"] = "Part"
                     flag = True
 
@@ -1128,7 +1129,13 @@ class BomFunctions:
                     if Answer == "yes":
                         General_BOM.createBoMSpreadsheet(self.mainList)
                     else:
-                        General_BOM.createBoMSpreadsheet(self.FilterBodies(BOMList=self.mainList, AllowAllBodies=False))
+                        General_BOM.createBoMSpreadsheet(
+                            self.FilterBodies(
+                                BOMList=self.mainList,
+                                AllowBodies=False,
+                                AllowFeaturePython=True,
+                            )
+                        )
                 # if command == "PartsOnly":
                 #     if EnableQuestion is True:
                 #         Answer = Standard_Functions.Mbox(
