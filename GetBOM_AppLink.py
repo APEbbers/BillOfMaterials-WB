@@ -791,6 +791,7 @@ class BomFunctions:
 
             if len(self.mainList) > 0:
                 IncludeBodiesText = "Do you want to include bodies?"
+                Answer = "no"
 
                 if command == "Total":
                     if EnableQuestion is True:
@@ -816,11 +817,9 @@ class BomFunctions:
                             style=1,
                         )
                     if Answer == "yes":
-                        IncludeBodies = True
-                    if IncludeBodies is True:
-                        General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
-                    else:
                         General_BOM.createBoMSpreadsheet(self.mainList)
+                    else:
+                        General_BOM.createBoMSpreadsheet(self.FilterBodies(BOMList=self.mainList, AllowAllBodies=False))
                 if command == "PartsOnly":
                     if EnableQuestion is True:
                         Answer = Standard_Functions.Mbox(

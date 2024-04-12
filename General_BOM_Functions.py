@@ -761,7 +761,8 @@ class General_BOM:
 
             if check_AppPart is True:
                 result = "AppPart"
-        except Exception:
+        except Exception as e:
+            print(e)
             pass
 
         return result

@@ -694,7 +694,6 @@ class BomFunctions:
             if len(self.mainList) > 0:
                 if command == "Total":
                     TemporaryList = self.CreateTotalBoM(
-                        CreateSpreadSheet=True,
                         IndentNumbering=IndentNumbering,
                         Level=Level,
                     )

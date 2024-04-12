@@ -51,6 +51,7 @@ class BomFunctions:
         docObjects = []
 
         AssemblyType = General_BOM.CheckAssemblyType(doc)
+        print("1, " + AssemblyType)
 
         if AssemblyType == "A2plus" or AssemblyType == "MultiBody" or AssemblyType == "Arch":
             RootObjects = doc.Objects
@@ -81,7 +82,7 @@ class BomFunctions:
         if AssemblyType == "Assembly4":
             # Check if there are groups with items. create a list from it and add it to the docObjects.
             for RootObject in RootObjects:
-                if RootObject.TypeId == "App::DocumentObjectGroup":
+                if RootObject.TypeId == "App::DocumentObjectGroup" and RootObject.Name != "Parts":
                     RootObjects.extend(General_BOM.GetObjectsFromGroups(RootObject))
 
             # Get the folder with the parts and create a list from it.
@@ -141,8 +142,6 @@ class BomFunctions:
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
 
-        print(len(docObjects))
-
         # Go Through all objects
         self.GoThrough_Objects(
             docObjects=docObjects,
@@ -153,6 +152,86 @@ class BomFunctions:
         )
         return
 
+    # Function to check the type of workbench
+    @classmethod
+    def CheckSubAssemblyType(self, DocObject):
+        """_summary_
+
+        Args:
+            DocObject (App.DocumentObject): The DocumentObject
+
+        Returns:
+            string: The assembly type as a string
+        """
+        result = ""
+
+        try:
+            # Define the result list.
+            resultList = []
+
+            # In the other workbenches go through the RootObjects
+            try:
+                if DocObject.AssemblyType == "Part::Link" and DocObject.Type == "Assembly":
+                    resultList.append("Assembly4")
+            except Exception:
+                pass
+
+            try:
+                if DocObject.SolverType == "SolveSpace":
+                    resultList.append("Assembly3")
+            except Exception:
+                pass
+
+            try:
+                if DocObject.Type == "Assembly" and DocObject.TypeId == "Assembly::AssemblyObject":
+                    resultList.append("Internal")
+            except Exception:
+                pass
+
+            try:
+                if DocObject.TypeId == "App::Link" or DocObject.TypeId == "App::LinkGroup":
+                    resultList.append("AppLink")
+            except Exception:
+                pass
+
+            try:
+                if DocObject.Type == "" and DocObject.TypeId == "App::Part":
+                    resultList.append("AppPart")
+            except Exception:
+                pass
+
+            # Check if the document is an arch or multibody document
+            try:
+                test = self.CheckMultiBodyType(DocObject)
+                if test != "":
+                    resultList.append(test)
+            except Exception:
+                pass
+
+            check_AppPart = False
+            for result in resultList:
+                if result == "Assembly3":
+                    return "Assembly3"
+                if result == "Assembly4":
+                    return "Assembly4"
+                if result == "Internal":
+                    return "Internal"
+                if result == "AppLink":
+                    return "AppLink"
+                if result == "Arch":
+                    return "Arch"
+                if result == "MultiBody":
+                    return "MultiBody"
+                if result == "AppPart":
+                    check_AppPart = True
+
+            if check_AppPart is True:
+                result = "AppPart"
+        except Exception as e:
+            raise e
+
+        return result
+
     # Function to compare an object type with supported object types.
     @classmethod
     def AllowedObjectType(self, objectID: str, AssemblyType: str) -> bool:
@@ -162,14 +241,7 @@ class BomFunctions:
         # Define and set the result to false.
         result = False
         # The list of object type ID's that are allowed.
-        listObjecttypes = [
-            "App::Link",
-            "App::LinkGroup",
-            "Part::FeaturePython",
-            "Part::Feature",
-            "App::Part",
-            "PartDesign::Body",
-        ]
+        listObjecttypes = []
 
         if AssemblyType == "A2plus":
             # The list of object type ID's that are allowed.
@@ -179,8 +251,7 @@ class BomFunctions:
                 "App::Part",
                 "PartDesign::Body",
             ]
-
-        if AssemblyType == "AppLink" or AssemblyType == "AppPart":
+        elif AssemblyType == "AppLink" or AssemblyType == "AppPart":
             # The list of object type ID's that are allowed.
             listObjecttypes = [
                 "App::Link",
@@ -189,8 +260,7 @@ class BomFunctions:
                 "Part::Feature",
                 "PartDesign::Body",
             ]
-
-        if AssemblyType == "Internal":
+        elif AssemblyType == "Internal":
             # The list of object type ID's that are allowed.
             listObjecttypes = [
                 "App::Link",
@@ -200,6 +270,15 @@ class BomFunctions:
                 "PartDesign::Body",
                 "App::Part",
                 "Assembly::AssemblyObject",
+            ]
+        else:
+            listObjecttypes = [
+                "App::Link",
+                "App::LinkGroup",
+                "Part::FeaturePython",
+                "Part::Feature",
+                "App::Part",
+                "PartDesign::Body",
             ]
 
         # Go through the list and compare the object ID's in the list with the ObjectId.
@@ -290,14 +369,16 @@ class BomFunctions:
         Returns:
                 True
         """
+        print("Qty: " + str(len(docObjects)))
         for i in range(len(docObjects)):
             # Get the documentObject
             docObject = docObjects[i]
 
             try:
+                print(docObject.Label + ", " + docObject.TypeId)
                 # Check if the docObject is an assembly and which type.
-                AssemblyType = General_BOM.CheckAssemblyType(docObject)
-                print(AssemblyType)
+                AssemblyType = self.CheckSubAssemblyType(docObject)
+                print("2, " + AssemblyType)
 
                 # If the documentObject is one of the allowed types, continue
                 if self.AllowedObjectType(objectID=docObject.TypeId, AssemblyType=AssemblyType) is True:
@@ -324,7 +405,6 @@ class BomFunctions:
                         "ObjectName": docObject.Name,
                         "Qty": 1,
                         "Type": "Part",
-                        "AssemblyType": AssemblyType,
                     }
 
                     # Add the rowList to the mainList
@@ -360,7 +440,7 @@ class BomFunctions:
                                     pass
 
                             if len(childObjects) > 0:
-                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.GoThrough_ChildObjects(
@@ -383,7 +463,7 @@ class BomFunctions:
                                     docObject.getSubObject(subname=docObject.getSubObjects()[k], retType=1),
                                 )
                         if len(childObjects) > 0:
-                            self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                            self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                             # Go the the child objects with a separate function for the child objects
                             # This way you can go through multiple levels
                             self.GoThrough_ChildObjects(
@@ -422,9 +502,10 @@ class BomFunctions:
                                             is not None
                                         ):
                                             if self.AllowedObjectType(
-                                                docObject.getSubObject(
+                                                objectID=docObject.getSubObject(
                                                     subname=docObject.getSubObjects()[j], retType=1
-                                                ).TypeId
+                                                ).TypeId,
+                                                AssemblyType=AssemblyType,
                                             ):
                                                 childObjects.append(
                                                     docObject.getSubObject(
@@ -433,7 +514,7 @@ class BomFunctions:
                                                     )
                                                 )
                             if len(childObjects) > 0:
-                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.GoThrough_ChildObjects(
@@ -458,7 +539,7 @@ class BomFunctions:
                                         docObject.getSubObject(docObject.getSubObjects()[j], 1),
                                     )
                             if len(childObjects) > 0:
-                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.GoThrough_ChildObjects(
@@ -479,11 +560,17 @@ class BomFunctions:
 
                             # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                             for j in range(len(docObject.Group)):
-                                if self.AllowedObjectType(docObject.Group[j].TypeId) is True:
+                                if (
+                                    self.AllowedObjectType(
+                                        objectID=docObject.Group[j].TypeId,
+                                        AssemblyType=AssemblyType,
+                                    )
+                                    is True
+                                ):
                                     childObjects.append(docObject.Group[j])
 
                             if len(childObjects) > 0:
-                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.GoThrough_ChildObjects(
@@ -513,7 +600,7 @@ class BomFunctions:
                                         docObject.getSubObject(subname=docObject.getSubObjects()[j], retType=1),
                                     )
                             if len(childObjects) > 0:
-                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.GoThrough_ChildObjects(
@@ -524,8 +611,7 @@ class BomFunctions:
                                     Parts=Parts,
                                 )
             except Exception as e:
-                print(e)
-                pass
+                raise (e)
         return
 
     # Sub function of GoThrough_Objects.
@@ -553,13 +639,14 @@ class BomFunctions:
 
             try:
                 # Check if the childObject is an assembly and which type.
-                AssemblyType = General_BOM.CheckAssemblyType(childObject)
+                AssemblyType = self.CheckSubAssemblyType(childObject)
+                print("3, " + AssemblyType)
 
                 # Increase the global startrow to make sure the data ends up in the next row
                 self.StartRow = self.StartRow + 1
 
                 # If the childDocumentObject is one of the allowed types, continue
-                if self.AllowedObjectType(objectID=childObject.TypeId) is True:
+                if self.AllowedObjectType(objectID=childObject.TypeId, AssemblyType=AssemblyType) is True:
                     # Increase the itemnumber for the child
                     ChildItemNumber = int(ChildItemNumber) + 1
                     # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
@@ -572,7 +659,6 @@ class BomFunctions:
                         "ObjectName": childObject.Name,
                         "Qty": 1,
                         "Type": "Part",
-                        "AssemblyType": AssemblyType,
                     }
 
                     # add the rowList to the mainList
@@ -608,7 +694,7 @@ class BomFunctions:
                                     pass
 
                             if len(childObjects) > 0:
-                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.GoThrough_ChildObjects(
@@ -631,7 +717,7 @@ class BomFunctions:
                                     childObject.getSubObject(subname=childObject.getSubObjects()[k], retType=1),
                                 )
                         if len(childObjects) > 0:
-                            self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                            self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                             # Go the the child objects with a separate function for the child objects
                             # This way you can go through multiple levels
                             self.GoThrough_ChildObjects(
@@ -673,9 +759,10 @@ class BomFunctions:
                                             is not None
                                         ):
                                             if self.AllowedObjectType(
-                                                childObject.getSubObject(
+                                                objectID=childObject.getSubObject(
                                                     subname=childObject.getSubObjects()[j], retType=1
-                                                ).TypeId
+                                                ).TypeId,
+                                                AssemblyType=AssemblyType,
                                             ):
                                                 childObjects.append(
                                                     childObject.getSubObject(
@@ -684,11 +771,11 @@ class BomFunctions:
                                                     )
                                                 )
                             if len(childObjects) > 0:
-                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.GoThrough_ChildObjects(
-                                    ChildchildObjects=childObjects,
+                                    ChilddocObjects=childObjects,
                                     ParentDocument=ParentDocument,
                                     ChildItemNumber=0,
                                     ParentNumber=ItemNumberString,
@@ -709,11 +796,11 @@ class BomFunctions:
                                         childObject.getSubObject(childObject.getSubObjects()[j], 1),
                                     )
                             if len(childObjects) > 0:
-                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.GoThrough_ChildObjects(
-                                    ChildchildObjects=childObjects,
+                                    ChilddocObjects=childObjects,
                                     ParentDocument=ParentDocument,
                                     ChildItemNumber=0,
                                     ParentNumber=ItemNumberString,
@@ -730,15 +817,21 @@ class BomFunctions:
 
                             # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                             for j in range(len(childObject.Group)):
-                                if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
+                                if (
+                                    self.AllowedObjectType(
+                                        objectID=childObject.Group[j].TypeId,
+                                        AssemblyType=AssemblyType,
+                                    )
+                                    is True
+                                ):
                                     childObjects.append(childObject.Group[j])
 
                             if len(childObjects) > 0:
-                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.GoThrough_ChildObjects(
-                                    ChildchildObjects=childObjects,
+                                    ChilddocObjects == childObjects,
                                     ParentDocument=ParentDocument,
                                     ChildItemNumber=0,
                                     ParentNumber=ItemNumberString,
@@ -767,18 +860,18 @@ class BomFunctions:
                                         childObject.getSubObject(subname=childObject.getSubObjects()[j], retType=1),
                                     )
                             if len(childObjects) > 0:
-                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.GoThrough_ChildObjects(
-                                    ChildchildObjects=childObjects,
+                                    ChilddocObjects == childObjects,
                                     ParentDocument=ParentDocument,
                                     ChildItemNumber=0,
                                     ParentNumber=ItemNumberString,
                                     Parts=Parts,
                                 )
-            except Exception:
-                pass
+            except Exception as e:
+                raise e
         return
 
     @classmethod
@@ -1008,6 +1101,7 @@ class BomFunctions:
             print(len(self.mainList))
             if len(self.mainList) > 0:
                 IncludeBodiesText = "Do you want to include bodies?"
+                Answer = "no"
 
                 # if command == "Total":
                 #     if EnableQuestion is True:
@@ -1018,7 +1112,6 @@ class BomFunctions:
                 #         )
                 #     if Answer == "yes":
                 #         IncludeBodies = True
-                #     TemporaryList = self.CreateTotalBoM(
                 #         CreateSpreadSheet=True,
                 #         IncludeBodies=IncludeBodies,
                 #         IndentNumbering=IndentNumbering,
@@ -1033,11 +1126,9 @@ class BomFunctions:
                             style=1,
                         )
                     if Answer == "yes":
-                        IncludeBodies = True
-                    if IncludeBodies is True:
-                        General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList))
-                    else:
                         General_BOM.createBoMSpreadsheet(self.mainList)
+                    else:
+                        General_BOM.createBoMSpreadsheet(self.FilterBodies(BOMList=self.mainList, AllowAllBodies=False))
                 # if command == "PartsOnly":
                 #     if EnableQuestion is True:
                 #         Answer = Standard_Functions.Mbox(
