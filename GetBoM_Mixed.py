@@ -1208,13 +1208,13 @@ class BomFunctions:
                     Standard_Functions.Mbox(
                         text="Bill of Materials is replaced with a new version!",
                         title="Bill of Materials Workbench",
-                        style=1,
+                        style=0,
                     )
                 if sheet is None:
                     Standard_Functions.Mbox(
                         text="Bill of Materials is created!",
                         title="Bill of Materials Workbench",
-                        style=1,
+                        style=0,
                     )
         except Exception as e:
             raise e
