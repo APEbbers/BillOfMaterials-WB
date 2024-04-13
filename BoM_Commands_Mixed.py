@@ -89,34 +89,34 @@ translate = App.Qt.translate
 #         return result
 
 
-# class CreateTotalBOM_MIXED_Class:
-#     def GetResources(self):
-#         return {
-#             "Pixmap": "AssemblyInternal-Total.svg",  # the name of a svg file available in the resources
-#             "MenuText": "Create a overall BoM",
-#             "ToolTip": "Create a Bill of Materials in a spreadsheet",
-#         }
+class CreateTotalBOM_MIXED_Class:
+    def GetResources(self):
+        return {
+            "Pixmap": "AssemblyInternal-Total.svg",  # the name of a svg file available in the resources
+            "MenuText": "Create a overall BoM",
+            "ToolTip": "Create a Bill of Materials in a spreadsheet",
+        }
 
-#     def Activated(self):
-#         from GetBoM_Mixed import BomFunctions
+    def Activated(self):
+        from GetBoM_Mixed import BomFunctions
 
-#         BomFunctions.Start("Total")
-#         return
+        BomFunctions.Start("Total")
+        return
 
-#     def IsActive(self):
-#         """Here you can define if the command must be active or not (greyed) if certain conditions
-#         are met or not. This function is optional."""
-#         # Set the default state
-#         result = False
-#         # Get for the active document.
-#         ActiveDoc = App.activeDocument()
-#         if ActiveDoc is not None:
-#             # Check if the document has any pages. If so the result is True and the command is activated.
-#             pages = App.ActiveDocument.findObjects("TechDraw::DrawPage")
-#             if pages is not None:
-#                 result = True
+    def IsActive(self):
+        """Here you can define if the command must be active or not (greyed) if certain conditions
+        are met or not. This function is optional."""
+        # Set the default state
+        result = False
+        # Get for the active document.
+        ActiveDoc = App.activeDocument()
+        if ActiveDoc is not None:
+            # Check if the document has any pages. If so the result is True and the command is activated.
+            pages = App.ActiveDocument.findObjects("TechDraw::DrawPage")
+            if pages is not None:
+                result = True
 
-#         return result
+        return result
 
 
 class CreateRawBOM_MIXED_Class:
@@ -152,5 +152,5 @@ class CreateRawBOM_MIXED_Class:
 # Add the commands to the Gui
 # Gui.addCommand("CreateBOM_PartsOnly_INTERNAL", CreatePartsOnlyBOM_MIXED_Class())
 # Gui.addCommand("CreateBOM_Summary_INTERNAL", CreateSummarizedBOM_MIXED_Class())
-# Gui.addCommand("CreateBOM_Total_INTERNAL", CreateTotalBOM_MIXED_Class())
+Gui.addCommand("CreateBOM_Total_INTERNAL", CreateTotalBOM_MIXED_Class())
 Gui.addCommand("CreateBOM_Raw_MIXED", CreateRawBOM_MIXED_Class())
