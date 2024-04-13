@@ -406,7 +406,7 @@ class BomFunctions:
             if flag is True:
                 TempTemporaryList.append(ItemObject)
 
-            # The for statement stops at the second list item, so add the the last item when the statement reaches its end.
+            # The for statement stops at the second last item, so add the the last item when the statement reaches its end.
             if i == len(BOMList) - 1:
                 # Test the next object. If the parent is an assembly, the object is allowed.
                 testResult = False

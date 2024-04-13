@@ -927,16 +927,41 @@ class BomFunctions:
     def FilterBodies(self, BOMList: list, AllowBodies: bool = True, AllowFeaturePython=True) -> list:
         # Create an extra temporary list
         TempTemporaryList = []
+        CurrentAssemblyType = BOMList[0]["Type"]
 
         TempTemporaryList.append(BOMList[0])
         # Go through the curent temporary list
         for i in range(len(BOMList) - 1):
             # Define the property objects
             ItemObject = BOMList[i]
+            # Create the list with assembly types
+            AssemblyTypes = [
+                "A2plus",
+                "Assembly4",
+                "Assembly3",
+                "Internal",
+                "AppLink",
+                "AppPart",
+            ]
 
             # Define the property objects of the next row
             ItemObjectNext = BOMList[i + 1]
             ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
+            ItemNumberNext = ItemObjectNext["ItemNumber"]
+
+            # Set the current assembly type, based on the parent
+            ItemNumberParent = ""
+            # If your on a deeper level, there must be a parent.
+            if len(ItemNumberNext.split(".")) > 1:
+                # Get the itemnnumber of the parent.
+                ItemNumberParent = ItemNumberNext.rsplit(".", 1)[0]
+                # Go through the BOMList, find the parent.
+                # If the type is in the AssemblyTypeList, set the CurrentAssemblyType
+                for j in range(len(BOMList)):
+                    if BOMList[j]["ItemNumber"] == ItemNumberParent:
+                        for k in range(len(AssemblyTypes)):
+                            if BOMList[j]["Type"] == AssemblyTypes[k]:
+                                CurrentAssemblyType = BOMList[j]["Type"]
 
             # Create a flag and set it true as default
             flag = True
@@ -949,7 +974,8 @@ class BomFunctions:
                     # set the flag to false.
                     flag = False
                 # Allow all bodies that are part of an assembly.
-                if AllowBodies is True:
+                # If the assemblyType is "AppPart", always allow bodies.
+                if AllowBodies is True or CurrentAssemblyType == "AppPart":
                     ItemObject["Assembly"] = "Part"
                     flag = True
 
