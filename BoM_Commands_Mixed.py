@@ -150,7 +150,7 @@ class CreateRawBOM_MIXED_Class:
 
 
 # Add the commands to the Gui
-# Gui.addCommand("CreateBOM_PartsOnly_INTERNAL", CreatePartsOnlyBOM_MIXED_Class())
-# Gui.addCommand("CreateBOM_Summary_INTERNAL", CreateSummarizedBOM_MIXED_Class())
-Gui.addCommand("CreateBOM_Total_INTERNAL", CreateTotalBOM_MIXED_Class())
+# Gui.addCommand("CreateBOM_PartsOnly_MIXED", CreatePartsOnlyBOM_MIXED_Class())
+# Gui.addCommand("CreateBOM_Summary_MIXED", CreateSummarizedBOM_MIXED_Class())
+Gui.addCommand("CreateBOM_Total_MIXED", CreateTotalBOM_MIXED_Class())
 Gui.addCommand("CreateBOM_Raw_MIXED", CreateRawBOM_MIXED_Class())
