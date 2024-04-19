@@ -187,7 +187,7 @@ class General_BOM:
                     NewHeader = ""
                     Unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
                     if Unit != "":
-                        NewHeader = Headers[Column + "1"] + " [" + +"]"
+                        NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
                     if sheet.getContents(Column + "1") != NewHeader:
                         sheet.set(Column + "1", NewHeader)
 
