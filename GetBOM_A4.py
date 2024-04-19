@@ -57,14 +57,20 @@ class BomFunctions:
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for RootObject in RootObjects:
-            if RootObject.TypeId == "App::DocumentObjectGroup" and RootObject.Name != "Parts":
+            if (
+                RootObject.TypeId == "App::DocumentObjectGroup"
+                and RootObject.Name != "Parts"
+            ):
                 RootObjects.extend(General_BOM.GetObjectsFromGroups(RootObject))
 
         # Get the folder with the parts and create a list from it.
         PartsGroup = []
         PartList = []
         for RootObject in RootObjects:
-            if RootObject.Name == "Parts" and RootObject.TypeId == "App::DocumentObjectGroup":
+            if (
+                RootObject.Name == "Parts"
+                and RootObject.TypeId == "App::DocumentObjectGroup"
+            ):
                 PartsGroup.append(RootObject)
         for Part in PartsGroup:
             PartList.append(Part)
@@ -75,12 +81,16 @@ class BomFunctions:
                 if self.AllowedObjectType(RootObject.TypeId) is True:
                     docObjects.append(RootObject)
 
+        # Get the spreadsheet.
+        sheet = App.ActiveDocument.getObject("BoM")
+
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
 
         # Go Through all objects
         self.GoThrough_Objects(
             docObjects=docObjects,
+            sheet=sheet,
             ItemNumber=ItemNumber,
             ParentNumber="",
             Parts=PartList,
@@ -91,7 +101,10 @@ class BomFunctions:
     def FindAssemblyInGroups(self, Group, docObjects: list):
         for GroupObject in Group.Group:
             try:
-                if GroupObject.AssemblyType == "Part::Link" and GroupObject.Type == "Assembly":
+                if (
+                    GroupObject.AssemblyType == "Part::Link"
+                    and GroupObject.Type == "Assembly"
+                ):
                     docObjects.append(GroupObject)
                     break
             except Exception:
@@ -150,7 +163,9 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, docObjects, Parts: list, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(
+        self, docObjects, sheet, Parts: list, ItemNumber, ParentNumber: str = ""
+    ) -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -162,10 +177,10 @@ class BomFunctions:
         """
         for i in range(len(docObjects)):
             # Get the documentObject
-            docObject = docObjects[i]
+            object = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
-            if self.AllowedObjectType(objectID=docObject.TypeId) is True:
+            if self.AllowedObjectType(objectID=object.TypeId) is True:
                 # Increase the itemnumber
                 ItemNumber = int(ItemNumber) + 1
 
@@ -184,9 +199,9 @@ class BomFunctions:
                 # Create a rowList
                 rowList = {
                     "ItemNumber": ItemNumberString,
-                    "DocumentObject": docObject,
-                    "ObjectLabel": docObject.Label,
-                    "ObjectName": docObject.Name,
+                    "DocumentObject": object,
+                    "ObjectLabel": object.Label,
+                    "ObjectName": object.Name,
                     "Qty": 1,
                     "Type": "Part",
                 }
@@ -196,36 +211,43 @@ class BomFunctions:
 
                 # If the object is an container, go through the sub items, (a.k.a child objects)
                 if (
-                    docObject.TypeId == "App::LinkGroup"
-                    or docObject.TypeId == "App::Link"
-                    or docObject.TypeId == "App::Part"
+                    object.TypeId == "App::LinkGroup"
+                    or object.TypeId == "App::Link"
+                    or object.TypeId == "App::Part"
                 ):
                     # Create a list with child objects as DocumentObjects
                     childObjects = []
                     # Make sure that the list is empty. (probally overkill)
                     childObjects.clear()
                     # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                    for j in range(len(docObject.getSubObjects())):
-                        if docObject.getSubObject(subname=docObject.getSubObjects()[j], retType=1) is not None:
+                    for j in range(len(object.getSubObjects())):
+                        if (
+                            object.getSubObject(
+                                subname=object.getSubObjects()[j], retType=1
+                            )
+                            is not None
+                        ):
                             # Go through the parts folder and compare the parts with the subobjects.
                             for k in range(len(Parts)):
                                 # If filtering with the parts in the part folder results in an document object,
                                 # this is a part. Add it the the child object list.
                                 if (
                                     self.FilterLinkedParts(
-                                        ObjectDocument=docObject.getSubObject(
-                                            subname=docObject.getSubObjects()[j], retType=1
+                                        ObjectDocument=object.getSubObject(
+                                            subname=object.getSubObjects()[j], retType=1
                                         ),
                                         objectComparison=Parts[k],
                                     )
                                     is not None
                                 ):
                                     if self.AllowedObjectType(
-                                        docObject.getSubObject(subname=docObject.getSubObjects()[j], retType=1).TypeId
+                                        object.getSubObject(
+                                            subname=object.getSubObjects()[j], retType=1
+                                        ).TypeId
                                     ):
                                         childObjects.append(
-                                            docObject.getSubObject(
-                                                subname=docObject.getSubObjects()[j],
+                                            object.getSubObject(
+                                                subname=object.getSubObjects()[j],
                                                 retType=1,
                                             )
                                         )
@@ -235,6 +257,7 @@ class BomFunctions:
                         # This way you can go through multiple levels
                         self.GoThrough_ChildObjects(
                             ChilddocObjects=childObjects,
+                            sheet=sheet,
                             ChildItemNumber=0,
                             ParentNumber=ItemNumberString,
                             Parts=Parts,
@@ -246,6 +269,7 @@ class BomFunctions:
     def GoThrough_ChildObjects(
         self,
         ChilddocObjects,
+        sheet,
         Parts: list,
         ChildItemNumber,
         ParentNumber: str = "",
@@ -297,7 +321,12 @@ class BomFunctions:
                     subChildObjects.clear()
                     # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
                     for j in range(len(childObject.getSubObjects())):
-                        if childObject.getSubObject(subname=childObject.getSubObjects()[j], retType=1) is not None:
+                        if (
+                            childObject.getSubObject(
+                                subname=childObject.getSubObjects()[j], retType=1
+                            )
+                            is not None
+                        ):
                             # Go through the parts folder and compare the parts with the subobjects.
                             for k in range(len(Parts)):
                                 # If filtering with the parts in the part folder results in an document object,
@@ -329,6 +358,7 @@ class BomFunctions:
                         # Go the the sub child objects with this same function
                         self.GoThrough_ChildObjects(
                             ChilddocObjects=subChildObjects,
+                            sheet=sheet,
                             ChildItemNumber=0,
                             ParentNumber=ItemNumberString,
                             Parts=Parts,
@@ -379,7 +409,12 @@ class BomFunctions:
             # Test the object. If the parent is an assembly, the object is allowed.
             testResult = False
             try:
-                if ItemObject["DocumentObject"].getParent().getPropertyByName("Type", 2)[1] == "Assembly":
+                if (
+                    ItemObject["DocumentObject"]
+                    .getParent()
+                    .getPropertyByName("Type", 2)[1]
+                    == "Assembly"
+                ):
                     testResult = True
                 if len(ItemObject["ItemNumber"].split(".")) == 1:
                     testResult = True
@@ -406,12 +441,17 @@ class BomFunctions:
             if flag is True:
                 TempTemporaryList.append(ItemObject)
 
-            # The for statement stops at the second last item, so add the the last item when the statement reaches its end.
+            # The for statement stops at the second list item, so add the the last item when the statement reaches its end.
             if i == len(BOMList) - 1:
                 # Test the next object. If the parent is an assembly, the object is allowed.
                 testResult = False
                 try:
-                    if ItemObjectNext["DocumentObject"].getParent().getPropertyByName("Type", 2)[1] == "Assembly":
+                    if (
+                        ItemObjectNext["DocumentObject"]
+                        .getParent()
+                        .getPropertyByName("Type", 2)[1]
+                        == "Assembly"
+                    ):
                         testResult = True
                     if len(ItemObjectNext["ItemNumber"].split(".")) == 1:
                         testResult = True
@@ -458,7 +498,7 @@ class BomFunctions:
                 RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
                 return RowItem
         except Exception:
-            return RowItem
+            return None
 
     @classmethod
     def CheckObject(self, docObject) -> bool:
@@ -490,6 +530,7 @@ class BomFunctions:
     def CreateTotalBoM(
         self,
         Level: int = 0,
+        CreateSpreadSheet: bool = True,
         IndentNumbering: bool = True,
         IncludeBodies: bool = False,
     ) -> list:
@@ -647,7 +688,9 @@ class BomFunctions:
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
         if Level > 1:
-            TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
+            TemporaryList = self.FilterBodies(
+                BOMList=TemporaryList, AllowAllBodies=IncludeBodies
+            )
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
@@ -659,7 +702,10 @@ class BomFunctions:
                 tempItem = TemporaryList[k]
                 tempItem["ItemNumber"] = k + 1
 
-        return TemporaryList
+        # Create the spreadsheet
+        if CreateSpreadSheet is True:
+            General_BOM.createBoMSpreadsheet(TemporaryList)
+        return
 
     # Function to create a summary list of all assemblies and their parts.
     # The function CreateBoM can be used to write it the an spreadsheet.
@@ -667,6 +713,7 @@ class BomFunctions:
     @classmethod
     def SummarizedBoM(
         self,
+        CreateSpreadSheet: bool = True,
         IncludeBodies: bool = False,
         ObjectNameBased: bool = False,
     ):
@@ -755,20 +802,28 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
+        TemporaryList = self.FilterBodies(
+            BOMList=TemporaryList, AllowAllBodies=IncludeBodies
+        )
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):
             tempItem = TemporaryList[k]
             tempItem["ItemNumber"] = k + 1
 
-        return TemporaryList
+        # Create the spreadsheet
+        if CreateSpreadSheet is True:
+            General_BOM.createBoMSpreadsheet(
+                mainList=TemporaryList, Headers=None, Summary=True
+            )
+        return
 
     # Function to create a BoM list for a parts only BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
     def PartsOnly(
         self,
+        CreateSpreadSheet: bool = True,
         IncludeBodies: bool = False,
         ObjectNameBased: bool = False,
     ):
@@ -855,14 +910,19 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
+        TemporaryList = self.FilterBodies(
+            BOMList=TemporaryList, AllowAllBodies=IncludeBodies
+        )
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):
             tempItem = TemporaryList[k]
             tempItem["ItemNumber"] = k + 1
 
-        return TemporaryList
+        # Create the spreadsheet
+        if CreateSpreadSheet is True:
+            General_BOM.createBoMSpreadsheet(TemporaryList)
+        return
 
     # endregion
 
@@ -885,68 +945,57 @@ class BomFunctions:
 
             if len(self.mainList) > 0:
                 IncludeBodiesText = "Do you want to include bodies?"
-                Answer = "no"
 
                 if command == "Total":
                     if EnableQuestion is True:
-                        Answer = Standard_Functions.Mbox(
+                        IncludeBodies = Standard_Functions.Mbox(
                             text=IncludeBodiesText,
                             title="Bill of Materials Workbench",
                             style=1,
                         )
-                    if Answer == "yes":
-                        IncludeBodies = True
-                    TemporaryList = self.CreateTotalBoM(
+                    self.CreateTotalBoM(
+                        CreateSpreadSheet=True,
                         IncludeBodies=IncludeBodies,
                         IndentNumbering=IndentNumbering,
                         Level=Level,
                     )
-                    General_BOM.createBoMSpreadsheet(
-                        mainList=TemporaryList,
-                        Headers=None,
-                        Summary=False,
-                    )
                 if command == "Raw":
                     if EnableQuestion is True:
-                        Answer = Standard_Functions.Mbox(
+                        IncludeBodies = Standard_Functions.Mbox(
                             text=IncludeBodiesText,
                             title="Bill of Materials Workbench",
                             style=1,
                         )
-                    if Answer == "yes":
-                        General_BOM.createBoMSpreadsheet(self.mainList)
+                    if IncludeBodies is True:
+                        General_BOM.createBoMSpreadsheet(
+                            self.FilterBodies(self.mainList)
+                        )
                     else:
-                        General_BOM.createBoMSpreadsheet(self.FilterBodies(BOMList=self.mainList, AllowAllBodies=False))
+                        General_BOM.createBoMSpreadsheet(self.mainList)
                 if command == "PartsOnly":
                     if EnableQuestion is True:
-                        Answer = Standard_Functions.Mbox(
+                        IncludeBodies = Standard_Functions.Mbox(
                             text=IncludeBodiesText,
                             title="Bill of Materials Workbench",
                             style=1,
                         )
-                    if Answer == "yes":
-                        IncludeBodies = True
-                    TemporaryList = self.PartsOnly(
+                    self.PartsOnly(
                         CreateSpreadSheet=True,
                         IncludeBodies=IncludeBodies,
                         ObjectNameBased=False,
                     )
-                    General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
                 if command == "Summarized":
                     if EnableQuestion is True:
-                        Answer = Standard_Functions.Mbox(
+                        IncludeBodies = Standard_Functions.Mbox(
                             text=IncludeBodiesText,
                             title="Bill of Materials Workbench",
                             style=1,
                         )
-                    if Answer == "yes":
-                        IncludeBodies = True
-                    TemporaryList = self.SummarizedBoM(
+                    self.SummarizedBoM(
                         IncludeBodies=IncludeBodies,
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
-                    General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
         except Exception as e:
             raise e
         return
