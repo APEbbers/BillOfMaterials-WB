@@ -45,9 +45,7 @@ class BomFunctions:
         if checkAssemblyType is True:
             AssemblyType = General_BOM.CheckAssemblyType(doc)
             if AssemblyType != "AppPart":
-                Print(
-                    f"Not an AppPart assembly but an {AssemblyType} assembly!!", "Error"
-                )
+                Print(f"Not an AppPart assembly but an {AssemblyType} assembly!!", "Error")
                 return
 
         # Get the list with rootobjects
@@ -58,16 +56,11 @@ class BomFunctions:
             if docObject.TypeId == "App::DocumentObjectGroup":
                 docObjects.extend(General_BOM.GetObjectsFromGroups(docObject))
 
-        # Get the spreadsheet.
-        sheet = App.ActiveDocument.getObject("BoM")
-
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
 
         # Go Through all objects
-        self.GoThrough_Objects(
-            docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber, ParentNumber=""
-        )
+        self.GoThrough_Objects(docObjects=docObjects, ItemNumber=ItemNumber, ParentNumber="")
 
         return
 
@@ -99,9 +92,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(
-        self, docObjects, sheet, ItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_Objects(self, docObjects, ItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -113,10 +104,10 @@ class BomFunctions:
         """
         for i in range(len(docObjects)):
             # Get the documentObject
-            Object = docObjects[i]
+            docObject = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
-            if self.AllowedObjectType(objectID=Object.TypeId) is True:
+            if self.AllowedObjectType(objectID=docObject.TypeId) is True:
                 # Increase the itemnumber
                 ItemNumber = int(ItemNumber) + 1
 
@@ -135,9 +126,9 @@ class BomFunctions:
                 # Create a rowList
                 rowList = {
                     "ItemNumber": ItemNumberString,
-                    "DocumentObject": Object,
-                    "ObjectLabel": Object.Label,
-                    "ObjectName": Object.Name,
+                    "DocumentObject": docObject,
+                    "ObjectLabel": docObject.Label,
+                    "ObjectName": docObject.Name,
                     "Qty": 1,
                     "Type": "Part",
                 }
@@ -146,16 +137,16 @@ class BomFunctions:
                 self.mainList.append(rowList)
 
                 # If the object is an container, go through the sub items, (a.k.a child objects)
-                if Object.TypeId == "App::Part":
+                if docObject.TypeId == "App::Part":
                     # Create a list with child objects as DocumentObjects
                     childObjects = []
                     # Make sure that the list is empty. (probally overkill)
                     childObjects.clear()
 
                     # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                    for j in range(len(Object.Group)):
-                        if self.AllowedObjectType(Object.Group[j].TypeId) is True:
-                            childObjects.append(Object.Group[j])
+                    for j in range(len(docObject.Group)):
+                        if self.AllowedObjectType(docObject.Group[j].TypeId) is True:
+                            childObjects.append(docObject.Group[j])
 
                     if len(childObjects) > 0:
                         self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -163,7 +154,6 @@ class BomFunctions:
                         # This way you can go through multiple levels
                         self.GoThrough_ChildObjects(
                             ChilddocObjects=childObjects,
-                            sheet=sheet,
                             ChildItemNumber=0,
                             ParentNumber=ItemNumberString,
                         )
@@ -171,9 +161,7 @@ class BomFunctions:
 
     # Sub function of GoThrough_Objects.
     @classmethod
-    def GoThrough_ChildObjects(
-        self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_ChildObjects(self, ChilddocObjects, ChildItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
                 ChilddocObjects (_type_):       list[DocumentObjects]\n
@@ -225,7 +213,6 @@ class BomFunctions:
                         # Go the the sub child objects with this same function
                         self.GoThrough_ChildObjects(
                             ChilddocObjects=subChildObjects,
-                            sheet=sheet,
                             ChildItemNumber=0,
                             ParentNumber=ItemNumberString,
                         )
@@ -240,7 +227,6 @@ class BomFunctions:
     def CreateTotalBoM(
         self,
         Level: int = 0,
-        CreateSpreadSheet: bool = True,
         IndentNumbering: bool = True,
     ) -> list:
         # If the Mainlist is empty, return.
@@ -401,17 +387,15 @@ class BomFunctions:
                 tempItem = TemporaryList[k]
                 tempItem["ItemNumber"] = k + 1
 
-        # Create the spreadsheet
-        if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList)
-        return
+        return TemporaryList
 
     # Function to create a summary list of all assemblies and their parts.
     # The function CreateBoM can be used to write it the an spreadsheet.
     # The value for 'WB' must be provided. It is used for the correct filtering for each support WB
     @classmethod
     def SummarizedBoM(
-        self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False
+        self,
+        ObjectNameBased: bool = False,
     ):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
@@ -496,16 +480,14 @@ class BomFunctions:
             tempItem = TemporaryList[k]
             tempItem["ItemNumber"] = k + 1
 
-        # Create the spreadsheet
-        if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(
-                mainList=TemporaryList, Headers=None, Summary=True
-            )
-        return
+        return TemporaryList
 
     # Function to create a BoM list for a parts only BoM.
     @classmethod
-    def PartsOnly(self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False):
+    def PartsOnly(
+        self,
+        ObjectNameBased: bool = False,
+    ):
         """_summary_
 
         Args:
@@ -600,10 +582,7 @@ class BomFunctions:
             tempItem = TemporaryList[k]
             tempItem["ItemNumber"] = k + 1
 
-        # Create the spreadsheet
-        if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList)
-        return
+        return TemporaryList
 
     # endregion
 
@@ -613,7 +592,6 @@ class BomFunctions:
         self,
         command="",
         Level=0,
-        IncludeBodies=False,
         IndentNumbering=True,
         CheckAssemblyType=True,
     ):
@@ -625,23 +603,25 @@ class BomFunctions:
 
             if len(self.mainList) > 0:
                 if command == "Total":
-                    self.CreateTotalBoM(
-                        CreateSpreadSheet=True,
+                    TemporaryList = self.CreateTotalBoM(
                         IndentNumbering=IndentNumbering,
                         Level=Level,
                     )
+                    General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
                 if command == "Raw":
                     General_BOM.createBoMSpreadsheet(self.mainList)
                 if command == "PartsOnly":
-                    self.PartsOnly(
+                    TemporaryList = self.PartsOnly(
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
+                    General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
                 if command == "Summarized":
-                    self.SummarizedBoM(
+                    TemporaryList = self.SummarizedBoM(
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
+                    General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
         except Exception as e:
             raise e
         return
