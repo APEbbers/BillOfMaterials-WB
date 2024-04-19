@@ -54,6 +54,7 @@ class General_BOM:
         doc = App.ActiveDocument
 
         # Get or create the spreadsheet.
+        IsNewSheet = False
         sheet = App.ActiveDocument.getObject("BoM")
         if sheet is not None:
             for i in range(1, 16384):  # 16384 is the maximum rows of the spreadsheet module
@@ -61,6 +62,7 @@ class General_BOM:
             sheet.clearAll()
         if sheet is None:
             sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
+            IsNewSheet = True
 
         # Define CopyMainList and Header
         CopyMainList = []
@@ -331,6 +333,19 @@ class General_BOM:
 
         # Recompute the document
         doc.recompute(None, True, True)
+
+        if IsNewSheet is False:
+            Standard_Functions.Mbox(
+                text="Bill of Materials is replaced with a new version!",
+                title="Bill of Materials Workbench",
+                style=0,
+            )
+            if IsNewSheet is True:
+                Standard_Functions.Mbox(
+                    text="Bill of Materials is created!",
+                    title="Bill of Materials Workbench",
+                    style=0,
+                )
 
         return
 
