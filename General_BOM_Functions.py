@@ -948,16 +948,11 @@ class General_BOM:
                     resultUnit = unit
                 # Get the other properties
                 if PropertyName.split(" - ", 1)[1] == "Volume":
-                    resultValue = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(shapeObject.Volume, App.Units.Volume), currentScheme
-                        )
-                    )
                     value = str(
                         App.Units.schemaTranslate(
                             App.Units.Quantity(shapeObject.Volume, App.Units.Volume), currentScheme
-                        )
-                    )[0]
+                        )[0]
+                    )
                     unit = App.Units.schemaTranslate(
                         App.Units.Quantity(shapeObject.Volume, App.Units.Volume), currentScheme
                     )[2]
