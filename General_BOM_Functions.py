@@ -182,16 +182,20 @@ class General_BOM:
                         self.ReturnDocProperty(rowList["DocumentObject"], "TypeId"),
                     )
                 else:
-                    sheet.set(
-                        Column + str(Row),
-                        self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[0],
-                    )
-                    NewHeader = ""
-                    Unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
-                    if Unit != "":
-                        NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
-                    if sheet.getContents(Column + "1") != NewHeader:
-                        sheet.set(Column + "1", NewHeader)
+                    try:
+                        sheet.set(
+                            Column + str(Row),
+                            self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[0],
+                        )
+                        NewHeader = ""
+                        Unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
+                        if Unit != "":
+                            NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
+                        if sheet.getContents(Column + "1") != NewHeader:
+                            sheet.set(Column + "1", NewHeader)
+                    except Exception as e:
+                        print(e)
+                        pass
 
             # Create the total number of items for the summary
             TotalNoItems = TotalNoItems + int(rowList["Qty"])
