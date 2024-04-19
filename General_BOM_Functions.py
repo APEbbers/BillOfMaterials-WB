@@ -54,7 +54,6 @@ class General_BOM:
         doc = App.ActiveDocument
 
         # Get or create the spreadsheet.
-        IsNewSheet = False
         sheet = App.ActiveDocument.getObject("BoM")
         if sheet is not None:
             for i in range(1, 16384):  # 16384 is the maximum rows of the spreadsheet module
@@ -62,7 +61,6 @@ class General_BOM:
             sheet.clearAll()
         if sheet is None:
             sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
-            IsNewSheet = True
 
         # Define CopyMainList and Header
         CopyMainList = []
@@ -182,24 +180,10 @@ class General_BOM:
                         self.ReturnDocProperty(rowList["DocumentObject"], "TypeId"),
                     )
                 else:
-                    try:
-                        sheet.set(
-                            Column + str(Row),
-                            self.ReturnViewProperty(
-                                rowList["DocumentObject"], Headers[Column + "1"]
-                            )[0],
-                        )
-                        NewHeader = ""
-                        Unit = self.ReturnViewProperty(
-                            rowList["DocumentObject"], Headers[Column + "1"]
-                        )[1]
-                        if Unit != "":
-                            NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
-                        if sheet.getContents(Column + "1") != NewHeader:
-                            sheet.set(Column + "1", NewHeader)
-                    except Exception as e:
-                        print(e)
-                        pass
+                    sheet.set(
+                        Column + str(Row),
+                        self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"]),
+                    )
 
             # Create the total number of items for the summary
             TotalNoItems = TotalNoItems + int(rowList["Qty"])
@@ -341,19 +325,6 @@ class General_BOM:
 
         # Recompute the document
         doc.recompute(None, True, True)
-
-        if IsNewSheet is False:
-            Standard_Functions.Mbox(
-                text="Bill of Materials is replaced with a new version!",
-                title="Bill of Materials Workbench",
-                style=0,
-            )
-            if IsNewSheet is True:
-                Standard_Functions.Mbox(
-                    text="Bill of Materials is created!",
-                    title="Bill of Materials Workbench",
-                    style=0,
-                )
 
         return
 
@@ -892,10 +863,8 @@ class General_BOM:
             return ""
 
     @classmethod
-    def ReturnViewProperty(self, DocObject, PropertyName) -> list:
-        resultValue: object
-        resultUnit: str
-        result: list
+    def ReturnViewProperty(self, DocObject, PropertyName):
+        result: object
 
         isShapeProperty = False
         if PropertyName.startswith("Shape - ") is True:
@@ -904,37 +873,35 @@ class General_BOM:
         if isShapeProperty is False:
             try:
                 try:
-                    resultValue = DocObject.getPropertyByName(PropertyName)
+                    result = DocObject.getPropertyByName(PropertyName)
                 except Exception:
-                    resultValue = None
+                    result = None
 
-                if isinstance(resultValue, int):
-                    resultValue = str(resultValue)
-                elif isinstance(resultValue, list):
+                if isinstance(result, int):
+                    result = str(result)
+                elif isinstance(result, list):
                     resultString = ""
-                    for item in resultValue:
+                    for item in result:
                         resultString = resultString + self.ObjectToString(item) + ", "
-                    resultValue = str(resultValue)
-                elif isinstance(resultValue, dict):
+                    result = str(result)
+                elif isinstance(result, dict):
                     resultString = ""
-                    for item in resultValue:
+                    for item in result:
                         resultString = resultString + self.ObjectToString(item) + ", "
-                    resultValue = str(resultValue)
+                    result = str(result)
                 else:
-                    resultValue = str(resultValue)
+                    result = str(result)
 
-                if resultValue is None or resultValue == "None":
-                    resultValue = ""
+                if result is None or result == "None":
+                    result = ""
 
-                result = (resultValue, "")
                 return result
             except Exception:
-                return ("", "")
+                return ""
 
         if isShapeProperty is True:
             try:
                 shapeObject = DocObject.Shape
-                currentScheme = App.Units.getSchema()
 
                 # Get the value from the shape
                 #
@@ -942,122 +909,22 @@ class General_BOM:
                 BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
                 # Get the dimensions
                 if PropertyName.split(" - ", 1)[1] == "Length":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
+                    result = str(BoundingBox.XLength)
                 if PropertyName.split(" - ", 1)[1] == "Width":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(BoundingBox.YLength, App.Units.Length),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(BoundingBox.YLength, App.Units.Length),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
+                    result = str(BoundingBox.YLength)
                 if PropertyName.split(" - ", 1)[1] == "Height":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(BoundingBox.ZLength, App.Units.Length),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(BoundingBox.ZLength, App.Units.Length),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
+                    result = str(BoundingBox.ZLength)
+
                 # Get the other properties
                 if PropertyName.split(" - ", 1)[1] == "Volume":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(shapeObject.Volume, App.Units.Volume),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(shapeObject.Volume, App.Units.Volume),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
+                    result = str(shapeObject.Volume)
                 if PropertyName.split(" - ", 1)[1] == "Area":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(shapeObject.Area, App.Units.Area),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(shapeObject.Area, App.Units.Area),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
+                    result = str(shapeObject.Area)
                 if PropertyName.split(" - ", 1)[1] == "CenterOfGravity":
-                    ValueX = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(
-                                App.Vector(shapeObject.CenterOfGravity).x,
-                                App.Units.Length,
-                            ),
-                            currentScheme,
-                        )[0]
-                    )
-                    ValueY = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(
-                                App.Vector(shapeObject.CenterOfGravity).y,
-                                App.Units.Length,
-                            ),
-                            currentScheme,
-                        )[0]
-                    )
-                    ValueZ = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(
-                                App.Vector(shapeObject.CenterOfGravity).z,
-                                App.Units.Length,
-                            ),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(
-                            App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length
-                        ),
-                        currentScheme,
-                    )[2]
-                    resultValue = f"Vector ({ValueX}, {ValueY}, {ValueZ}"
-                    resultUnit = unit
+                    result = str(shapeObject.CenterOfGravity)
                 if PropertyName.split(" - ", 1)[1] == "Mass":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(shapeObject.Mass, App.Units.Mass),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(shapeObject.Mass, App.Units.Mass),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
+                    result = str(shapeObject.Mass)
 
-                result = (resultValue, resultUnit)
                 return result
             except Exception:
                 return ""
