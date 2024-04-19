@@ -916,7 +916,7 @@ class General_BOM:
                 result = (resultValue, "")
                 return result
             except Exception:
-                return ""
+                return ("", "")
 
         if isShapeProperty is True:
             try:
