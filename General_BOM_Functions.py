@@ -28,6 +28,7 @@ from Settings_BoM import DEBUG_HEADERS
 from datetime import datetime
 import os
 import Settings_BoM
+import getpass
 
 # Define the translation
 translate = App.Qt.translate
@@ -55,6 +56,7 @@ class General_BOM:
         doc = App.ActiveDocument
 
         # Get or create the spreadsheet.
+        IsNewSheet = False
         sheet = App.ActiveDocument.getObject("BoM")
         if sheet is not None:
             for i in range(
@@ -64,6 +66,7 @@ class General_BOM:
             sheet.clearAll()
         if sheet is None:
             sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
+            IsNewSheet = True
 
         # Define CopyMainList and Header
         CopyMainList = []
@@ -102,7 +105,7 @@ class General_BOM:
             Headers=Headers, AdditionalHeaders=DebugHeadersDict
         )
 
-        # Go through the debug headers
+        # Go through the custom headers
         if CustomHeadersDict is not None and IFCData is None:
             CustomHeaderList = self.customHeaders.split(";")
             for i in range(len(CustomHeaderList)):
@@ -114,6 +117,7 @@ class General_BOM:
                 Cell = f"{Column}1"
                 # Add the cell and header as a dict item to the dict AdditionalHeaders
                 CustomHeadersDict[Cell] = Header
+
         # Set the headers with additional headers
         Headers = Settings_BoM.ReturnHeaders(
             Headers=Headers, AdditionalHeaders=CustomHeadersDict
@@ -188,12 +192,24 @@ class General_BOM:
                         self.ReturnDocProperty(rowList["DocumentObject"], "TypeId"),
                     )
                 else:
-                    sheet.set(
-                        Column + str(Row),
-                        self.ReturnViewProperty(
+                    try:
+                        sheet.set(
+                            Column + str(Row),
+                            self.ReturnViewProperty(
+                                rowList["DocumentObject"], Headers[Column + "1"]
+                            )[0],
+                        )
+                        NewHeader = ""
+                        Unit = self.ReturnViewProperty(
                             rowList["DocumentObject"], Headers[Column + "1"]
-                        ),
-                    )
+                        )[1]
+                        if Unit != "":
+                            NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
+                        if sheet.getContents(Column + "1") != NewHeader:
+                            sheet.set(Column + "1", NewHeader)
+                    except Exception as e:
+                        print(e)
+                        pass
 
             # Create the total number of items for the summary
             TotalNoItems = TotalNoItems + int(rowList["Qty"])
@@ -306,7 +322,10 @@ class General_BOM:
         # Define the created by value. If no document information is available, use the OS account info.
         CreatedBy = doc.LastModifiedBy
         if CreatedBy == "":
-            CreatedBy = os.getlogin()
+            try:
+                CreatedBy = getpass.getuser()
+            except Exception:
+                pass
 
         # Fill in the cells with Date, time, created by and for which file.
         sheet.set("A" + str(Row), translate("BoM Workbench", "File information"))
@@ -340,6 +359,19 @@ class General_BOM:
 
         # Recompute the document
         doc.recompute(None, True, True)
+
+        if IsNewSheet is False:
+            Standard_Functions.Mbox(
+                text="Bill of Materials is replaced with a new version!",
+                title="Bill of Materials Workbench",
+                style=0,
+            )
+            if IsNewSheet is True:
+                Standard_Functions.Mbox(
+                    text="Bill of Materials is created!",
+                    title="Bill of Materials Workbench",
+                    style=0,
+                )
 
         return
 
@@ -769,7 +801,10 @@ class General_BOM:
                 pass
 
             try:
-                if Object.Type == "Assembly" and Object.TypeId == "App::Part":
+                if (
+                    Object.Type == "Assembly"
+                    and Object.TypeId == "Assembly::AssemblyObject"
+                ):
                     resultList.append("Internal")
             except Exception:
                 pass
@@ -912,35 +947,175 @@ class General_BOM:
             return ""
 
     @classmethod
-    def ReturnViewProperty(self, DocObject, PropertyName):
-        result: object
-        try:
+    def ReturnViewProperty(self, DocObject, PropertyName) -> list:
+        resultValue: object
+        resultUnit: str
+        result: list
+
+        isShapeProperty = False
+        if PropertyName.startswith("Shape - ") is True:
+            isShapeProperty = True
+
+        if isShapeProperty is False:
             try:
-                result = DocObject.getPropertyByName(PropertyName)
+                try:
+                    resultValue = DocObject.getPropertyByName(PropertyName)
+                except Exception:
+                    resultValue = None
+
+                if isinstance(resultValue, int):
+                    resultValue = str(resultValue)
+                elif isinstance(resultValue, list):
+                    resultString = ""
+                    for item in resultValue:
+                        resultString = resultString + self.ObjectToString(item) + ", "
+                    resultValue = str(resultValue)
+                elif isinstance(resultValue, dict):
+                    resultString = ""
+                    for item in resultValue:
+                        resultString = resultString + self.ObjectToString(item) + ", "
+                    resultValue = str(resultValue)
+                else:
+                    resultValue = str(resultValue)
+
+                if resultValue is None or resultValue == "None":
+                    resultValue = ""
+
+                result = (resultValue, "")
+                return result
             except Exception:
-                result = None
+                return ("", "")
 
-            if isinstance(result, int):
-                result = str(result)
-            elif isinstance(result, list):
-                resultString = ""
-                for item in result:
-                    resultString = resultString + self.ObjectToString(item) + ", "
-                result = str(result)
-            elif isinstance(result, dict):
-                resultString = ""
-                for item in result:
-                    resultString = resultString + self.ObjectToString(item) + ", "
-                result = str(result)
-            else:
-                result = str(result)
+        if isShapeProperty is True:
+            try:
+                shapeObject = DocObject.Shape
+                currentScheme = App.Units.getSchema()
 
-            if result is None or result == "None":
-                result = ""
+                # Get the value from the shape
+                #
+                # Get the boundingbox from the item as if it is not transformed
+                BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
+                # Get the dimensions
+                if PropertyName.split(" - ", 1)[1] == "Length":
+                    value = str(
+                        App.Units.schemaTranslate(
+                            App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
+                            currentScheme,
+                        )[0]
+                    )
+                    unit = App.Units.schemaTranslate(
+                        App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
+                        currentScheme,
+                    )[2]
+                    resultValue = value.replace(" " + unit, "")
+                    resultUnit = unit
+                if PropertyName.split(" - ", 1)[1] == "Width":
+                    value = str(
+                        App.Units.schemaTranslate(
+                            App.Units.Quantity(BoundingBox.YLength, App.Units.Length),
+                            currentScheme,
+                        )[0]
+                    )
+                    unit = App.Units.schemaTranslate(
+                        App.Units.Quantity(BoundingBox.YLength, App.Units.Length),
+                        currentScheme,
+                    )[2]
+                    resultValue = value.replace(" " + unit, "")
+                    resultUnit = unit
+                if PropertyName.split(" - ", 1)[1] == "Height":
+                    value = str(
+                        App.Units.schemaTranslate(
+                            App.Units.Quantity(BoundingBox.ZLength, App.Units.Length),
+                            currentScheme,
+                        )[0]
+                    )
+                    unit = App.Units.schemaTranslate(
+                        App.Units.Quantity(BoundingBox.ZLength, App.Units.Length),
+                        currentScheme,
+                    )[2]
+                    resultValue = value.replace(" " + unit, "")
+                    resultUnit = unit
+                # Get the other properties
+                if PropertyName.split(" - ", 1)[1] == "Volume":
+                    value = str(
+                        App.Units.schemaTranslate(
+                            App.Units.Quantity(shapeObject.Volume, App.Units.Volume),
+                            currentScheme,
+                        )[0]
+                    )
+                    unit = App.Units.schemaTranslate(
+                        App.Units.Quantity(shapeObject.Volume, App.Units.Volume),
+                        currentScheme,
+                    )[2]
+                    resultValue = value.replace(" " + unit, "")
+                    resultUnit = unit
+                if PropertyName.split(" - ", 1)[1] == "Area":
+                    value = str(
+                        App.Units.schemaTranslate(
+                            App.Units.Quantity(shapeObject.Area, App.Units.Area),
+                            currentScheme,
+                        )[0]
+                    )
+                    unit = App.Units.schemaTranslate(
+                        App.Units.Quantity(shapeObject.Area, App.Units.Area),
+                        currentScheme,
+                    )[2]
+                    resultValue = value.replace(" " + unit, "")
+                    resultUnit = unit
+                if PropertyName.split(" - ", 1)[1] == "CenterOfGravity":
+                    ValueX = str(
+                        App.Units.schemaTranslate(
+                            App.Units.Quantity(
+                                App.Vector(shapeObject.CenterOfGravity).x,
+                                App.Units.Length,
+                            ),
+                            currentScheme,
+                        )[0]
+                    )
+                    ValueY = str(
+                        App.Units.schemaTranslate(
+                            App.Units.Quantity(
+                                App.Vector(shapeObject.CenterOfGravity).y,
+                                App.Units.Length,
+                            ),
+                            currentScheme,
+                        )[0]
+                    )
+                    ValueZ = str(
+                        App.Units.schemaTranslate(
+                            App.Units.Quantity(
+                                App.Vector(shapeObject.CenterOfGravity).z,
+                                App.Units.Length,
+                            ),
+                            currentScheme,
+                        )[0]
+                    )
+                    unit = App.Units.schemaTranslate(
+                        App.Units.Quantity(
+                            App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length
+                        ),
+                        currentScheme,
+                    )[2]
+                    resultValue = f"Vector ({ValueX}, {ValueY}, {ValueZ}"
+                    resultUnit = unit
+                if PropertyName.split(" - ", 1)[1] == "Mass":
+                    value = str(
+                        App.Units.schemaTranslate(
+                            App.Units.Quantity(shapeObject.Mass, App.Units.Mass),
+                            currentScheme,
+                        )[0]
+                    )
+                    unit = App.Units.schemaTranslate(
+                        App.Units.Quantity(shapeObject.Mass, App.Units.Mass),
+                        currentScheme,
+                    )[2]
+                    resultValue = value.replace(" " + unit, "")
+                    resultUnit = unit
 
-            return result
-        except Exception:
-            return ""
+                result = (resultValue, resultUnit)
+                return result
+            except Exception:
+                return ""
 
     @classmethod
     def ObjectToString(self, item):

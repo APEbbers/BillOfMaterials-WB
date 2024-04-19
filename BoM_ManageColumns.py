@@ -244,7 +244,16 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
                     IsInList = True
                     break
             if IsInList is False:
-                self.form.Columns_To_Add.addItem(Property)
+                if Property != "Shape":
+                    self.form.Columns_To_Add.addItem(Property)
+                if Property == "Shape":
+                    self.form.Columns_To_Add.addItem("Shape - Length")
+                    self.form.Columns_To_Add.addItem("Shape - Width")
+                    self.form.Columns_To_Add.addItem("Shape - Height")
+                    self.form.Columns_To_Add.addItem("Shape - Volume")
+                    self.form.Columns_To_Add.addItem("Shape - Area")
+                    self.form.Columns_To_Add.addItem("Shape - CenterOfGravity")
+                    self.form.Columns_To_Add.addItem("Shape - Mass")
 
         return
 
@@ -257,7 +266,8 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         for Value in Values:
             # Get the item text
             itemText = QListWidgetItem(Value).text()
-            # Add the item to the lsit with current items
+
+            # Add the item to the list with current items
             self.form.Columns_Present.addItem(itemText)
 
             # If debug is enabled, log the action.
