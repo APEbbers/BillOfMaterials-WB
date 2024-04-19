@@ -1,4 +1,5 @@
-<a href="https://github.com/APEbbers/BillOfMaterials-WB"><img src="https://github.com/APEbbers/BillOfMaterials-WB/assets/10145631/bda087ef-d360-4278-a071-93f42ee5612b" height=150px width=150px></a>
+<img src="./Resources/Icons/BillOfMaterialsWB.svg" width="200" alt="Alternate text"/>
+
 # Bill of Materials-WB
 
 A workbench to create Bill of Materials (BoM) independent of the assembly workbench of your choice.
@@ -41,7 +42,7 @@ Support for the following assemblies, workbenches and futures are planned:
 * One function to support a mixed structure of all assembly workbenches
 * A function to add the BoM to a TechDraw page template
 * Mass calculation based on shape and material
-* outer dimensions of items
+* outer dimensions of items -> Done.
 
 ## License:
 LGPL2.+

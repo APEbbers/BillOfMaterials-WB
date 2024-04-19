@@ -1,15 +1,16 @@
 # .pre-commit-config.yaml
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v1.0.5  # this is optional, use `pre-commit autoupdate` to get the latest rev!
+    rev: v4.6.0  # this is optional, use `pre-commit autoupdate` to get the latest rev!
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
-    repo: https://github.com/mattlqx/pre-commit-search-and-replace
+-   repo: https://github.com/mattlqx/pre-commit-search-and-replace
+    rev: v1.1.0
     hooks:
     -   id: search-and-replace
 -   repo: https://github.com/psf/black
-    rev: 24.2.0
+    rev: 24.4.0
     hooks:
     -   id: black
