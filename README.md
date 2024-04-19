@@ -46,4 +46,3 @@ Support for the following assemblies, workbenches and futures are planned:
 
 ## License:
 LGPL2.+
-
