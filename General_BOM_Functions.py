@@ -960,8 +960,10 @@ class General_BOM:
                     resultUnit = unit
                 if PropertyName.split(" - ", 1)[1] == "Area":
                     value = str(
-                        App.Units.schemaTranslate(App.Units.Quantity(shapeObject.Area, App.Units.Area), currentScheme)
-                    )[0]
+                        App.Units.schemaTranslate(App.Units.Quantity(shapeObject.Area, App.Units.Area), currentScheme)[
+                            0
+                        ]
+                    )
                     unit = App.Units.schemaTranslate(
                         App.Units.Quantity(shapeObject.Area, App.Units.Area), currentScheme
                     )[2]
@@ -972,32 +974,32 @@ class General_BOM:
                         App.Units.schemaTranslate(
                             App.Units.Quantity(App.Vector(shapeObject.CenterOfGravity).x, App.Units.Length),
                             currentScheme,
-                        )
-                    )[0]
+                        )[0]
+                    )
                     ValueY = str(
                         App.Units.schemaTranslate(
                             App.Units.Quantity(App.Vector(shapeObject.CenterOfGravity).y, App.Units.Length),
                             currentScheme,
-                        )
-                    )[0]
+                        )[0]
+                    )
                     ValueZ = str(
                         App.Units.schemaTranslate(
                             App.Units.Quantity(App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length),
                             currentScheme,
-                        )
-                    )[0]
-                    unit = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length),
-                            currentScheme,
-                        )
+                        )[0]
+                    )
+                    unit = App.Units.schemaTranslate(
+                        App.Units.Quantity(App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length),
+                        currentScheme,
                     )[2]
                     resultValue = f"Vector ({ValueX}, {ValueY}, {ValueZ}"
                     resultUnit = unit
                 if PropertyName.split(" - ", 1)[1] == "Mass":
                     value = str(
-                        App.Units.schemaTranslate(App.Units.Quantity(shapeObject.Mass, App.Units.Mass), currentScheme)
-                    )[0]
+                        App.Units.schemaTranslate(App.Units.Quantity(shapeObject.Mass, App.Units.Mass), currentScheme)[
+                            0
+                        ]
+                    )
                     unit = App.Units.schemaTranslate(
                         App.Units.Quantity(shapeObject.Mass, App.Units.Mass), currentScheme
                     )[2]
