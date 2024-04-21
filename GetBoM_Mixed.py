@@ -58,6 +58,12 @@ class BomFunctions:
 
             # In the other workbenches go through the RootObjects
             try:
+                if DocObject.objectType == "a2pPart":
+                    resultList.append("A2plus")
+            except Exception:
+                pass
+
+            try:
                 if DocObject.AssemblyType == "Part::Link" and DocObject.Type == "Assembly":
                     resultList.append("Assembly4")
             except Exception:
@@ -97,6 +103,8 @@ class BomFunctions:
 
             check_AppPart = False
             for result in resultList:
+                if result == "A2plus":
+                    return "A2plus"
                 if result == "Assembly3":
                     return "Assembly3"
                 if result == "Assembly4":
@@ -1391,6 +1399,12 @@ class BomFunctions:
             self.mainList.clear()
             # create the mainList
             self.GetTreeObjects()
+
+            for i in range(len(self.mainList)):
+                Text = (
+                    f'{self.mainList[i]["ItemNumber"]}, {self.mainList[i]["ObjectLabel"]}, {self.mainList[i]["Type"]}'
+                )
+                print(Text)
 
             if len(self.mainList) > 0:
                 IncludeBodiesText = "Do you want to include bodies?"

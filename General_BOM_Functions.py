@@ -55,13 +55,13 @@ class General_BOM:
 
         # Get or create the spreadsheet.
         IsNewSheet = False
-        sheet = App.ActiveDocument.getObject("BoM")
+        sheet = doc.getObject("BoM")
         if sheet is not None:
             for i in range(1, 16384):  # 16384 is the maximum rows of the spreadsheet module
                 doc.BoM.splitCell("A" + str(i))
             sheet.clearAll()
         if sheet is None:
-            sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
+            sheet = doc.addObject("Spreadsheet::Sheet", "BoM")
             IsNewSheet = True
 
         # Define CopyMainList and Header
