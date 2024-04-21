@@ -91,9 +91,9 @@ class CreateSummarizedBOM_MIXED_Class:
         import General_BOM_Functions
         import Standard_Functions_BOM_WB as Standard_Functions
 
+        IncludeBodies = False
         IncludeBodiesText = "Do you want to include bodies?"
         Answer = "no"
-
         EnableQuestion = True
 
         if EnableQuestion is True:
@@ -140,9 +140,9 @@ class CreateTotalBOM_MIXED_Class:
         import General_BOM_Functions
         import Standard_Functions_BOM_WB as Standard_Functions
 
+        IncludeBodies = False
         IncludeBodiesText = "Do you want to include bodies?"
         Answer = "no"
-
         EnableQuestion = True
 
         if EnableQuestion is True:
@@ -189,9 +189,9 @@ class CreateRawBOM_MIXED_Class:
         import General_BOM_Functions
         import Standard_Functions_BOM_WB as Standard_Functions
 
+        IncludeBodies = False
         IncludeBodiesText = "Do you want to include bodies?"
         Answer = "no"
-
         EnableQuestion = True
 
         if EnableQuestion is True:
