@@ -1420,15 +1420,14 @@ class BomFunctions:
                             style=1,
                         )
                     if Answer == "yes":
-                        General_BOM.createBoMSpreadsheet(self.mainList)
-                    else:
-                        General_BOM.createBoMSpreadsheet(
-                            self.__FilterBodies(
-                                BOMList=self.mainList,
-                                AllowBodies=False,
-                                AllowFeaturePython=True,
-                            )
+                        IncludeBodies = True
+                    General_BOM.createBoMSpreadsheet(
+                        self.__FilterBodies(
+                            BOMList=self.mainList,
+                            AllowBodies=IncludeBodies,
+                            AllowFeaturePython=True,
                         )
+                    )
                 # if command == "PartsOnly":
                 #     if EnableQuestion is True:
                 #         Answer = Standard_Functions.Mbox(
