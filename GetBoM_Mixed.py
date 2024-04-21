@@ -964,15 +964,6 @@ class BomFunctions:
             if isAssembly is False:
                 return RowItem
             else:
-                # isA2plus = False
-                # try:
-                #     docObject.objectType == "a2pPart"
-                #     isA2plus = True
-                # except Exception:
-                #     pass
-                # if isA2plus is True:
-                #     return RowItem
-
                 # If the property returns empty, it is an part. Return the linked object.
                 # This way, duplicate items (normally like Bearing001, Bearing002, etc.) will be replaced with
                 # the original part. This is used for summation of the same parts.
@@ -1420,6 +1411,118 @@ class BomFunctions:
 
         return TemporaryList
 
+    # Function to create a summary list of all assemblies and their parts.
+    # The function CreateBoM can be used to write it the an spreadsheet.
+    # The value for 'WB' must be provided. It is used for the correct filtering for each support WB
+    @classmethod
+    def SummarizedBoM(
+        self,
+        IncludeBodies: bool = False,
+        ObjectNameBased: bool = False,
+    ):
+        # If the Mainlist is empty, return.
+        if len(self.mainList) == 0:
+            return
+
+        # Copy the main list. Leave the orginal intact for other fdunctions
+        CopyMainList = self.mainList.copy()
+
+        # Replace duplicate items with their original
+        for i in range(len(CopyMainList)):
+            ReturnedRowIem = self.__ReturnLinkedObject(CopyMainList[i])
+
+            if ReturnedRowIem is not None:
+                CopyMainList[i] = ReturnedRowIem
+
+        # Replace duplicate items with their original
+        # For a2plus only
+        CopyMainList = self.__ReturnDuplicates_a2p()
+
+        # Create a temporary list
+        TemporaryList = []
+
+        # Create a shadow list to put objects on which shouldn't be added to the Temporary list, because they are already there.
+        ShadowList = []
+        # define an item for the shadow list.
+        shadowRow = dict
+
+        # Go Through the object list
+        for i in range(len(CopyMainList)):
+            # Get the row item
+            rowList = CopyMainList[i]
+
+            # If ItemObject exits only once in the objectList, the quantity will be one.
+            # Just create a row item for the temporary list.
+            # The ObjectCounter is used to count the items based on object type and object name
+            # This can be done, because earlier the names of the duplicates with a follow-up name are
+            # replaced with the names of the master. Done by ReturnLinkedObject Function.
+            ObjectNameField = "ObjectName"
+            if ObjectNameBased is False:
+                ObjectNameField = "ObjectLabel"
+
+            # Get the itemnumber
+            itemNumber = str(rowList["ItemNumber"])
+
+            # create a place holder for the quantity
+            QtyValue = 1
+
+            # Create a new dict as new Row item.
+            rowListNew = dict
+
+            # Find the quantity for the item
+            QtyValue = str(
+                General_BOM.ObjectCounter(
+                    DocObject=None,
+                    RowItem=rowList,
+                    mainList=CopyMainList,
+                    ObjectNameBased=ObjectNameBased,
+                )
+            )
+
+            # Create a new row item for the temporary row.
+            rowListNew = {
+                "ItemNumber": itemNumber,
+                "DocumentObject": rowList["DocumentObject"],
+                "ObjectLabel": rowList["ObjectLabel"],
+                "ObjectName": rowList["ObjectName"],
+                "Qty": QtyValue,
+                "Type": rowList["Type"],
+            }
+
+            # Create the row item for the shadow list.
+            shadowRow = {
+                "Item1": rowList[ObjectNameField],
+                "Item2": rowList["DocumentObject"].TypeId,
+                "Item3": rowList["Type"],
+            }
+            # Add the rowItem if it is not in the shadow list.
+            if (
+                General_BOM.ListContainsCheck(
+                    List=ShadowList,
+                    Item1=shadowRow["Item1"],
+                    Item2=shadowRow["Item2"],
+                    Item3=shadowRow["Item3"],
+                )
+                is False
+            ):
+                TemporaryList.append(rowListNew)
+                ShadowList.append(shadowRow)
+
+        # If App:Links only contain the same bodies and IncludeBodies = False,
+        # replace the App::Links with the bodies they contain. Including their quantity.
+        TemporaryList = self.__FilterBodies(
+            BOMList=TemporaryList,
+            AllowAllBodies=IncludeBodies,
+            AllowFeaturePython=True,
+        )
+
+        # number the parts 1,2,3, etc.
+        for k in range(len(TemporaryList)):
+            tempItem = TemporaryList[k]
+            tempItem["ItemNumber"] = k + 1
+
+        return TemporaryList
+
     # end region
 
     # Function to start the other functions based on a command string that is passed.
@@ -1490,21 +1593,21 @@ class BomFunctions:
                 #         ObjectNameBased=False,
                 #     )
                 #     General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
-                # if command == "Summarized":
-                #     if EnableQuestion is True:
-                #         Answer = Standard_Functions.Mbox(
-                #             text=IncludeBodiesText,
-                #             title="Bill of Materials Workbench",
-                #             style=1,
-                #         )
-                #     if Answer == "yes":
-                #         IncludeBodies = True
-                #     TemporaryList = self.SummarizedBoM(
-                #         IncludeBodies=IncludeBodies,
-                #         CreateSpreadSheet=True,
-                #         ObjectNameBased=False,
-                #     )
-                #     General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
+                if command == "Summarized":
+                    if EnableQuestion is True:
+                        Answer = Standard_Functions.Mbox(
+                            text=IncludeBodiesText,
+                            title="Bill of Materials Workbench",
+                            style=1,
+                        )
+                    if Answer == "yes":
+                        IncludeBodies = True
+
+                    TemporaryList = self.SummarizedBoM(
+                        IncludeBodies=IncludeBodies,
+                        ObjectNameBased=False,
+                    )
+                    General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
         except Exception as e:
             raise e
         return
