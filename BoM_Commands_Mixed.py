@@ -39,8 +39,27 @@ class CreatePartsOnlyBOM_MIXED_Class:
 
     def Activated(self):
         from GetBoM_Mixed import BomFunctions
+        import General_BOM_Functions
+        import Standard_Functions_BOM_WB as Standard_Functions
 
-        BomFunctions.Start("PartsOnly")
+        IncludeBodiesText = "Do you want to include bodies?"
+        Answer = "no"
+
+        EnableQuestion = True
+
+        if EnableQuestion is True:
+            Answer = Standard_Functions.Mbox(
+                text=IncludeBodiesText,
+                title="Bill of Materials Workbench",
+                style=1,
+            )
+        if Answer == "yes":
+            IncludeBodies = True
+
+        BoM = BomFunctions.CreateBoM(command="PartsOnly", IncludeBodies=IncludeBodies)
+        if BoM is not None:
+            General_BOM_Functions.General_BOM.createBoMSpreadsheet(mainList=BoM, Headers=None, Summary=False)
+
         return
 
     def IsActive(self):
@@ -69,8 +88,27 @@ class CreateSummarizedBOM_MIXED_Class:
 
     def Activated(self):
         from GetBoM_Mixed import BomFunctions
+        import General_BOM_Functions
+        import Standard_Functions_BOM_WB as Standard_Functions
 
-        BomFunctions.Start("Summarized")
+        IncludeBodiesText = "Do you want to include bodies?"
+        Answer = "no"
+
+        EnableQuestion = True
+
+        if EnableQuestion is True:
+            Answer = Standard_Functions.Mbox(
+                text=IncludeBodiesText,
+                title="Bill of Materials Workbench",
+                style=1,
+            )
+        if Answer == "yes":
+            IncludeBodies = True
+
+        BoM = BomFunctions.CreateBoM(command="Summarized", IncludeBodies=IncludeBodies)
+        if BoM is not None:
+            General_BOM_Functions.General_BOM.createBoMSpreadsheet(mainList=BoM, Headers=None, Summary=False)
+
         return
 
     def IsActive(self):
@@ -99,8 +137,27 @@ class CreateTotalBOM_MIXED_Class:
 
     def Activated(self):
         from GetBoM_Mixed import BomFunctions
+        import General_BOM_Functions
+        import Standard_Functions_BOM_WB as Standard_Functions
 
-        BomFunctions.Start("Total")
+        IncludeBodiesText = "Do you want to include bodies?"
+        Answer = "no"
+
+        EnableQuestion = True
+
+        if EnableQuestion is True:
+            Answer = Standard_Functions.Mbox(
+                text=IncludeBodiesText,
+                title="Bill of Materials Workbench",
+                style=1,
+            )
+        if Answer == "yes":
+            IncludeBodies = True
+
+        BoM = BomFunctions.CreateBoM(command="Total", Level=0, IncludeBodies=IncludeBodies, IndentNumbering=True)
+        if BoM is not None:
+            General_BOM_Functions.General_BOM.createBoMSpreadsheet(mainList=BoM, Headers=None, Summary=False)
+
         return
 
     def IsActive(self):
@@ -129,8 +186,27 @@ class CreateRawBOM_MIXED_Class:
 
     def Activated(self):
         from GetBoM_Mixed import BomFunctions
+        import General_BOM_Functions
+        import Standard_Functions_BOM_WB as Standard_Functions
 
-        BomFunctions.Start("Raw")
+        IncludeBodiesText = "Do you want to include bodies?"
+        Answer = "no"
+
+        EnableQuestion = True
+
+        if EnableQuestion is True:
+            Answer = Standard_Functions.Mbox(
+                text=IncludeBodiesText,
+                title="Bill of Materials Workbench",
+                style=1,
+            )
+        if Answer == "yes":
+            IncludeBodies = True
+
+        BoM = BomFunctions.CreateBoM(command="Raw", IncludeBodies=IncludeBodies, IndentNumbering=True)
+        if BoM is not None:
+            General_BOM_Functions.General_BOM.createBoMSpreadsheet(mainList=BoM, Headers=None, Summary=False)
+
         return
 
     def IsActive(self):
