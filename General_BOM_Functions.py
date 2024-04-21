@@ -243,10 +243,25 @@ class General_BOM:
             for i in range(len(CopyMainList)):
                 rowList = CopyMainList[i]
 
-                if rowList["Type"] == "Assembly":
+                isAssembly = False
+                AssemblyTypes = [
+                    "A2plus",
+                    "Assembly4",
+                    "Assembly3",
+                    "Internal",
+                    "AppLink",
+                    "AppPart",
+                    "Assembly",
+                ]
+
+                for j in range(len(AssemblyTypes)):
+                    if rowList["Type"] == AssemblyTypes[j]:
+                        isAssembly = True
+
+                if isAssembly is True:
                     AssemblyCounter = AssemblyCounter + 1
                     TotalCounter = TotalCounter + 1
-                if rowList["Type"] == "Part":
+                if isAssembly is False:
                     PartCounter = PartCounter + 1
                     TotalCounter = TotalCounter + 1
 
