@@ -1523,6 +1523,116 @@ class BomFunctions:
 
         return TemporaryList
 
+    # Function to create a BoM list for a parts only BoM.
+    # The function CreateBoM can be used to write it the an spreadsheet.
+    @classmethod
+    def PartsOnly(
+        self,
+        IncludeBodies: bool = False,
+        ObjectNameBased: bool = False,
+    ):
+        # If the Mainlist is empty, return.
+        if len(self.mainList) == 0:
+            return
+
+        # Copy the main list. Leave the orginal intact for other fdunctions
+        CopyMainList = self.mainList.copy()
+
+        # Replace duplicate items with their original
+        for i in range(len(CopyMainList)):
+            ReturnedRowIem = self.__ReturnLinkedObject(CopyMainList[i])
+
+            if ReturnedRowIem is not None:
+                CopyMainList[i] = ReturnedRowIem
+
+        # Replace duplicate items with their original
+        # For a2plus only
+        CopyMainList = self.__ReturnDuplicates_a2p()
+
+        # create a shadowlist. Will be used to avoid duplicates
+        ShadowList = []
+        # define an item for the shadow list.
+        shadowRow = dict
+
+        # Create a temporary list
+        TemporaryList = []
+
+        for i in range(len(CopyMainList)):
+            # Get the row item
+            rowList = CopyMainList[i]
+
+            # if the objectcheck succeeded, continue.
+            if self.__CheckObject(docObject=rowList["DocumentObject"]) is True:
+                ObjectNameField = "ObjectName"
+                if ObjectNameBased is False:
+                    ObjectNameField = "ObjectLabel"
+
+                # Get the itemnumber
+                itemNumber = str(rowList["ItemNumber"])
+
+                # create a place holder for the quantity
+                QtyValue = 1
+
+                # Create a new dict as new Row item.
+                rowListNew = dict
+
+                # Find the quantity for the item
+                QtyValue = str(
+                    General_BOM.ObjectCounter(
+                        DocObject=None,
+                        RowItem=rowList,
+                        mainList=CopyMainList,
+                        ObjectNameBased=ObjectNameBased,
+                    )
+                )
+
+                # Create a new row item for the temporary row.
+                rowListNew = {
+                    "ItemNumber": itemNumber,
+                    "DocumentObject": rowList["DocumentObject"],
+                    "ObjectLabel": rowList["ObjectLabel"],
+                    "ObjectName": rowList["ObjectName"],
+                    "Qty": QtyValue,
+                    "Type": rowList["Type"],
+                }
+
+                # Create the row item for the shadow list.
+                shadowRow = {
+                    "Item1": rowList[ObjectNameField],
+                    "Item2": rowList["DocumentObject"].TypeId,
+                    "Item3": rowList["Type"],
+                }
+                # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
+                # Add it to the temporary list.
+                # Add the rowItem if it is not in the shadow list.
+                if (
+                    General_BOM.ListContainsCheck(
+                        List=ShadowList,
+                        Item1=shadowRow["Item1"],
+                        Item2=shadowRow["Item2"],
+                        Item3=shadowRow["Item3"],
+                    )
+                    is False
+                ):
+                    TemporaryList.append(rowListNew)
+                    # add the shadow row to the shadow list. This prevents from adding this item an second time.
+                    ShadowList.append(shadowRow)
+
+        # If App:Links only contain the same bodies and IncludeBodies = False,
+        # replace the App::Links with the bodies they contain. Including their quantity.
+        TemporaryList = self.__FilterBodies(
+            BOMList=TemporaryList,
+            AllowBodies=IncludeBodies,
+            AllowFeaturePython=True,
+        )
+
+        # number the parts 1,2,3, etc.
+        for k in range(len(TemporaryList)):
+            tempItem = TemporaryList[k]
+            tempItem["ItemNumber"] = k + 1
+
+        return TemporaryList
+
     # end region
 
     # Function to start the other functions based on a command string that is passed.
@@ -1578,21 +1688,20 @@ class BomFunctions:
                             AllowFeaturePython=True,
                         )
                     )
-                # if command == "PartsOnly":
-                #     if EnableQuestion is True:
-                #         Answer = Standard_Functions.Mbox(
-                #             text=IncludeBodiesText,
-                #             title="Bill of Materials Workbench",
-                #             style=1,
-                #         )
-                #     if Answer == "yes":
-                #         IncludeBodies = True
-                #     TemporaryList = self.PartsOnly(
-                #         CreateSpreadSheet=True,
-                #         IncludeBodies=IncludeBodies,
-                #         ObjectNameBased=False,
-                #     )
-                #     General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
+                if command == "PartsOnly":
+                    if EnableQuestion is True:
+                        Answer = Standard_Functions.Mbox(
+                            text=IncludeBodiesText,
+                            title="Bill of Materials Workbench",
+                            style=1,
+                        )
+                    if Answer == "yes":
+                        IncludeBodies = True
+                    TemporaryList = self.PartsOnly(
+                        IncludeBodies=IncludeBodies,
+                        ObjectNameBased=False,
+                    )
+                    General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
                 if command == "Summarized":
                     if EnableQuestion is True:
                         Answer = Standard_Functions.Mbox(
