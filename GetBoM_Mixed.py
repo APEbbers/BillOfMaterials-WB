@@ -1393,9 +1393,6 @@ class BomFunctions:
             self.GetTreeObjects()
 
             if len(self.mainList) > 0:
-                # Get spreadsheet.if it exists
-                sheet = App.ActiveDocument.getObject("BoM")
-
                 IncludeBodiesText = "Do you want to include bodies?"
                 Answer = "no"
 
@@ -1462,18 +1459,6 @@ class BomFunctions:
                 #         ObjectNameBased=False,
                 #     )
                 #     General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
-                if sheet is not None:
-                    Standard_Functions.Mbox(
-                        text="Bill of Materials is replaced with a new version!",
-                        title="Bill of Materials Workbench",
-                        style=0,
-                    )
-                if sheet is None:
-                    Standard_Functions.Mbox(
-                        text="Bill of Materials is created!",
-                        title="Bill of Materials Workbench",
-                        style=0,
-                    )
         except Exception as e:
             raise e
         return
