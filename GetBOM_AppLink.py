@@ -850,7 +850,7 @@ class BomFunctions:
                         )
                     if IncludeBodies is True:
                         General_BOM.createBoMSpreadsheet(
-                            self.FilterBodies(self.mainList)
+                            self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies)
                         )
                     else:
                         General_BOM.createBoMSpreadsheet(self.mainList)
