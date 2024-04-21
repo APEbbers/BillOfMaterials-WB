@@ -365,6 +365,8 @@ class BomFunctions:
             ParentNumber="",
             Parts=PartList,
         )
+
+        App.setActiveDocument(doc.Name)
         return
 
     # function to go through the objects and their child objects
