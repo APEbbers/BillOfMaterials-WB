@@ -1863,6 +1863,8 @@ class BomFunctions:
             self.__mainList.clear()
             # create the mainList
             self.__GetTreeObjects()
+            # Define the BOM
+            BoM = []
 
             if len(self.__mainList) > 0:
                 if command == "Total":
