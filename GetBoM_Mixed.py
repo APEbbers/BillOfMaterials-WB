@@ -1940,7 +1940,7 @@ class BomFunctions:
         IncludeBodies=False,
         IndentNumbering=True,
         DebugMode=False,
-    ):
+    ) -> list:
         """_summary_
 
         Args:
@@ -1952,6 +1952,17 @@ class BomFunctions:
 
         Raises:
             e: Exception
+
+        Output:
+            a list with items. Each item is a dict.
+            {"ItemNumber", "DocumentObject", "ObjectLabel", "ObjectName", "Qty", "Type"}
+
+            Itemnumber: Itemnumber
+            DocumentObject: FreeCAD DocumentObject
+            ObjectLabel: The label in the tree
+            ObjectName: The internal name
+            Qty: The quantity of the item
+            Type: Part or type of assembly (a2plus, assembly3, etc.)
         """
         try:
             if DebugMode is True:
