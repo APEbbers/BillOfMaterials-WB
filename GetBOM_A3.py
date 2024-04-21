@@ -842,16 +842,14 @@ class BomFunctions:
                     )
                 if command == "Raw":
                     if EnableQuestion is True:
-                        IncludeBodies = Standard_Functions.Mbox(
+                        Answer = Standard_Functions.Mbox(
                             text=IncludeBodiesText,
                             title="Bill of Materials Workbench",
                             style=1,
                         )
-                    General_BOM.createBoMSpreadsheet(
-                        self.FilterBodies(
-                            BOMList=self.mainList, AllowAllBodies=IncludeBodies
-                        )
-                    )
+                    if Answer == "yes":
+                        IncludeBodies = True
+                    General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies))
                 if command == "PartsOnly":
                     if EnableQuestion is True:
                         IncludeBodies = Standard_Functions.Mbox(
