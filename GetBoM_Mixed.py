@@ -1512,7 +1512,7 @@ class BomFunctions:
         # replace the App::Links with the bodies they contain. Including their quantity.
         TemporaryList = self.__FilterBodies(
             BOMList=TemporaryList,
-            AllowAllBodies=IncludeBodies,
+            AllowBodies=IncludeBodies,
             AllowFeaturePython=True,
         )
 
