@@ -32,11 +32,107 @@ class BomFunctions:
     # The startrow number which increases with every item and child
     __StartRow = 0
     __mainList = []
+    __DebugMode = False
 
     # region -- Help functions to create the mainList
+    # Function to check the type of workbench at top level
+    @classmethod
+    def __CheckAssemblyType_Root(self, DocObject):
+        """_summary_
+
+        Args:
+            DocObject (App.DocumentObject): The DocumentObject
+
+        Returns:
+            string: The assembly type as a string
+        """
+        result = ""
+        # Get the list with rootobjects
+        RootObjects = DocObject.RootObjects
+
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for RootObject in RootObjects:
+            if RootObject.TypeId == "App::DocumentObjectGroup":
+                RootObjects.extend(self.__GetObjectsFromGroups(RootObject))
+
+        # Define the result list.
+        resultList = []
+
+        # Go through the root objects. If there is an object type "a2pPart", this is an A2plus assembly.
+        # If not, continue.
+        # In the A2plus WB, you have to go through the Objects instead of the RootObjects
+        for Object in DocObject.Objects:
+            try:
+                if Object.objectType == "a2pPart":
+                    return "A2plus"
+            except Exception:
+                pass
+
+        # In the other workbenches go through the RootObjects
+        for Object in RootObjects:
+            try:
+                if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
+                    resultList.append("Assembly4")
+            except Exception:
+                pass
+
+            try:
+                if Object.SolverType == "SolveSpace":
+                    resultList.append("Assembly3")
+            except Exception:
+                pass
+
+            try:
+                if Object.Type == "Assembly" and Object.TypeId == "Assembly::AssemblyObject":
+                    resultList.append("Internal")
+            except Exception:
+                pass
+
+            try:
+                if Object.TypeId == "App::Link" or Object.TypeId == "App::LinkGroup":
+                    resultList.append("AppLink")
+            except Exception:
+                pass
+
+            try:
+                if Object.Type == "" and Object.TypeId == "App::Part":
+                    resultList.append("AppPart")
+            except Exception:
+                pass
+
+        # # Check if the document is an arch or multibody document
+        # try:
+        #     test = self.CheckMultiBodyType(DocObject)
+        #     if test != "":
+        #         resultList.append(test)
+        # except Exception:
+        #     pass
+
+        check_AppPart = False
+        for result in resultList:
+            if result == "Assembly3":
+                return "Assembly3"
+            if result == "Assembly4":
+                return "Assembly4"
+            if result == "Internal":
+                return "Internal"
+            if result == "AppLink":
+                return "AppLink"
+            if result == "Arch":
+                return "Arch"
+            if result == "MultiBody":
+                return "MultiBody"
+            if result == "AppPart":
+                check_AppPart = True
+
+        if check_AppPart is True:
+            result = "AppPart"
+
+        return result
+
     # Function to check the type of workbench for a sub assembly
     @classmethod
-    def __CheckAssemblyType(self, DocObject):
+    def __CheckAssemblyType_Child(self, DocObject):
         """_summary_
 
         Args:
@@ -274,7 +370,7 @@ class BomFunctions:
         # define the list for the
         docObjects = []
 
-        AssemblyType = self.__CheckAssemblyType(doc)
+        AssemblyType = self.__CheckAssemblyType_Root(doc)
 
         if AssemblyType == "A2plus" or AssemblyType == "MultiBody" or AssemblyType == "Arch":
             RootObjects = doc.Objects
@@ -395,7 +491,7 @@ class BomFunctions:
 
             try:
                 # Check if the docObject is an assembly and which type.
-                AssemblyType = self.__CheckAssemblyType(docObject)
+                AssemblyType = self.__CheckAssemblyType_Child(docObject)
 
                 # If the documentObject is one of the allowed types, continue
                 if self.__AllowedObjectType(objectID=docObject.TypeId, AssemblyType=AssemblyType) is True:
@@ -656,8 +752,7 @@ class BomFunctions:
 
             try:
                 # Check if the childObject is an assembly and which type.
-                AssemblyType = self.__CheckAssemblyType(childObject)
-                print(AssemblyType)
+                AssemblyType = self.__CheckAssemblyType_Child(childObject)
 
                 # Increase the global startrow to make sure the data ends up in the next row
                 self.__StartRow = self.__StartRow + 1
@@ -1285,7 +1380,7 @@ class BomFunctions:
 
     # Function to correct the items of the BoM after filtering has taken place.
     @classmethod
-    def __CorrectItemNumbers(self, BoMList: list, DebugMode: bool = False) -> list:
+    def __CorrectItemNumbers(self, BoMList: list) -> list:
         """_summary_
 
         Args:
@@ -1391,7 +1486,7 @@ class BomFunctions:
                 TemporaryList.append(rowListNew)
 
         # If in debug mode, print the resulting list of numbers
-        if DebugMode is True:
+        if self.__DebugMode is True:
             for i in range(len(TemporaryList)):
                 self.__Print(TemporaryList[i]["ItemNumber"], "Log")
 
@@ -1520,7 +1615,6 @@ class BomFunctions:
 
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
-                # print(f"{shadowRow['Item1'], shadowRow['Item2']}")
                 if (
                     self.__ListContainsCheck(
                         List=ShadowList,
@@ -1581,7 +1675,6 @@ class BomFunctions:
 
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
-                # print(f"{shadowRow['Item1'], shadowRow['Item2']}")
                 if (
                     self.__ListContainsCheck(
                         List=ShadowList,
@@ -1846,6 +1939,7 @@ class BomFunctions:
         Level=0,
         IncludeBodies=False,
         IndentNumbering=True,
+        DebugMode=False,
     ):
         """_summary_
 
@@ -1854,11 +1948,15 @@ class BomFunctions:
             Level (int, optional): Needed for Total. 0=All levels. Defaults to 0.
             IncludeBodies (bool, optional): Include(True) or exclude(False) bodies. Defaults to False.
             IndentNumbering (bool, optional): Enable indented numbering(True) or Row numbering(False). Defaults to True.
+            DebugMode (Bool, optional): Prints extra info in report view for debugging. Defaults to False
 
         Raises:
             e: Exception
         """
         try:
+            if DebugMode is True:
+                self.__DebugMode = True
+
             # Clear the mainList to avoid double data
             self.__mainList.clear()
             # create the mainList
@@ -1873,7 +1971,6 @@ class BomFunctions:
                         IndentNumbering=IndentNumbering,
                         IncludeBodies=IncludeBodies,
                     )
-                    # General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
 
                 if command == "Raw" or command == "":
                     BoM = self.__FilterBodies(
@@ -1887,14 +1984,13 @@ class BomFunctions:
                         IncludeBodies=IncludeBodies,
                         ObjectNameBased=False,
                     )
-                    # General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=False)
 
                 if command == "Summarized":
                     BoM = self.__SummarizedBoM(
                         IncludeBodies=IncludeBodies,
                         ObjectNameBased=False,
                     )
-                    # General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
+
         except Exception as e:
             raise e
         return BoM
