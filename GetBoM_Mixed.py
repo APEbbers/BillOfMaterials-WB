@@ -649,6 +649,7 @@ class BomFunctions:
             try:
                 # Check if the childObject is an assembly and which type.
                 AssemblyType = self.__CheckSubAssemblyType(childObject)
+                print(AssemblyType)
 
                 # Increase the global startrow to make sure the data ends up in the next row
                 self.StartRow = self.StartRow + 1
@@ -676,9 +677,9 @@ class BomFunctions:
                         # If the object is an container, go through the sub items, (a.k.a child objects)
                         if childObject.subassemblyImport is True:
                             # Create a list with child objects as DocumentObjects
-                            childObjects = []
+                            subchildObjects = []
                             # Make sure that the list is empty. (probally overkill)
-                            childObjects.clear()
+                            subchildObjects.clear()
 
                             # Get the path of the sub-object
                             FullPath = childObject.sourceFile
@@ -697,16 +698,16 @@ class BomFunctions:
                                 # If the documentObject is one of the allowed types, add it to the list of child objects
                                 try:
                                     if childObject.objectType == "a2pPart":
-                                        childObjects.append(childObject)
+                                        subchildObjects.append(childObject)
                                 except Exception:
                                     pass
 
-                            if len(childObjects) > 0:
+                            if len(subchildObjects) > 0:
                                 self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.__GoThrough_ChildObjects(
-                                    ChilddocObjects=childObjects,
+                                    ChilddocObjects=subchildObjects,
                                     ParentDocument=ParentDocument,
                                     ChildItemNumber=0,
                                     ParentNumber=ItemNumberString,
@@ -715,21 +716,21 @@ class BomFunctions:
 
                     if AssemblyType == "Assembly3":
                         # Create a list with child objects as DocumentObjects
-                        childObjects = []
+                        subchildObjects = []
                         # Make sure that the list is empty. (probally overkill)
-                        childObjects.clear()
+                        subchildObjects.clear()
                         # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                         for k in range(len(childObject.getSubObjects())):
                             if childObject.getSubObject(subname=childObject.getSubObjects()[k], retType=1) is not None:
-                                childObjects.append(
+                                subchildObjects.append(
                                     childObject.getSubObject(subname=childObject.getSubObjects()[k], retType=1),
                                 )
-                        if len(childObjects) > 0:
+                        if len(subchildObjects) > 0:
                             self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                             # Go the the child objects with a separate function for the child objects
                             # This way you can go through multiple levels
                             self.__GoThrough_ChildObjects(
-                                ChilddocObjects=childObjects,
+                                ChilddocObjects=subchildObjects,
                                 ParentDocument=ParentDocument,
                                 ChildItemNumber=0,
                                 ParentNumber=ItemNumberString,
@@ -744,9 +745,9 @@ class BomFunctions:
                             or childObject.TypeId == "App::Part"
                         ):
                             # Create a list with child objects as DocumentObjects
-                            childObjects = []
+                            subchildObjects = []
                             # Make sure that the list is empty. (probally overkill)
-                            childObjects.clear()
+                            subchildObjects.clear()
                             # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                             for j in range(len(childObject.getSubObjects())):
                                 if (
@@ -772,18 +773,18 @@ class BomFunctions:
                                                 ).TypeId,
                                                 AssemblyType=AssemblyType,
                                             ):
-                                                childObjects.append(
+                                                subchildObjects.append(
                                                     childObject.getSubObject(
                                                         subname=childObject.getSubObjects()[j],
                                                         retType=1,
                                                     )
                                                 )
-                            if len(childObjects) > 0:
+                            if len(subchildObjects) > 0:
                                 self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.__GoThrough_ChildObjects(
-                                    ChilddocObjects=childObjects,
+                                    ChilddocObjects=subchildObjects,
                                     ParentDocument=ParentDocument,
                                     ChildItemNumber=0,
                                     ParentNumber=ItemNumberString,
@@ -794,21 +795,21 @@ class BomFunctions:
                         # If the object is an container, go through the sub items, (a.k.a child objects)
                         if childObject.TypeId == "App::LinkGroup" or childObject.TypeId == "App::Link":
                             # Create a list with child objects as DocumentObjects
-                            childObjects = []
+                            subchildObjects = []
                             # Make sure that the list is empty. (probally overkill)
-                            childObjects.clear()
+                            subchildObjects.clear()
                             # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                             for j in range(len(childObject.getSubObjects())):
                                 if childObject.getSubObjects()[j] is not None:
-                                    childObjects.append(
+                                    subchildObjects.append(
                                         childObject.getSubObject(childObject.getSubObjects()[j], 1),
                                     )
-                            if len(childObjects) > 0:
+                            if len(subchildObjects) > 0:
                                 self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.__GoThrough_ChildObjects(
-                                    ChilddocObjects=childObjects,
+                                    ChilddocObjects=subchildObjects,
                                     ParentDocument=ParentDocument,
                                     ChildItemNumber=0,
                                     ParentNumber=ItemNumberString,
@@ -819,9 +820,9 @@ class BomFunctions:
                         # If the object is an container, go through the sub items, (a.k.a child objects)
                         if childObject.TypeId == "App::Part":
                             # Create a list with child objects as DocumentObjects
-                            childObjects = []
+                            subchildObjects = []
                             # Make sure that the list is empty. (probally overkill)
-                            childObjects.clear()
+                            subchildObjects.clear()
 
                             # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                             for j in range(len(childObject.Group)):
@@ -832,15 +833,15 @@ class BomFunctions:
                                     )
                                     is True
                                 ):
-                                    childObjects.append(childObject.Group[j])
+                                    subchildObjects.append(childObject.Group[j])
 
-                            if len(childObjects) > 0:
-                                self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
+                            if len(subchildObjects) > 0:
+                                self.mainList[len(self.mainList) - 1]["Type"] = str(AssemblyType)
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.__GoThrough_ChildObjects(
-                                    ChilddocObjects == childObjects,
                                     ParentDocument=ParentDocument,
+                                    ChilddocObjects=subchildObjects,
                                     ChildItemNumber=0,
                                     ParentNumber=ItemNumberString,
                                     Parts=Parts,
@@ -855,24 +856,24 @@ class BomFunctions:
                             or childObject.TypeId == "Assembly::AssemblyObject"
                         ):
                             # Create a list with child objects as DocumentObjects
-                            childObjects = []
+                            subchildObjects = []
                             # Make sure that the list is empty. (probally overkill)
-                            childObjects.clear()
+                            subchildObjects.clear()
                             # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                             for j in range(len(childObject.getSubObjects())):
                                 if (
                                     childObject.getSubObject(subname=childObject.getSubObjects()[j], retType=1)
                                     is not None
                                 ):
-                                    childObjects.append(
+                                    subchildObjects.append(
                                         childObject.getSubObject(subname=childObject.getSubObjects()[j], retType=1),
                                     )
-                            if len(childObjects) > 0:
+                            if len(subchildObjects) > 0:
                                 self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.__GoThrough_ChildObjects(
-                                    ChilddocObjects == childObjects,
+                                    ChilddocObjects == subchildObjects,
                                     ParentDocument=ParentDocument,
                                     ChildItemNumber=0,
                                     ParentNumber=ItemNumberString,
@@ -952,35 +953,39 @@ class BomFunctions:
         # Use an try-except statement incase there is no "getPropertyByName" method.
         try:
             docObject = RowItem["DocumentObject"]
+            docType = RowItem["Type"]
 
-            isA2plus = False
-            try:
-                docObject.objectType == "a2pPart"
-                isA2plus = True
-            except Exception:
-                pass
-            if isA2plus is True:
-                return RowItem
+            isAssembly = False
+            AssemblyTypes = ["Assembly4", "Assembly3", "Internal", "AppLink", "AppPart"]
+            for i in range(len(AssemblyTypes)):
+                if docType == AssemblyTypes[i]:
+                    isAssembly = True
 
-            isAssembly3 = False
-            try:
-                docObject.getPropertyByName("Type")
-            except Exception:
-                isAssembly3 = True
+            if isAssembly is False:
+                return RowItem
+            else:
+                # isA2plus = False
+                # try:
+                #     docObject.objectType == "a2pPart"
+                #     isA2plus = True
+                # except Exception:
+                #     pass
+                # if isA2plus is True:
+                #     return RowItem
 
-            # If the property returns empty, it is an part. Return the linked object.
-            # This way, duplicate items (normally like Bearing001, Bearing002, etc.) will be replaced with
-            # the original part. This is used for summation of the same parts.
-            if docObject.getPropertyByName("Type") == "":
-                RowItem["DocumentObject"] = docObject.LinkedObject
-                RowItem["ObjectName"] = docObject.LinkedObject.Name
-                RowItem["ObjectLabel"] = docObject.LinkedObject.Label
-                return RowItem
-            # If the property returns "Assembly", it is an sub-assembly. Return the object.
-            if docObject.getPropertyByName("Type") == "Assembly" or isAssembly3 is True:
-                RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[0]
-                RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
-                return RowItem
+                # If the property returns empty, it is an part. Return the linked object.
+                # This way, duplicate items (normally like Bearing001, Bearing002, etc.) will be replaced with
+                # the original part. This is used for summation of the same parts.
+                if docObject.getPropertyByName("Type") == "":
+                    RowItem["DocumentObject"] = docObject.LinkedObject
+                    RowItem["ObjectName"] = docObject.LinkedObject.Name
+                    RowItem["ObjectLabel"] = docObject.LinkedObject.Label
+                    return RowItem
+                # If the property returns "Assembly", it is an sub-assembly. Return the object.
+                if docObject.getPropertyByName("Type") == "Assembly":
+                    RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[0]
+                    RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
+                    return RowItem
         except Exception:
             return RowItem
 
@@ -1106,7 +1111,7 @@ class BomFunctions:
             # If the next object is an body or feature, set the flag to False.
             if ItemObjectTypeNext == "Part::Feature" or ItemObjectTypeNext == "PartDesign::Body":
                 # Filter out all type of bodies
-                if AllowBodies is False:
+                if AllowBodies is False and CurrentAssemblyType != "AppPart":
                     ItemObject["Type"] = "Part"
                     # set the flag to false.
                     flag = False
@@ -1217,7 +1222,12 @@ class BomFunctions:
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
-    def CreateTotalBoM(self, Level: int = 0, IndentNumbering: bool = True, IncludeBodies: bool = False) -> list:
+    def CreateTotalBoM(
+        self,
+        Level: int = 0,
+        IndentNumbering: bool = True,
+        IncludeBodies: bool = False,
+    ) -> list:
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -1273,10 +1283,19 @@ class BomFunctions:
             if len(itemNumber.split(".")) > 1 and len(itemNumber.split(".")) <= Level:
                 # write the itemnumber of the subassy for the shadow list.
                 shadowItemNumber = itemNumber.rsplit(".", 1)[0]
-                # Define the shadow item.
-                shadowObject = rowList["DocumentObject"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
+                # Define the shadow item.
+                shadowObject = rowList["DocumentObject"]
+                # If assembly is AppLink, AppPart or Internal, use the object label instead of the object document
+                if (
+                    shadowObject.TypeId == "App::Link"
+                    or shadowObject.TypeId == "App::LinkGroup"
+                    or shadowObject.TypeId == "Assembly::AssemblyObject"
+                    or shadowObject.TypeId == "Part::Feature"
+                    or shadowObject.TypeId == "App::Part"
+                ):
+                    shadowObject = rowList["ObjectLabel"]
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
@@ -1324,11 +1343,20 @@ class BomFunctions:
             # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
             if len(itemNumber.split(".")) == 1:
                 # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
-                shadowItemNumber = "X"
-                # Define the shadow item.
-                shadowObject = rowList["DocumentObject"]
+                shadowItemNumber = "0"
                 # Define the shadow type:
                 shadowType = rowList["Type"]
+                # Define the shadow item.
+                shadowObject = rowList["DocumentObject"]
+                # If assembly is AppLink, AppPart or Internal, use the object label instead of the object document
+                if (
+                    shadowObject.TypeId == "App::Link"
+                    or shadowObject.TypeId == "App::LinkGroup"
+                    or shadowObject.TypeId == "Assembly::AssemblyObject"
+                    or shadowObject.TypeId == "Part::Feature"
+                    or shadowObject.TypeId == "App::Part"
+                ):
+                    shadowObject = rowList["ObjectLabel"]
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
@@ -1410,12 +1438,6 @@ class BomFunctions:
             self.mainList.clear()
             # create the mainList
             self.GetTreeObjects()
-
-            for i in range(len(self.mainList)):
-                Text = (
-                    f'{self.mainList[i]["ItemNumber"]}, {self.mainList[i]["ObjectLabel"]}, {self.mainList[i]["Type"]}'
-                )
-                print(Text)
 
             if len(self.mainList) > 0:
                 IncludeBodiesText = "Do you want to include bodies?"
