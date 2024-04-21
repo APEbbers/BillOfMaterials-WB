@@ -867,7 +867,7 @@ class BomFunctions:
                             title="Bill of Materials Workbench",
                             style=1,
                         )
-                    if Answer is "yes":
+                    if Answer == "yes":
                         IncludeBodies = True
                     self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies)
                 if command == "PartsOnly":
