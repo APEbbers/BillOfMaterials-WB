@@ -951,6 +951,15 @@ class BomFunctions:
         try:
             docObject = RowItem["DocumentObject"]
 
+            isA2plus = False
+            try:
+                docObject.objectType == "a2pPart"
+                isA2plus = True
+            except Exception:
+                pass
+            if isA2plus is True:
+                return RowItem
+
             isAssembly3 = False
             try:
                 docObject.getPropertyByName("Type")
