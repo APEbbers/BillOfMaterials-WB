@@ -27,7 +27,7 @@ from inspect import getsourcefile
 import BoM_WB_Locator
 
 
-__title__ = "Bill of Materials Workbench"
+__title__ = "Bill of Materials"
 __author__ = "A.P. Ebbers"
 __url__ = "https://github.com/APEbbers/BillOfMaterials-WB.git"
 
@@ -49,14 +49,14 @@ PATH_TB_UI = os.path.join(PATH_TB_RESOURCES, "UI")
 
 
 class BillOfMaterialsWB(Gui.Workbench):
-    MenuText = "Bill of Materials Workbench"
+    MenuText = "Bill of Materials"
     ToolTip = "A workbench for creating a Bill of Materials"
     Icon = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
 
     Gui.addIconPath(PATH_TB_ICONS)
     Gui.addPreferencePage(
         os.path.join(PATH_TB_UI, "PreferencesUI_BoM.ui"),
-        "bill of materials",
+        "Bill of Materials",
     )
 
     def GetClassName(self):
@@ -86,13 +86,9 @@ class BillOfMaterialsWB(Gui.Workbench):
         SettingsList = BoM_CreateUI.DefineMenus()["SettingsMenu"]
 
         # Append the menues
+        self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList)  # creates a new menu
         self.appendMenu(
-            QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList
-        )  # creates a new menu
-        self.appendMenu(
-            QT_TRANSLATE_NOOP(
-                "BoM Workbench", ["Bill of Materials", "Separate commands "]
-            ),
+            QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Separate commands "]),
             SeparateFunctionsList,
         )
         self.appendMenu(
