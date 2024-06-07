@@ -166,10 +166,10 @@ class BomFunctions:
         """
         for i in range(len(docObjects)):
             # Get the documentObject
-            object = docObjects[i]
+            Object = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
-            if self.AllowedObjectType(objectID=object.TypeId) is True:
+            if self.AllowedObjectType(objectID=Object.TypeId) is True:
                 # Increase the global startrow to make sure the data ends up in the next row
                 self.StartRow = self.StartRow + 1
 
@@ -184,72 +184,67 @@ class BomFunctions:
 
                 # If the object is an array. update the quantity and replace the array with is elements
                 try:
-                    ArrayType = object.ArrayType
-                except Exception as e:
+                    ArrayType = Object.ArrayType
+                except Exception:
                     IsArray = False
                     pass
 
                 if IsArray is True:
-                    Qty = int(object.Count)
-                    object = object.SourceObject
+                    Qty = int(Object.Count)
+                    Object = Object.SourceObject
                 else:
                     Qty = 1
 
-                # define the itemnumber string. for toplevel this is equel to Itemnumber.
-                # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
-                ItemNumberString = str(ItemNumber)
-                # If there is a parentnumber (like 1.1, add it as prefix.)
-                if ParentNumber != "":
-                    ItemNumberString = str(ParentNumber)
-
-                for k in range(Qty):
+                print(f"Item name is {Object.Label}, Qty is: {Qty}")
+                for q in range(Qty):
+                    ItemNumberString = str(ItemNumber + q)
+                    if ParentNumber != "":
+                        ItemNumberString = str(ParentNumber + q)
                     # Create a rowList
                     rowList = {
                         "ItemNumber": ItemNumberString,
-                        "DocumentObject": object,
-                        "ObjectLabel": object.Label,
-                        "ObjectName": object.Name,
+                        "DocumentObject": Object,
+                        "ObjectLabel": Object.Label,
+                        "ObjectName": Object.Name,
                         "Qty": 1,
                         "Type": "Part",
                     }
-
-                    print(f'Qty = {rowList["Qty"]}')
 
                     # Add the rowList to the mainList
                     self.mainList.append(rowList)
 
                     # If the object is an container, go through the sub items, (a.k.a child objects)
                     if (
-                        object.TypeId == "App::LinkGroup"
-                        or object.TypeId == "App::Link"
-                        or object.TypeId == "App::Part"
+                        Object.TypeId == "App::LinkGroup"
+                        or Object.TypeId == "App::Link"
+                        or Object.TypeId == "App::Part"
                     ):
                         # Create a list with child objects as DocumentObjects
                         childObjects = []
                         # Make sure that the list is empty. (probally overkill)
                         childObjects.clear()
                         # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                        for j in range(len(object.getSubObjects())):
-                            if object.getSubObject(subname=object.getSubObjects()[j], retType=1) is not None:
+                        for j in range(len(Object.getSubObjects())):
+                            if Object.getSubObject(subname=Object.getSubObjects()[j], retType=1) is not None:
                                 # Go through the parts folder and compare the parts with the subobjects.
                                 for k in range(len(Parts)):
                                     # If filtering with the parts in the part folder results in an document object,
                                     # this is a part. Add it the the child object list.
                                     if (
                                         self.FilterLinkedParts(
-                                            ObjectDocument=object.getSubObject(
-                                                subname=object.getSubObjects()[j], retType=1
+                                            ObjectDocument=Object.getSubObject(
+                                                subname=Object.getSubObjects()[j], retType=1
                                             ),
                                             objectComparison=Parts[k],
                                         )
                                         is not None
                                     ):
                                         if self.AllowedObjectType(
-                                            object.getSubObject(subname=object.getSubObjects()[j], retType=1).TypeId
+                                            Object.getSubObject(subname=Object.getSubObjects()[j], retType=1).TypeId
                                         ):
                                             childObjects.append(
-                                                object.getSubObject(
-                                                    subname=object.getSubObjects()[j],
+                                                Object.getSubObject(
+                                                    subname=Object.getSubObjects()[j],
                                                     retType=1,
                                                 )
                                             )
@@ -297,9 +292,6 @@ class BomFunctions:
                 # Increase the itemnumber for the child
                 ChildItemNumber = int(ChildItemNumber) + 1
 
-                # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
-                ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
-
                 # Set the quantity to 1.
                 Qty = 1
 
@@ -309,9 +301,8 @@ class BomFunctions:
                 # If the object is an array. update the quantity and replace the array with is elements
                 try:
                     ArrayType = childObject.ArrayType
-                except Exception as e:
+                except Exception:
                     IsArray = False
-                    print(f"{e}, {childObject.Label}")
                     pass
 
                 if IsArray is True:
@@ -320,7 +311,15 @@ class BomFunctions:
                 else:
                     Qty = 1
 
-                for j in range(Qty):
+                for q in range(Qty):
+                    if len(ParentNumber.split(".")) == 1:
+                        ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
+                    if len(ParentNumber.split(".")) > 1:
+                        print(ParentNumber)
+                        ParentNumberA = ParentNumber.rsplit(".", 1)[0]
+                        ParentNumberB = str(int(ParentNumber.rsplit(".", 1)[1]) + q)
+                        ItemNumberString = ParentNumberA + "." + ParentNumberB + "." + str(ChildItemNumber)
+
                     # Create a rowList
                     rowList = {
                         "ItemNumber": ItemNumberString,
@@ -330,8 +329,6 @@ class BomFunctions:
                         "Qty": 1,
                         "Type": "Part",
                     }
-
-                    print(f'Qty = {rowList["Qty"]}')
 
                     # add the rowList to the mainList
                     self.mainList.append(rowList)
@@ -393,63 +390,37 @@ class BomFunctions:
     # Function to filter out bodies
     @classmethod
     def FilterBodies(self, BOMList: list, AllowAllBodies: bool = True) -> list:
-        # Correct the item type before filtering if filtering will be done.
-        if AllowAllBodies is False:
-            for i in range(len(BOMList) - 1):
-                # Define the property objects
-                ItemObject = BOMList[i]
-                ItemObjectType = ItemObject["DocumentObject"].TypeId
-
-                # Define the property objects of the next row
-                i = i + 1
-                ItemObjectNext = BOMList[i]
-                ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
-
-                if (
-                    ItemObjectTypeNext == "Part::Feature"
-                    or ItemObjectTypeNext == "PartDesign::Body"
-                    or ItemObjectTypeNext == "Part::FeaturePython"
-                ):
-                    BOMList[i]["Type"] = "Part"
-
         # Create an extra temporary list
         TempTemporaryList = []
+
+        TempTemporaryList.append(BOMList[0])
         # Go through the curent temporary list
-        for i in range(len(BOMList)):
+        for i in range(len(BOMList) - 1):
             # Define the property objects
             ItemObject = BOMList[i]
-            ItemObjectType = ItemObject["DocumentObject"].TypeId
+
+            # Define the property objects of the next row
+            ItemObjectNext = BOMList[i + 1]
+            ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
 
             # Create a flag and set it true as default
             flag = True
 
-            # Test the object. If the parent is an assembly, the object is allowed.
-            testResult = False
-            if ItemObject["Type"] == "Assembly":
-                testResult = True
-            if len(ItemObject["ItemNumber"].split(".")) == 1:
-                testResult = True
-
-            # If the object is an body or feature, set the flag to False.
-            if (
-                ItemObjectType == "Part::Feature"
-                or ItemObjectType == "PartDesign::Body"
-                or ItemObjectType == "Part::FeaturePython"
-            ):
+            # If the next object is an body or feature, set the flag to False.
+            if ItemObjectTypeNext == "Part::Feature" or ItemObjectTypeNext == "PartDesign::Body":
                 # Filter out all type of bodies
                 if AllowAllBodies is False:
-                    if testResult is False:
-                        # set the flag to false.
-                        flag = False
-
+                    ItemObject["Type"] = "Part"
+                    # set the flag to false.
+                    flag = False
                 # Allow all bodies that are part of an assembly.
                 if AllowAllBodies is True:
-                    # set the flag to false.
+                    ItemObject["Assembly"] = "Part"
                     flag = True
 
             # if the flag is true, append the itemobject to the second temporary list.
             if flag is True:
-                TempTemporaryList.append(ItemObject)
+                TempTemporaryList.append(ItemObjectNext)
 
         # Replace the temporary list with the second temporary list.
         BOMList = TempTemporaryList
@@ -551,7 +522,7 @@ class BomFunctions:
             # Create a new dict as new Row item.
             rowListNew = dict
 
-            # getContents the row item
+            # get Contents from the row item
             rowList = CopyMainList[i]
             # Get the itemnumber
             itemNumber = str(rowList["ItemNumber"])
@@ -563,6 +534,8 @@ class BomFunctions:
             if len(itemNumber.split(".")) <= Level and len(itemNumber.split(".")) > 1:
                 # write the itemnumber of the subassy for the shadow list.
                 shadowItemNumber = itemNumber.rsplit(".", 1)[0]
+                if len(shadowItemNumber.split(".")) == 1:
+                    shadowItemNumber = itemNumber
                 # Define the shadow item.
                 shadowObject = rowList["DocumentObject"]
                 # Define the shadow type:
@@ -572,27 +545,6 @@ class BomFunctions:
                     "Item1": shadowItemNumber,
                     "Item2": shadowObject,
                     "Item3": shadowType,
-                }
-
-                # Find the quantity for the item
-                QtyValue = str(
-                    General_BOM.ObjectCounter_ItemNumber(
-                        ListItem=rowList,
-                        ItemNumber=itemNumber,
-                        BomList=CopyMainList,
-                        ObjectBasedPart=False,
-                        ObjectBasedAssy=False,
-                    )
-                )
-
-                # Create a new row item for the temporary row.
-                rowListNew = {
-                    "ItemNumber": itemNumber,
-                    "DocumentObject": rowList["DocumentObject"],
-                    "ObjectLabel": rowList["ObjectLabel"],
-                    "ObjectName": rowList["ObjectName"],
-                    "Qty": QtyValue,
-                    "Type": rowList["Type"],
                 }
 
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
@@ -607,6 +559,27 @@ class BomFunctions:
                     )
                     is False
                 ):
+                    # Find the quantity for the item
+                    QtyValue = str(
+                        General_BOM.ObjectCounter_ItemNumber(
+                            ListItem=rowList,
+                            ItemNumber=itemNumber,
+                            BomList=CopyMainList,
+                            ObjectBasedPart=False,
+                            ObjectBasedAssy=True,
+                        )
+                    )
+
+                    # Create a new row item for the temporary row.
+                    rowListNew = {
+                        "ItemNumber": itemNumber,
+                        "DocumentObject": rowList["DocumentObject"],
+                        "ObjectLabel": rowList["ObjectLabel"],
+                        "ObjectName": rowList["ObjectName"],
+                        "Qty": QtyValue,
+                        "Type": rowList["Type"],
+                    }
+
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
@@ -625,28 +598,6 @@ class BomFunctions:
                     "Item2": shadowObject,
                     "Item3": shadowType,
                 }
-                # Find the quantity for the item
-
-                # Find the quantity for the item
-                QtyValue = str(
-                    General_BOM.ObjectCounter_ItemNumber(
-                        ListItem=rowList,
-                        ItemNumber=itemNumber,
-                        BomList=CopyMainList,
-                        ObjectBasedPart=False,
-                        ObjectBasedAssy=False,
-                    )
-                )
-
-                # Create a new row item for the temporary row.
-                rowListNew = {
-                    "ItemNumber": itemNumber,
-                    "DocumentObject": rowList["DocumentObject"],
-                    "ObjectLabel": rowList["ObjectLabel"],
-                    "ObjectName": rowList["ObjectName"],
-                    "Qty": QtyValue,
-                    "Type": rowList["Type"],
-                }
 
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
@@ -660,6 +611,27 @@ class BomFunctions:
                     )
                     is False
                 ):
+                    # Find the quantity for the item
+                    QtyValue = str(
+                        General_BOM.ObjectCounter_ItemNumber(
+                            ListItem=rowList,
+                            ItemNumber=itemNumber,
+                            BomList=CopyMainList,
+                            ObjectBasedPart=False,
+                            ObjectBasedAssy=True,
+                        )
+                    )
+
+                    # Create a new row item for the temporary row.
+                    rowListNew = {
+                        "ItemNumber": itemNumber,
+                        "DocumentObject": rowList["DocumentObject"],
+                        "ObjectLabel": rowList["ObjectLabel"],
+                        "ObjectName": rowList["ObjectName"],
+                        "Qty": QtyValue,
+                        "Type": rowList["Type"],
+                    }
+
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
