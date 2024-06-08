@@ -605,11 +605,11 @@ class BomFunctions:
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
 
-        # # Replace duplicate items with their original
-        # for i in range(len(CopyMainList)):
-        #     ReturnedRowIem = self.ReturnLinkedObject(CopyMainList[i])
-        #     if ReturnedRowIem is not None:
-        #         CopyMainList[i] = ReturnedRowIem
+        # Replace duplicate items with their original
+        CopyMainList_2 = []
+        for i in range(len(CopyMainList)):
+            CopyMainList_2.append(self.ReturnLinkedObject(CopyMainList[i]))
+        CopyMainList = CopyMainList_2
 
         # Create a temporary list
         TemporaryList = []
@@ -710,11 +710,11 @@ class BomFunctions:
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
 
-        # # Replace duplicate items with their original
-        # for i in range(len(CopyMainList)):
-        #     ReturnedRowIem = self.ReturnLinkedObject(CopyMainList[i])
-        #     if ReturnedRowIem is not None:
-        #         CopyMainList[i] = ReturnedRowIem
+        # Replace duplicate items with their original
+        CopyMainList_2 = []
+        for i in range(len(CopyMainList)):
+            CopyMainList_2.append(self.ReturnLinkedObject(CopyMainList[i]))
+        CopyMainList = CopyMainList_2
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
