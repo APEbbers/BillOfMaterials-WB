@@ -319,14 +319,6 @@ class BomFunctions:
                     Qty = 1
 
                 for q in range(Qty):
-                    # if len(ParentNumber.split(".")) == 1:
-                    #     ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
-                    # if len(ParentNumber.split(".")) > 1:
-                    #     ParentNumberA = ParentNumber.rsplit(".", 1)[0]
-                    #     ParentNumberB = str(int(ParentNumber.rsplit(".", 1)[1]) + q)
-                    #     ItemNumberString = ParentNumberA + "." + ParentNumberB + "." + str(ChildItemNumber)
-                    # ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
-
                     # Create a rowList
                     rowList = {
                         "ItemNumber": ItemNumberString,
