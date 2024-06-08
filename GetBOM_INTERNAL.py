@@ -52,7 +52,11 @@ class BomFunctions:
                 return
 
         # Get the list with rootobjects
-        docObjects = doc.RootObjects
+        # docObjects = doc.RootObjects
+        docObjects = []
+        for i in range(len(doc.RootObjects)):
+            if doc.RootObjects[i].Visibility is True:
+                docObjects.append(doc.RootObjects[i])
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for docObject in docObjects:
@@ -65,8 +69,6 @@ class BomFunctions:
             if self.AllowedObjectType(docObject.TypeId) is True:
                 docObjects = self.ReturnEquealPart(docObject=docObject, ObjectList=docObjects)
 
-        # Check if a App::LinkGroup is copied. this will appear as an App::Link.
-        # Replace the App::LinkGroup with a second App::Link. (other way around doesn't work!)
         docObjectsTemp = []  # a temporary list for the extra assembly
         for docObject in docObjects:
             # Return the linked object
@@ -115,7 +117,7 @@ class BomFunctions:
     def ReturnEquealPart(self, docObject, ObjectList: list):
         # define the initial replace object as the original object.
         # If something goes wrong, the result will be the same list of Objects as at the begining.
-        replaceItem = docObject.getLinkedObject()
+        replaceItem = docObject
         # Find the replace item. This is the item without v001 at the end.
         ObjectName = docObject.Label
         for i in range(len(ObjectList)):
@@ -204,6 +206,7 @@ class BomFunctions:
                     "Qty": 1,
                     "Type": "Part",
                 }
+                print(object.Label)
 
                 # add the rowList to the mainList
                 self.mainList.append(rowList)
@@ -308,55 +311,45 @@ class BomFunctions:
     # endregion
 
     # region -- Functions for creating the different types of BoM's
+    # Function to check if a part is an sub-assembly.
+    @classmethod
+    def ReturnLinkedObject(self, RowItem: dict):
+        # Use an try-except statement incase there is no "getPropertyByName" method.
+        # try:
+        docObject = RowItem["DocumentObject"]
+        # If the property returns empty, it is an part. Return the linked object.
+        # This way, duplicate items (normally like Bearing001, Bearing002, etc.) will be replaced with
+        # the original part. This is used for summation of the same parts.
+
+        rowListNew = {
+            "ItemNumber": RowItem["ItemNumber"],
+            "DocumentObject": docObject.getLinkedObject(),
+            "ObjectLabel": docObject.getLinkedObject().Label,
+            "ObjectName": docObject.getLinkedObject().Name,
+            "Qty": RowItem["Qty"],
+            "Type": RowItem["Type"],
+        }
+
+        return rowListNew
+        # except Exception:
+        #     return None
+
     # Function to filter out bodies
     @classmethod
     def FilterBodies(self, BOMList: list, AllowAllBodies: bool = True) -> list:
-        # Correct the item type before filtering if filtering will be done.
-        if AllowAllBodies is False:
-            for i in range(len(BOMList) - 1):
-                # Define the property objects
-                ItemObject = BOMList[i]
-                ItemObjectType = ItemObject["DocumentObject"].TypeId
-
-                # Define the property objects of the next row
-                i = i + 1
-                ItemObjectNext = BOMList[i]
-                ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
-
-                if (
-                    ItemObjectTypeNext == "Part::Feature"
-                    or ItemObjectTypeNext == "PartDesign::Body"
-                    or ItemObjectTypeNext == "Part::FeaturePython"
-                ):
-                    ItemObject["Type"] = "Part"
-
         # Create an extra temporary list
         TempTemporaryList = []
+
         # Go through the curent temporary list
-        for i in range(len(BOMList) - 1):
-            # Define the property objects
+        for i in range(len(BOMList)):
+            # Define the property objects of the next row
             ItemObject = BOMList[i]
             ItemObjectType = ItemObject["DocumentObject"].TypeId
-
-            # Define the property objects of the next row
-            i = i + 1
-            ItemObjectNext = BOMList[i]
-            ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
 
             # Create a flag and set it true as default
             flag = True
 
-            # Test the object. If the parent is an assembly, the object is allowed.
-            testResult = False
-            try:
-                if ItemObject["DocumentObject"].getParent().getPropertyByName("Type", 2)[1] == "Assembly":
-                    testResult = True
-                if len(ItemObject["ItemNumber"].split(".")) == 1:
-                    testResult = True
-            except AttributeError:
-                testResult = False
-
-            # If the object is an body or feature, set the flag to False.
+            # If the next object is an body or feature, set the flag to False.
             if (
                 ItemObjectType == "Part::Feature"
                 or ItemObjectType == "PartDesign::Body"
@@ -364,43 +357,17 @@ class BomFunctions:
             ):
                 # Filter out all type of bodies
                 if AllowAllBodies is False:
+                    # ItemObject["Type"] = "Part"
                     # set the flag to false.
                     flag = False
                 # Allow all bodies that are part of an assembly.
                 if AllowAllBodies is True:
-                    if testResult is False:
-                        # set the flag to false.
-                        flag = False
+                    # ItemObject["Type"] = "Part"
+                    flag = True
 
             # if the flag is true, append the itemobject to the second temporary list.
             if flag is True:
                 TempTemporaryList.append(ItemObject)
-
-            # The for statement stops at the second list item, so add the the last item when the statement reaches its end.
-            if i == len(BOMList) - 1:
-                # Test the next object. If the parent is an assembly, the object is allowed.
-                testResult = False
-                try:
-                    if ItemObjectNext["DocumentObject"].getParent().getPropertyByName("Type", 2)[1] == "Assembly":
-                        testResult = True
-                    if len(ItemObjectNext["ItemNumber"].split(".")) == 1:
-                        testResult = True
-                except AttributeError:
-                    testResult = False
-
-                # If the object is an body or feature, set the flag to False.
-                if (
-                    ItemObjectTypeNext != "Part::Feature"
-                    or ItemObjectTypeNext != "PartDesign::Body"
-                    or ItemObjectTypeNext != "Part::FeaturePython"
-                ):
-                    # Filter out all type of bodies
-                    if AllowAllBodies is True:
-                        TempTemporaryList.append(ItemObjectNext)
-                    # Allow all bodies that are part of an assembly.
-                    if AllowAllBodies is False:
-                        if testResult is True:
-                            TempTemporaryList.append(ItemObjectNext)
 
         # Replace the temporary list with the second temporary list.
         BOMList = TempTemporaryList
@@ -448,6 +415,12 @@ class BomFunctions:
 
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
+
+        # Replace duplicate items with their original
+        CopyMainList_2 = []
+        for i in range(len(CopyMainList)):
+            CopyMainList_2.append(self.ReturnLinkedObject(CopyMainList[i]))
+        CopyMainList = CopyMainList_2
 
         # Create a temporary list
         TemporaryList = []
@@ -594,8 +567,6 @@ class BomFunctions:
                     # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
                     ShadowList.append(shadowRow)
 
-        # If App:Links only contain the same bodies and IncludeBodies = False,
-        # replace the App::Links with the bodies they contain. Including their quantity.
         if Level > 1:
             TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
 
