@@ -918,7 +918,9 @@ class BomFunctions:
                         )
                     if Answer == "yes":
                         IncludeBodies = True
-                    General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies))
+                    General_BOM.createBoMSpreadsheet(
+                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies)
+                    )
 
                 if command == "PartsOnly":
                     if EnableQuestion is True:
