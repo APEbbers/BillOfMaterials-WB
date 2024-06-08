@@ -27,7 +27,7 @@ from inspect import getsourcefile
 import BoM_WB_Locator
 
 
-__title__ = "Bill of Materials Workbench"
+__title__ = "Bill of Materials"
 __author__ = "A.P. Ebbers"
 __url__ = "https://github.com/APEbbers/BillOfMaterials-WB.git"
 
@@ -49,14 +49,14 @@ PATH_TB_UI = os.path.join(PATH_TB_RESOURCES, "UI")
 
 
 class BillOfMaterialsWB(Gui.Workbench):
-    MenuText = "Bill of Materials Workbench"
+    MenuText = "Bill of Materials"
     ToolTip = "A workbench for creating a Bill of Materials"
     Icon = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
 
     Gui.addIconPath(PATH_TB_ICONS)
     Gui.addPreferencePage(
         os.path.join(PATH_TB_UI, "PreferencesUI_BoM.ui"),
-        "bill of materials",
+        "Bill of Materials",
     )
 
     def GetClassName(self):
@@ -70,6 +70,7 @@ class BillOfMaterialsWB(Gui.Workbench):
         """
         # -----------------------------------------------------------------------------------------------------
         import BoM_Commands  # import here all the needed files that create your FreeCAD commands
+        import BoM_Commands_Mixed
         import Settings_BoM
         import BoM_CreateUI
 
@@ -107,6 +108,13 @@ class BillOfMaterialsWB(Gui.Workbench):
 
         # creates a new toolbar with your commands
         self.appendToolbar("BOM Commands", MainToolbar)
+        self.list = [
+            "CreateBOM_Raw_MIXED",
+            "CreateBOM_Total_MIXED",
+            "CreateBOM_Summary_MIXED",
+            "CreateBOM_PartsOnly_MIXED",
+        ]
+        self.appendToolbar("BoM_Commands_Mixed", self.list)
         # endregion ----------------------------------------------------------------------------------------------------
 
         # region - Create the toolbar for other workbenches ------------------------------------------------------------

@@ -57,7 +57,7 @@ class General_BOM:
 
         # Get or create the spreadsheet.
         IsNewSheet = False
-        sheet = App.ActiveDocument.getObject("BoM")
+        sheet = doc.getObject("BoM")
         if sheet is not None:
             for i in range(
                 1, 16384
@@ -65,7 +65,7 @@ class General_BOM:
                 doc.BoM.splitCell("A" + str(i))
             sheet.clearAll()
         if sheet is None:
-            sheet = App.ActiveDocument.addObject("Spreadsheet::Sheet", "BoM")
+            sheet = doc.addObject("Spreadsheet::Sheet", "BoM")
             IsNewSheet = True
 
         # Define CopyMainList and Header
@@ -263,10 +263,25 @@ class General_BOM:
             for i in range(len(CopyMainList)):
                 rowList = CopyMainList[i]
 
-                if rowList["Type"] == "Assembly":
+                isAssembly = False
+                AssemblyTypes = [
+                    "A2plus",
+                    "Assembly4",
+                    "Assembly3",
+                    "Internal",
+                    "AppLink",
+                    "AppPart",
+                    "Assembly",
+                ]
+
+                for j in range(len(AssemblyTypes)):
+                    if rowList["Type"] == AssemblyTypes[j]:
+                        isAssembly = True
+
+                if isAssembly is True:
                     AssemblyCounter = AssemblyCounter + 1
                     TotalCounter = TotalCounter + 1
-                if rowList["Type"] == "Part":
+                if isAssembly is False:
                     PartCounter = PartCounter + 1
                     TotalCounter = TotalCounter + 1
 
@@ -1173,3 +1188,32 @@ class General_BOM:
             return result
         except Exception:
             return ""
+
+    @classmethod
+    def correctQtyAssemblies(self, BOMList) -> list:
+        # Define AssemblyQty and AssemblyNumber
+        AssemblyQty = 1
+        AssemblyNumber = ""
+
+        # Go trough the Bom list
+        for i in range(1, len(BOMList)):
+            # Define the property objects
+            ItemObject = BOMList[i]
+            ItemNumber = ItemObject["ItemNumber"]
+
+            # Define the property objects of the next row
+            ItemObjectPrevious = BOMList[i - 1]
+            ItemNumberPrevious = ItemObjectPrevious["ItemNumber"]
+            ItemTypePrevious = ItemObjectPrevious["Type"]
+
+            # If the previous item is an assembly, store its qty and itemnumber
+            if ItemTypePrevious == "Assembly":
+                AssemblyQty = ItemObjectPrevious["Qty"]
+                AssemblyNumber = ItemNumberPrevious
+
+            # if the item is a child of the stored assembly,
+            # divede the quantity of this item with the quantity of its parent assembly.
+            if ItemNumber.rsplit(".", 1)[0] == AssemblyNumber:
+                BOMList[i]["Qty"] = int(BOMList[i]["Qty"]) / int(AssemblyQty)
+
+        return BOMList
