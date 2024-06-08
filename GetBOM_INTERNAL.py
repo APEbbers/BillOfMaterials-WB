@@ -740,7 +740,7 @@ class BomFunctions:
             rowList = CopyMainList[i]
 
             # if the objectcheck succeeded, continue.
-            if self.CheckObject(docObject=rowList["DocumentObject"]) is True:
+            if self.CheckObject(docObject=rowList["DocumentObject"], AllowBodies=IncludeBodies) is True:
                 ObjectNameField = "ObjectName"
                 if ObjectNameBased is False:
                     ObjectNameField = "ObjectLabel"
