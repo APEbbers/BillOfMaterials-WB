@@ -599,6 +599,9 @@ class BomFunctions:
         if Level > 1:
             TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
 
+        # correct the quantities for the parts in subassemblies
+        TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
+
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
             TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
@@ -869,9 +872,7 @@ class BomFunctions:
                         )
                     if Answer == "yes":
                         IncludeBodies = True
-                    General_BOM.createBoMSpreadsheet(
-                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies)
-                    )
+                    General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies))
 
                 if command == "PartsOnly":
                     if EnableQuestion is True:

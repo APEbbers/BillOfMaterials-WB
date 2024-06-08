@@ -507,13 +507,12 @@ class General_BOM:
                         if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
                             counter = counter + 1
                 if ListItem["Type"] == "Assembly":
-                    if BomList[i]["ItemNumber"] == ItemNumber:
-                        if ObjectNameValueAssy == "Object":
-                            if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
-                                counter = counter + 1
-                        if ObjectNameValueAssy == "ObjectLabel":
-                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
-                                counter = counter + 1
+                    if ObjectNameValueAssy == "Object":
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                            counter = counter + 1
+                    if ObjectNameValueAssy == "ObjectLabel":
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                            counter = counter + 1
 
         # Return the counter
         return counter
@@ -1123,3 +1122,32 @@ class General_BOM:
             return result
         except Exception:
             return ""
+
+    @classmethod
+    def correctQtyAssemblies(self, BOMList) -> list:
+        # Define AssemblyQty and AssemblyNumber
+        AssemblyQty = 1
+        AssemblyNumber = ""
+
+        # Go trough the Bom list
+        for i in range(1, len(BOMList)):
+            # Define the property objects
+            ItemObject = BOMList[i]
+            ItemNumber = ItemObject["ItemNumber"]
+
+            # Define the property objects of the next row
+            ItemObjectPrevious = BOMList[i - 1]
+            ItemNumberPrevious = ItemObjectPrevious["ItemNumber"]
+            ItemTypePrevious = ItemObjectPrevious["Type"]
+
+            # If the previous item is an assembly, store its qty and itemnumber
+            if ItemTypePrevious == "Assembly":
+                AssemblyQty = ItemObjectPrevious["Qty"]
+                AssemblyNumber = ItemNumberPrevious
+
+            # if the item is a child of the stored assembly,
+            # divede the quantity of this item with the quantity of its parent assembly.
+            if ItemNumber.rsplit(".", 1)[0] == AssemblyNumber:
+                BOMList[i]["Qty"] = int(BOMList[i]["Qty"]) / int(AssemblyQty)
+
+        return BOMList

@@ -176,6 +176,13 @@ class BomFunctions:
                 # Increase the itemnumber
                 ItemNumber = int(ItemNumber) + 1
 
+                # define the itemnumber string. for toplevel this is equel to Itemnumber.
+                # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
+                ItemNumberString = str(ItemNumber)
+                # If there is a parentnumber (like 1.1, add it as prefix.)
+                if ParentNumber != "":
+                    ItemNumberString = str(ParentNumber)
+
                 # Set the quantity to 1.
                 Qty = 1
 
@@ -195,11 +202,10 @@ class BomFunctions:
                 else:
                     Qty = 1
 
-                print(f"Item name is {Object.Label}, Qty is: {Qty}")
                 for q in range(Qty):
-                    ItemNumberString = str(ItemNumber + q)
-                    if ParentNumber != "":
-                        ItemNumberString = str(ParentNumber + q)
+                    # ItemNumberString = str(ItemNumber + q)
+                    # if ParentNumber != "":
+                    #     ItemNumberString = str(ParentNumber + q)
                     # Create a rowList
                     rowList = {
                         "ItemNumber": ItemNumberString,
@@ -291,7 +297,8 @@ class BomFunctions:
             if self.AllowedObjectType(objectID=childObject.TypeId) is True:
                 # Increase the itemnumber for the child
                 ChildItemNumber = int(ChildItemNumber) + 1
-
+                # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
+                ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
                 # Set the quantity to 1.
                 Qty = 1
 
@@ -312,13 +319,13 @@ class BomFunctions:
                     Qty = 1
 
                 for q in range(Qty):
-                    if len(ParentNumber.split(".")) == 1:
-                        ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
-                    if len(ParentNumber.split(".")) > 1:
-                        print(ParentNumber)
-                        ParentNumberA = ParentNumber.rsplit(".", 1)[0]
-                        ParentNumberB = str(int(ParentNumber.rsplit(".", 1)[1]) + q)
-                        ItemNumberString = ParentNumberA + "." + ParentNumberB + "." + str(ChildItemNumber)
+                    # if len(ParentNumber.split(".")) == 1:
+                    #     ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
+                    # if len(ParentNumber.split(".")) > 1:
+                    #     ParentNumberA = ParentNumber.rsplit(".", 1)[0]
+                    #     ParentNumberB = str(int(ParentNumber.rsplit(".", 1)[1]) + q)
+                    #     ItemNumberString = ParentNumberA + "." + ParentNumberB + "." + str(ChildItemNumber)
+                    # ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
 
                     # Create a rowList
                     rowList = {
@@ -387,47 +394,6 @@ class BomFunctions:
     # endregion
 
     # region -- Functions for creating the different types of BoM's
-    # Function to filter out bodies
-    @classmethod
-    def FilterBodies(self, BOMList: list, AllowAllBodies: bool = True) -> list:
-        # Create an extra temporary list
-        TempTemporaryList = []
-
-        TempTemporaryList.append(BOMList[0])
-        # Go through the curent temporary list
-        for i in range(len(BOMList) - 1):
-            # Define the property objects
-            ItemObject = BOMList[i]
-
-            # Define the property objects of the next row
-            ItemObjectNext = BOMList[i + 1]
-            ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
-
-            # Create a flag and set it true as default
-            flag = True
-
-            # If the next object is an body or feature, set the flag to False.
-            if ItemObjectTypeNext == "Part::Feature" or ItemObjectTypeNext == "PartDesign::Body":
-                # Filter out all type of bodies
-                if AllowAllBodies is False:
-                    ItemObject["Type"] = "Part"
-                    # set the flag to false.
-                    flag = False
-                # Allow all bodies that are part of an assembly.
-                if AllowAllBodies is True:
-                    ItemObject["Assembly"] = "Part"
-                    flag = True
-
-            # if the flag is true, append the itemobject to the second temporary list.
-            if flag is True:
-                TempTemporaryList.append(ItemObjectNext)
-
-        # Replace the temporary list with the second temporary list.
-        BOMList = TempTemporaryList
-
-        # return the filtered list.
-        return BOMList
-
     # Function to check if a part is an sub-assembly.
     @classmethod
     def ReturnLinkedObject(self, RowItem: dict) -> App.DocumentObject:
@@ -474,6 +440,47 @@ class BomFunctions:
 
         return objectCheck
 
+    # Function to filter out bodies
+    @classmethod
+    def FilterBodies(self, BOMList: list, AllowAllBodies: bool = True) -> list:
+        # Create an extra temporary list
+        TempTemporaryList = []
+
+        TempTemporaryList.append(BOMList[0])
+        # Go through the curent temporary list
+        for i in range(len(BOMList) - 1):
+            # Define the property objects
+            ItemObject = BOMList[i]
+
+            # Define the property objects of the next row
+            ItemObjectNext = BOMList[i + 1]
+            ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
+
+            # Create a flag and set it true as default
+            flag = True
+
+            # If the next object is an body or feature, set the flag to False.
+            if ItemObjectTypeNext == "Part::Feature" or ItemObjectTypeNext == "PartDesign::Body":
+                # Filter out all type of bodies
+                if AllowAllBodies is False:
+                    ItemObject["Type"] = "Part"
+                    # set the flag to false.
+                    flag = False
+                # Allow all bodies that are part of an assembly.
+                if AllowAllBodies is True:
+                    ItemObject["Assembly"] = "Part"
+                    flag = True
+
+            # if the flag is true, append the itemobject to the second temporary list.
+            if flag is True:
+                TempTemporaryList.append(ItemObjectNext)
+
+        # Replace the temporary list with the second temporary list.
+        BOMList = TempTemporaryList
+
+        # return the filtered list.
+        return BOMList
+
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
@@ -519,23 +526,22 @@ class BomFunctions:
 
         # Go through the CopyMainList
         for i in range(len(CopyMainList)):
+            # create a place holder for the quantity
+            QtyValue = 1
+
             # Create a new dict as new Row item.
             rowListNew = dict
 
-            # get Contents from the row item
+            # getContents the row item
             rowList = CopyMainList[i]
             # Get the itemnumber
             itemNumber = str(rowList["ItemNumber"])
 
-            # create a place holder for the quantity
-            QtyValue = rowList["Qty"]
-
-            # if the itemnumber is longer than one level (1.1, 1.1.1, etc.) and the level is equal or shorter then the level wanted, continue
+            # if the itemnumber is longer than one level (1.1, 1.1.1, etc.)
+            # and the level is equal or shorter then the level wanted, continue
             if len(itemNumber.split(".")) <= Level and len(itemNumber.split(".")) > 1:
                 # write the itemnumber of the subassy for the shadow list.
                 shadowItemNumber = itemNumber.rsplit(".", 1)[0]
-                if len(shadowItemNumber.split(".")) == 1:
-                    shadowItemNumber = itemNumber
                 # Define the shadow item.
                 shadowObject = rowList["DocumentObject"]
                 # Define the shadow type:
@@ -547,9 +553,29 @@ class BomFunctions:
                     "Item3": shadowType,
                 }
 
+                # Find the quantity for the item
+                QtyValue = str(
+                    General_BOM.ObjectCounter_ItemNumber(
+                        ListItem=rowList,
+                        ItemNumber=itemNumber,
+                        BomList=CopyMainList,
+                        ObjectBasedPart=False,
+                        ObjectBasedAssy=True,
+                    )
+                )
+
+                # Create a new row item for the temporary row.
+                rowListNew = {
+                    "ItemNumber": itemNumber,
+                    "DocumentObject": rowList["DocumentObject"],
+                    "ObjectLabel": rowList["ObjectLabel"],
+                    "ObjectName": rowList["ObjectName"],
+                    "Qty": QtyValue,
+                    "Type": rowList["Type"],
+                }
+
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
-                # print(f"{shadowRow['Item1'], shadowRow['Item2']}")
                 if (
                     General_BOM.ListContainsCheck(
                         List=ShadowList,
@@ -559,32 +585,13 @@ class BomFunctions:
                     )
                     is False
                 ):
-                    # Find the quantity for the item
-                    QtyValue = str(
-                        General_BOM.ObjectCounter_ItemNumber(
-                            ListItem=rowList,
-                            ItemNumber=itemNumber,
-                            BomList=CopyMainList,
-                            ObjectBasedPart=False,
-                            ObjectBasedAssy=True,
-                        )
-                    )
-
-                    # Create a new row item for the temporary row.
-                    rowListNew = {
-                        "ItemNumber": itemNumber,
-                        "DocumentObject": rowList["DocumentObject"],
-                        "ObjectLabel": rowList["ObjectLabel"],
-                        "ObjectName": rowList["ObjectName"],
-                        "Qty": QtyValue,
-                        "Type": rowList["Type"],
-                    }
-
+                    # add the new rowList item to the temporary list
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
 
-            # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
+            # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or
+            # shorter then the level wanted, continue
             if len(itemNumber.split(".")) == 1:
                 # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
                 shadowItemNumber = "X"
@@ -599,6 +606,27 @@ class BomFunctions:
                     "Item3": shadowType,
                 }
 
+                # Find the quantity for the item
+                QtyValue = str(
+                    General_BOM.ObjectCounter_ItemNumber(
+                        ListItem=rowList,
+                        ItemNumber=itemNumber,
+                        BomList=CopyMainList,
+                        ObjectBasedPart=False,
+                        ObjectBasedAssy=False,
+                    )
+                )
+
+                # Create a new row item for the temporary row.
+                rowListNew = {
+                    "ItemNumber": itemNumber,
+                    "DocumentObject": rowList["DocumentObject"],
+                    "ObjectLabel": rowList["ObjectLabel"],
+                    "ObjectName": rowList["ObjectName"],
+                    "Qty": QtyValue,
+                    "Type": rowList["Type"],
+                }
+
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
                 # print(f"{shadowRow['Item1'], shadowRow['Item2']}")
@@ -611,27 +639,6 @@ class BomFunctions:
                     )
                     is False
                 ):
-                    # Find the quantity for the item
-                    QtyValue = str(
-                        General_BOM.ObjectCounter_ItemNumber(
-                            ListItem=rowList,
-                            ItemNumber=itemNumber,
-                            BomList=CopyMainList,
-                            ObjectBasedPart=False,
-                            ObjectBasedAssy=True,
-                        )
-                    )
-
-                    # Create a new row item for the temporary row.
-                    rowListNew = {
-                        "ItemNumber": itemNumber,
-                        "DocumentObject": rowList["DocumentObject"],
-                        "ObjectLabel": rowList["ObjectLabel"],
-                        "ObjectName": rowList["ObjectName"],
-                        "Qty": QtyValue,
-                        "Type": rowList["Type"],
-                    }
-
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
@@ -640,6 +647,9 @@ class BomFunctions:
         # replace the App::Links with the bodies they contain. Including their quantity.
         if Level > 1:
             TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
+
+        # correct the quantities for the parts in subassemblies
+        TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
