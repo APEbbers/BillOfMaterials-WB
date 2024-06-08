@@ -376,7 +376,7 @@ class BomFunctions:
         return BOMList
 
     @classmethod
-    def CheckObject(self, docObject) -> bool:
+    def CheckObject(self, docObject, AllowBodies=False) -> bool:
         # check if the item is an part and not an body.
         # Default result will be false.
         objectCheck = False
@@ -395,7 +395,18 @@ class BomFunctions:
                 if docObject.getParent().getPropertyByName("Type", 2)[1] == "Assembly":
                     objectCheck = True
             except AttributeError:
-                objectCheck = False
+                try:
+                    if AllowBodies is True:
+                        if (
+                            docObject.TypeId == "Part::Feature"
+                            or docObject.TypeId == "PartDesign::Body"
+                            or docObject.TypeId == "Part::FeaturePython"
+                        ):
+                            objectCheck = True
+                    else:
+                        objectCheck = False
+                except AttributeError:
+                    objectCheck = False
 
         return objectCheck
 
