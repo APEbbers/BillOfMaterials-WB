@@ -811,6 +811,11 @@ class BomFunctions:
                     ChildItemNumber = int(ChildItemNumber) + 1
                     # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                     ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
+                    # Set the quantity to 1.
+                    Qty = 1
+
+                    # Standard assume the object is not an array
+                    IsArray = True
 
                     # If the object is an array. update the quantity and replace the array with is elements
                     try:
@@ -1811,7 +1816,7 @@ class BomFunctions:
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
-            TemporaryList = self.__CorrectItemNumbers(TemporaryList, True)
+            TemporaryList = self.__CorrectItemNumbers(TemporaryList)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:

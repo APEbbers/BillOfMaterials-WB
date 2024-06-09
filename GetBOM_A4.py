@@ -459,12 +459,12 @@ class BomFunctions:
             if ItemObjectTypeNext == "Part::Feature" or ItemObjectTypeNext == "PartDesign::Body":
                 # Filter out all type of bodies
                 if AllowAllBodies is False:
-                    ItemObject["Type"] = "Part"
+                    BOMList[i]["Type"] = "Part"
                     # set the flag to false.
                     flag = False
                 # Allow all bodies that are part of an assembly.
                 if AllowAllBodies is True:
-                    ItemObject["Assembly"] = "Part"
+                    BOMList[i]["Type"] = "Assembly"
                     flag = True
 
             # if the flag is true, append the itemobject to the second temporary list.
