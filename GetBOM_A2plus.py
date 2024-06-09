@@ -480,6 +480,9 @@ class BomFunctions:
         if IndentNumbering is True:
             TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
 
+        # correct the quantities for the parts in subassemblies
+        TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
+
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:
             for k in range(len(TemporaryList)):

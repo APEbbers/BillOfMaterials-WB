@@ -87,9 +87,13 @@ class BillOfMaterialsWB(Gui.Workbench):
         SettingsList = BoM_CreateUI.DefineMenus()["SettingsMenu"]
 
         # Append the menues
-        self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList)  # creates a new menu
         self.appendMenu(
-            QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Separate commands "]),
+            QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList
+        )  # creates a new menu
+        self.appendMenu(
+            QT_TRANSLATE_NOOP(
+                "BoM Workbench", ["Bill of Materials", "Separate commands "]
+            ),
             SeparateFunctionsList,
         )
         self.appendMenu(
@@ -104,13 +108,13 @@ class BillOfMaterialsWB(Gui.Workbench):
 
         # creates a new toolbar with your commands
         self.appendToolbar("BOM Commands", MainToolbar)
-        self.list = [
-            "CreateBOM_Raw_MIXED",
-            "CreateBOM_Total_MIXED",
-            "CreateBOM_Summary_MIXED",
-            "CreateBOM_PartsOnly_MIXED",
-        ]
-        self.appendToolbar("BoM_Commands_Mixed", self.list)
+        # self.list = [
+        #     "CreateBOM_Raw_MIXED",
+        #     "CreateBOM_Total_MIXED",
+        #     "CreateBOM_Summary_MIXED",
+        #     "CreateBOM_PartsOnly_MIXED",
+        # ]
+        # self.appendToolbar("BoM_Commands_Mixed", self.list)
         # endregion ----------------------------------------------------------------------------------------------------
 
         # region - Create the toolbar for other workbenches ------------------------------------------------------------

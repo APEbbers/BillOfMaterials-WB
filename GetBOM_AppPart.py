@@ -51,7 +51,10 @@ class BomFunctions:
                 return
 
         # Get the list with rootobjects
-        docObjects = doc.RootObjects
+        docObjects = []
+        for i in range(len(doc.RootObjects)):
+            if doc.RootObjects[i].Visibility is True:
+                docObjects.append(doc.RootObjects[i])
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for docObject in docObjects:
@@ -394,6 +397,9 @@ class BomFunctions:
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
             TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
+
+        # correct the quantities for the parts in subassemblies
+        TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:
