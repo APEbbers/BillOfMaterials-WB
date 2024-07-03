@@ -399,18 +399,33 @@ class BomFunctions:
         # Use an try-except statement incase there is no "getPropertyByName" method.
         try:
             docObject = RowItem["DocumentObject"]
+
+            propertyList = []
+            propertyList = docObject.PropertiesList
+            HasType = False
+
+            for i in range(len(propertyList)):
+                if propertyList[i] == "Type":
+                    HasType = True
+
             # If the property returns empty, it is an part. Return the linked object.
             # This way, duplicate items (normally like Bearing001, Bearing002, etc.) will be replaced with
             # the original part. This is used for summation of the same parts.
-            if docObject.getPropertyByName("Type") == "":
+            if HasType is True:
+                if docObject.getPropertyByName("Type") == "":
+                    RowItem["DocumentObject"] = docObject.LinkedObject
+                    RowItem["ObjectName"] = docObject.LinkedObject.Name
+                    RowItem["ObjectLabel"] = docObject.LinkedObject.Label
+                    return RowItem
+                # If the property returns "Assembly", it is an sub-assembly. Return the object.
+                if docObject.getPropertyByName("Type") == "Assembly":
+                    RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[0]
+                    RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
+                    return RowItem
+            if HasType is False:
                 RowItem["DocumentObject"] = docObject.LinkedObject
                 RowItem["ObjectName"] = docObject.LinkedObject.Name
                 RowItem["ObjectLabel"] = docObject.LinkedObject.Label
-                return RowItem
-            # If the property returns "Assembly", it is an sub-assembly. Return the object.
-            if docObject.getPropertyByName("Type") == "Assembly":
-                RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[0]
-                RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
                 return RowItem
         except Exception:
             return None
