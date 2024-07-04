@@ -111,22 +111,16 @@ SPREADSHEET_HEADERBACKGROUND = GetColorSetting("SpreadSheetHeaderBackGround")
 SPREADSHEET_HEADERFOREGROUND = GetColorSetting("SpreadSheetHeaderForeGround")
 SPREADSHEET_HEADERFONTSTYLE_BOLD = GetBoolSetting("SpreadsheetHeaderFontStyle_Bold")
 SPREADSHEET_HEADERFONTSTYLE_ITALIC = GetBoolSetting("SpreadsheetHeaderFontStyle_Italic")
-SPREADSHEET_HEADERFONTSTYLE_UNDERLINE = GetBoolSetting(
-    "SpreadsheetHeaderFontStyle_Underline"
-)
+SPREADSHEET_HEADERFONTSTYLE_UNDERLINE = GetBoolSetting("SpreadsheetHeaderFontStyle_Underline")
 SPREADSHEET_TABLEBACKGROUND_1 = GetColorSetting("SpreadSheetTableBackGround_1")
 SPREADSHEET_TABLEBACKGROUND_2 = GetColorSetting("SpreadSheetTableBackGround_2")
 SPREADSHEET_TABLEFOREGROUND = GetColorSetting("SpreadSheetTableForeGround")
 SPREADSHEET_TABLEFONTSTYLE_BOLD = GetBoolSetting("SpreadsheetTableFontStyle_Bold")
 SPREADSHEET_TABLEFONTSTYLE_ITALIC = GetBoolSetting("SpreadsheetTableFontStyle_Italic")
-SPREADSHEET_TABLEFONTSTYLE_UNDERLINE = GetBoolSetting(
-    "SpreadsheetTableFontStyle_Underline"
-)
+SPREADSHEET_TABLEFONTSTYLE_UNDERLINE = GetBoolSetting("SpreadsheetTableFontStyle_Underline")
 SPREADSHEET_COLUMNFONTSTYLE_BOLD = GetBoolSetting("SpreadsheetColumnFontStyle_Bold")
 SPREADSHEET_COLUMNFONTSTYLE_ITALIC = GetBoolSetting("SpreadsheetColumnFontStyle_Italic")
-SPREADSHEET_COLUMNFONTSTYLE_UNDERLINE = GetBoolSetting(
-    "SpreadsheetColumnFontStyle_Underline"
-)
+SPREADSHEET_COLUMNFONTSTYLE_UNDERLINE = GetBoolSetting("SpreadsheetColumnFontStyle_Underline")
 AUTOFIT_FACTOR = GetFloatSetting("AutoFitFactor")
 
 # Enable debug mode. This will enable additional report messages
@@ -181,7 +175,7 @@ def ReturnHeaders(Headers: dict = None, AdditionalHeaders: dict = None):
             "D1": "Description",
         }
 
-    if AdditionalHeaders is not None:
+    if AdditionalHeaders is not None or bool(AdditionalHeaders) is False:
         Headers.update(AdditionalHeaders)
 
     return Headers
