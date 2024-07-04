@@ -175,7 +175,7 @@ def ReturnHeaders(Headers: dict = None, AdditionalHeaders: dict = None):
             "D1": "Description",
         }
 
-    if AdditionalHeaders is not None or bool(AdditionalHeaders) is False:
+    if AdditionalHeaders is not None or bool(AdditionalHeaders) is True:
         Headers.update(AdditionalHeaders)
 
     return Headers
