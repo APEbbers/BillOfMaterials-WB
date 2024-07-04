@@ -101,23 +101,24 @@ class General_BOM:
         Headers = Settings_BoM.ReturnHeaders(Headers=Headers, AdditionalHeaders=DebugHeadersDict)
 
         # Go through the custom headers
-        if CustomHeadersDict is not None and IFCData is None:
-            CustomHeaderList = self.customHeaders.split(";")
-            for i in range(len(CustomHeaderList)):
-                # Set the header
-                Header = CustomHeaderList[i]
-                # Set the column
-                Column = Standard_Functions.GetLetterFromNumber(len(Headers) + i + 1)
-                # Set the cell
-                Cell = f"{Column}1"
-                # Add the cell and header as a dict item to the dict AdditionalHeaders
-                CustomHeadersDict[Cell] = Header
+        if CustomHeadersDict is not None or bool(CustomHeadersDict) is True:
+            if IFCData is None:
+                CustomHeaderList = self.customHeaders.split(";")
+                for i in range(len(CustomHeaderList)):
+                    # Set the header
+                    Header = CustomHeaderList[i]
+                    # Set the column
+                    Column = Standard_Functions.GetLetterFromNumber(len(Headers) + i + 1)
+                    # Set the cell
+                    Cell = f"{Column}1"
+                    # Add the cell and header as a dict item to the dict AdditionalHeaders
+                    CustomHeadersDict[Cell] = Header
 
         # Set the headers with additional headers
         Headers = Settings_BoM.ReturnHeaders(Headers=Headers, AdditionalHeaders=CustomHeadersDict)
 
         # Define the header range based on Headers
-        HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers)+1)}1"
+        HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers))}1"
 
         # Set the cell width based on the headers as default
         for key in Headers:

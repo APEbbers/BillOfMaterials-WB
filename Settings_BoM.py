@@ -165,6 +165,7 @@ def ReturnHeaders(Headers: dict = None, AdditionalHeaders: dict = None):
                     "A1": "Number",
                     "B1": "Qty",
                     "C1": "Label",
+                    "D1": "Description",
             }
     """
     if Headers is None:
