@@ -460,9 +460,6 @@ class BomFunctions:
         # Create an extra temporary list
         TempTemporaryList = []
 
-        if len(BOMList) == 0:
-            return
-
         TempTemporaryList.append(BOMList[0])
         # Go through the curent temporary list
         for i in range(len(BOMList) - 1):

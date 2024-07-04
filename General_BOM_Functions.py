@@ -117,7 +117,7 @@ class General_BOM:
         Headers = Settings_BoM.ReturnHeaders(Headers=Headers, AdditionalHeaders=CustomHeadersDict)
 
         # Define the header range based on Headers
-        HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers))}1"
+        HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers)+1)}1"
 
         # Set the cell width based on the headers as default
         for key in Headers:
