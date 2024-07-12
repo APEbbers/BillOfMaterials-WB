@@ -8,7 +8,7 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (
+from PySide.QtCore import (
     QCoreApplication,
     QDate,
     QDateTime,
@@ -22,7 +22,7 @@ from PySide6.QtCore import (
     QUrl,
     Qt,
 )
-from PySide6.QtGui import (
+from PySide.QtGui import (
     QBrush,
     QColor,
     QConicalGradient,
@@ -40,7 +40,7 @@ from PySide6.QtGui import (
     QRadialGradient,
     QTransform,
 )
-from PySide6.QtWidgets import (
+from PySide.QtWidgets import (
     QApplication,
     QCheckBox,
     QComboBox,
@@ -112,7 +112,9 @@ class Ui_Dialog(object):
         sizePolicy2 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.CreatePartsOnly.sizePolicy().hasHeightForWidth())
+        sizePolicy2.setHeightForWidth(
+            self.CreatePartsOnly.sizePolicy().hasHeightForWidth()
+        )
         self.CreatePartsOnly.setSizePolicy(sizePolicy2)
         icon = QIcon()
         icon.addFile(":/Resources/Icons/Parts.svg", QSize(), QIcon.Normal, QIcon.Off)
@@ -145,7 +147,9 @@ class Ui_Dialog(object):
 
         self.CreateSummary = QPushButton(self.layoutWidget1)
         self.CreateSummary.setObjectName("CreateSummary")
-        sizePolicy2.setHeightForWidth(self.CreateSummary.sizePolicy().hasHeightForWidth())
+        sizePolicy2.setHeightForWidth(
+            self.CreateSummary.sizePolicy().hasHeightForWidth()
+        )
         self.CreateSummary.setSizePolicy(sizePolicy2)
         icon2 = QIcon()
         icon2.addFile(":/Resources/Icons/Summary.svg", QSize(), QIcon.Normal, QIcon.Off)
@@ -162,7 +166,9 @@ class Ui_Dialog(object):
         self.CreateFirstLevel = QPushButton(self.layoutWidget1)
         self.CreateFirstLevel.setObjectName("CreateFirstLevel")
         icon3 = QIcon()
-        icon3.addFile(":/Resources/Icons/1stLevel.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon3.addFile(
+            ":/Resources/Icons/1stLevel.svg", QSize(), QIcon.Normal, QIcon.Off
+        )
         self.CreateFirstLevel.setIcon(icon3)
         self.CreateFirstLevel.setIconSize(QSize(32, 32))
 
@@ -258,7 +264,9 @@ class Ui_Dialog(object):
         sizePolicy5.setHeightForWidth(self.SetColumns.sizePolicy().hasHeightForWidth())
         self.SetColumns.setSizePolicy(sizePolicy5)
         icon4 = QIcon()
-        icon4.addFile(":/Resources/Icons/SetColumns.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon4.addFile(
+            ":/Resources/Icons/SetColumns.svg", QSize(), QIcon.Normal, QIcon.Off
+        )
         self.SetColumns.setIcon(icon4)
         self.SetColumns.setIconSize(QSize(32, 32))
 
@@ -303,26 +311,44 @@ class Ui_Dialog(object):
         self.gridLayout_8.setContentsMargins(0, 0, 0, 0)
         self.AssemblyType = QComboBox(self.layoutWidget3)
         icon5 = QIcon()
-        icon5.addFile(":/Resources/Icons/A2p_workbench.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon5.addFile(
+            ":/Resources/Icons/A2p_workbench.svg", QSize(), QIcon.Normal, QIcon.Off
+        )
         self.AssemblyType.addItem(icon5, "")
         icon6 = QIcon()
-        icon6.addFile(":/Resources/Icons/Assembly4_workbench_icon.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon6.addFile(
+            ":/Resources/Icons/Assembly4_workbench_icon.svg",
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         self.AssemblyType.addItem(icon6, "")
         icon7 = QIcon()
-        icon7.addFile(":/Resources/Icons/Assembly3_workbench_icon.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon7.addFile(
+            ":/Resources/Icons/Assembly3_workbench_icon.svg",
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         self.AssemblyType.addItem(icon7, "")
         self.AssemblyType.addItem(icon6, "")
         icon8 = QIcon()
         icon8.addFile(":/Resources/Icons/Link.svg", QSize(), QIcon.Normal, QIcon.Off)
         self.AssemblyType.addItem(icon8, "")
         icon9 = QIcon()
-        icon9.addFile(":/Resources/Icons/Geofeaturegroup.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon9.addFile(
+            ":/Resources/Icons/Geofeaturegroup.svg", QSize(), QIcon.Normal, QIcon.Off
+        )
         self.AssemblyType.addItem(icon9, "")
         icon10 = QIcon()
-        icon10.addFile(":/Resources/Icons/Part_Transformed.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon10.addFile(
+            ":/Resources/Icons/Part_Transformed.svg", QSize(), QIcon.Normal, QIcon.Off
+        )
         self.AssemblyType.addItem(icon10, "")
         icon11 = QIcon()
-        icon11.addFile(":/Resources/Icons/ArchWorkbench.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon11.addFile(
+            ":/Resources/Icons/ArchWorkbench.svg", QSize(), QIcon.Normal, QIcon.Off
+        )
         self.AssemblyType.addItem(icon11, "")
         self.AssemblyType.setObjectName("AssemblyType")
         self.AssemblyType.setSizeAdjustPolicy(QComboBox.AdjustToContents)
@@ -334,7 +360,9 @@ class Ui_Dialog(object):
         sizePolicy6 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
         sizePolicy6.setHorizontalStretch(0)
         sizePolicy6.setVerticalStretch(0)
-        sizePolicy6.setHeightForWidth(self.DetectAssemblyType.sizePolicy().hasHeightForWidth())
+        sizePolicy6.setHeightForWidth(
+            self.DetectAssemblyType.sizePolicy().hasHeightForWidth()
+        )
         self.DetectAssemblyType.setSizePolicy(sizePolicy6)
 
         self.gridLayout_8.addWidget(self.DetectAssemblyType, 0, 0, 1, 2)
@@ -367,7 +395,9 @@ class Ui_Dialog(object):
 
         self.verticalLayout.addWidget(self.frame_3)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer = QSpacerItem(
+            20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding
+        )
 
         self.verticalLayout.addItem(self.verticalSpacer)
 
@@ -389,18 +419,34 @@ class Ui_Dialog(object):
     # setupUi
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", "Bill of Materials workbench", None))
+        Dialog.setWindowTitle(
+            QCoreApplication.translate("Dialog", "Bill of Materials workbench", None)
+        )
         self.CreatePartsOnly.setText("")
-        self.label.setText(QCoreApplication.translate("Dialog", "Create total BoM", None))
+        self.label.setText(
+            QCoreApplication.translate("Dialog", "Create total BoM", None)
+        )
         self.CreateTotal.setText("")
-        self.label_7.setText(QCoreApplication.translate("Dialog", "Create parts only BoM", None))
+        self.label_7.setText(
+            QCoreApplication.translate("Dialog", "Create parts only BoM", None)
+        )
         self.CreateSummary.setText("")
-        self.label_4.setText(QCoreApplication.translate("Dialog", "Create summary  BoM", None))
+        self.label_4.setText(
+            QCoreApplication.translate("Dialog", "Create summary  BoM", None)
+        )
         self.CreateFirstLevel.setText("")
-        self.label_11.setText(QCoreApplication.translate("Dialog", "Create first level BoM", None))
-        self.toolButton_Settings.setText(QCoreApplication.translate("Dialog", "Settings", None))
-        self.IndentedNumbering.setText(QCoreApplication.translate("Dialog", "Indented numbering", None))
-        self.IncludeBodies.setText(QCoreApplication.translate("Dialog", "Include bodies", None))
+        self.label_11.setText(
+            QCoreApplication.translate("Dialog", "Create first level BoM", None)
+        )
+        self.toolButton_Settings.setText(
+            QCoreApplication.translate("Dialog", "Settings", None)
+        )
+        self.IndentedNumbering.setText(
+            QCoreApplication.translate("Dialog", "Indented numbering", None)
+        )
+        self.IncludeBodies.setText(
+            QCoreApplication.translate("Dialog", "Include bodies", None)
+        )
         self.label_6.setText(
             QCoreApplication.translate(
                 "Dialog",
@@ -418,22 +464,50 @@ class Ui_Dialog(object):
         )
         # endif // QT_CONFIG(tooltip)
         self.MaxLevel.setSuffix("")
-        self.label_12.setText(QCoreApplication.translate("Dialog", "Set deepest leve for BoMl", None))
+        self.label_12.setText(
+            QCoreApplication.translate("Dialog", "Set deepest leve for BoMl", None)
+        )
         self.SetColumns.setText("")
-        self.label_3.setText(QCoreApplication.translate("Dialog", " Set extra columns ", None))
-        self.toolButton_Debug.setText(QCoreApplication.translate("Dialog", "Debug settings", None))
-        self.AssemblyType.setItemText(0, QCoreApplication.translate("Dialog", "A2plus", None))
-        self.AssemblyType.setItemText(1, QCoreApplication.translate("Dialog", "Internal assembly", None))
-        self.AssemblyType.setItemText(2, QCoreApplication.translate("Dialog", "Assembly 3", None))
-        self.AssemblyType.setItemText(3, QCoreApplication.translate("Dialog", "Assembly 4", None))
-        self.AssemblyType.setItemText(4, QCoreApplication.translate("Dialog", "App:LinkGroup", None))
-        self.AssemblyType.setItemText(5, QCoreApplication.translate("Dialog", "App:Part", None))
-        self.AssemblyType.setItemText(6, QCoreApplication.translate("Dialog", "MultiBody", None))
-        self.AssemblyType.setItemText(7, QCoreApplication.translate("Dialog", "Arch", None))
+        self.label_3.setText(
+            QCoreApplication.translate("Dialog", " Set extra columns ", None)
+        )
+        self.toolButton_Debug.setText(
+            QCoreApplication.translate("Dialog", "Debug settings", None)
+        )
+        self.AssemblyType.setItemText(
+            0, QCoreApplication.translate("Dialog", "A2plus", None)
+        )
+        self.AssemblyType.setItemText(
+            1, QCoreApplication.translate("Dialog", "Internal assembly", None)
+        )
+        self.AssemblyType.setItemText(
+            2, QCoreApplication.translate("Dialog", "Assembly 3", None)
+        )
+        self.AssemblyType.setItemText(
+            3, QCoreApplication.translate("Dialog", "Assembly 4", None)
+        )
+        self.AssemblyType.setItemText(
+            4, QCoreApplication.translate("Dialog", "App:LinkGroup", None)
+        )
+        self.AssemblyType.setItemText(
+            5, QCoreApplication.translate("Dialog", "App:Part", None)
+        )
+        self.AssemblyType.setItemText(
+            6, QCoreApplication.translate("Dialog", "MultiBody", None)
+        )
+        self.AssemblyType.setItemText(
+            7, QCoreApplication.translate("Dialog", "Arch", None)
+        )
 
-        self.DetectAssemblyType.setText(QCoreApplication.translate("Dialog", " Detect assembly type ", None))
-        self.label_2.setText(QCoreApplication.translate("Dialog", "Set assemby type manually", None))
+        self.DetectAssemblyType.setText(
+            QCoreApplication.translate("Dialog", " Detect assembly type ", None)
+        )
+        self.label_2.setText(
+            QCoreApplication.translate("Dialog", "Set assemby type manually", None)
+        )
         self.CreateRaw.setText("")
-        self.label_5.setText(QCoreApplication.translate("Dialog", "Create total BoM", None))
+        self.label_5.setText(
+            QCoreApplication.translate("Dialog", "Create total BoM", None)
+        )
 
     # retranslateUi
