@@ -51,7 +51,10 @@ class BomFunctions:
                 return
 
         # Get the list with rootobjects
-        docObjects = doc.RootObjects
+        docObjects = []
+        for i in range(len(doc.RootObjects)):
+            if doc.RootObjects[i].Visibility is True:
+                docObjects.append(doc.RootObjects[i])
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for docObject in docObjects:
