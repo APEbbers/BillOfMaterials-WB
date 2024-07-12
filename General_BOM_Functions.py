@@ -85,7 +85,7 @@ class General_BOM:
         CustomHeadersDict = {}
 
         # Go through the debug headers
-        if DEBUG_HEADERS is not None or DEBUG_HEADERS != "":
+        if DEBUG_HEADERS != "":
             DebugHeaderList = DEBUG_HEADERS.split(";")
             for i in range(len(DebugHeaderList)):
                 # Set the header
@@ -97,8 +97,8 @@ class General_BOM:
                 # Add the cell and header as a dict item to the dict AdditionalHeaders
                 DebugHeadersDict[Cell] = Header
 
-        # Set the headers with additional headers
-        Headers = Settings_BoM.ReturnHeaders(Headers=Headers, AdditionalHeaders=DebugHeadersDict)
+            # Get the headers with additional headers
+            Headers = Settings_BoM.ReturnHeaders(Headers=Headers, AdditionalHeaders=DebugHeadersDict)
 
         # Go through the custom headers
         if CustomHeadersDict is not None or bool(CustomHeadersDict) is True:
@@ -120,13 +120,11 @@ class General_BOM:
         # Define the header range based on Headers
         HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers))}1"
 
-        # Set the cell width based on the headers as default
-        for key in Headers:
-            Cell = str(key)
-            Value = str(Headers[key])
-            sheet.set(Cell, Value)
+        # Create the headers and set the width
+        for key, value in Headers.items():
+            sheet.set(key, value)
             # set the width based on the headers
-            Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=Value)
+            Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=value)
 
         # Style the Top row
         sheet.setStyle(HeaderRange, "bold")  # \bold|italic|underline'
@@ -189,12 +187,12 @@ class General_BOM:
                             Column + str(Row),
                             self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[0],
                         )
-                        NewHeader = ""
-                        Unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
-                        if Unit != "":
-                            NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
-                        if sheet.getContents(Column + "1") != NewHeader:
-                            sheet.set(Column + "1", NewHeader)
+                        # NewHeader = ""
+                        # Unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
+                        # # if Unit != "":
+                        # #     NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
+                        # # if sheet.getContents(Column + "1") != NewHeader:
+                        # #     sheet.set(Column + "1", NewHeader)
                     except Exception as e:
                         # print(e)
                         pass
@@ -1152,4 +1150,5 @@ class General_BOM:
             if ItemNumber.rsplit(".", 1)[0] == AssemblyNumber:
                 BOMList[i]["Qty"] = int(BOMList[i]["Qty"]) / int(AssemblyQty)
 
+        return BOMList
         return BOMList

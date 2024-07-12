@@ -168,7 +168,7 @@ def ReturnHeaders(Headers: dict = None, AdditionalHeaders: dict = None):
                     "D1": "Description",
             }
     """
-    if Headers is None:
+    if Headers is None or bool(Headers) is False:
         Headers = {
             "A1": "Number",
             "B1": "Qty",
