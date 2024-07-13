@@ -8,7 +8,7 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (
+from PySide.QtCore import (
     QCoreApplication,
     QDate,
     QDateTime,
@@ -22,7 +22,7 @@ from PySide6.QtCore import (
     QUrl,
     Qt,
 )
-from PySide6.QtGui import (
+from PySide.QtGui import (
     QBrush,
     QColor,
     QConicalGradient,
@@ -40,7 +40,7 @@ from PySide6.QtGui import (
     QRadialGradient,
     QTransform,
 )
-from PySide6.QtWidgets import (
+from PySide.QtWidgets import (
     QApplication,
     QCheckBox,
     QComboBox,
@@ -305,10 +305,20 @@ class Ui_Dialog(object):
         icon5.addFile(":/Resources/Icons/A2p_workbench.svg", QSize(), QIcon.Normal, QIcon.Off)
         self.AssemblyType.addItem(icon5, "")
         icon6 = QIcon()
-        icon6.addFile(":/Resources/Icons/Assembly4_workbench_icon.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon6.addFile(
+            ":/Resources/Icons/Assembly4_workbench_icon.svg",
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         self.AssemblyType.addItem(icon6, "")
         icon7 = QIcon()
-        icon7.addFile(":/Resources/Icons/Assembly3_workbench_icon.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon7.addFile(
+            ":/Resources/Icons/Assembly3_workbench_icon.svg",
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
         self.AssemblyType.addItem(icon7, "")
         self.AssemblyType.addItem(icon6, "")
         icon8 = QIcon()
@@ -423,7 +433,9 @@ class Ui_Dialog(object):
         self.MaxLevel.setSuffix("")
         self.label_12.setText(
             QCoreApplication.translate(
-                "Dialog", "<html><head/><body><p>Set deepest level for BoM</p></body></html>", None
+                "Dialog",
+                "<html><head/><body><p>Set deepest level for BoM</p></body></html>",
+                None,
             )
         )
         self.SetColumns.setText("")
