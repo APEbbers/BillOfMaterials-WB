@@ -121,7 +121,7 @@ class BillOfMaterialsWB(Gui.Workbench):
         ]
 
         AllWorkbenches = {}
-        AllWorkbenches = self.listWorkbenches()
+        AllWorkbenches = Gui.listWorkbenches()
 
         # for i in range(len(DefaultWorkBenches)):
         for key, value in AllWorkbenches.items():
