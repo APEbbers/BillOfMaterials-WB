@@ -29,6 +29,7 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
+import Settings_BoM
 
 # Define the translation
 translate = App.Qt.translate
@@ -47,17 +48,24 @@ def DefineToolbars() -> dict:
     ToolbarListMain = [
         "CreateBOM_Overall",
         "Separator",
-        "CreateBOM_Raw",
-        "Separator",
         "CreateBOM_1stLevel",
         "Separator",
         "SetColumns",
     ]
 
+    if Settings_BoM.ENABLE_DEBUG is True:
+        ToolbarListMain = [
+            "CreateBOM_Overall",
+            "Separator",
+            "CreateBOM_1stLevel",
+            "Separator",
+            "SetColumns",
+            "Separator",
+            "CreateBOM_Raw",
+        ]
+
     ToolbarListWorkbenches = [
         "CreateBOM_Overall",
-        "Separator",
-        "CreateBOM_1stLevel",
     ]
 
     result = {
@@ -104,7 +112,7 @@ def DefineMenus() -> dict:
 
 
 def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list) -> object:
-    """Creates a toolbar in the standard TechDraw WorkBench with the most importand commands"""
+    """Creates a toolbar in the other WorkBenches with the most importand commands"""
     import FreeCADGui as Gui
 
     # region -- define the names and folders

@@ -52,22 +52,25 @@ class BomFunctions:
                 return
 
         # Get the list with rootobjects
-        RootObjects = []
-        for i in range(len(doc.RootObjects)):
-            if doc.RootObjects[i].Visibility is True:
-                RootObjects.append(doc.RootObjects[i])
+        RootObjects = doc.RootObjects
         docObjects = []
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for RootObject in RootObjects:
-            if RootObject.TypeId == "App::DocumentObjectGroup" and RootObject.Name != "Parts":
+            if (
+                RootObject.TypeId == "App::DocumentObjectGroup"
+                and RootObject.Name != "Parts"
+            ):
                 RootObjects.extend(General_BOM.GetObjectsFromGroups(RootObject))
 
         # Get the folder with the parts and create a list from it.
         PartsGroup = []
         PartList = []
         for RootObject in RootObjects:
-            if RootObject.Name == "Parts" and RootObject.TypeId == "App::DocumentObjectGroup":
+            if (
+                RootObject.Name == "Parts"
+                and RootObject.TypeId == "App::DocumentObjectGroup"
+            ):
                 PartsGroup.append(RootObject)
         for Part in PartsGroup:
             PartList.append(Part)
@@ -98,7 +101,10 @@ class BomFunctions:
     def FindAssemblyInGroups(self, Group, docObjects: list):
         for GroupObject in Group.Group:
             try:
-                if GroupObject.AssemblyType == "Part::Link" and GroupObject.Type == "Assembly":
+                if (
+                    GroupObject.AssemblyType == "Part::Link"
+                    and GroupObject.Type == "Assembly"
+                ):
                     docObjects.append(GroupObject)
                     break
             except Exception:
@@ -157,7 +163,9 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(self, docObjects, sheet, Parts: list, ItemNumber, ParentNumber: str = "") -> True:
+    def GoThrough_Objects(
+        self, docObjects, sheet, Parts: list, ItemNumber, ParentNumber: str = ""
+    ) -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -231,7 +239,12 @@ class BomFunctions:
                         childObjects.clear()
                         # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                         for j in range(len(Object.getSubObjects())):
-                            if Object.getSubObject(subname=Object.getSubObjects()[j], retType=1) is not None:
+                            if (
+                                Object.getSubObject(
+                                    subname=Object.getSubObjects()[j], retType=1
+                                )
+                                is not None
+                            ):
                                 # Go through the parts folder and compare the parts with the subobjects.
                                 for k in range(len(Parts)):
                                     # If filtering with the parts in the part folder results in an document object,
@@ -323,6 +336,14 @@ class BomFunctions:
                     Qty = 1
 
                 for q in range(Qty):
+                    # if len(ParentNumber.split(".")) == 1:
+                    #     ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
+                    # if len(ParentNumber.split(".")) > 1:
+                    #     ParentNumberA = ParentNumber.rsplit(".", 1)[0]
+                    #     ParentNumberB = str(int(ParentNumber.rsplit(".", 1)[1]) + q)
+                    #     ItemNumberString = ParentNumberA + "." + ParentNumberB + "." + str(ChildItemNumber)
+                    # ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
+
                     # Create a rowList
                     rowList = {
                         "ItemNumber": ItemNumberString,
@@ -348,7 +369,12 @@ class BomFunctions:
                         subChildObjects.clear()
                         # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
                         for j in range(len(childObject.getSubObjects())):
-                            if childObject.getSubObject(subname=childObject.getSubObjects()[j], retType=1) is not None:
+                            if (
+                                childObject.getSubObject(
+                                    subname=childObject.getSubObjects()[j], retType=1
+                                )
+                                is not None
+                            ):
                                 # Go through the parts folder and compare the parts with the subobjects.
                                 for k in range(len(Parts)):
                                     # If filtering with the parts in the part folder results in an document object,
@@ -371,7 +397,9 @@ class BomFunctions:
                                         ):
                                             subChildObjects.append(
                                                 childObject.getSubObject(
-                                                    subname=childObject.getSubObjects()[j],
+                                                    subname=childObject.getSubObjects()[
+                                                        j
+                                                    ],
                                                     retType=1,
                                                 )
                                             )
@@ -456,7 +484,10 @@ class BomFunctions:
             flag = True
 
             # If the next object is an body or feature, set the flag to False.
-            if ItemObjectTypeNext == "Part::Feature" or ItemObjectTypeNext == "PartDesign::Body":
+            if (
+                ItemObjectTypeNext == "Part::Feature"
+                or ItemObjectTypeNext == "PartDesign::Body"
+            ):
                 # Filter out all type of bodies
                 if AllowAllBodies is False:
                     BOMList[i]["Type"] = "Part"
@@ -642,7 +673,9 @@ class BomFunctions:
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
         if Level > 1:
-            TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
+            TemporaryList = self.FilterBodies(
+                BOMList=TemporaryList, AllowAllBodies=IncludeBodies
+            )
 
         # correct the quantities for the parts in subassemblies
         TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
@@ -757,7 +790,9 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
+        TemporaryList = self.FilterBodies(
+            BOMList=TemporaryList, AllowAllBodies=IncludeBodies
+        )
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):
@@ -766,7 +801,9 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
+            General_BOM.createBoMSpreadsheet(
+                mainList=TemporaryList, Headers=None, Summary=True
+            )
         return
 
     # Function to create a BoM list for a parts only BoM.
@@ -861,7 +898,9 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
+        TemporaryList = self.FilterBodies(
+            BOMList=TemporaryList, AllowAllBodies=IncludeBodies
+        )
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):
@@ -917,7 +956,9 @@ class BomFunctions:
                         )
                     if Answer == "yes":
                         IncludeBodies = True
-                    General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies))
+                    General_BOM.createBoMSpreadsheet(
+                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies)
+                    )
 
                 if command == "PartsOnly":
                     if EnableQuestion is True:
