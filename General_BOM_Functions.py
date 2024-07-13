@@ -43,9 +43,7 @@ class General_BOM:
     # If a modified list is created, this function can be used to write it the a spreadsheet.
     # You can add a dict for the headers of this list
     @classmethod
-    def createBoMSpreadsheet(
-        self, mainList: list, Headers: dict = None, Summary: bool = False, IFCData=None
-    ):
+    def createBoMSpreadsheet(self, mainList: list, Headers: dict = None, Summary: bool = False, IFCData=None):
         # If the Mainlist is empty, return.
         if mainList is None:
             Text = translate("BoM Workbench", "No list available!!")
@@ -59,9 +57,7 @@ class General_BOM:
         IsNewSheet = False
         sheet = doc.getObject("BoM")
         if sheet is not None:
-            for i in range(
-                1, 16384
-            ):  # 16384 is the maximum rows of the spreadsheet module
+            for i in range(1, 16384):  # 16384 is the maximum rows of the spreadsheet module
                 doc.BoM.splitCell("A" + str(i))
             sheet.clearAll()
         if sheet is None:
@@ -102,9 +98,7 @@ class General_BOM:
                 DebugHeadersDict[Cell] = Header
 
             # Get the headers with additional headers
-            Headers = Settings_BoM.ReturnHeaders(
-                Headers=Headers, AdditionalHeaders=DebugHeadersDict
-            )
+            Headers = Settings_BoM.ReturnHeaders(Headers=Headers, AdditionalHeaders=DebugHeadersDict)
 
         # Go through the custom headers
         if CustomHeadersDict is not None or bool(CustomHeadersDict) is True:
@@ -114,18 +108,14 @@ class General_BOM:
                     # Set the header
                     Header = CustomHeaderList[i]
                     # Set the column
-                    Column = Standard_Functions.GetLetterFromNumber(
-                        len(Headers) + i + 1
-                    )
+                    Column = Standard_Functions.GetLetterFromNumber(len(Headers) + i + 1)
                     # Set the cell
                     Cell = f"{Column}1"
                     # Add the cell and header as a dict item to the dict AdditionalHeaders
                     CustomHeadersDict[Cell] = Header
 
         # Set the headers with additional headers
-        Headers = Settings_BoM.ReturnHeaders(
-            Headers=Headers, AdditionalHeaders=CustomHeadersDict
-        )
+        Headers = Settings_BoM.ReturnHeaders(Headers=Headers, AdditionalHeaders=CustomHeadersDict)
 
         # Define the header range based on Headers
         HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers))}1"
@@ -134,9 +124,7 @@ class General_BOM:
         for key, value in Headers.items():
             sheet.set(key, value)
             # set the width based on the headers
-            Standard_Functions.SetColumnWidth_SpreadSheet(
-                sheet=sheet, column=key[:1], cellValue=value
-            )
+            Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=key[:1], cellValue=value)
 
         # Style the Top row
         sheet.setStyle(HeaderRange, "bold")  # \bold|italic|underline'
@@ -197,9 +185,7 @@ class General_BOM:
                     try:
                         sheet.set(
                             Column + str(Row),
-                            self.ReturnViewProperty(
-                                rowList["DocumentObject"], Headers[Column + "1"]
-                            )[0],
+                            self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[0],
                         )
                         # NewHeader = ""
                         # Unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
@@ -221,25 +207,19 @@ class General_BOM:
                 ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
 
                 if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
-                    Standard_Functions.SetColumnWidth_SpreadSheet(
-                        sheet=sheet, column=Column, cellValue=Value
-                    )
+                    Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=Column, cellValue=Value)
 
         # Allign the columns
         if Row > 1:
             sheet.setAlignment(
-                "A1:"
-                + str(Standard_Functions.GetLetterFromNumber(len(Headers)))
-                + str(Row),
+                "A1:" + str(Standard_Functions.GetLetterFromNumber(len(Headers))) + str(Row),
                 "center",
                 "keep",
             )
 
         # Style the table
         RangeStyleHeader = HeaderRange
-        RangeStyleTable = (
-            "A2:" + str(Standard_Functions.GetLetterFromNumber(len(Headers))) + str(Row)
-        )
+        RangeStyleTable = "A2:" + str(Standard_Functions.GetLetterFromNumber(len(Headers))) + str(Row)
         self.FormatTableColors(
             sheet=sheet,
             HeaderRange=RangeStyleHeader,
@@ -300,9 +280,7 @@ class General_BOM:
             sheet.set("A2", translate("BoM Workbench", "The total number of items:"))
             sheet.set("A3", translate("BoM Workbench", "Number of unique parts:"))
             sheet.set("A4", translate("BoM Workbench", "Number of unique assemblies:"))
-            sheet.set(
-                "A5", translate("BoM Workbench", "The total number of unique items:")
-            )
+            sheet.set("A5", translate("BoM Workbench", "The total number of unique items:"))
             sheet.set("D2", str(TotalNoItems))
             sheet.set("D3", str(PartCounter))
             sheet.set("D4", str(AssemblyCounter))
@@ -424,30 +402,18 @@ class General_BOM:
         if HeaderStyle != "":
             sheet.setStyle(HeaderRange, HeaderStyle)  # \bold|italic|underline'
         # Set the colors for the header
-        sheet.setBackground(
-            HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB)
-        )
-        sheet.setForeground(
-            HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB)
-        )  # RGBA
+        sheet.setBackground(HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB))
+        sheet.setForeground(HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB))  # RGBA
         # ------------------------------------------------------------------------------------------------------------------
 
         # Format the table -------------------------------------------------------------------------------------------------
         # Get the first column and first row
-        TableRangeColumnStart = Standard_Functions.RemoveNumbersFromString(
-            TableRange.split(":")[0]
-        )
-        TableRangeRowStart = int(
-            Standard_Functions.RemoveLettersFromString(TableRange.split(":")[0])
-        )
+        TableRangeColumnStart = Standard_Functions.RemoveNumbersFromString(TableRange.split(":")[0])
+        TableRangeRowStart = int(Standard_Functions.RemoveLettersFromString(TableRange.split(":")[0]))
 
         # Get the last column and last row
-        TableRangeColumnEnd = Standard_Functions.RemoveNumbersFromString(
-            TableRange.split(":")[1]
-        )
-        TableRangeRowEnd = int(
-            Standard_Functions.RemoveLettersFromString(TableRange.split(":")[1])
-        )
+        TableRangeColumnEnd = Standard_Functions.RemoveNumbersFromString(TableRange.split(":")[1])
+        TableRangeRowEnd = int(Standard_Functions.RemoveLettersFromString(TableRange.split(":")[1]))
 
         # Calculate the delta between the start and end of the table in vertical direction (Rows).
         DeltaRange = TableRangeRowEnd - TableRangeRowStart + 1
@@ -456,25 +422,19 @@ class General_BOM:
             # Correct the position
             j = i - 1
             # Define the first row
-            FirstRow = f"{TableRangeColumnStart}{str(j+TableRangeRowStart)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart)}"
+            FirstRow = (
+                f"{TableRangeColumnStart}{str(j+TableRangeRowStart)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart)}"
+            )
             # Define the second row
             SecondRow = f"{TableRangeColumnStart}{str(j+TableRangeRowStart+1)}:{TableRangeColumnEnd}{str(j+TableRangeRowStart+1)}"
 
             # if the first and second rows are within the range, set the colors
             if i <= DeltaRange:
-                sheet.setBackground(
-                    FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB)
-                )
-                sheet.setForeground(
-                    FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable)
-                )
+                sheet.setBackground(FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB))
+                sheet.setForeground(FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable))
             if i + 1 <= DeltaRange:
-                sheet.setBackground(
-                    SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB)
-                )
-                sheet.setForeground(
-                    SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable)
-                )
+                sheet.setBackground(SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB))
+                sheet.setForeground(SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable))
 
             # Set the font style for the table
             if TableStyle != "":
@@ -520,36 +480,24 @@ class General_BOM:
             # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
             # If the itemnumber is more than one level deep:
             if len(ItemNumber.split(".")) > 1:
-                if (
-                    BomList[i]["ItemNumber"].rsplit(".", 1)[0]
-                    == ItemNumber.rsplit(".", 1)[0]
-                ):
+                if BomList[i]["ItemNumber"].rsplit(".", 1)[0] == ItemNumber.rsplit(".", 1)[0]:
                     if ListItem["Type"] == "Part":
                         if ObjectNameValuePart == "Object":
-                            if (
-                                BomList[i]["DocumentObject"]
-                                == ListItem["DocumentObject"]
-                            ):
+                            if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
                                 counter = counter + 1
                         if ObjectNameValuePart == "ObjectLabel":
                             if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
                                 counter = counter + 1
                     if ListItem["Type"] == "Assembly":
                         if ObjectNameValueAssy == "Object":
-                            if (
-                                BomList[i]["DocumentObject"]
-                                == ListItem["DocumentObject"]
-                            ):
+                            if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
                                 counter = counter + 1
                         if ObjectNameValueAssy == "ObjectLabel":
                             if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
                                 counter = counter + 1
 
             # If the itemnumber is one level deep:
-            if (
-                len(ItemNumber.split(".")) == 1
-                and len(BomList[i]["ItemNumber"].split(".")) == 1
-            ):
+            if len(ItemNumber.split(".")) == 1 and len(BomList[i]["ItemNumber"].split(".")) == 1:
                 # if BomList[i]["ItemNumber"].rsplit(".", 1)[0] == ItemNumber.rsplit(".", 1)[0]:
                 if ListItem["Type"] == "Part":
                     if ObjectNameValuePart == "Object":
@@ -638,10 +586,7 @@ class General_BOM:
 
                 # If the object name and type of the object in the list are equal to that of the DocObject,
                 # increase the counter by one
-                if (
-                    RowItem[ObjectNameValue] == ObjectName
-                    and RowItem["DocumentObject"].TypeId == ObjectType
-                ):
+                if RowItem[ObjectNameValue] == ObjectName and RowItem["DocumentObject"].TypeId == ObjectType:
                     counter = counter + 1
 
         # Return the counter
@@ -692,17 +637,13 @@ class General_BOM:
                 # If the previous itemnumber is shorter than the current itemnumber,
                 # you have the first item in a subassembly.
                 # Add ".1" and you have the itemnumber for this first item. (e.g. 1.1 -> 1.1.1)
-                if len(ItemNumberPreviousOriginal.split(".")) < len(
-                    ItemNumberOriginal.split(".")
-                ):
+                if len(ItemNumberPreviousOriginal.split(".")) < len(ItemNumberOriginal.split(".")):
                     # Define the new itemnumber.
                     NewItemNumber = str(ItemNumberPrevious) + ".1"
 
                 # If the previous itemnumber is as long as the current itemnumber,
                 # you have an item of a subassembly that is not the first item.
-                if len(ItemNumberPreviousOriginal.split(".")) == len(
-                    ItemNumberOriginal.split(".")
-                ):
+                if len(ItemNumberPreviousOriginal.split(".")) == len(ItemNumberOriginal.split(".")):
                     # If the current item is a first level item, increase the number by 1.
                     if len(ItemNumberOriginal.split(".")) == 1:
                         NewItemNumber = str(int(ItemNumberPrevious) + 1)
@@ -716,9 +657,7 @@ class General_BOM:
                         NewItemNumber = Part1 + "." + Part2
 
                 # If the previous itemnumber is longer than the current itemnumber, you have a new subassembly.
-                if len(ItemNumberPreviousOriginal.split(".")) > len(
-                    ItemNumberOriginal.split(".")
-                ):
+                if len(ItemNumberPreviousOriginal.split(".")) > len(ItemNumberOriginal.split(".")):
                     # if the new subassembly is at the first level, split the previous itemnumber in two
                     # to get the first digit and increase this by one.
                     if len(ItemNumberOriginal.split(".")) == 1:
@@ -816,10 +755,7 @@ class General_BOM:
                 pass
 
             try:
-                if (
-                    Object.Type == "Assembly"
-                    and Object.TypeId == "Assembly::AssemblyObject"
-                ):
+                if Object.Type == "Assembly" and Object.TypeId == "Assembly::AssemblyObject":
                     resultList.append("Internal")
             except Exception:
                 pass
@@ -1106,9 +1042,7 @@ class General_BOM:
                         )[0]
                     )
                     unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(
-                            App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length
-                        ),
+                        App.Units.Quantity(App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length),
                         currentScheme,
                     )[2]
                     resultValue = f"Vector ({ValueX}, {ValueY}, {ValueZ}"
@@ -1216,5 +1150,4 @@ class General_BOM:
             if ItemNumber.rsplit(".", 1)[0] == AssemblyNumber:
                 BOMList[i]["Qty"] = int(BOMList[i]["Qty"]) / int(AssemblyQty)
 
-        return BOMList
         return BOMList
