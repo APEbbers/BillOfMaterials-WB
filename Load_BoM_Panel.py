@@ -31,6 +31,8 @@ from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
 import sys
+import Settings_BoM
+import Standard_Functions_BOM_WB as Standard_Functions
 
 # Define the translation
 translate = App.Qt.translate
@@ -44,6 +46,9 @@ PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI")
 
 sys.path.append(PATH_TB_UI)
 
+# Get settings
+ENABLE_DEBUG = Settings_BoM.ENABLE_DEBUG
+
 # import graphical created Ui. (With QtDesigner or QtCreator)
 import BoM_Panel_ui as BoM_Panel_ui
 
@@ -55,6 +60,7 @@ import BoM_Panel_ui as BoM_Panel_ui
 class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
     manualChange = False
+    currentSheet = None
 
     def __init__(self):
         # Makes "self.on_CreateBOM_clicked" listen to the changed control values instead initial values
@@ -63,17 +69,19 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # this will create a Qt widget from our ui file
         self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB_UI, "BoM_Panel.ui"))
 
+        # Get the current BoM
+        self.getCurrentBoM()
+
+        # Set the icon
         self.form.setWindowIcon(
             QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg"))
         )
 
+        # region - Connect controls with functions
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
         self.form.AssemblyType.currentTextChanged.connect(
             self.on_AssemblyType_TextChanged
         )
-
-        # This will create a connection between the pushbutton "currentTextChanged" and def "on_BomType_TextChanged"
-        self.form.BoMType.currentTextChanged.connect(self.on_BomType_TextChanged)
 
         # This will create a connection between the pushbutton "DectAssemblyType" and def "on_DectAssemblyType_clicked"
         self.form.DetectAssemblyType.connect(
@@ -82,15 +90,124 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.on_DetectAssemblyType_clicked,
         )
 
+        # This will create a connection between the pushbutton "toolButton_Settings" and def "on_toolButton_Settings_clicked"
+        self.form.toolButton_Settings.connect(
+            self.form.toolButton_Settings,
+            SIGNAL("pressed()"),
+            self.on_toolButton_Settings_clicked,
+        )
+
+        # This will create a connection between the pushbutton "toolButton_Debug" and def "on_toolButton_Debug_clicked"
+        self.form.toolButton_Debug.connect(
+            self.form.toolButton_Debug,
+            SIGNAL("pressed()"),
+            self.on_toolButton_Debug_clicked,
+        )
+
         # This will create a connection between the pushbutton "Set extra columns" and def "on_SetColumns_clicked"
         self.form.SetColumns.connect(
             self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked
         )
 
-        # This will create a connection between the pushbutton "CreateBOM" and def "on_CreateBOM_clicked"
-        self.form.CreateBOM.connect(
-            self.form.CreateBOM, SIGNAL("pressed()"), self.on_CreateBOM_clicked
+        # This will create a connection between the pushbutton "Create Total BoM" and def "on_CreateTotal_clicked"
+        self.form.CreateTotal.connect(
+            self.form.CreateTotal, SIGNAL("pressed()"), self.on_CreateTotal_clicked
         )
+
+        # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
+        self.form.CreateSummary.connect(
+            self.form.CreateSummary, SIGNAL("pressed()"), self.on_CreateSummary_clicked
+        )
+
+        # This will create a connection between the pushbutton "Create parts only BoM" and def "on_CreatePartsOnly_clicked"
+        self.form.CreatePartsOnly.connect(
+            self.form.CreatePartsOnly,
+            SIGNAL("pressed()"),
+            self.on_CreatePartsOnly_clicked,
+        )
+
+        # This will create a connection between the pushbutton "Create first level BoM" and def "on_CreateFirstLevel_clicked"
+        self.form.CreateFirstLevel.connect(
+            self.form.CreateFirstLevel,
+            SIGNAL("pressed()"),
+            self.on_CreateFirstLevel_clicked,
+        )
+        # endregion
+
+        # region - Debug settings
+        if ENABLE_DEBUG is True:
+            # Hide the debug section by default
+            self.form.DebugFrame.setHidden(True)
+            self.form.toolButton_Debug.setHidden(False)
+            self.form.DebugText.setHidden(True)
+        if ENABLE_DEBUG is False:
+            # Hide the debug section by default
+            self.form.DebugFrame.setHidden(True)
+            self.form.toolButton_Debug.setHidden(True)
+            self.form.DebugText.setHidden(False)
+        # endregion
+
+        # region - add icons to the buttons
+        icon_TotalBoM = QIcon()
+        icon_TotalBoM.addFile(
+            os.path.join(PATH_TB_ICONS, "Total.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
+        icon_SummaryBoM = QIcon()
+        icon_SummaryBoM.addFile(
+            os.path.join(PATH_TB_ICONS, "Summary.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
+        icon_PartsBoM = QIcon()
+        icon_PartsBoM.addFile(
+            os.path.join(PATH_TB_ICONS, "Parts.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
+        icon_FirstLevelBoM = QIcon()
+        icon_FirstLevelBoM.addFile(
+            os.path.join(PATH_TB_ICONS, "1stLevel.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
+        icon_SetColumns = QIcon()
+        icon_SetColumns.addFile(
+            os.path.join(PATH_TB_ICONS, "SetColumns.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
+        icon_RawBoM = QIcon()
+        icon_RawBoM.addFile(
+            os.path.join(PATH_TB_ICONS, "Raw.svg"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
+        self.form.CreateTotal.setIcon(icon_TotalBoM)
+        self.form.CreateTotal.setIconSize(QSize(32, 32))
+
+        self.form.CreateSummary.setIcon(icon_SummaryBoM)
+        self.form.CreateSummary.setIconSize(QSize(32, 32))
+
+        self.form.CreatePartsOnly.setIcon(icon_PartsBoM)
+        self.form.CreatePartsOnly.setIconSize(QSize(32, 32))
+
+        self.form.CreateFirstLevel.setIcon(icon_FirstLevelBoM)
+        self.form.CreateFirstLevel.setIconSize(QSize(32, 32))
+
+        self.form.SetColumns.setIcon(icon_SetColumns)
+        self.form.SetColumns.setIconSize(QSize(32, 32))
+
+        self.form.CreateRaw.setIcon(icon_RawBoM)
+        self.form.CreateRaw.setIconSize(QSize(32, 32))
+        # endregion
 
         # region - add icons to the assemblytype checkbox
         icon_A2Plus = QIcon()
@@ -156,7 +273,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form.AssemblyType.setItemIcon(7, icon_Arch)
         # endregion
 
-        # Set the correct assembly as default
+        # region - Set the correct assembly as default
         doc = App.ActiveDocument
         if General_BOM.CheckAssemblyType(doc) == "A2plus":
             self.form.AssemblyType.setCurrentText("A2plus")
@@ -174,23 +291,81 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.AssemblyType.setCurrentText("Arch")
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
-        # Set the correct assembly as default
-        return
 
-    # Define the standard buttons that are needed.
-    def getStandardButtons(self):
-        return int(QDialogButtonBox.StandardButton.Close)
+        return
+        # endregion
 
     # Define Icon.
     def getIcon(self):
         iconPath = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
         return iconPath
 
+    def getStandardButtons(self):
+        # return int(QDialogButtonBox.StandardButton.Close)
+        return int(QDialogButtonBox.Ok) | int(QDialogButtonBox.Cancel)
+
     # Code needed when closing the widget.
     def accept(self):
+        # Remove the backup
+        doc = App.ActiveDocument
+
+        # if there is a backupsheet, remove it
+        if self.currentSheet is not None:
+            # remove the backup sheet
+            doc.removeObject(self.currentSheet.Name)
+
+        # Recompute the document
+        doc.recompute(None, True, True)
+
         # close the dialog
         Gui.Control.closeDialog()
         return True
+
+    def reject(self):
+        # remove the new created BoM
+        doc = App.ActiveDocument
+        NewBoM = doc.getObject("BoM")
+        if NewBoM is not None:
+            doc.removeObject("BoM")
+
+        # Recompute the document
+        doc.recompute(None, True, True)
+
+        # If there is a backup sheet, restore it
+        if self.currentSheet is not None:
+            # Get the backup sheet and rename it back
+            restoreSheet = doc.getObject(self.currentSheet.Name)
+            # Rename the backup sheet
+            restoreSheet.Label = "BoM"
+
+            # message the user that the original is restored
+            Standard_Functions.Mbox(
+                "Original BoM restored!",
+                "Bill of Materials Workbench",
+                0,
+            )
+
+            # Recompute the document
+            doc.recompute(None, True, True)
+
+        # close the dialog
+        Gui.Control.closeDialog()
+
+        return True
+
+    # Hide or show the settings
+    def on_toolButton_Settings_clicked(self):
+        if self.form.SettingsFrame.isHidden() is False:
+            self.form.SettingsFrame.setHidden(True)
+        else:
+            self.form.SettingsFrame.setHidden(False)
+
+    # Hide or show extra debug settings
+    def on_toolButton_Debug_clicked(self):
+        if self.form.DebugFrame.isHidden() is False:
+            self.form.DebugFrame.setHidden(True)
+        else:
+            self.form.DebugFrame.setHidden(False)
 
     # Function to detect the assembly type
     def on_DetectAssemblyType_clicked(self):
@@ -219,8 +394,20 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         BoM_ManageColumns.main()
         return
 
+    def on_CreateTotal_clicked(self):
+        self.CreateBOM("Total BoM")
+
+    def on_CreateSummary_clicked(self):
+        self.CreateBOM("Summary BoM")
+
+    def on_CreatePartsOnly_clicked(self):
+        self.CreateBOM("Parts only BoM")
+
+    def on_CreateFirstLevel_clicked(self):
+        self.CreateBOM("First level BoM")
+
     # A function to execute the BoM scripts based on the input from the controls.
-    def on_CreateBOM_clicked(self):
+    def CreateBOM(self, TypeOfBoM):
         # Import the BoM modules
         import GetBOM_A4
         import GetBOM_AppLink
@@ -230,21 +417,44 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         import GetBOM_A2plus
         import GetBOM_MultiBody_Arch
 
+        # Get the assembly type
+        doc = App.ActiveDocument
+        if General_BOM.CheckAssemblyType(doc) == "A2plus":
+            AssemblyType_Selected = "A2plus"
+        if General_BOM.CheckAssemblyType(doc) == "AppLink":
+            AssemblyType_Selected = "App:LinkGroup"
+        if General_BOM.CheckAssemblyType(doc) == "AppPart":
+            AssemblyType_Selected = "App:Part"
+        if General_BOM.CheckAssemblyType(doc) == "Assembly3":
+            AssemblyType_Selected = "Assembly 3"
+        if General_BOM.CheckAssemblyType(doc) == "Assembly4":
+            AssemblyType_Selected = "Assembly 4"
+        if General_BOM.CheckAssemblyType(doc) == "Internal":
+            AssemblyType_Selected = "Internal assembly"
+        if General_BOM.CheckAssemblyType(doc) == "Arch":
+            AssemblyType_Selected = "Arch"
+        if General_BOM.CheckAssemblyType(doc) == "MultiBody":
+            AssemblyType_Selected = "MultiBody"
+
         # Get the values from the controls
-        AssemblyType_Selected = str(self.form.AssemblyType.currentText())
-        TypeOfBoM_Selected = str(self.form.BoMType.currentText())
         IncludeBodies_Checked = self.form.IncludeBodies.isChecked()
         UseIndent_Checked = self.form.IndentedNumbering.isChecked()
         Level_Value = self.form.MaxLevel.value()
 
         # Create the command based on selected BoM type.
         Command = ""
-        if TypeOfBoM_Selected == "Total BoM":
+        if TypeOfBoM == "Total BoM":
             Command = "Total"
-        if TypeOfBoM_Selected == "Parts only BoM":
+            Level_Value = self.form.MaxLevel.value()
+        if TypeOfBoM == "Parts only BoM":
             Command = "PartsOnly"
-        if TypeOfBoM_Selected == "Summary BoM":
+            Level_Value = self.form.MaxLevel.value()
+        if TypeOfBoM == "Summary BoM":
             Command = "Summarized"
+            Level_Value = self.form.MaxLevel.value()
+        if TypeOfBoM == "First level BoM":
+            Command = "Total"
+            Level_Value = 1
 
         # Get the correct BoM functions based on the  selected assembly type
         if AssemblyType_Selected == "Assembly 4":
@@ -308,8 +518,6 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             GetBOM_MultiBody_Arch.BomFunctions.Start(
                 CheckAssemblyType=not self.manualChange
             )
-
-        self.form.CreateBOM.clearFocus()
         return
 
     def on_AssemblyType_TextChanged(self):
@@ -325,8 +533,6 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
 
-            self.form.BoMType.setEnabled(False)
-            self.form.BoMType.setCurrentText("Total BoM")
             self.form.label.setStyleSheet("""color: #787878;""")
 
             self.form.IndentedNumbering.setEnabled(False)
@@ -339,7 +545,6 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.IncludeBodies.setEnabled(True)
             self.form.label_3.setStyleSheet("")
 
-            self.form.BoMType.setEnabled(True)
             self.form.label.setStyleSheet("")
 
             self.form.IndentedNumbering.setEnabled(True)
@@ -351,14 +556,26 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
         return
 
-    def on_BomType_TextChanged(self):
-        TypeOfBoM_Selected = str(self.form.BoMType.currentText())
-        if TypeOfBoM_Selected != "Total BoM":
-            self.form.IndentedNumbering.setEnabled(False)
-            self.form.label_4.setStyleSheet("""color: #787878;""")
-        else:
-            self.form.IndentedNumbering.setEnabled(True)
-            self.form.label_4.setStyleSheet("")
-        self.form.label_4.update()
+    # A function to store a BoM if it already exists
+    def getCurrentBoM(self):
+        doc = App.ActiveDocument
+
+        # Get the current sheet and the group it is in.
+        currentSheet = doc.getObject("BoM")
+        Group = None
+        try:
+            Group = currentSheet.getParentGroup()
+        except Exception:
+            pass
+
+        # If there is a sheet, copy and rename it
+        if currentSheet is not None:
+            currentSheet = doc.copyObject(doc.getObject("BoM"), False, False)
+            # If the currentSheet is in a Group, move the backup in there
+            if Group is not None:
+                Group.addObject(currentSheet)
+
+            currentSheet.Label = "BoM_Backup"
+            self.currentSheet = currentSheet
 
         return
