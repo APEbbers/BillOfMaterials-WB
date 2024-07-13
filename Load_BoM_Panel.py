@@ -543,7 +543,11 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
         # Get the current sheet and the group it is in.
         currentSheet = doc.getObject("BoM")
-        Group = currentSheet.getParentGroup()
+        Group = None
+        try:
+            Group = currentSheet.getParentGroup()
+        except Exception:
+            pass
 
         # If there is a sheet, copy and rename it
         if currentSheet is not None:
