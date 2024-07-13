@@ -52,8 +52,9 @@ class BomFunctions:
                 return
 
         # Get the list with rootobjects
-        RootObjects = doc.RootObjects
-        docObjects = []
+        RootObjects = []
+        for i in range(len(doc.RootObjects)):
+            RootObjects.append(doc.RootObjects[i])
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for RootObject in RootObjects:
@@ -76,10 +77,12 @@ class BomFunctions:
             PartList.append(Part)
 
         # Get items outside the parts
+        docObjects = []
         for RootObject in RootObjects:
             if RootObject.Name != "Parts":
-                if self.AllowedObjectType(RootObject.TypeId) is True:
-                    docObjects.append(RootObject)
+                if RootObject.Visibility is True:
+                    if self.AllowedObjectType(RootObject.TypeId) is True:
+                        docObjects.append(RootObject)
 
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
@@ -419,18 +422,37 @@ class BomFunctions:
         # Use an try-except statement incase there is no "getPropertyByName" method.
         try:
             docObject = RowItem["DocumentObject"]
+
+            propertyList = []
+            propertyList = docObject.PropertiesList
+            HasType = False
+
+            for i in range(len(propertyList)):
+                if propertyList[i] == "Type":
+                    HasType = True
+
             # If the property returns empty, it is an part. Return the linked object.
             # This way, duplicate items (normally like Bearing001, Bearing002, etc.) will be replaced with
             # the original part. This is used for summation of the same parts.
-            if docObject.getPropertyByName("Type") == "":
+            if HasType is True:
+                if docObject.getPropertyByName("Type") == "":
+                    RowItem["DocumentObject"] = docObject.LinkedObject
+                    RowItem["ObjectName"] = docObject.LinkedObject.Name
+                    RowItem["ObjectLabel"] = docObject.LinkedObject.Label
+                    return RowItem
+                # If the property returns "Assembly", it is an sub-assembly. Return the object.
+                if docObject.getPropertyByName("Type") == "Assembly":
+                    RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[
+                        0
+                    ]
+                    RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[
+                        0
+                    ]
+                    return RowItem
+            if HasType is False:
                 RowItem["DocumentObject"] = docObject.LinkedObject
                 RowItem["ObjectName"] = docObject.LinkedObject.Name
                 RowItem["ObjectLabel"] = docObject.LinkedObject.Label
-                return RowItem
-            # If the property returns "Assembly", it is an sub-assembly. Return the object.
-            if docObject.getPropertyByName("Type") == "Assembly":
-                RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[0]
-                RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
                 return RowItem
         except Exception:
             return None

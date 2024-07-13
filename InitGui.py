@@ -108,18 +108,27 @@ class BillOfMaterialsWB(Gui.Workbench):
 
         # creates a new toolbar with your commands
         self.appendToolbar("BOM Commands", MainToolbar)
-        self.list = [
-            "CreateBOM_Raw_MIXED",
-            "CreateBOM_Total_MIXED",
-            "CreateBOM_Summary_MIXED",
-            "CreateBOM_PartsOnly_MIXED",
-        ]
-        self.appendToolbar("BoM_Commands_Mixed", self.list)
         # endregion ----------------------------------------------------------------------------------------------------
 
         # region - Create the toolbar for other workbenches ------------------------------------------------------------
         # a list of command names created in the line above
         WorkbenchToolbar = BoM_CreateUI.DefineToolbars()["ToolbarListWorkbenches"]
+
+        WorkBenchList = [
+            "A2plusWorkbench",
+            "Assembly4Workbench",
+            "PartWorkbench",
+            "Assembly3Workbench",
+            "AssemblyWorkbench",
+            "BIMWorkbench",
+            "ArchWorkbench",
+        ]
+
+        for i in range(len(WorkBenchList)):
+            try:
+                BoM_CreateUI.CreateWorkBenchToolbar(WorkBenchList[i], WorkbenchToolbar)
+            except Exception:
+                pass
 
         # endregion ----------------------------------------------------------------------------------------------------
 

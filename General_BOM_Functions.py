@@ -89,7 +89,7 @@ class General_BOM:
         CustomHeadersDict = {}
 
         # Go through the debug headers
-        if DEBUG_HEADERS is not None:
+        if DEBUG_HEADERS != "":
             DebugHeaderList = DEBUG_HEADERS.split(";")
             for i in range(len(DebugHeaderList)):
                 # Set the header
@@ -100,23 +100,27 @@ class General_BOM:
                 Cell = f"{Column}1"
                 # Add the cell and header as a dict item to the dict AdditionalHeaders
                 DebugHeadersDict[Cell] = Header
-        # Set the headers with additional headers
-        Headers = Settings_BoM.ReturnHeaders(
-            Headers=Headers, AdditionalHeaders=DebugHeadersDict
-        )
+
+            # Get the headers with additional headers
+            Headers = Settings_BoM.ReturnHeaders(
+                Headers=Headers, AdditionalHeaders=DebugHeadersDict
+            )
 
         # Go through the custom headers
-        if CustomHeadersDict is not None and IFCData is None:
-            CustomHeaderList = self.customHeaders.split(";")
-            for i in range(len(CustomHeaderList)):
-                # Set the header
-                Header = CustomHeaderList[i]
-                # Set the column
-                Column = Standard_Functions.GetLetterFromNumber(len(Headers) + i + 1)
-                # Set the cell
-                Cell = f"{Column}1"
-                # Add the cell and header as a dict item to the dict AdditionalHeaders
-                CustomHeadersDict[Cell] = Header
+        if CustomHeadersDict is not None or bool(CustomHeadersDict) is True:
+            if IFCData is None:
+                CustomHeaderList = self.customHeaders.split(";")
+                for i in range(len(CustomHeaderList)):
+                    # Set the header
+                    Header = CustomHeaderList[i]
+                    # Set the column
+                    Column = Standard_Functions.GetLetterFromNumber(
+                        len(Headers) + i + 1
+                    )
+                    # Set the cell
+                    Cell = f"{Column}1"
+                    # Add the cell and header as a dict item to the dict AdditionalHeaders
+                    CustomHeadersDict[Cell] = Header
 
         # Set the headers with additional headers
         Headers = Settings_BoM.ReturnHeaders(
@@ -126,14 +130,12 @@ class General_BOM:
         # Define the header range based on Headers
         HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers))}1"
 
-        # Set the cell width based on the headers as default
-        for key in Headers:
-            Cell = str(key)
-            Value = str(Headers[key])
-            sheet.set(Cell, Value)
+        # Create the headers and set the width
+        for key, value in Headers.items():
+            sheet.set(key, value)
             # set the width based on the headers
             Standard_Functions.SetColumnWidth_SpreadSheet(
-                sheet=sheet, column=key[:1], cellValue=Value
+                sheet=sheet, column=key[:1], cellValue=value
             )
 
         # Style the Top row
@@ -199,14 +201,12 @@ class General_BOM:
                                 rowList["DocumentObject"], Headers[Column + "1"]
                             )[0],
                         )
-                        NewHeader = ""
-                        Unit = self.ReturnViewProperty(
-                            rowList["DocumentObject"], Headers[Column + "1"]
-                        )[1]
-                        if Unit != "":
-                            NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
-                        if sheet.getContents(Column + "1") != NewHeader:
-                            sheet.set(Column + "1", NewHeader)
+                        # NewHeader = ""
+                        # Unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
+                        # # if Unit != "":
+                        # #     NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
+                        # # if sheet.getContents(Column + "1") != NewHeader:
+                        # #     sheet.set(Column + "1", NewHeader)
                     except Exception as e:
                         # print(e)
                         pass

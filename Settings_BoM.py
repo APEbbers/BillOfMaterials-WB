@@ -171,9 +171,10 @@ def ReturnHeaders(Headers: dict = None, AdditionalHeaders: dict = None):
                     "A1": "Number",
                     "B1": "Qty",
                     "C1": "Label",
+                    "D1": "Description",
             }
     """
-    if Headers is None:
+    if Headers is None or bool(Headers) is False:
         Headers = {
             "A1": "Number",
             "B1": "Qty",
@@ -181,7 +182,7 @@ def ReturnHeaders(Headers: dict = None, AdditionalHeaders: dict = None):
             "D1": "Description",
         }
 
-    if AdditionalHeaders is not None:
+    if AdditionalHeaders is not None or bool(AdditionalHeaders) is True:
         Headers.update(AdditionalHeaders)
 
     return Headers
