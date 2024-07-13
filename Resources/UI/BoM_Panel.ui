@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>691</width>
-    <height>829</height>
+    <height>1202</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -95,13 +95,13 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>291</width>
-     <height>662</height>
+     <width>311</width>
+     <height>591</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -654,7 +654,7 @@
           <item row="0" column="1">
            <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>Create total BoM</string>
+             <string>Create raw BoM</string>
             </property>
            </widget>
           </item>
@@ -672,7 +672,7 @@
       <property name="sizeHint" stdset="0">
        <size>
         <width>20</width>
-        <height>40</height>
+        <height>100</height>
        </size>
       </property>
      </spacer>
@@ -694,38 +694,5 @@
  <resources>
   <include location="../../Icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>toolButton_Settings</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>frame</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>84</x>
-     <y>238</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>394</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toolButton_Debug</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>frame_3</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>422</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>195</x>
-     <y>566</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
