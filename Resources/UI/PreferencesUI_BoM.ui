@@ -36,29 +36,33 @@
      <rect>
       <x>17</x>
       <y>27</y>
-      <width>321</width>
-      <height>251</height>
+      <width>391</width>
+      <height>257</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout_5">
      <item row="1" column="0" colspan="2">
       <layout class="QGridLayout" name="gridLayout_14">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_47">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>50</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>50</width>
-           <height>0</height>
-          </size>
+       <item row="0" column="3">
+        <widget class="Gui::PrefCheckBox" name="SprHeaderFontStyle_Underline_3">
+         <property name="font">
+          <font>
+           <weight>50</weight>
+           <bold>false</bold>
+           <underline>true</underline>
+          </font>
          </property>
          <property name="text">
-          <string>Header font style</string>
+          <string>Underline</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="prefEntry" stdset="0">
+          <cstring>SpreadsheetHeaderFontStyle_Underline</cstring>
+         </property>
+         <property name="prefPath" stdset="0">
+          <cstring>Mod/BoM Workbench</cstring>
          </property>
         </widget>
        </item>
@@ -84,6 +88,25 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_47">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Header font style</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="2">
         <widget class="Gui::PrefCheckBox" name="SprHeaderFontStyle_Italic_3">
          <property name="font">
@@ -104,46 +127,23 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="Gui::PrefCheckBox" name="SprHeaderFontStyle_Underline_3">
-         <property name="font">
-          <font>
-           <weight>50</weight>
-           <bold>false</bold>
-           <underline>true</underline>
-          </font>
+       <item row="0" column="4">
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="text">
-          <string>Underline</string>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
          </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-         <property name="prefEntry" stdset="0">
-          <cstring>SpreadsheetHeaderFontStyle_Underline</cstring>
-         </property>
-         <property name="prefPath" stdset="0">
-          <cstring>Mod/BoM Workbench</cstring>
-         </property>
-        </widget>
+        </spacer>
        </item>
       </layout>
      </item>
      <item row="3" column="0" colspan="2">
       <layout class="QGridLayout" name="gridLayout_16">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_51">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>30</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Table font style</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="1">
         <widget class="Gui::PrefCheckBox" name="SprTableFontStyle_Bold_3">
          <property name="font">
@@ -160,6 +160,25 @@
          </property>
          <property name="prefPath" stdset="0">
           <cstring>Mod/BoM Workbench</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_51">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>30</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Table font style</string>
          </property>
         </widget>
        </item>
@@ -203,6 +222,19 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="4">
+        <spacer name="horizontalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </item>
      <item row="4" column="0" colspan="2">
@@ -213,36 +245,44 @@
        <property name="horizontalSpacing">
         <number>6</number>
        </property>
+       <item row="0" column="1">
+        <widget class="Gui::PrefCheckBox" name="SprColumnFontStyle_Bold_3">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Bold</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="prefEntry" stdset="0">
+          <cstring>SpreadsheetColumnFontStyle_Bold</cstring>
+         </property>
+         <property name="prefPath" stdset="0">
+          <cstring>Mod/BoM Workbench</cstring>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_52">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>40</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>1st column font style</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="Gui::PrefCheckBox" name="SprColumnFontStyle_Italic_3">
-         <property name="font">
-          <font>
-           <weight>50</weight>
-           <italic>true</italic>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Italic</string>
-         </property>
-         <property name="prefEntry" stdset="0">
-          <cstring>SpreadsheetColumnFontStyle_Italic</cstring>
-         </property>
-         <property name="prefPath" stdset="0">
-          <cstring>Mod/BoM Workbench</cstring>
          </property>
         </widget>
        </item>
@@ -266,27 +306,38 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="Gui::PrefCheckBox" name="SprColumnFontStyle_Bold_3">
+       <item row="0" column="2">
+        <widget class="Gui::PrefCheckBox" name="SprColumnFontStyle_Italic_3">
          <property name="font">
           <font>
-           <weight>75</weight>
-           <bold>true</bold>
+           <weight>50</weight>
+           <italic>true</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="text">
-          <string>Bold</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
+          <string>Italic</string>
          </property>
          <property name="prefEntry" stdset="0">
-          <cstring>SpreadsheetColumnFontStyle_Bold</cstring>
+          <cstring>SpreadsheetColumnFontStyle_Italic</cstring>
          </property>
          <property name="prefPath" stdset="0">
           <cstring>Mod/BoM Workbench</cstring>
          </property>
         </widget>
+       </item>
+       <item row="0" column="4">
+        <spacer name="horizontalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </item>
@@ -294,6 +345,18 @@
       <layout class="QGridLayout" name="gridLayout_13">
        <item row="0" column="0">
         <widget class="QLabel" name="label_45">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>Header background       </string>
          </property>
@@ -374,20 +437,32 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_46">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>Header foreground</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="2" rowspan="2">
-        <widget class="QFrame" name="frame_2">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
+       <item row="0" column="2">
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
          </property>
-        </widget>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>150</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </item>
@@ -416,33 +491,16 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="Gui::PrefColorButton" name="SprTableBackGround_6">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_48">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
          </property>
-         <property name="color">
-          <color>
-           <red>128</red>
-           <green>128</green>
-           <blue>128</blue>
-          </color>
-         </property>
-         <property name="prefEntry" stdset="0">
-          <cstring>SpreadSheetTableBackGround_2</cstring>
-         </property>
-         <property name="prefPath" stdset="0">
-          <cstring>Mod/BoM Workbench</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_50">
          <property name="text">
-          <string>Table background 2</string>
+          <string>Table foreground</string>
          </property>
         </widget>
        </item>
@@ -469,36 +527,8 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_48">
-         <property name="text">
-          <string>Table foreground</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_49">
-         <property name="text">
-          <string>Table background 1       </string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2" rowspan="3">
-        <widget class="QFrame" name="frame">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="5" column="0" colspan="2">
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="2">
-        <widget class="QFrame" name="frame_3">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_50">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -507,18 +537,71 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>120</width>
+           <width>150</width>
            <height>0</height>
           </size>
          </property>
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
+         <property name="text">
+          <string>Table background 2</string>
          </property>
         </widget>
        </item>
+       <item row="1" column="1">
+        <widget class="Gui::PrefColorButton" name="SprTableBackGround_6">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="color">
+          <color>
+           <red>128</red>
+           <green>128</green>
+           <blue>128</blue>
+          </color>
+         </property>
+         <property name="prefEntry" stdset="0">
+          <cstring>SpreadSheetTableBackGround_2</cstring>
+         </property>
+         <property name="prefPath" stdset="0">
+          <cstring>Mod/BoM Workbench</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_49">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Table background 1       </string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>140</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item row="5" column="0" colspan="2">
+      <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="1">
         <widget class="Gui::PrefDoubleSpinBox" name="AutoFitFactor_3">
          <property name="sizePolicy">
@@ -544,14 +627,14 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_53">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="minimumSize">
           <size>
-           <width>50</width>
+           <width>150</width>
            <height>0</height>
           </size>
          </property>
@@ -566,6 +649,22 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="2">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>125</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </item>
     </layout>
@@ -577,7 +676,7 @@
      <x>10</x>
      <y>310</y>
      <width>421</width>
-     <height>91</height>
+     <height>81</height>
     </rect>
    </property>
    <property name="font">
@@ -589,75 +688,73 @@
    <property name="title">
     <string>Debug settings</string>
    </property>
-   <widget class="Gui::PrefCheckBox" name="EnableDebugColumns">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>181</width>
-      <height>17</height>
+      <width>399</width>
+      <height>44</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Enable extra columns for debug</string>
-    </property>
-    <property name="prefEntry" stdset="0">
-     <cstring>EnableDebugColumns</cstring>
-    </property>
-    <property name="prefPath" stdset="0">
-     <cstring>Mod/BoM Workbench</cstring>
-    </property>
-   </widget>
-   <widget class="QWidget" name="layoutWidget_3">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>50</y>
-      <width>459</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="Gui::PrefCheckBox" name="EnableDebug_2">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>20</width>
-         <height>0</height>
-        </size>
-       </property>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="Gui::PrefCheckBox" name="EnableDebugColumns">
        <property name="text">
-        <string>Debug mode</string>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
+        <string>Enable extra columns for debug</string>
        </property>
        <property name="prefEntry" stdset="0">
-        <cstring>EnableDebug</cstring>
+        <cstring>EnableDebugColumns</cstring>
        </property>
        <property name="prefPath" stdset="0">
         <cstring>Mod/BoM Workbench</cstring>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QLabel" name="label_12">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;(If enabled, extra information will be shown in the report view.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
+     <item row="1" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="Gui::PrefCheckBox" name="EnableDebug_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>20</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Debug mode</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <property name="prefEntry" stdset="0">
+          <cstring>EnableDebug</cstring>
+         </property>
+         <property name="prefPath" stdset="0">
+          <cstring>Mod/BoM Workbench</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_12">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;(If enabled, extra information will be shown in the report view.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
@@ -666,7 +763,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>400</y>
+     <y>390</y>
      <width>401</width>
      <height>16</height>
     </rect>
