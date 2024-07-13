@@ -64,14 +64,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB_UI, "BoM_Panel.ui"))
 
         # Set the icon
-        self.form.setWindowIcon(
-            QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg"))
-        )
+        self.form.setWindowIcon(QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")))
 
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
-        self.form.AssemblyType.currentTextChanged.connect(
-            self.on_AssemblyType_TextChanged
-        )
+        self.form.AssemblyType.currentTextChanged.connect(self.on_AssemblyType_TextChanged)
 
         # This will create a connection between the pushbutton "DectAssemblyType" and def "on_DectAssemblyType_clicked"
         self.form.DetectAssemblyType.connect(
@@ -93,19 +89,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         )
 
         # This will create a connection between the pushbutton "Set extra columns" and def "on_SetColumns_clicked"
-        self.form.SetColumns.connect(
-            self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked
-        )
+        self.form.SetColumns.connect(self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked)
 
         # This will create a connection between the pushbutton "Create Total BoM" and def "on_CreateTotal_clicked"
-        self.form.CreateTotal.connect(
-            self.form.CreateTotal, SIGNAL("pressed()"), self.on_CreateTotal_clicked
-        )
+        self.form.CreateTotal.connect(self.form.CreateTotal, SIGNAL("pressed()"), self.on_CreateTotal_clicked)
 
         # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
-        self.form.CreateSummary.connect(
-            self.form.CreateSummary, SIGNAL("pressed()"), self.on_CreateSummary_clicked
-        )
+        self.form.CreateSummary.connect(self.form.CreateSummary, SIGNAL("pressed()"), self.on_CreateSummary_clicked)
 
         # This will create a connection between the pushbutton "Create parts only BoM" and def "on_CreatePartsOnly_clicked"
         self.form.CreatePartsOnly.connect(
@@ -195,9 +185,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             QIcon.Off,
         )
         icon_AppLink = QIcon()
-        icon_AppLink.addFile(
-            os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off
-        )
+        icon_AppLink.addFile(os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off)
         icon_Asm3 = QIcon()
         icon_Asm3.addFile(
             os.path.join(PATH_TB_ICONS, "Assembly3_workbench_icon.svg"),
@@ -288,17 +276,17 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
     # Hide or show the settings
     def on_toolButton_Settings_clicked(self):
-        if self.SettingsFrame.isHidden() is False:
-            self.SettingsFrame.setHidden(True)
+        if self.form.SettingsFrame.isHidden() is False:
+            self.form.SettingsFrame.setHidden(True)
         else:
-            self.SettingsFrame.setHidden(False)
+            self.form.SettingsFrame.setHidden(False)
 
     # Hide or show extra debug settings
     def on_toolButton_Debug_clicked(self):
-        if self.DebugFrame.isHidden() is False:
-            self.DebugFrame.setHidden(True)
+        if self.form.DebugFrame.isHidden() is False:
+            self.form.DebugFrame.setHidden(True)
         else:
-            self.DebugFrame.setHidden(False)
+            self.form.DebugFrame.setHidden(False)
 
     # Function to detect the assembly type
     def on_DetectAssemblyType_clicked(self):
@@ -447,22 +435,15 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Arch":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(
-                CheckAssemblyType=not self.manualChange
-            )
+            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=not self.manualChange)
         if AssemblyType_Selected == "MultiBody":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(
-                CheckAssemblyType=not self.manualChange
-            )
+            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=not self.manualChange)
         return
 
     def on_AssemblyType_TextChanged(self):
         self.manualChange = True
         AssemblyType_Selected = str(self.form.AssemblyType.currentText())
-        if (
-            AssemblyType_Selected == "App:Part"
-            or AssemblyType_Selected == "App:LinkGroup"
-        ):
+        if AssemblyType_Selected == "App:Part" or AssemblyType_Selected == "App:LinkGroup":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
         elif AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":

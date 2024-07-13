@@ -95,7 +95,7 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <widget class="QFrame" name="frame">
+  <widget class="QFrame" name="MainFrame">
    <property name="geometry">
     <rect>
      <x>10</x>
