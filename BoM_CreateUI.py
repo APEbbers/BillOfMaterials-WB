@@ -29,6 +29,7 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
+import Settings_BoM
 
 # Define the translation
 translate = App.Qt.translate
@@ -46,18 +47,25 @@ def DefineToolbars() -> dict:
     # a list of command names created in the line above
     ToolbarListMain = [
         "CreateBOM_Overall",
-        # "Separator",
-        # "CreateBOM_Raw",
-        # "Separator",
-        # "CreateBOM_1stLevel",
-        # "Separator",
-        # "SetColumns",
+        "Separator",
+        "CreateBOM_1stLevel",
+        "Separator",
+        "SetColumns",
     ]
+
+    if Settings_BoM.ENABLE_DEBUG is True:
+        ToolbarListMain = [
+            "CreateBOM_Overall",
+            "Separator",
+            "CreateBOM_1stLevel",
+            "Separator",
+            "SetColumns",
+            "Separator",
+            "CreateBOM_Raw",
+        ]
 
     ToolbarListWorkbenches = [
         "CreateBOM_Overall",
-        # "Separator",
-        # "CreateBOM_1stLevel",
     ]
 
     result = {
@@ -114,9 +122,7 @@ def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list) -> object:
     # Define the name for the toolbar
     ToolBarName = "BoM_Toolbar"
     # define the parameter path for the toolbar
-    WorkbenchToolBarsParamPath = (
-        "User parameter:BaseApp/Workbench/" + WorkBench + "/Toolbar/"
-    )
+    WorkbenchToolBarsParamPath = "User parameter:BaseApp/Workbench/" + WorkBench + "/Toolbar/"
 
     # endregion
 
@@ -164,9 +170,7 @@ def RemoveWorkBenchToolbars(WorkBench: str) -> None:
     custom_toolbars.RemGroup(ToolbarGroupName)
 
 
-def ReplaceButtons(
-    ToolbarGroupName: str, WorkbenchToolBarsParamPath: str, ButtonList: list
-) -> None:
+def ReplaceButtons(ToolbarGroupName: str, WorkbenchToolBarsParamPath: str, ButtonList: list) -> None:
     # Get the toolbar
     TechDrawToolbar = App.ParamGet(WorkbenchToolBarsParamPath + ToolbarGroupName)
 

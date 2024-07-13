@@ -688,12 +688,12 @@
    <property name="title">
     <string>Debug settings</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>18</x>
       <y>20</y>
-      <width>399</width>
+      <width>391</width>
       <height>44</height>
      </rect>
     </property>
