@@ -1,5 +1,4 @@
-
-![BillOfMaterialsWB](https://github.com/user-attachments/assets/2732c473-94fb-481f-b922-bb843986a89a)
+![BillOfMaterialsWB](https://github.com/user-attachments/assets/ef66fa69-b78e-4210-afe2-a1476f601fa0)
 
 # Bill of Materials-WB
 
@@ -23,9 +22,9 @@ For debugging the option "Enable extra columns for debug" can be enabled. This o
 * Type. -> Part or Assembly
 * Internal name.
 * Fullname.
-* TypeId.
-
-
+* TypeId.  
+  
+  
 ## Supported assembly types:
 * a2plus
 * Assembly 3
@@ -33,17 +32,18 @@ For debugging the option "Enable extra columns for debug" can be enabled. This o
 * Internal assembly workbench (This workbench is still in development)
 * Applink / ApplinkGroup assemblies
 * AppPart assemblies
+* Multi body parts
 
 
 This workbench is still under development. Therefore there are some limitations.\
 Support for the following assemblies, workbenches and futures are planned:
-* ~~Improvement on assembly type detection, so assemblies can be placed in groups.~~
+* ~~Improvement on assembly type detection, so assemblies can be placed in groups.~~ -> Done
 * Support for the Arch WB
-* ~~Support for multi-body parts (Part WB)~~
+* ~~Support for multi-body parts (Part WB)~~ -> Done
 * One function to support a mixed structure of all assembly workbenches
 * A function to add the BoM to a TechDraw page template
 * Mass calculation based on shape and material
-* ~~outer dimensions of items~~
+* ~~outer dimensions of items~~ -> Done
 
 ## License:
 LGPL2.+
