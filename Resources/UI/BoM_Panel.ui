@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>691</width>
-    <height>1202</height>
+    <width>334</width>
+    <height>801</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+   <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>0</width>
-    <height>305</height>
+    <height>650</height>
    </size>
   </property>
   <property name="palette">
@@ -101,7 +101,7 @@
      <x>10</x>
      <y>10</y>
      <width>311</width>
-     <height>591</height>
+     <height>711</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -123,7 +123,7 @@
        </size>
       </property>
       <property name="autoFillBackground">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -308,7 +308,7 @@
        </size>
       </property>
       <property name="autoFillBackground">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -662,6 +662,16 @@
         </item>
        </layout>
       </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="DebugText">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Enable &amp;quot;Debug mode&amp;quot; in preferences to enable extra functions for testing purposes.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item>

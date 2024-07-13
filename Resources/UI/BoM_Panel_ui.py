@@ -64,13 +64,13 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName("Dialog")
-        Dialog.resize(691, 1202)
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        Dialog.resize(334, 801)
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
         Dialog.setSizePolicy(sizePolicy)
-        Dialog.setMinimumSize(QSize(0, 305))
+        Dialog.setMinimumSize(QSize(0, 650))
         palette = QPalette()
         brush = QBrush(QColor(255, 255, 255, 255))
         brush.setStyle(Qt.SolidPattern)
@@ -85,7 +85,7 @@ class Ui_Dialog(object):
         Dialog.setModal(True)
         self.MainFrame = QFrame(Dialog)
         self.MainFrame.setObjectName("MainFrame")
-        self.MainFrame.setGeometry(QRect(10, 10, 311, 591))
+        self.MainFrame.setGeometry(QRect(10, 10, 311, 711))
         self.verticalLayout = QVBoxLayout(self.MainFrame)
         self.verticalLayout.setObjectName("verticalLayout")
         self.verticalLayout.setSizeConstraint(QLayout.SetMinimumSize)
@@ -97,7 +97,7 @@ class Ui_Dialog(object):
         sizePolicy1.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
         self.frame_2.setSizePolicy(sizePolicy1)
         self.frame_2.setMinimumSize(QSize(0, 200))
-        self.frame_2.setAutoFillBackground(True)
+        self.frame_2.setAutoFillBackground(False)
         self.frame_2.setFrameShape(QFrame.StyledPanel)
         self.frame_2.setFrameShadow(QFrame.Sunken)
         self.layoutWidget = QWidget(self.frame_2)
@@ -186,12 +186,12 @@ class Ui_Dialog(object):
 
         self.verticalLayout.addWidget(self.toolButton_Settings)
 
-        self.SettingsFrame = QFrame(self.frame)
+        self.SettingsFrame = QFrame(self.MainFrame)
         self.SettingsFrame.setObjectName("SettingsFrame")
         sizePolicy1.setHeightForWidth(self.SettingsFrame.sizePolicy().hasHeightForWidth())
         self.SettingsFrame.setSizePolicy(sizePolicy1)
         self.SettingsFrame.setMinimumSize(QSize(0, 150))
-        self.SettingsFrame.setAutoFillBackground(True)
+        self.SettingsFrame.setAutoFillBackground(False)
         self.SettingsFrame.setFrameShape(QFrame.StyledPanel)
         self.layoutWidget1 = QWidget(self.SettingsFrame)
         self.layoutWidget1.setObjectName("layoutWidget1")
@@ -366,6 +366,12 @@ class Ui_Dialog(object):
 
         self.verticalLayout.addWidget(self.DebugFrame)
 
+        self.DebugText = QLabel(self.MainFrame)
+        self.DebugText.setObjectName("DebugText")
+        self.DebugText.setWordWrap(True)
+
+        self.verticalLayout.addWidget(self.DebugText)
+
         self.verticalSpacer = QSpacerItem(20, 100, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.verticalLayout.addItem(self.verticalSpacer)
@@ -436,5 +442,12 @@ class Ui_Dialog(object):
         self.label_2.setText(QCoreApplication.translate("Dialog", "Set assemby type manually", None))
         self.CreateRaw.setText("")
         self.label_5.setText(QCoreApplication.translate("Dialog", "Create raw BoM", None))
+        self.DebugText.setText(
+            QCoreApplication.translate(
+                "Dialog",
+                '<html><head/><body><p><span style=" font-style:italic;">Enable &quot;Debug mode&quot; in preferences to enable extra functions for testing purposes.</span></p><p><br/></p></body></html>',
+                None,
+            )
+        )
 
     # retranslateUi

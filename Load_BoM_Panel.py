@@ -31,6 +31,7 @@ from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
 import sys
+import Settings_BoM
 
 # Define the translation
 translate = App.Qt.translate
@@ -44,6 +45,9 @@ PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI")
 
 sys.path.append(PATH_TB_UI)
 
+# Get settings
+ENABLE_DEBUG = Settings_BoM.ENABLE_DEBUG
+
 # import graphical created Ui. (With QtDesigner or QtCreator)
 import BoM_Panel_ui as BoM_Panel_ui
 
@@ -55,6 +59,7 @@ import BoM_Panel_ui as BoM_Panel_ui
 class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
     manualChange = False
+    currentSheet = None
 
     def __init__(self):
         # Makes "self.on_CreateBOM_clicked" listen to the changed control values instead initial values
@@ -63,9 +68,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # this will create a Qt widget from our ui file
         self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB_UI, "BoM_Panel.ui"))
 
+        # Get the current BoM
+        self.getCurrentBoM()
+
         # Set the icon
         self.form.setWindowIcon(QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")))
 
+        # region - Connect controls with functions
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
         self.form.AssemblyType.currentTextChanged.connect(self.on_AssemblyType_TextChanged)
 
@@ -76,12 +85,14 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.on_DetectAssemblyType_clicked,
         )
 
+        # This will create a connection between the pushbutton "toolButton_Settings" and def "on_toolButton_Settings_clicked"
         self.form.toolButton_Settings.connect(
             self.form.toolButton_Settings,
             SIGNAL("pressed()"),
             self.on_toolButton_Settings_clicked,
         )
 
+        # This will create a connection between the pushbutton "toolButton_Debug" and def "on_toolButton_Debug_clicked"
         self.form.toolButton_Debug.connect(
             self.form.toolButton_Debug,
             SIGNAL("pressed()"),
@@ -110,9 +121,20 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             SIGNAL("pressed()"),
             self.on_CreateFirstLevel_clicked,
         )
+        # endregion
 
-        # Hide the debug section by default
-        self.form.DebugFrame.setHidden(True)
+        # region - Debug settings
+        if ENABLE_DEBUG is True:
+            # Hide the debug section by default
+            self.form.DebugFrame.setHidden(True)
+            self.form.toolButton_Debug.setHidden(False)
+            self.form.DebugText.setHidden(True)
+        if ENABLE_DEBUG is False:
+            # Hide the debug section by default
+            self.form.DebugFrame.setHidden(True)
+            self.form.toolButton_Debug.setHidden(True)
+            self.form.DebugText.setHidden(False)
+        # endregion
 
         # region - add icons to the buttons
         icon_TotalBoM = QIcon()
@@ -238,7 +260,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form.AssemblyType.setItemIcon(7, icon_Arch)
         # endregion
 
-        # Set the correct assembly as default
+        # region - Set the correct assembly as default
         doc = App.ActiveDocument
         if General_BOM.CheckAssemblyType(doc) == "A2plus":
             self.form.AssemblyType.setCurrentText("A2plus")
@@ -256,23 +278,36 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.AssemblyType.setCurrentText("Arch")
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
-        # Set the correct assembly as default
-        return
 
-    # Define the standard buttons that are needed.
-    def getStandardButtons(self):
-        return int(QDialogButtonBox.StandardButton.Close)
+        return
+        # endregion
 
     # Define Icon.
     def getIcon(self):
         iconPath = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
         return iconPath
 
+    def getStandardButtons(self):
+        # return int(QDialogButtonBox.StandardButton.Close)
+        return int(QDialogButtonBox.Ok) | int(QDialogButtonBox.Cancel)
+
+    # def clicked(self, button):
+    #     if button == QDialogButtonBox.Cancel:
+    #         self.updatePreview()
+
     # Code needed when closing the widget.
     def accept(self):
         # close the dialog
         Gui.Control.closeDialog()
         return True
+
+    def cancel(self):
+        doc = App.ActiveDocument
+        doc.removeObject("BoM")
+        restoreSheet = doc.getObject(self.currentSheet.Label)
+        restoreSheet.Label = "BoM"
+
+        Gui.Control.closeDialog()
 
     # Hide or show the settings
     def on_toolButton_Settings_clicked(self):
@@ -472,3 +507,12 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.label_6.setStyleSheet("")
 
         return
+
+    # A function to store a BoM if it already exists
+    def getCurrentBoM(self):
+        doc = App.ActiveDocument
+        Sheet = doc.copyObject(doc.getObject("BoM"), False, False)
+        Sheet.Label = "BoM_Backup"
+
+        if type(Sheet) is not None:
+            self.currentSheet = Sheet
