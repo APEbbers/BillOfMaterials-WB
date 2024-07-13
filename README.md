@@ -1,4 +1,5 @@
-<img src="./Resources/Icons/BillOfMaterialsWB.svg" width="200" alt="Alternate text"/>
+
+![BillOfMaterialsWB](https://github.com/user-attachments/assets/2732c473-94fb-481f-b922-bb843986a89a)
 
 # Bill of Materials-WB
 
@@ -36,13 +37,13 @@ For debugging the option "Enable extra columns for debug" can be enabled. This o
 
 This workbench is still under development. Therefore there are some limitations.\
 Support for the following assemblies, workbenches and futures are planned:
-* Improvement on assembly type detection, so assemblies can be placed in groups. -> Done. Ready for testing
+* ~~Improvement on assembly type detection, so assemblies can be placed in groups.~~
 * Support for the Arch WB
-* Support for multi-body parts (Part WB)
+* ~~Support for multi-body parts (Part WB)~~
 * One function to support a mixed structure of all assembly workbenches
 * A function to add the BoM to a TechDraw page template
 * Mass calculation based on shape and material
-* outer dimensions of items -> Done.
+* ~~outer dimensions of items~~
 
 ## License:
 LGPL2.+
