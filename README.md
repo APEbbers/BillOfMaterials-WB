@@ -22,9 +22,9 @@ For debugging the option "Enable extra columns for debug" can be enabled. This o
 * Type. -> Part or Assembly
 * Internal name.
 * Fullname.
-* TypeId.  
-  
-  
+* TypeId.
+
+
 ## Supported assembly types:
 * a2plus
 * Assembly 3
