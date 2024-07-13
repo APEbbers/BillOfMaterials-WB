@@ -313,7 +313,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # remove the new created BoM
         doc = App.ActiveDocument
         NewBoM = doc.getObject("BoM")
+        Group = None
         if NewBoM is not None:
+            Group = NewBoM.getParentGroup()
             doc.removeObject("BoM")
 
         # Recompute the document
@@ -325,6 +327,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             restoreSheet = doc.getObject(self.currentSheet.Name)
             # Rename the backup sheet
             restoreSheet.Label = "BoM"
+
+            # if the new BoM was in a group, place the backup in that group
+            if Group is not None:
+                Group.addObject(restoreSheet)
 
             # message the user that the original is restored
             Standard_Functions.Mbox(
