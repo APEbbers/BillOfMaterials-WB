@@ -1,4 +1,5 @@
-![BillOfMaterialsWB](https://github.com/user-attachments/assets/80e75150-7365-4b61-8513-5b68b790dd0c)
+
+![BillOfMaterialsWB](https://github.com/user-attachments/assets/2732c473-94fb-481f-b922-bb843986a89a)
 
 # Bill of Materials-WB
 
