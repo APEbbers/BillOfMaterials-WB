@@ -372,7 +372,7 @@ class Ui_Dialog(object):
         self.MaxLevel.setToolTip(QCoreApplication.translate("Dialog", u"<html><head/><body><p>When set to &quot;0&quot;, all levels will be displayed.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.MaxLevel.setSuffix("")
-        self.label_12.setText(QCoreApplication.translate("Dialog", u"Set deepest leve for BoMl", None))
+        self.label_12.setText(QCoreApplication.translate("Dialog", u"<html><head/><body><p>Set deepest level for BoM</p></body></html>", None))
         self.SetColumns.setText("")
         self.label_3.setText(QCoreApplication.translate("Dialog", u" Set extra columns ", None))
         self.toolButton_Debug.setText(QCoreApplication.translate("Dialog", u"Debug settings", None))

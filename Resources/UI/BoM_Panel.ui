@@ -410,7 +410,7 @@
           <item row="0" column="1" colspan="2">
            <widget class="QLabel" name="label_12">
             <property name="text">
-             <string>Set deepest leve for BoMl</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set deepest level for BoM&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
