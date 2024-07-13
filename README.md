@@ -1,4 +1,4 @@
-<img src="./Resources/Icons/BillOfMaterialsWB.svg" width="200" alt="Alternate text"/>
+![BillOfMaterialsWB](https://github.com/user-attachments/assets/80e75150-7365-4b61-8513-5b68b790dd0c)
 
 # Bill of Materials-WB
 
