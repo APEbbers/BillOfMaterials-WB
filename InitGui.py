@@ -87,13 +87,9 @@ class BillOfMaterialsWB(Gui.Workbench):
         SettingsList = BoM_CreateUI.DefineMenus()["SettingsMenu"]
 
         # Append the menues
+        self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList)  # creates a new menu
         self.appendMenu(
-            QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList
-        )  # creates a new menu
-        self.appendMenu(
-            QT_TRANSLATE_NOOP(
-                "BoM Workbench", ["Bill of Materials", "Separate commands "]
-            ),
+            QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Separate commands "]),
             SeparateFunctionsList,
         )
         self.appendMenu(
@@ -114,7 +110,7 @@ class BillOfMaterialsWB(Gui.Workbench):
         # a list of command names created in the line above
         WorkbenchToolbar = BoM_CreateUI.DefineToolbars()["ToolbarListWorkbenches"]
 
-        WorkBenchList = [
+        DefaultWorkBenches = [
             "A2plusWorkbench",
             "Assembly4Workbench",
             "PartWorkbench",
@@ -124,9 +120,18 @@ class BillOfMaterialsWB(Gui.Workbench):
             "ArchWorkbench",
         ]
 
-        for i in range(len(WorkBenchList)):
+        AllWorkbenches = {}
+        AllWorkbenches = self.listWorkbenches()
+
+        # for i in range(len(DefaultWorkBenches)):
+        for key, value in AllWorkbenches.items():
             try:
-                BoM_CreateUI.CreateWorkBenchToolbar(WorkBenchList[i], WorkbenchToolbar)
+                EnableToolbar = False
+                for WorkBench in DefaultWorkBenches:
+                    if value == WorkBench:
+                        EnableToolbar = True
+                BoM_CreateUI.CreateWorkBenchToolbar(value, WorkbenchToolbar, EnableToolbar)
+
             except Exception:
                 pass
 

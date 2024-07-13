@@ -111,19 +111,21 @@ def DefineMenus() -> dict:
     return result
 
 
-def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list) -> object:
+def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list, Enabled: bool = True) -> object:
     """Creates a toolbar in the other WorkBenches with the most importand commands"""
     import FreeCADGui as Gui
 
-    # region -- define the names and folders
+    # If WorkBench is this workbench, stop and exit this def
+    if WorkBench == "BillOfMaterialsWB":
+        return
 
+    # region -- define the names and folders
     # Define the name for the ToolbarGroup in the FreeCAD Parameters
     ToolbarGroupName = "BoM_Toolbar_" + WorkBench
     # Define the name for the toolbar
     ToolBarName = "BoM_Toolbar"
     # define the parameter path for the toolbar
     WorkbenchToolBarsParamPath = "User parameter:BaseApp/Workbench/" + WorkBench + "/Toolbar/"
-
     # endregion
 
     # region -- check if the toolbar already exits.
@@ -145,7 +147,7 @@ def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list) -> object:
     WorkbenchToolbar.SetString("Name", ToolBarName)
 
     # Set the toolbar active
-    WorkbenchToolbar.SetBool("Active", True)
+    WorkbenchToolbar.SetBool("Active", Enabled)
 
     # add the commands
     for Button in ButtonList:
