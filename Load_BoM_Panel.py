@@ -73,15 +73,11 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.getCurrentBoM()
 
         # Set the icon
-        self.form.setWindowIcon(
-            QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg"))
-        )
+        self.form.setWindowIcon(QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")))
 
         # region - Connect controls with functions
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
-        self.form.AssemblyType.currentTextChanged.connect(
-            self.on_AssemblyType_TextChanged
-        )
+        self.form.AssemblyType.currentTextChanged.connect(self.on_AssemblyType_TextChanged)
 
         # This will create a connection between the pushbutton "DectAssemblyType" and def "on_DectAssemblyType_clicked"
         self.form.DetectAssemblyType.connect(
@@ -105,19 +101,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         )
 
         # This will create a connection between the pushbutton "Set extra columns" and def "on_SetColumns_clicked"
-        self.form.SetColumns.connect(
-            self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked
-        )
+        self.form.SetColumns.connect(self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked)
 
         # This will create a connection between the pushbutton "Create Total BoM" and def "on_CreateTotal_clicked"
-        self.form.CreateTotal.connect(
-            self.form.CreateTotal, SIGNAL("pressed()"), self.on_CreateTotal_clicked
-        )
+        self.form.CreateTotal.connect(self.form.CreateTotal, SIGNAL("pressed()"), self.on_CreateTotal_clicked)
 
         # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
-        self.form.CreateSummary.connect(
-            self.form.CreateSummary, SIGNAL("pressed()"), self.on_CreateSummary_clicked
-        )
+        self.form.CreateSummary.connect(self.form.CreateSummary, SIGNAL("pressed()"), self.on_CreateSummary_clicked)
 
         # This will create a connection between the pushbutton "Create parts only BoM" and def "on_CreatePartsOnly_clicked"
         self.form.CreatePartsOnly.connect(
@@ -218,9 +208,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             QIcon.Off,
         )
         icon_AppLink = QIcon()
-        icon_AppLink.addFile(
-            os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off
-        )
+        icon_AppLink.addFile(os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off)
         icon_Asm3 = QIcon()
         icon_Asm3.addFile(
             os.path.join(PATH_TB_ICONS, "Assembly3_workbench_icon.svg"),
@@ -325,9 +313,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # remove the new created BoM
         doc = App.ActiveDocument
         NewBoM = doc.getObject("BoM")
-        Group = None
         if NewBoM is not None:
-            Group = NewBoM.getParentGroup()
             doc.removeObject("BoM")
 
         # Recompute the document
@@ -339,10 +325,6 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             restoreSheet = doc.getObject(self.currentSheet.Name)
             # Rename the backup sheet
             restoreSheet.Label = "BoM"
-
-            # if the new BoM was in a group, place the backup in that group
-            if Group is not None:
-                Group.addObject(restoreSheet)
 
             # message the user that the original is restored
             Standard_Functions.Mbox(
@@ -517,22 +499,15 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Arch":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(
-                CheckAssemblyType=not self.manualChange
-            )
+            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=not self.manualChange)
         if AssemblyType_Selected == "MultiBody":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(
-                CheckAssemblyType=not self.manualChange
-            )
+            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=not self.manualChange)
         return
 
     def on_AssemblyType_TextChanged(self):
         self.manualChange = True
         AssemblyType_Selected = str(self.form.AssemblyType.currentText())
-        if (
-            AssemblyType_Selected == "App:Part"
-            or AssemblyType_Selected == "App:LinkGroup"
-        ):
+        if AssemblyType_Selected == "App:Part" or AssemblyType_Selected == "App:LinkGroup":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
         elif AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
@@ -572,6 +547,11 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # If there is a sheet, copy and rename it
         if currentSheet is not None:
             currentSheet = doc.copyObject(doc.getObject("BoM"), False, False)
+            # If the currentSheet is in a Group, move the backup in there
+            Group = currentSheet.getParentGroup()
+            if Group is not None:
+                Group.addObject(currentSheet)
+
             currentSheet.Label = "BoM_Backup"
             self.currentSheet = currentSheet
 
