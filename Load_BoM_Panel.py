@@ -540,12 +540,6 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     # A function to store a BoM if it already exists
     def getCurrentBoM(self):
         doc = App.ActiveDocument
-        # Define the name for the backup
-        BackupLabel = "BoM_Backup"
-        # Check if there is are already an item with the same label
-        Objects = doc.findObjects(Label=BackupLabel)
-        if len(Objects) > 0:
-            BackupLabel = BackupLabel + "_" + str(len(Objects)).zfill(3)
 
         # Get the current sheet and the group it is in.
         currentSheet = doc.getObject("BoM")
@@ -562,7 +556,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             if Group is not None:
                 Group.addObject(currentSheet)
 
-            currentSheet.Label = BackupLabel
+            currentSheet.Label = "BoM_Backup"
             self.currentSheet = currentSheet
 
         return
