@@ -544,7 +544,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         BackupLabel = "BoM_Backup"
         # Check if there is are already an item with the same label
         Objects = doc.findObjects(Label=BackupLabel)
-        if len(Objects) > 1:
+        if len(Objects) > 0:
             BackupLabel = BackupLabel + "_" + str(len(Objects)).zfill(3)
 
         # Get the current sheet and the group it is in.
