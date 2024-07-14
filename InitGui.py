@@ -110,7 +110,11 @@ class BillOfMaterialsWB(Gui.Workbench):
         # a list of command names created in the line above
         WorkbenchToolbar = BoM_CreateUI.DefineToolbars()["ToolbarListWorkbenches"]
 
-        DefaultWorkBenches = [
+        # Create a copy of the list of all other workbenches
+        AllOtherWorkbenches = Gui.listWorkbenches().copy()
+
+        # Create a list of workbenches for which the toolbar must be enabled as default.
+        WorkBenchList = [
             "A2plusWorkbench",
             "Assembly4Workbench",
             "PartWorkbench",
@@ -120,21 +124,22 @@ class BillOfMaterialsWB(Gui.Workbench):
             "ArchWorkbench",
         ]
 
-        AllWorkbenches = {}
-        AllWorkbenches = Gui.listWorkbenches()
+        # Create the toolbar for the default workbenches.
+        try:
+            for i in range(len(WorkBenchList)):
+                BoM_CreateUI.CreateWorkBenchToolbar(WorkBenchList[i], WorkbenchToolbar)
+                # Remove the workbench from the list with all other workbenches
+                AllOtherWorkbenches.pop(WorkBenchList[i])
+        except Exception:
+            pass
 
-        # for i in range(len(DefaultWorkBenches)):
-        for key, value in AllWorkbenches.items():
+        # Create the toolbar for the other workbenches and hide it.
+        for key, value in AllOtherWorkbenches.items():
             try:
-                EnableToolbar = False
-                for WorkBench in DefaultWorkBenches:
-                    if value == WorkBench:
-                        EnableToolbar = True
-                BoM_CreateUI.CreateWorkBenchToolbar(value, WorkbenchToolbar, EnableToolbar)
-
+                ToolbarName = BoM_CreateUI.CreateWorkBenchToolbar(key, WorkbenchToolbar)
+                BoM_CreateUI.HideToolbars(ToolbarName, key)
             except Exception:
                 pass
-
         # endregion ----------------------------------------------------------------------------------------------------
 
     def Activated(self):

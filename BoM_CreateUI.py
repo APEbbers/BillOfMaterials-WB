@@ -111,21 +111,19 @@ def DefineMenus() -> dict:
     return result
 
 
-def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list, Enabled: bool = True) -> object:
+def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list) -> str:
     """Creates a toolbar in the other WorkBenches with the most importand commands"""
     import FreeCADGui as Gui
 
-    # If WorkBench is this workbench, stop and exit this def
-    if WorkBench == "BillOfMaterialsWB":
-        return
-
     # region -- define the names and folders
+
     # Define the name for the ToolbarGroup in the FreeCAD Parameters
     ToolbarGroupName = "BoM_Toolbar_" + WorkBench
     # Define the name for the toolbar
-    ToolBarName = "BoM_Toolbar"
+    ToolBarName = "BoM Toolbar - " + WorkBench
     # define the parameter path for the toolbar
     WorkbenchToolBarsParamPath = "User parameter:BaseApp/Workbench/" + WorkBench + "/Toolbar/"
+
     # endregion
 
     # region -- check if the toolbar already exits.
@@ -134,7 +132,7 @@ def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list, Enabled: bool = Tru
         i = 2  # Don't use (1), start at (2)
         while True:
             if get_toolbar_with_name(ToolBarName, WorkbenchToolBarsParamPath):
-                ReplaceButtons()
+                ReplaceButtons(ToolbarGroupName, WorkbenchToolBarsParamPath, ButtonList)
                 return
             i = i + 1
     # endregion
@@ -147,29 +145,29 @@ def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list, Enabled: bool = Tru
     WorkbenchToolbar.SetString("Name", ToolBarName)
 
     # Set the toolbar active
-    WorkbenchToolbar.SetBool("Active", Enabled)
+    WorkbenchToolbar.SetBool("Active", True)
 
     # add the commands
     for Button in ButtonList:
         WorkbenchToolbar.SetString(Button, "FreeCAD")
-
     # endregion
 
     # Force the toolbars to be recreated
     wb = Gui.activeWorkbench()
     if int(App.Version()[0]) == 0 and int(App.Version()[1]) > 19:
         wb.reloadActive()
-    return
+    return ToolBarName
 
 
 def RemoveWorkBenchToolbars(WorkBench: str) -> None:
     # Define the name for the ToolbarGroup in the FreeCAD Parameters
-    ToolbarGroupName = WorkBench
+    ToolbarGroupName = "BoM_Toolbar_" + WorkBench
     # define the parameter path for the toolbar
     ToolBarsParamPath = "User parameter:BaseApp/Workbench/" + WorkBench + "/Toolbar/"
 
     custom_toolbars = App.ParamGet(ToolBarsParamPath)
     custom_toolbars.RemGroup(ToolbarGroupName)
+    return
 
 
 def ReplaceButtons(ToolbarGroupName: str, WorkbenchToolBarsParamPath: str, ButtonList: list) -> None:
@@ -183,6 +181,7 @@ def ReplaceButtons(ToolbarGroupName: str, WorkbenchToolBarsParamPath: str, Butto
     # add the commands
     for Button in ButtonList:
         TechDrawToolbar.SetString(Button, "FreeCAD")
+    return
 
 
 # this is an modified verion of the one in:
@@ -198,3 +197,49 @@ def get_toolbar_with_name(name: str, UserParam: str) -> bool:
         if group_name == name:
             return True
     return False
+
+
+def ToggleToolbars(ToolbarName: str, WorkBench: str = ""):
+    """Used for hide/show a toolbar with a button from another toolbar"""
+    import FreeCADGui as Gui
+    from PySide.QtWidgets import QToolBar
+
+    # Get the active workbench
+    if WorkBench == "":
+        WB = Gui.activeWorkbench()
+    if WorkBench != "":
+        WB = Gui.getWorkbench(WorkBench)
+
+    # Get the list of toolbars present.
+    ListToolbars = WB.listToolbars()
+    # Go through the list. If the toolbar exists set ToolbarExists to True
+    ToolbarExists = False
+    for i in range(len(ListToolbars)):
+        if ListToolbars[i] == ToolbarName:
+            ToolbarExists = True
+
+    # If ToolbarExists is True continue. Otherwise return.
+    if ToolbarExists is True:
+        # Get the main window
+        mainWindow = Gui.getMainWindow()
+        # Get the toolbar
+        ToolBar = mainWindow.findChild(QToolBar, ToolbarName)
+        # If the toolbar is not hidden, hide it and return.
+        if ToolBar.isHidden() is False:
+            ToolBar.setHidden(True)
+            return
+        # If the toolbar is hidden, set visible and return.
+        if ToolBar.isHidden() is True:
+            ToolBar.setVisible(True)
+            return
+    return
+
+
+def HideToolbars(ToolbarName: str, WorkBench: str = ""):
+    """Used for hide/show a toolbar on startup (InitGui.py)"""
+    # define the parameter path for the toolbar
+    ToolBarGroupPath = "User parameter:BaseApp/MainWindow/Toolbars/"
+    # add the ToolbarGroup in the FreeCAD Parameters
+    ToolbarGroup = App.ParamGet(ToolBarGroupPath)
+    # Set the toolbar active
+    ToolbarGroup.SetBool(ToolbarName, False)
