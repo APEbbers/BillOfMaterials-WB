@@ -289,8 +289,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         return iconPath
 
     def getStandardButtons(self):
-        # return int(QDialogButtonBox.StandardButton.Close)
-        return int(QDialogButtonBox.Ok) | int(QDialogButtonBox.Cancel)
+        return QDialogButtonBox.Ok | QDialogButtonBox.Cancel
 
     # Code needed when closing the widget.
     def accept(self):
