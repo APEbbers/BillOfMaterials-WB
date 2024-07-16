@@ -50,7 +50,7 @@ class CreatePartsOnlyBOM_MIXED_Class:
         if EnableQuestion is True:
             Answer = Standard_Functions.Mbox(
                 text=IncludeBodiesText,
-                title="Bill of Materials Workbench",
+                title="Bill of Materials",
                 style=1,
             )
         if Answer == "yes":
@@ -62,9 +62,7 @@ class CreatePartsOnlyBOM_MIXED_Class:
             DebugMode=False,
         )
         if BoM is not None:
-            General_BOM_Functions.General_BOM.createBoMSpreadsheet(
-                mainList=BoM, Headers=None, Summary=False
-            )
+            General_BOM_Functions.General_BOM.createBoMSpreadsheet(mainList=BoM, Headers=None, Summary=False)
 
         return
 
@@ -105,7 +103,7 @@ class CreateSummarizedBOM_MIXED_Class:
         if EnableQuestion is True:
             Answer = Standard_Functions.Mbox(
                 text=IncludeBodiesText,
-                title="Bill of Materials Workbench",
+                title="Bill of Materials",
                 style=1,
             )
         if Answer == "yes":
@@ -117,9 +115,7 @@ class CreateSummarizedBOM_MIXED_Class:
             DebugMode=False,
         )
         if BoM is not None:
-            General_BOM_Functions.General_BOM.createBoMSpreadsheet(
-                mainList=BoM, Headers=None, Summary=False
-            )
+            General_BOM_Functions.General_BOM.createBoMSpreadsheet(mainList=BoM, Headers=None, Summary=False)
 
         return
 
@@ -160,7 +156,7 @@ class CreateTotalBOM_MIXED_Class:
         if EnableQuestion is True:
             Answer = Standard_Functions.Mbox(
                 text=IncludeBodiesText,
-                title="Bill of Materials Workbench",
+                title="Bill of Materials",
                 style=1,
             )
         if Answer == "yes":
@@ -174,9 +170,7 @@ class CreateTotalBOM_MIXED_Class:
             DebugMode=False,
         )
         if BoM is not None:
-            General_BOM_Functions.General_BOM.createBoMSpreadsheet(
-                mainList=BoM, Headers=None, Summary=False
-            )
+            General_BOM_Functions.General_BOM.createBoMSpreadsheet(mainList=BoM, Headers=None, Summary=False)
 
         return
 
@@ -217,7 +211,7 @@ class CreateRawBOM_MIXED_Class:
         if EnableQuestion is True:
             Answer = Standard_Functions.Mbox(
                 text=IncludeBodiesText,
-                title="Bill of Materials Workbench",
+                title="Bill of Materials",
                 style=1,
             )
         if Answer == "yes":
@@ -230,9 +224,7 @@ class CreateRawBOM_MIXED_Class:
             DebugMode=False,
         )
         if BoM is not None:
-            General_BOM_Functions.General_BOM.createBoMSpreadsheet(
-                mainList=BoM, Headers=None, Summary=False
-            )
+            General_BOM_Functions.General_BOM.createBoMSpreadsheet(mainList=BoM, Headers=None, Summary=False)
 
         return
 

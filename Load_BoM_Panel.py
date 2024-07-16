@@ -328,7 +328,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             # message the user that the original is restored
             Standard_Functions.Mbox(
                 "Original BoM restored!",
-                "Bill of Materials Workbench",
+                "Bill of Materials",
                 0,
             )
 
