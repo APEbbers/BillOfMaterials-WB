@@ -378,13 +378,13 @@ class General_BOM:
         if IsNewSheet is False:
             Standard_Functions.Mbox(
                 text="Bill of Materials is replaced with a new version!",
-                title="Bill of Materials Workbench",
+                title="Bill of Materials",
                 style=0,
             )
             if IsNewSheet is True:
                 Standard_Functions.Mbox(
                     text="Bill of Materials is created!",
-                    title="Bill of Materials Workbench",
+                    title="Bill of Materials",
                     style=0,
                 )
 
