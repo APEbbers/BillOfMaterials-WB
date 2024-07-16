@@ -301,8 +301,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         return iconPath
 
     def getStandardButtons(self):
-        # return int(QDialogButtonBox.StandardButton.Close)
-        return int(QDialogButtonBox.Ok) | int(QDialogButtonBox.Cancel)
+        return QDialogButtonBox.Ok | QDialogButtonBox.Cancel
 
     # Code needed when closing the widget.
     def accept(self):
@@ -341,7 +340,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             # message the user that the original is restored
             Standard_Functions.Mbox(
                 "Original BoM restored!",
-                "Bill of Materials Workbench",
+                "Bill of Materials",
                 0,
             )
 
