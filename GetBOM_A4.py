@@ -938,7 +938,7 @@ class BomFunctions:
                     if EnableQuestion is True:
                         IncludeBodies = Standard_Functions.Mbox(
                             text=IncludeBodiesText,
-                            title="Bill of Materials Workbench",
+                            title="Bill of Materials",
                             style=1,
                         )
                     self.CreateTotalBoM(
@@ -951,7 +951,7 @@ class BomFunctions:
                     if EnableQuestion is True:
                         Answer = Standard_Functions.Mbox(
                             text=IncludeBodiesText,
-                            title="Bill of Materials Workbench",
+                            title="Bill of Materials",
                             style=1,
                         )
                     if Answer == "yes":
@@ -964,7 +964,7 @@ class BomFunctions:
                     if EnableQuestion is True:
                         IncludeBodies = Standard_Functions.Mbox(
                             text=IncludeBodiesText,
-                            title="Bill of Materials Workbench",
+                            title="Bill of Materials",
                             style=1,
                         )
                     self.PartsOnly(
@@ -976,7 +976,7 @@ class BomFunctions:
                     if EnableQuestion is True:
                         IncludeBodies = Standard_Functions.Mbox(
                             text=IncludeBodiesText,
-                            title="Bill of Materials Workbench",
+                            title="Bill of Materials",
                             style=1,
                         )
                     self.SummarizedBoM(
