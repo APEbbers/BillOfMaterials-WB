@@ -50,7 +50,7 @@ class CreatePartsOnlyBOM_MIXED_Class:
         if EnableQuestion is True:
             Answer = Standard_Functions.Mbox(
                 text=IncludeBodiesText,
-                title="Bill of Materials Workbench",
+                title="Bill of Materials",
                 style=1,
             )
         if Answer == "yes":
@@ -105,7 +105,7 @@ class CreateSummarizedBOM_MIXED_Class:
         if EnableQuestion is True:
             Answer = Standard_Functions.Mbox(
                 text=IncludeBodiesText,
-                title="Bill of Materials Workbench",
+                title="Bill of Materials",
                 style=1,
             )
         if Answer == "yes":
@@ -160,7 +160,7 @@ class CreateTotalBOM_MIXED_Class:
         if EnableQuestion is True:
             Answer = Standard_Functions.Mbox(
                 text=IncludeBodiesText,
-                title="Bill of Materials Workbench",
+                title="Bill of Materials",
                 style=1,
             )
         if Answer == "yes":
@@ -217,7 +217,7 @@ class CreateRawBOM_MIXED_Class:
         if EnableQuestion is True:
             Answer = Standard_Functions.Mbox(
                 text=IncludeBodiesText,
-                title="Bill of Materials Workbench",
+                title="Bill of Materials",
                 style=1,
             )
         if Answer == "yes":
