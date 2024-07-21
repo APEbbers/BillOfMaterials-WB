@@ -1237,7 +1237,8 @@ class General_BOM:
                     # if the part of the itemnumber minus the last digit is equeal to the
                     # itemnumber minus the last digit in the BoMList go through here
                     if (
-                        ReplaceList[j]["ItemNumber"].rsplit(".", 1)[0] == itemNumber.rsplit(".", 1)[0]
+                        ReplaceList[j]["ItemNumber"].rsplit(".", 1)[0]
+                        == itemNumber.rsplit(".", 1)[0]
                         and ReplaceList[j]["ObjectLabel"] == itemName
                     ):
                         # Go through the BoMList. Every item that starts with current itemnumber
@@ -1257,7 +1258,10 @@ class General_BOM:
                         break
 
                 if len(itemNumber.split(".")) == 1:
-                    if ReplaceList[j]["ItemNumber"] == itemNumber and ReplaceList[j]["ObjectName"] == itemName:
+                    if (
+                        ReplaceList[j]["ItemNumber"] == itemNumber
+                        and ReplaceList[j]["ObjectName"] == itemName
+                    ):
                         resultList.append(ReplaceList[j])
                         break
         return resultList
