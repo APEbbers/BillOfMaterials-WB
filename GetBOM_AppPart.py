@@ -253,6 +253,9 @@ class BomFunctions:
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
 
+        # summarize duplicate subassemblies
+        CopyMainList = General_BOM.ReplacesAssembly(CopyMainList)
+
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
         # Create two lists for splitting the copy of the main list

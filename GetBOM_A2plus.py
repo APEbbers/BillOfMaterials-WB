@@ -346,6 +346,9 @@ class BomFunctions:
         # Filter duplicate items
         CopyMainList = self.ReturnDuplicates()
 
+        # summarize duplicate subassemblies
+        CopyMainList = General_BOM.ReplacesAssembly(CopyMainList)
+
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
 

@@ -132,6 +132,11 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             SIGNAL("pressed()"),
             self.on_CreateFirstLevel_clicked,
         )
+
+        # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
+        self.form.CreateRaw.connect(
+            self.form.CreateRaw, SIGNAL("pressed()"), self.on_CreateRaw_clicked
+        )
         # endregion
 
         # region - Debug settings
@@ -405,6 +410,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     def on_CreateFirstLevel_clicked(self):
         self.CreateBOM("First level BoM")
 
+    def on_CreateRaw_clicked(self):
+        self.CreateBOM("Raw BoM")
+
     # A function to execute the BoM scripts based on the input from the controls.
     def CreateBOM(self, TypeOfBoM):
         # Import the BoM modules
@@ -454,6 +462,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if TypeOfBoM == "First level BoM":
             Command = "Total"
             Level_Value = 1
+        if TypeOfBoM == "Raw BoM":
+            Command = "Raw"
 
         # Get the correct BoM functions based on the  selected assembly type
         if AssemblyType_Selected == "Assembly 4":

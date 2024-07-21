@@ -434,9 +434,8 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(
-            QCoreApplication.translate("Dialog", "Bill of Materials", None)
+            QCoreApplication.translate("Dialog", "Bill of Materials workbench", None)
         )
-
         self.CreatePartsOnly.setText("")
         self.label.setText(
             QCoreApplication.translate("Dialog", "Create total BoM", None)
