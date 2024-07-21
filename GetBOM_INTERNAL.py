@@ -67,9 +67,7 @@ class BomFunctions:
         # Threat them as identical parts and replace the copies with the original
         for docObject in docObjects:
             if self.AllowedObjectType(docObject.TypeId) is True:
-                docObjects = self.ReturnEquealPart(
-                    docObject=docObject, ObjectList=docObjects
-                )
+                docObjects = self.ReturnEquealPart(docObject=docObject, ObjectList=docObjects)
 
         docObjectsTemp = []  # a temporary list for the extra assembly
         for docObject in docObjects:
@@ -89,9 +87,7 @@ class BomFunctions:
         ItemNumber = 0
 
         # Go Through all objects
-        self.GoThrough_Objects(
-            docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber
-        )
+        self.GoThrough_Objects(docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber)
 
         return
 
@@ -134,10 +130,7 @@ class BomFunctions:
             if ObjectList[j].Label[-3].isnumeric() is True:
                 # go through the same list and replace all objects with similar labels with the replace item.
                 for k in range(len(ObjectList)):
-                    if (
-                        ObjectList[j].Label == ObjectList[k].Label
-                        and ObjectList[j].Label[:-3] == replaceItem.Label
-                    ):
+                    if ObjectList[j].Label == ObjectList[k].Label and ObjectList[j].Label[:-3] == replaceItem.Label:
                         ObjectList.remove(ObjectList[j])
                         ObjectList.append(replaceItem)
 
@@ -175,9 +168,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(
-        self, docObjects, sheet, ItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_Objects(self, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
             docObjects (_type_):    list[DocumentObjects]\n
@@ -189,10 +180,10 @@ class BomFunctions:
         """
         for i in range(len(docObjects)):
             # Get the documentObject
-            object = docObjects[i]
+            docObject = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
-            if self.AllowedObjectType(object.TypeId) is True:
+            if self.AllowedObjectType(docObject.TypeId) is True:
                 # Increase the itemnumber
                 ItemNumber = ItemNumber + 1
 
@@ -206,61 +197,75 @@ class BomFunctions:
                 if ParentNumber != "":
                     ItemNumberString = ParentNumber
 
-                # Create a rowList
-                rowList = {
-                    "ItemNumber": ItemNumberString,
-                    "DocumentObject": object,
-                    "ObjectLabel": object.Label,
-                    "ObjectName": object.FullName,
-                    "Qty": 1,
-                    "Type": "Part",
-                }
-                print(object.Label)
+                # Set the quantity to 1.
+                Qty = 1
 
-                # add the rowList to the mainList
-                self.mainList.append(rowList)
+                # Standard assume the object is not an array
+                IsArray = True
 
-                # If the object is an container, go through the sub items, (a.k.a child objects)
-                if (
-                    object.TypeId == "App::LinkGroup"
-                    or object.TypeId == "App::Link"
-                    or object.TypeId == "App::Part"
-                    or object.TypeId == "Assembly::AssemblyObject"
-                ):
-                    # Create a list with child objects as DocumentObjects
-                    childObjects = []
-                    # Make sure that the list is empty. (probally overkill)
-                    childObjects.clear()
-                    # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                    for j in range(len(object.getSubObjects())):
-                        if (
-                            object.getSubObject(
-                                subname=object.getSubObjects()[j], retType=1
+                # If the object is an array. update the quantity and replace the array with is elements
+                try:
+                    ArrayType = docObject.ArrayType
+                except Exception:
+                    IsArray = False
+                    pass
+
+                if IsArray is True:
+                    Qty = int(docObject.Count)
+                    docObject = docObject.SourceObject
+                else:
+                    Qty = 1
+
+                for q in range(Qty):
+                    ItemNumberString = str(ItemNumber + q)
+                    if ParentNumber != "":
+                        ItemNumberString = str(ParentNumber + q)
+
+                    # Create a rowList
+                    rowList = {
+                        "ItemNumber": ItemNumberString,
+                        "DocumentObject": docObject,
+                        "ObjectLabel": docObject.Label,
+                        "ObjectName": docObject.FullName,
+                        "Qty": 1,
+                        "Type": "Part",
+                    }
+
+                    # add the rowList to the mainList
+                    self.mainList.append(rowList)
+
+                    # If the object is an container, go through the sub items, (a.k.a child objects)
+                    if (
+                        docObject.TypeId == "App::LinkGroup"
+                        or docObject.TypeId == "App::Link"
+                        or docObject.TypeId == "App::Part"
+                        or docObject.TypeId == "Assembly::AssemblyObject"
+                    ):
+                        # Create a list with child objects as DocumentObjects
+                        childObjects = []
+                        # Make sure that the list is empty. (probally overkill)
+                        childObjects.clear()
+                        # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                        for j in range(len(docObject.getSubObjects())):
+                            if docObject.getSubObject(subname=docObject.getSubObjects()[j], retType=1) is not None:
+                                childObjects.append(
+                                    docObject.getSubObject(subname=docObject.getSubObjects()[j], retType=1),
+                                )
+                        if len(childObjects) > 0:
+                            self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                            # Go the the child objects with a separate function for the child objects
+                            # This way you can go through multiple levels
+                            self.GoThrough_ChildObjects(
+                                ChilddocObjects=childObjects,
+                                sheet=sheet,
+                                ChildItemNumber=0,
+                                ParentNumber=ItemNumberString,
                             )
-                            is not None
-                        ):
-                            childObjects.append(
-                                object.getSubObject(
-                                    subname=object.getSubObjects()[j], retType=1
-                                ),
-                            )
-                    if len(childObjects) > 0:
-                        self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
-                        # Go the the child objects with a separate function for the child objects
-                        # This way you can go through multiple levels
-                        self.GoThrough_ChildObjects(
-                            ChilddocObjects=childObjects,
-                            sheet=sheet,
-                            ChildItemNumber=0,
-                            ParentNumber=ItemNumberString,
-                        )
         return
 
     # Sub function of GoThrough_Objects.
     @classmethod
-    def GoThrough_ChildObjects(
-        self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_ChildObjects(self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
             ChilddocObjects (_type_):       list[DocumentObjects]\n
@@ -285,52 +290,68 @@ class BomFunctions:
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
 
-                # Create a rowList
-                rowList = {
-                    "ItemNumber": ItemNumberString,
-                    "DocumentObject": childObject,
-                    "ObjectLabel": childObject.Label,
-                    "ObjectName": childObject.FullName,
-                    "Qty": 1,
-                    "Type": "Part",
-                }
+                # Set the quantity to 1.
+                Qty = 1
 
-                # add the rowList to the mainList
-                self.mainList.append(rowList)
+                # Standard assume the object is not an array
+                IsArray = True
 
-                # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
-                if (
-                    childObject.TypeId == "App::LinkGroup"
-                    or childObject.TypeId == "App::Link"
-                    or childObject.TypeId == "App::Part"
-                    or childObject.TypeId == "Assembly::AssemblyObject"
-                ):
-                    # Create a list with sub child objects as DocumentObjects
-                    subChildObjects = []
-                    # Make sure that the list is empty. (probally overkill)
-                    subChildObjects.clear()
-                    # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
-                    for j in range(len(childObject.getSubObjects())):
-                        if (
-                            childObject.getSubObject(
-                                subname=childObject.getSubObjects()[j], retType=1
+                # If the object is an array. update the quantity and replace the array with is elements
+                try:
+                    ArrayType = childObject.ArrayType
+                except Exception:
+                    IsArray = False
+                    pass
+
+                if IsArray is True:
+                    Qty = int(childObject.Count)
+                    childObject = childObject.SourceObject
+                else:
+                    Qty = 1
+
+                for q in range(Qty):
+                    ItemNumberString = str(ChildItemNumber + q)
+                    if ParentNumber != "":
+                        ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
+                    # Create a rowList
+                    rowList = {
+                        "ItemNumber": ItemNumberString,
+                        "DocumentObject": childObject,
+                        "ObjectLabel": childObject.Label,
+                        "ObjectName": childObject.FullName,
+                        "Qty": 1,
+                        "Type": "Part",
+                    }
+
+                    # add the rowList to the mainList
+                    self.mainList.append(rowList)
+
+                    # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
+                    if (
+                        childObject.TypeId == "App::LinkGroup"
+                        or childObject.TypeId == "App::Link"
+                        or childObject.TypeId == "App::Part"
+                        or childObject.TypeId == "Assembly::AssemblyObject"
+                    ):
+                        # Create a list with sub child objects as DocumentObjects
+                        subChildObjects = []
+                        # Make sure that the list is empty. (probally overkill)
+                        subChildObjects.clear()
+                        # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
+                        for j in range(len(childObject.getSubObjects())):
+                            if childObject.getSubObject(subname=childObject.getSubObjects()[j], retType=1) is not None:
+                                subChildObjects.append(
+                                    childObject.getSubObject(childObject.getSubObjects()[j], 1),
+                                )
+                        if len(subChildObjects) > 0:
+                            self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                            # Go the the sub child objects with this same function
+                            self.GoThrough_ChildObjects(
+                                ChilddocObjects=subChildObjects,
+                                sheet=sheet,
+                                ChildItemNumber=0,
+                                ParentNumber=ItemNumberString,
                             )
-                            is not None
-                        ):
-                            subChildObjects.append(
-                                childObject.getSubObject(
-                                    childObject.getSubObjects()[j], 1
-                                ),
-                            )
-                    if len(subChildObjects) > 0:
-                        self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
-                        # Go the the sub child objects with this same function
-                        self.GoThrough_ChildObjects(
-                            ChilddocObjects=subChildObjects,
-                            sheet=sheet,
-                            ChildItemNumber=0,
-                            ParentNumber=ItemNumberString,
-                        )
         return
 
     # endregion
@@ -580,10 +601,7 @@ class BomFunctions:
                     )
                 )
 
-                if (
-                    TypeListParts.__contains__(rowList["DocumentObject"].TypeId)
-                    is False
-                ):
+                if TypeListParts.__contains__(rowList["DocumentObject"].TypeId) is False:
                     QtyValue = "1"
                 # Create a new row item for the temporary row.
                 rowListNew = {
@@ -610,9 +628,7 @@ class BomFunctions:
                     ShadowList.append(shadowRow)
 
         if Level > 1:
-            TemporaryList = self.FilterBodies(
-                BOMList=TemporaryList, AllowAllBodies=IncludeBodies
-            )
+            TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
 
         # correct the quantities for the parts in subassemblies
         TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
@@ -727,9 +743,7 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.FilterBodies(
-            BOMList=TemporaryList, AllowAllBodies=IncludeBodies
-        )
+        TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):
@@ -738,9 +752,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(
-                mainList=TemporaryList, Headers=None, Summary=True
-            )
+            General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
         return
 
     # Function to create a BoM list for a parts only BoM.
@@ -777,12 +789,7 @@ class BomFunctions:
             rowList = CopyMainList[i]
 
             # if the objectcheck succeeded, continue.
-            if (
-                self.CheckObject(
-                    docObject=rowList["DocumentObject"], AllowBodies=IncludeBodies
-                )
-                is True
-            ):
+            if self.CheckObject(docObject=rowList["DocumentObject"], AllowBodies=IncludeBodies) is True:
                 ObjectNameField = "ObjectName"
                 if ObjectNameBased is False:
                     ObjectNameField = "ObjectLabel"
@@ -840,9 +847,7 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.FilterBodies(
-            BOMList=TemporaryList, AllowAllBodies=IncludeBodies
-        )
+        TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):
@@ -898,9 +903,7 @@ class BomFunctions:
                         )
                         if Answer == "yes":
                             IncludeBodies = True
-                    General_BOM.createBoMSpreadsheet(
-                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies)
-                    )
+                    General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies))
 
                 if command == "PartsOnly":
                     if EnableQuestion is True:

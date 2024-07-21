@@ -47,9 +47,7 @@ class BomFunctions:
         if checkAssemblyType is True:
             AssemblyType = General_BOM.CheckAssemblyType(doc)
             if AssemblyType != "A2plus":
-                Print(
-                    f"Not an A2plus assembly but an {AssemblyType} assembly!!", "Error"
-                )
+                Print(f"Not an A2plus assembly but an {AssemblyType} assembly!!", "Error")
                 return
 
         # Get the list with rootobjects
@@ -115,9 +113,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(
-        self, ParentDocument, docObjects, sheet, ItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_Objects(self, ParentDocument, docObjects, sheet, ItemNumber, ParentNumber: str = "") -> True:
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -129,11 +125,11 @@ class BomFunctions:
         """
         for i in range(len(docObjects)):
             # Get the documentObject
-            Object = docObjects[i]
+            docObject = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
             try:
-                if Object.objectType == "a2pPart":
+                if docObject.objectType == "a2pPart":
                     # Increase the itemnumber
                     ItemNumber = int(ItemNumber) + 1
 
@@ -147,58 +143,82 @@ class BomFunctions:
                     if ParentNumber != "":
                         ItemNumberString = str(ParentNumber)
 
-                    # Create a rowList
-                    rowList = {
-                        "ItemNumber": ItemNumberString,
-                        "DocumentObject": Object,
-                        "ObjectLabel": Object.Label,
-                        "ObjectName": Object.Name,
-                        "Qty": 1,
-                        "Type": "Part",
-                    }
+                    # Set the quantity to 1.
+                    Qty = 1
 
-                    # Add the rowList to the mainList
-                    self.mainList.append(rowList)
+                    # Standard assume the object is not an array
+                    IsArray = True
 
-                    # If the object is an container, go through the sub items, (a.k.a child objects)
-                    if Object.subassemblyImport is True:
-                        # Create a list with child objects as DocumentObjects
-                        childObjects = []
-                        # Make sure that the list is empty. (probally overkill)
-                        childObjects.clear()
+                    # If the object is an array. update the quantity and replace the array with is elements
+                    try:
+                        ArrayType = docObject.ArrayType
+                    except Exception:
+                        IsArray = False
+                        pass
 
-                        # Get the path of the sub-object
-                        FullPath = Object.sourceFile
-                        # If the path starts with ".", it is in the same folder as this document.
-                        # Combine the path of this document with the path of the subobject.
-                        if FullPath.startswith(".\\") or FullPath.startswith("./"):
-                            FullPath = os.path.join(
-                                os.path.dirname(ParentDocument.FileName),
-                                FullPath,
-                            )
-                        # Open the sub object. Open it hidden
-                        ObjectDocument = App.openDocument(FullPath, True)
-                        # Go through the objects of this sub objects
-                        for j in range(len(ObjectDocument.Objects)):
-                            childObject = ObjectDocument.Objects[j]
-                            # If the documentObject is one of the allowed types, add it to the list of child objects
-                            try:
-                                if childObject.objectType == "a2pPart":
-                                    childObjects.append(childObject)
-                            except Exception:
-                                pass
+                    if IsArray is True:
+                        Qty = int(docObject.Count)
+                        docObject = docObject.SourceObject
+                    else:
+                        Qty = 1
 
-                        if len(childObjects) > 0:
-                            self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
-                            # Go the the child objects with a separate function for the child objects
-                            # This way you can go through multiple levels
-                            self.GoThrough_ChildObjects(
-                                ChilddocObjects=childObjects,
-                                ParentDocument=ParentDocument,
-                                sheet=sheet,
-                                ChildItemNumber=0,
-                                ParentNumber=ItemNumberString,
-                            )
+                    for q in range(Qty):
+                        ItemNumberString = str(ItemNumber + q)
+                        if ParentNumber != "":
+                            ItemNumberString = str(ParentNumber + q)
+
+                        # Create a rowList
+                        rowList = {
+                            "ItemNumber": ItemNumberString,
+                            "DocumentObject": docObject,
+                            "ObjectLabel": docObject.Label,
+                            "ObjectName": docObject.Name,
+                            "Qty": 1,
+                            "Type": "Part",
+                        }
+
+                        # Add the rowList to the mainList
+                        self.mainList.append(rowList)
+
+                        # If the object is an container, go through the sub items, (a.k.a child objects)
+                        if docObject.subassemblyImport is True:
+                            # Create a list with child objects as DocumentObjects
+                            childObjects = []
+                            # Make sure that the list is empty. (probally overkill)
+                            childObjects.clear()
+
+                            # Get the path of the sub-object
+                            FullPath = docObject.sourceFile
+                            # If the path starts with ".", it is in the same folder as this document.
+                            # Combine the path of this document with the path of the subobject.
+                            if FullPath.startswith(".\\") or FullPath.startswith("./"):
+                                FullPath = os.path.join(
+                                    os.path.dirname(ParentDocument.FileName),
+                                    FullPath,
+                                )
+                            # Open the sub object. Open it hidden
+                            ObjectDocument = App.openDocument(FullPath, True)
+                            # Go through the objects of this sub objects
+                            for j in range(len(ObjectDocument.Objects)):
+                                childObject = ObjectDocument.Objects[j]
+                                # If the documentObject is one of the allowed types, add it to the list of child objects
+                                try:
+                                    if childObject.objectType == "a2pPart":
+                                        childObjects.append(childObject)
+                                except Exception:
+                                    pass
+
+                            if len(childObjects) > 0:
+                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                # Go the the child objects with a separate function for the child objects
+                                # This way you can go through multiple levels
+                                self.GoThrough_ChildObjects(
+                                    ChilddocObjects=childObjects,
+                                    ParentDocument=ParentDocument,
+                                    sheet=sheet,
+                                    ChildItemNumber=0,
+                                    ParentNumber=ItemNumberString,
+                                )
             except Exception:
                 pass
         return
@@ -236,56 +256,80 @@ class BomFunctions:
                     ChildItemNumber = int(ChildItemNumber) + 1
                     # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                     ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
-                    # Create a rowList
-                    rowList = {
-                        "ItemNumber": ItemNumberString,
-                        "DocumentObject": childObject,
-                        "ObjectLabel": childObject.Label,
-                        "ObjectName": childObject.Name,
-                        "Qty": 1,
-                        "Type": "Part",
-                    }
 
-                    # add the rowList to the mainList
-                    self.mainList.append(rowList)
+                    # Set the quantity to 1.
+                    Qty = 1
 
-                    # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
-                    if childObject.subassemblyImport is True:
-                        # Create a list with sub child objects as DocumentObjects
-                        subChildObjects = []
-                        # Make sure that the list is empty. (probally overkill)
-                        subChildObjects.clear()
+                    # Standard assume the object is not an array
+                    IsArray = True
 
-                        # Get the path of the child object
-                        FullPath = childObject.sourceFile
-                        # If the path starts with ".", it is in the same folder as this document.
-                        # Combine the path of this document with the path of the subobject.
-                        if FullPath.startswith(".\\") or FullPath.startswith("./"):
-                            FullPath = os.path.join(
-                                os.path.dirname(ParentDocument.FileName),
-                                FullPath,
-                            )
-                        # Open the sub object. Open it hidden
-                        childObjectDocument = App.openDocument(FullPath, True)
-                        # Go through the objects of this sub objects
-                        for j in range(len(childObjectDocument.Objects)):
-                            childObject = childObjectDocument.Objects[j]
-                            # If the documentObject is one of the allowed types, add it to the list of child objects
-                            try:
-                                if childObject.objectType == "a2pPart":
-                                    subChildObjects.append(childObject)
-                            except Exception:
-                                pass
+                    # If the object is an array. update the quantity and replace the array with is elements
+                    try:
+                        ArrayType = childObject.ArrayType
+                    except Exception:
+                        IsArray = False
+                        pass
 
-                        if len(subChildObjects) > 0:
-                            self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
-                            # Go the the sub child objects with this same function
-                            self.GoThrough_ChildObjects(
-                                ChilddocObjects=subChildObjects,
-                                sheet=sheet,
-                                ChildItemNumber=0,
-                                ParentNumber=ItemNumberString,
-                            )
+                    if IsArray is True:
+                        Qty = int(childObject.Count)
+                        childObject = childObject.SourceObject
+                    else:
+                        Qty = 1
+
+                    for q in range(Qty):
+                        ItemNumberString = str(ChildItemNumber + q)
+                        if ParentNumber != "":
+                            ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
+                        # Create a rowList
+                        rowList = {
+                            "ItemNumber": ItemNumberString,
+                            "DocumentObject": childObject,
+                            "ObjectLabel": childObject.Label,
+                            "ObjectName": childObject.Name,
+                            "Qty": 1,
+                            "Type": "Part",
+                        }
+
+                        # add the rowList to the mainList
+                        self.mainList.append(rowList)
+
+                        # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
+                        if childObject.subassemblyImport is True:
+                            # Create a list with sub child objects as DocumentObjects
+                            subChildObjects = []
+                            # Make sure that the list is empty. (probally overkill)
+                            subChildObjects.clear()
+
+                            # Get the path of the child object
+                            FullPath = childObject.sourceFile
+                            # If the path starts with ".", it is in the same folder as this document.
+                            # Combine the path of this document with the path of the subobject.
+                            if FullPath.startswith(".\\") or FullPath.startswith("./"):
+                                FullPath = os.path.join(
+                                    os.path.dirname(ParentDocument.FileName),
+                                    FullPath,
+                                )
+                            # Open the sub object. Open it hidden
+                            childObjectDocument = App.openDocument(FullPath, True)
+                            # Go through the objects of this sub objects
+                            for j in range(len(childObjectDocument.Objects)):
+                                childObject = childObjectDocument.Objects[j]
+                                # If the documentObject is one of the allowed types, add it to the list of child objects
+                                try:
+                                    if childObject.objectType == "a2pPart":
+                                        subChildObjects.append(childObject)
+                                except Exception:
+                                    pass
+
+                            if len(subChildObjects) > 0:
+                                self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                                # Go the the sub child objects with this same function
+                                self.GoThrough_ChildObjects(
+                                    ChilddocObjects=subChildObjects,
+                                    sheet=sheet,
+                                    ChildItemNumber=0,
+                                    ParentNumber=ItemNumberString,
+                                )
             except Exception:
                 pass
         return
@@ -302,10 +346,7 @@ class BomFunctions:
             path = CopyMainList[i]["DocumentObject"].sourceFile
             Label = CopyMainList[i]["ObjectLabel"]
             if len(Label.split("_")) > 1:
-                if (
-                    Label.rsplit("_", 1)[1].isnumeric()
-                    and len(Label.rsplit("_", 1)[1]) == 3
-                ):
+                if Label.rsplit("_", 1)[1].isnumeric() and len(Label.rsplit("_", 1)[1]) == 3:
                     Label = Label.rsplit("_", 1)[0]
 
             ShadowItem = {
@@ -501,9 +542,7 @@ class BomFunctions:
     # The function CreateBoM can be used to write it the an spreadsheet.
     # The value for 'WB' must be provided. It is used for the correct filtering for each support WB
     @classmethod
-    def SummarizedBoM(
-        self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False
-    ):
+    def SummarizedBoM(self, CreateSpreadSheet: bool = True, ObjectNameBased: bool = False):
         # If the Mainlist is empty, return.
         if len(self.mainList) == 0:
             return
@@ -592,9 +631,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(
-                mainList=TemporaryList, Headers=None, Summary=True
-            )
+            General_BOM.createBoMSpreadsheet(mainList=TemporaryList, Headers=None, Summary=True)
         return
 
     # Function to create a BoM list for a parts only BoM.
