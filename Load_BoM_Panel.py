@@ -507,7 +507,6 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 Level=Level_Value,
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
-                # EnableQuestion=False,
                 CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Assembly 3":
