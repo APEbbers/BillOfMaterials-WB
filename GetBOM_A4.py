@@ -497,79 +497,6 @@ class BomFunctions:
 
         return False
 
-    # function to summarize, subassemblies with their children
-    @classmethod
-    def ReplacesAssembly(self, BoMList: list):
-        # Define the result list
-        resultList = []
-        # Define a list to hold items that are used to replace duplicates
-        ReplaceList = []
-        # Create a shadow list with items that has te be skipped
-        shadowList = []
-
-        # Go through the BoM
-        for i in range(len(BoMList)):
-            # getContents the row item
-            BoMListItem = BoMList[i]
-            # Get the itemnumber
-            itemNumber = str(BoMListItem["ItemNumber"])
-            # Get the item type
-            itemType = BoMListItem["Type"]
-            # GEt the internal name of the item
-            itemName = BoMListItem["ObjectLabel"]
-
-            # Add always the first item to the replace list
-            if i == 0:
-                ReplaceList.append(BoMList[i])
-
-            # Go trhough the replace list to see if there are duplicate items that must be replaced.
-            for j in range(len(ReplaceList)):
-                # Set skip to false as default
-                skip = False
-
-                # if you at the end of the replace list: if the item is not in the shadowlist,
-                # add it to the result list.
-                if j == len(ReplaceList) - 1:
-                    # Go through the shadow list. If the current item is in the shadow list, skip it.
-                    for k in range(len(shadowList)):
-                        if shadowList[k]["ItemNumber"] == itemNumber:
-                            skip = True
-                    # If the item is not to be skipped, add the item from the replace list to the result list.
-                    if skip is False:
-                        resultList.append(BoMListItem)
-                        ReplaceList.append(BoMListItem)
-                    break
-
-                # If the itemnumber consists of multiple parts go here. (1.1.1 for example)
-                if len(itemNumber.split(".")) > 1:
-                    # if the part of the itemnumber minus the last digit is equeal to the
-                    # itemnumber minus the last digit in the BoMList go through here
-                    if (
-                        ReplaceList[j]["ItemNumber"].rsplit(".", 1)[0] == itemNumber.rsplit(".", 1)[0]
-                        and ReplaceList[j]["ObjectLabel"] == itemName
-                    ):
-                        # Go through the BoMList. Every item that starts with current itemnumber
-                        # is a child of the current item. Add it to the shadow list
-                        for k in range(len(BoMList)):
-                            if BoMList[k]["ItemNumber"].rsplit(".", 1)[0] == itemNumber:
-                                shadowList.append(BoMList[k])
-
-                        # Go through the shadow list. If the current item is in the shadow list, skip it.
-                        for k in range(len(shadowList)):
-                            if shadowList[k]["ItemNumber"] == itemNumber:
-                                skip = True
-
-                        # If the item is not to be skipped, add the item from the replace list to the result list.
-                        if skip is False:
-                            resultList.append(ReplaceList[j])
-                        break
-
-                if len(itemNumber.split(".")) == 1:
-                    if ReplaceList[j]["ItemNumber"] == itemNumber and ReplaceList[j]["ObjectName"] == itemName:
-                        resultList.append(ReplaceList[j])
-                        break
-        return resultList
-
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
@@ -594,7 +521,7 @@ class BomFunctions:
                 CopyMainList[i] = ReturnedRowIem
 
         # summarize duplicate subassemblies
-        CopyMainList = self.ReplacesAssembly(CopyMainList)
+        CopyMainList = General_BOM.ReplacesAssembly(CopyMainList)
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
@@ -677,33 +604,10 @@ class BomFunctions:
                     )
                     is False
                 ):
-                    # print(f'{shadowRow["Item1"]}, {shadowRow["Item2"]}, {shadowRow["Item3"]}')
                     # add the new rowList item to the temporary list
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
-                    # if shadowRow["Item3"] == "Assembly":
-                    #     for i in range(len(CopyMainList)):
-                    #         # getContents the row item
-                    #         rowList = CopyMainList[i]
-                    #         # Get the itemnumber
-                    #         itemNumber = str(rowList["ItemNumber"])
-
-                    #         if itemNumber.startswith(shadowRow["Item1"]):
-                    #             # write the itemnumber of the subassy for the shadow list.
-                    #             shadowItemNumber = str(rowList["ItemNumber"]).rsplit(".", 1)[0]
-                    #             # Define the shadow item.
-                    #             shadowObject = rowList["DocumentObject"]
-                    #             # Define the shadow type:
-                    #             shadowType = rowList["Type"]
-                    #             # Create the row item for the shadow list.
-                    #             shadowRow = {
-                    #                 "Item1": shadowItemNumber,
-                    #                 "Item2": shadowObject,
-                    #                 "Item3": shadowType,
-                    #             }
-
-                    #             ShadowList.append(shadowRow)
 
             # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or
             # shorter then the level wanted, continue
@@ -758,40 +662,19 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
-                    # if shadowRow["Item3"] == "Assembly":
-                    #     for i in range(len(CopyMainList)):
-                    #         # getContents the row item
-                    #         rowList = CopyMainList[i]
-                    #         # Get the itemnumber
-                    #         itemNumber = str(rowList["ItemNumber"])
-
-                    #         if itemNumber.startswith(shadowRow["Item1"]):
-                    #             # write the itemnumber of the subassy for the shadow list.
-                    #             shadowItemNumber = str(rowList["ItemNumber"]).rsplit(".", 1)[0]
-                    #             # Define the shadow item.
-                    #             shadowObject = rowList["DocumentObject"]
-                    #             # Define the shadow type:
-                    #             shadowType = rowList["Type"]
-                    #             # Create the row item for the shadow list.
-                    #             shadowRow = {
-                    #                 "Item1": shadowItemNumber,
-                    #                 "Item2": shadowObject,
-                    #                 "Item3": shadowType,
-                    #             }
-
-                    #             ShadowList.append(shadowRow)
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
         if Level > 1:
             TemporaryList = self.FilterBodies(BOMList=TemporaryList, AllowAllBodies=IncludeBodies)
 
+        # obsolete---------------------------------------------------------------
         # # correct the quantities for the parts in subassemblies
         # TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
 
-        # # Correct the itemnumbers if indentation is wanted.
-        # if IndentNumbering is True:
-        #     TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList, True)
+        # Correct the itemnumbers if indentation is wanted.
+        if IndentNumbering is True:
+            TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList, True)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:

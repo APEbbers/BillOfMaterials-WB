@@ -432,6 +432,9 @@ class BomFunctions:
             if ReturnedRowIem is not None:
                 CopyMainList[i] = ReturnedRowIem
 
+        # summarize duplicate subassemblies
+        CopyMainList = General_BOM.ReplacesAssembly(CopyMainList)
+
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
         # Create two lists for splitting the copy of the main list
@@ -853,8 +856,8 @@ class BomFunctions:
                             title="Bill of Materials",
                             style=1,
                         )
-                    if Answer == "yes":
-                        IncludeBodies = True
+                        if Answer == "yes":
+                            IncludeBodies = True
                     General_BOM.createBoMSpreadsheet(
                         self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies)
                     )
