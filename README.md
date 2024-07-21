@@ -9,6 +9,7 @@ With this workbench, different types of the BoM can be created:
 * a parts only BoM.
 * a first level BoM (useful for assembly pages.
 * a raw BoM. (This is a BoM, just as is. No summation of parts and assemblies. Can be used for testing or creating your own BoM in programs like Excel.)\
+* Since version 0.1.3.0 patterns are also supported. Parterns currently only present in Assembly 4.
 Standard the following columns are added to the (BoM):
 * Number.
 * Quantity.
