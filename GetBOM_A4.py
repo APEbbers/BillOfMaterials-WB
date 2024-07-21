@@ -1057,8 +1057,8 @@ class BomFunctions:
                             title="Bill of Materials",
                             style=1,
                         )
-                    if Answer == "yes":
-                        IncludeBodies = True
+                        if Answer == "yes":
+                            IncludeBodies = True
                     General_BOM.createBoMSpreadsheet(self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies))
 
                 if command == "PartsOnly":
