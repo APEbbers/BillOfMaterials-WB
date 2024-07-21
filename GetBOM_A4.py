@@ -214,9 +214,9 @@ class BomFunctions:
                     Qty = 1
 
                 for q in range(Qty):
-                    # ItemNumberString = str(ItemNumber + q)
-                    # if ParentNumber != "":
-                    #     ItemNumberString = str(ParentNumber + q)
+                    ItemNumberString = str(ItemNumber + q)
+                    if ParentNumber != "":
+                        ItemNumberString = str(ParentNumber + q)
                     # Create a rowList
                     rowList = {
                         "ItemNumber": ItemNumberString,
@@ -276,8 +276,8 @@ class BomFunctions:
                                             )
                         if len(childObjects) > 0:
                             self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
-                            # Go the the child objects with a separate function for the child objects
-                            # This way you can go through multiple levels
+
+                            # Go the the sub child objects with this same function
                             self.GoThrough_ChildObjects(
                                 ChilddocObjects=childObjects,
                                 sheet=sheet,
@@ -317,8 +317,10 @@ class BomFunctions:
             if self.AllowedObjectType(objectID=childObject.TypeId) is True:
                 # Increase the itemnumber for the child
                 ChildItemNumber = int(ChildItemNumber) + 1
+
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
+
                 # Set the quantity to 1.
                 Qty = 1
 
@@ -339,14 +341,9 @@ class BomFunctions:
                     Qty = 1
 
                 for q in range(Qty):
-                    # if len(ParentNumber.split(".")) == 1:
-                    #     ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
-                    # if len(ParentNumber.split(".")) > 1:
-                    #     ParentNumberA = ParentNumber.rsplit(".", 1)[0]
-                    #     ParentNumberB = str(int(ParentNumber.rsplit(".", 1)[1]) + q)
-                    #     ItemNumberString = ParentNumberA + "." + ParentNumberB + "." + str(ChildItemNumber)
-                    # ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
-
+                    ItemNumberString = str(ChildItemNumber + q)
+                    if ParentNumber != "":
+                        ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
                     # Create a rowList
                     rowList = {
                         "ItemNumber": ItemNumberString,
@@ -408,6 +405,7 @@ class BomFunctions:
                                             )
                         if len(subChildObjects) > 0:
                             self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+
                             # Go the the sub child objects with this same function
                             self.GoThrough_ChildObjects(
                                 ChilddocObjects=subChildObjects,
@@ -434,6 +432,7 @@ class BomFunctions:
                 RowItem["DocumentObject"] = docObject.LinkedObject
                 RowItem["ObjectName"] = docObject.LinkedObject.Name
                 RowItem["ObjectLabel"] = docObject.LinkedObject.Label
+
                 return RowItem
             # If the property returns "Assembly", it is an sub-assembly. Return the object.
             if docObject.getPropertyByName("Type") == "Assembly":
@@ -511,6 +510,19 @@ class BomFunctions:
         # return the filtered list.
         return BOMList
 
+    @classmethod
+    def ListContainsCheck(self, List: list, Item1, Item2, Item3) -> bool:
+        for i in range(len(List)):
+            rowItem = List[i]
+            ListItem1 = rowItem["Item1"]
+            ListItem2 = rowItem["Item2"]
+            ListItem3 = rowItem["Item3"]
+
+            if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
+                return True
+
+        return False
+
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
@@ -533,6 +545,9 @@ class BomFunctions:
             ReturnedRowIem = self.ReturnLinkedObject(CopyMainList[i])
             if ReturnedRowIem is not None:
                 CopyMainList[i] = ReturnedRowIem
+
+        # summarize duplicate subassemblies
+        CopyMainList = General_BOM.ReplacesAssembly(CopyMainList)
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
@@ -607,7 +622,7 @@ class BomFunctions:
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
                 if (
-                    General_BOM.ListContainsCheck(
+                    self.ListContainsCheck(
                         List=ShadowList,
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
@@ -643,7 +658,7 @@ class BomFunctions:
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
                         ObjectBasedPart=False,
-                        ObjectBasedAssy=False,
+                        ObjectBasedAssy=True,
                     )
                 )
 
@@ -669,6 +684,7 @@ class BomFunctions:
                     )
                     is False
                 ):
+                    # print(f'{shadowRow["Item1"]}, {shadowRow["Item2"]}, {shadowRow["Item3"]}')
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
@@ -680,8 +696,9 @@ class BomFunctions:
                 BOMList=TemporaryList, AllowAllBodies=IncludeBodies
             )
 
-        # correct the quantities for the parts in subassemblies
-        TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
+        # obsolete---------------------------------------------------------------
+        # # correct the quantities for the parts in subassemblies
+        # TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
@@ -957,8 +974,8 @@ class BomFunctions:
                             title="Bill of Materials",
                             style=1,
                         )
-                    if Answer == "yes":
-                        IncludeBodies = True
+                        if Answer == "yes":
+                            IncludeBodies = True
                     General_BOM.createBoMSpreadsheet(
                         self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies)
                     )

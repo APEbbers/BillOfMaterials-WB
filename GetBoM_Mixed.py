@@ -382,21 +382,22 @@ class BomFunctions:
         doc = App.ActiveDocument
 
         # Get the list with rootobjects
-        RootObjects = doc.RootObjects
-
-        # define the list for the
+        RootObjects = []
+        for i in range(len(doc.RootObjects)):
+            if doc.RootObjects[i].Visibility is True:
+                RootObjects.append(doc.RootObjects[i])
         docObjects = []
 
+        # Detect the assembly type
         AssemblyType = self.__CheckAssemblyType_Root(doc)
 
-        if (
-            AssemblyType == "A2plus"
-            or AssemblyType == "MultiBody"
-            or AssemblyType == "Arch"
-        ):
-            RootObjects = doc.Objects
-
         if AssemblyType == "A2plus":
+            # Redefine RootObjects. A2Plus doesn't work with 'RootObjets"
+            RootObjects = []
+            for i in range(len(doc.Objects)):
+                if doc.Objects[i].Visibility is True:
+                    RootObjects.append(doc.Objects[i])
+
             # Get all the parts and subassemblies
             for i in range(len(RootObjects)):
                 try:
@@ -422,9 +423,10 @@ class BomFunctions:
                     ):
                         docObjects.append(RootObject)
 
-        PartsGroup = []
-        PartList = []
         if AssemblyType == "Assembly4":
+            PartsGroup = []
+            PartList = []
+
             # Check if there are groups with items. create a list from it and add it to the docObjects.
             for RootObject in RootObjects:
                 if (
@@ -456,7 +458,9 @@ class BomFunctions:
 
         if AssemblyType == "AppLink" or AssemblyType == "Internal":
             # Get the list with rootobjects
-            docObjects = doc.RootObjects
+            for RootObject in RootObjects:
+                if RootObject.Visibility is True:
+                    docObjects.append(RootObject)
 
             # Check if there are groups with items. create a list from it and add it to the docObjects.
             for docObject in docObjects:
@@ -496,7 +500,9 @@ class BomFunctions:
 
         if AssemblyType == "AppPart":
             # Get the list with rootobjects
-            docObjects = doc.RootObjects
+            for RootObject in RootObjects:
+                if RootObject.Visibility is True:
+                    docObjects.append(RootObject)
 
             # Check if there are groups with items. create a list from it and add it to the docObjects.
             for docObject in docObjects:
@@ -505,7 +511,9 @@ class BomFunctions:
 
         if AssemblyType == "MultiBody" or AssemblyType == "Arch":
             # Get the list with rootobjects
-            docObjects = doc.Objects
+            for i in range(len(doc.Objects)):
+                if doc.RootObjects[i].Visibility is True:
+                    docObjects.append(doc.Objects[i])
 
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
@@ -569,250 +577,100 @@ class BomFunctions:
                     if ParentNumber != "":
                         ItemNumberString = str(ParentNumber)
 
-                    # Get the linked object if there is one.
+                    # Set the quantity to 1.
+                    Qty = 1
 
-                    # Create a rowList
-                    rowList = {
-                        "ItemNumber": ItemNumberString,
-                        "DocumentObject": docObject,
-                        "ObjectLabel": docObject.Label,
-                        "ObjectName": docObject.Name,
-                        "Qty": 1,
-                        "Type": "Part",
-                    }
+                    # Standard assume the object is not an array
+                    IsArray = True
 
-                    # Add the rowList to the mainList
-                    self.__mainList.append(rowList)
+                    # If the object is an array. update the quantity and replace the array with is elements
+                    try:
+                        ArrayType = docObject.ArrayType
+                    except Exception:
+                        IsArray = False
+                        pass
 
-                    if AssemblyType == "A2plus":
-                        # If the object is an container, go through the sub items, (a.k.a child objects)
-                        if docObject.subassemblyImport is True:
+                    if IsArray is True:
+                        Qty = int(docObject.Count)
+                        docObject = docObject.SourceObject
+                    else:
+                        Qty = 1
+
+                    for q in range(Qty):
+                        # Create a rowList
+                        rowList = {
+                            "ItemNumber": ItemNumberString,
+                            "DocumentObject": docObject,
+                            "ObjectLabel": docObject.Label,
+                            "ObjectName": docObject.Name,
+                            "Qty": 1,
+                            "Type": "Part",
+                        }
+
+                        # Add the rowList to the mainList
+                        self.__mainList.append(rowList)
+
+                        if AssemblyType == "A2plus":
+                            # If the object is an container, go through the sub items, (a.k.a child objects)
+                            if docObject.subassemblyImport is True:
+                                # Create a list with child objects as DocumentObjects
+                                childObjects = []
+                                # Make sure that the list is empty. (probally overkill)
+                                childObjects.clear()
+
+                                # Get the path of the sub-object
+                                FullPath = docObject.sourceFile
+                                # If the path starts with ".", it is in the same folder as this document.
+                                # Combine the path of this document with the path of the subobject.
+                                if FullPath.startswith(".\\") or FullPath.startswith(
+                                    "./"
+                                ):
+                                    FullPath = os.path.join(
+                                        os.path.dirname(ParentDocument.FileName),
+                                        FullPath,
+                                    )
+                                # Open the sub object. Open it hidden
+                                ObjectDocument = App.openDocument(FullPath, True)
+                                # Go through the objects of this sub objects
+                                for j in range(len(ObjectDocument.Objects)):
+                                    childObject = ObjectDocument.Objects[j]
+                                    # If the documentObject is one of the allowed types, add it to the list of child objects
+                                    try:
+                                        if childObject.objectType == "a2pPart":
+                                            childObjects.append(childObject)
+                                    except Exception:
+                                        pass
+
+                                if len(childObjects) > 0:
+                                    self.__mainList[len(self.__mainList) - 1][
+                                        "Type"
+                                    ] = AssemblyType
+                                    # Go the the child objects with a separate function for the child objects
+                                    # This way you can go through multiple levels
+                                    self.__GoThrough_ChildObjects(
+                                        ChilddocObjects=childObjects,
+                                        ParentDocument=ParentDocument,
+                                        ChildItemNumber=0,
+                                        ParentNumber=ItemNumberString,
+                                        Parts=Parts,
+                                    )
+
+                        if AssemblyType == "Assembly3":
                             # Create a list with child objects as DocumentObjects
                             childObjects = []
                             # Make sure that the list is empty. (probally overkill)
                             childObjects.clear()
-
-                            # Get the path of the sub-object
-                            FullPath = docObject.sourceFile
-                            # If the path starts with ".", it is in the same folder as this document.
-                            # Combine the path of this document with the path of the subobject.
-                            if FullPath.startswith(".\\") or FullPath.startswith("./"):
-                                FullPath = os.path.join(
-                                    os.path.dirname(ParentDocument.FileName),
-                                    FullPath,
-                                )
-                            # Open the sub object. Open it hidden
-                            ObjectDocument = App.openDocument(FullPath, True)
-                            # Go through the objects of this sub objects
-                            for j in range(len(ObjectDocument.Objects)):
-                                childObject = ObjectDocument.Objects[j]
-                                # If the documentObject is one of the allowed types, add it to the list of child objects
-                                try:
-                                    if childObject.objectType == "a2pPart":
-                                        childObjects.append(childObject)
-                                except Exception:
-                                    pass
-
-                            if len(childObjects) > 0:
-                                self.__mainList[len(self.__mainList) - 1][
-                                    "Type"
-                                ] = AssemblyType
-                                # Go the the child objects with a separate function for the child objects
-                                # This way you can go through multiple levels
-                                self.__GoThrough_ChildObjects(
-                                    ChilddocObjects=childObjects,
-                                    ParentDocument=ParentDocument,
-                                    ChildItemNumber=0,
-                                    ParentNumber=ItemNumberString,
-                                    Parts=Parts,
-                                )
-
-                    if AssemblyType == "Assembly3":
-                        # Create a list with child objects as DocumentObjects
-                        childObjects = []
-                        # Make sure that the list is empty. (probally overkill)
-                        childObjects.clear()
-                        # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                        for k in range(len(docObject.getSubObjects())):
-                            if (
-                                docObject.getSubObject(
-                                    subname=docObject.getSubObjects()[k], retType=1
-                                )
-                                is not None
-                            ):
-                                childObjects.append(
+                            # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                            for k in range(len(docObject.getSubObjects())):
+                                if (
                                     docObject.getSubObject(
                                         subname=docObject.getSubObjects()[k], retType=1
-                                    ),
-                                )
-                        if len(childObjects) > 0:
-                            self.__mainList[len(self.__mainList) - 1][
-                                "Type"
-                            ] = AssemblyType
-                            # Go the the child objects with a separate function for the child objects
-                            # This way you can go through multiple levels
-                            self.__GoThrough_ChildObjects(
-                                ChilddocObjects=childObjects,
-                                ParentDocument=ParentDocument,
-                                ChildItemNumber=0,
-                                ParentNumber=ItemNumberString,
-                                Parts=Parts,
-                            )
-
-                    if AssemblyType == "Assembly4":
-                        # If the object is an container, go through the sub items, (a.k.a child objects)
-                        if (
-                            docObject.TypeId == "App::LinkGroup"
-                            or docObject.TypeId == "App::Link"
-                            or docObject.TypeId == "App::Part"
-                        ):
-                            # Create a list with child objects as DocumentObjects
-                            childObjects = []
-                            # Make sure that the list is empty. (probally overkill)
-                            childObjects.clear()
-                            # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                            for j in range(len(docObject.getSubObjects())):
-                                if (
-                                    docObject.getSubObject(
-                                        subname=docObject.getSubObjects()[j], retType=1
-                                    )
-                                    is not None
-                                ):
-                                    # Go through the parts folder and compare the parts with the subobjects.
-                                    for k in range(len(Parts)):
-                                        # If filtering with the parts in the part folder results in an document object,
-                                        # this is a part. Add it the the child object list.
-                                        if (
-                                            self.__FilterLinkedParts_A4(
-                                                ObjectDocument=docObject.getSubObject(
-                                                    subname=docObject.getSubObjects()[
-                                                        j
-                                                    ],
-                                                    retType=1,
-                                                ),
-                                                objectComparison=Parts[k],
-                                            )
-                                            is not None
-                                        ):
-                                            if self.__AllowedObjectType(
-                                                objectID=docObject.getSubObject(
-                                                    subname=docObject.getSubObjects()[
-                                                        j
-                                                    ],
-                                                    retType=1,
-                                                ).TypeId,
-                                                AssemblyType=AssemblyType,
-                                            ):
-                                                childObjects.append(
-                                                    docObject.getSubObject(
-                                                        subname=docObject.getSubObjects()[
-                                                            j
-                                                        ],
-                                                        retType=1,
-                                                    )
-                                                )
-                            if len(childObjects) > 0:
-                                self.__mainList[len(self.__mainList) - 1][
-                                    "Type"
-                                ] = AssemblyType
-                                # Go the the child objects with a separate function for the child objects
-                                # This way you can go through multiple levels
-                                self.__GoThrough_ChildObjects(
-                                    ChilddocObjects=childObjects,
-                                    ParentDocument=ParentDocument,
-                                    ChildItemNumber=0,
-                                    ParentNumber=ItemNumberString,
-                                    Parts=Parts,
-                                )
-
-                    if AssemblyType == "AppLink":
-                        # If the object is an container, go through the sub items, (a.k.a child objects)
-                        if (
-                            docObject.TypeId == "App::LinkGroup"
-                            or docObject.TypeId == "App::Link"
-                        ):
-                            # Create a list with child objects as DocumentObjects
-                            childObjects = []
-                            # Make sure that the list is empty. (probally overkill)
-                            childObjects.clear()
-                            # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                            for j in range(len(docObject.getSubObjects())):
-                                if docObject.getSubObjects()[j] is not None:
-                                    childObjects.append(
-                                        docObject.getSubObject(
-                                            docObject.getSubObjects()[j], 1
-                                        ),
-                                    )
-                            if len(childObjects) > 0:
-                                self.__mainList[len(self.__mainList) - 1][
-                                    "Type"
-                                ] = AssemblyType
-                                # Go the the child objects with a separate function for the child objects
-                                # This way you can go through multiple levels
-                                self.__GoThrough_ChildObjects(
-                                    ChilddocObjects=childObjects,
-                                    ParentDocument=ParentDocument,
-                                    ChildItemNumber=0,
-                                    ParentNumber=ItemNumberString,
-                                    Parts=Parts,
-                                )
-
-                    if AssemblyType == "AppPart":
-                        # If the object is an container, go through the sub items, (a.k.a child objects)
-                        if docObject.TypeId == "App::Part":
-                            # Create a list with child objects as DocumentObjects
-                            childObjects = []
-                            # Make sure that the list is empty. (probally overkill)
-                            childObjects.clear()
-
-                            # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                            for j in range(len(docObject.Group)):
-                                if (
-                                    self.__AllowedObjectType(
-                                        objectID=docObject.Group[j].TypeId,
-                                        AssemblyType=AssemblyType,
-                                    )
-                                    is True
-                                ):
-                                    childObjects.append(docObject.Group[j])
-
-                            if len(childObjects) > 0:
-                                self.__mainList[len(self.__mainList) - 1][
-                                    "Type"
-                                ] = AssemblyType
-                                # Go the the child objects with a separate function for the child objects
-                                # This way you can go through multiple levels
-                                self.__GoThrough_ChildObjects(
-                                    ChilddocObjects=childObjects,
-                                    ParentDocument=ParentDocument,
-                                    ChildItemNumber=0,
-                                    ParentNumber=ItemNumberString,
-                                    Parts=Parts,
-                                )
-
-                    if AssemblyType == "Internal":
-                        # If the object is an container, go through the sub items, (a.k.a child objects)
-                        if (
-                            docObject.TypeId == "App::LinkGroup"
-                            or docObject.TypeId == "App::Link"
-                            or docObject.TypeId == "App::Part"
-                            or docObject.TypeId == "Assembly::AssemblyObject"
-                        ):
-                            # Create a list with child objects as DocumentObjects
-                            childObjects = []
-                            # Make sure that the list is empty. (probally overkill)
-                            childObjects.clear()
-                            # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                            for j in range(len(docObject.getSubObjects())):
-                                if (
-                                    docObject.getSubObject(
-                                        subname=docObject.getSubObjects()[j], retType=1
                                     )
                                     is not None
                                 ):
                                     childObjects.append(
                                         docObject.getSubObject(
-                                            subname=docObject.getSubObjects()[j],
+                                            subname=docObject.getSubObjects()[k],
                                             retType=1,
                                         ),
                                     )
@@ -829,6 +687,179 @@ class BomFunctions:
                                     ParentNumber=ItemNumberString,
                                     Parts=Parts,
                                 )
+
+                        if AssemblyType == "Assembly4":
+                            # If the object is an container, go through the sub items, (a.k.a child objects)
+                            if (
+                                docObject.TypeId == "App::LinkGroup"
+                                or docObject.TypeId == "App::Link"
+                                or docObject.TypeId == "App::Part"
+                            ):
+                                # Create a list with child objects as DocumentObjects
+                                childObjects = []
+                                # Make sure that the list is empty. (probally overkill)
+                                childObjects.clear()
+                                # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                                for j in range(len(docObject.getSubObjects())):
+                                    if (
+                                        docObject.getSubObject(
+                                            subname=docObject.getSubObjects()[j],
+                                            retType=1,
+                                        )
+                                        is not None
+                                    ):
+                                        # Go through the parts folder and compare the parts with the subobjects.
+                                        for k in range(len(Parts)):
+                                            # If filtering with the parts in the part folder results in an document object,
+                                            # this is a part. Add it the the child object list.
+                                            if (
+                                                self.__FilterLinkedParts_A4(
+                                                    ObjectDocument=docObject.getSubObject(
+                                                        subname=docObject.getSubObjects()[
+                                                            j
+                                                        ],
+                                                        retType=1,
+                                                    ),
+                                                    objectComparison=Parts[k],
+                                                )
+                                                is not None
+                                            ):
+                                                if self.__AllowedObjectType(
+                                                    objectID=docObject.getSubObject(
+                                                        subname=docObject.getSubObjects()[
+                                                            j
+                                                        ],
+                                                        retType=1,
+                                                    ).TypeId,
+                                                    AssemblyType=AssemblyType,
+                                                ):
+                                                    childObjects.append(
+                                                        docObject.getSubObject(
+                                                            subname=docObject.getSubObjects()[
+                                                                j
+                                                            ],
+                                                            retType=1,
+                                                        )
+                                                    )
+                                if len(childObjects) > 0:
+                                    self.__mainList[len(self.__mainList) - 1][
+                                        "Type"
+                                    ] = AssemblyType
+                                    # Go the the child objects with a separate function for the child objects
+                                    # This way you can go through multiple levels
+                                    self.__GoThrough_ChildObjects(
+                                        ChilddocObjects=childObjects,
+                                        ParentDocument=ParentDocument,
+                                        ChildItemNumber=0,
+                                        ParentNumber=ItemNumberString,
+                                        Parts=Parts,
+                                    )
+
+                        if AssemblyType == "AppLink":
+                            # If the object is an container, go through the sub items, (a.k.a child objects)
+                            if (
+                                docObject.TypeId == "App::LinkGroup"
+                                or docObject.TypeId == "App::Link"
+                            ):
+                                # Create a list with child objects as DocumentObjects
+                                childObjects = []
+                                # Make sure that the list is empty. (probally overkill)
+                                childObjects.clear()
+                                # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                                for j in range(len(docObject.getSubObjects())):
+                                    if docObject.getSubObjects()[j] is not None:
+                                        childObjects.append(
+                                            docObject.getSubObject(
+                                                docObject.getSubObjects()[j], 1
+                                            ),
+                                        )
+                                if len(childObjects) > 0:
+                                    self.__mainList[len(self.__mainList) - 1][
+                                        "Type"
+                                    ] = AssemblyType
+                                    # Go the the child objects with a separate function for the child objects
+                                    # This way you can go through multiple levels
+                                    self.__GoThrough_ChildObjects(
+                                        ChilddocObjects=childObjects,
+                                        ParentDocument=ParentDocument,
+                                        ChildItemNumber=0,
+                                        ParentNumber=ItemNumberString,
+                                        Parts=Parts,
+                                    )
+
+                        if AssemblyType == "AppPart":
+                            # If the object is an container, go through the sub items, (a.k.a child objects)
+                            if docObject.TypeId == "App::Part":
+                                # Create a list with child objects as DocumentObjects
+                                childObjects = []
+                                # Make sure that the list is empty. (probally overkill)
+                                childObjects.clear()
+
+                                # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                                for j in range(len(docObject.Group)):
+                                    if (
+                                        self.__AllowedObjectType(
+                                            objectID=docObject.Group[j].TypeId,
+                                            AssemblyType=AssemblyType,
+                                        )
+                                        is True
+                                    ):
+                                        childObjects.append(docObject.Group[j])
+
+                                if len(childObjects) > 0:
+                                    self.__mainList[len(self.__mainList) - 1][
+                                        "Type"
+                                    ] = AssemblyType
+                                    # Go the the child objects with a separate function for the child objects
+                                    # This way you can go through multiple levels
+                                    self.__GoThrough_ChildObjects(
+                                        ChilddocObjects=childObjects,
+                                        ParentDocument=ParentDocument,
+                                        ChildItemNumber=0,
+                                        ParentNumber=ItemNumberString,
+                                        Parts=Parts,
+                                    )
+
+                        if AssemblyType == "Internal":
+                            # If the object is an container, go through the sub items, (a.k.a child objects)
+                            if (
+                                docObject.TypeId == "App::LinkGroup"
+                                or docObject.TypeId == "App::Link"
+                                or docObject.TypeId == "App::Part"
+                                or docObject.TypeId == "Assembly::AssemblyObject"
+                            ):
+                                # Create a list with child objects as DocumentObjects
+                                childObjects = []
+                                # Make sure that the list is empty. (probally overkill)
+                                childObjects.clear()
+                                # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                                for j in range(len(docObject.getSubObjects())):
+                                    if (
+                                        docObject.getSubObject(
+                                            subname=docObject.getSubObjects()[j],
+                                            retType=1,
+                                        )
+                                        is not None
+                                    ):
+                                        childObjects.append(
+                                            docObject.getSubObject(
+                                                subname=docObject.getSubObjects()[j],
+                                                retType=1,
+                                            ),
+                                        )
+                                if len(childObjects) > 0:
+                                    self.__mainList[len(self.__mainList) - 1][
+                                        "Type"
+                                    ] = AssemblyType
+                                    # Go the the child objects with a separate function for the child objects
+                                    # This way you can go through multiple levels
+                                    self.__GoThrough_ChildObjects(
+                                        ChilddocObjects=childObjects,
+                                        ParentDocument=ParentDocument,
+                                        ChildItemNumber=0,
+                                        ParentNumber=ItemNumberString,
+                                        Parts=Parts,
+                                    )
             except Exception as e:
                 raise (e)
         return
@@ -874,251 +905,101 @@ class BomFunctions:
                     ChildItemNumber = int(ChildItemNumber) + 1
                     # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                     ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
-                    # Create a rowList
-                    rowList = {
-                        "ItemNumber": ItemNumberString,
-                        "DocumentObject": childObject,
-                        "ObjectLabel": childObject.Label,
-                        "ObjectName": childObject.Name,
-                        "Qty": 1,
-                        "Type": "Part",
-                    }
+                    # Set the quantity to 1.
+                    Qty = 1
 
-                    # add the rowList to the mainList
-                    self.__mainList.append(rowList)
+                    # Standard assume the object is not an array
+                    IsArray = True
 
-                    if AssemblyType == "A2plus":
-                        # If the object is an container, go through the sub items, (a.k.a child objects)
-                        if childObject.subassemblyImport is True:
+                    # If the object is an array. update the quantity and replace the array with is elements
+                    try:
+                        ArrayType = childObject.ArrayType
+                    except Exception:
+                        IsArray = False
+                        pass
+
+                    if IsArray is True:
+                        Qty = int(childObject.Count)
+                        childObject = childObject.SourceObject
+                    else:
+                        Qty = 1
+
+                    for q in range(Qty):
+                        # Create a rowList
+                        rowList = {
+                            "ItemNumber": ItemNumberString,
+                            "DocumentObject": childObject,
+                            "ObjectLabel": childObject.Label,
+                            "ObjectName": childObject.Name,
+                            "Qty": 1,
+                            "Type": "Part",
+                        }
+
+                        # add the rowList to the mainList
+                        self.__mainList.append(rowList)
+
+                        if AssemblyType == "A2plus":
+                            # If the object is an container, go through the sub items, (a.k.a child objects)
+                            if childObject.subassemblyImport is True:
+                                # Create a list with child objects as DocumentObjects
+                                subchildObjects = []
+                                # Make sure that the list is empty. (probally overkill)
+                                subchildObjects.clear()
+
+                                # Get the path of the sub-object
+                                FullPath = childObject.sourceFile
+                                # If the path starts with ".", it is in the same folder as this document.
+                                # Combine the path of this document with the path of the subobject.
+                                if FullPath.startswith(".\\") or FullPath.startswith(
+                                    "./"
+                                ):
+                                    FullPath = os.path.join(
+                                        os.path.dirname(ParentDocument.FileName),
+                                        FullPath,
+                                    )
+                                # Open the sub object. Open it hidden
+                                ObjectDocument = App.openDocument(FullPath, True)
+                                # Go through the objects of this sub objects
+                                for j in range(len(ObjectDocument.Objects)):
+                                    childObject = ObjectDocument.Objects[j]
+                                    # If the documentObject is one of the allowed types, add it to the list of child objects
+                                    try:
+                                        if childObject.objectType == "a2pPart":
+                                            subchildObjects.append(childObject)
+                                    except Exception:
+                                        pass
+
+                                if len(subchildObjects) > 0:
+                                    self.__mainList[len(self.__mainList) - 1][
+                                        "Type"
+                                    ] = AssemblyType
+                                    # Go the the child objects with a separate function for the child objects
+                                    # This way you can go through multiple levels
+                                    self.__GoThrough_ChildObjects(
+                                        ChilddocObjects=subchildObjects,
+                                        ParentDocument=ParentDocument,
+                                        ChildItemNumber=0,
+                                        ParentNumber=ItemNumberString,
+                                        Parts=Parts,
+                                    )
+
+                        if AssemblyType == "Assembly3":
                             # Create a list with child objects as DocumentObjects
                             subchildObjects = []
                             # Make sure that the list is empty. (probally overkill)
                             subchildObjects.clear()
-
-                            # Get the path of the sub-object
-                            FullPath = childObject.sourceFile
-                            # If the path starts with ".", it is in the same folder as this document.
-                            # Combine the path of this document with the path of the subobject.
-                            if FullPath.startswith(".\\") or FullPath.startswith("./"):
-                                FullPath = os.path.join(
-                                    os.path.dirname(ParentDocument.FileName),
-                                    FullPath,
-                                )
-                            # Open the sub object. Open it hidden
-                            ObjectDocument = App.openDocument(FullPath, True)
-                            # Go through the objects of this sub objects
-                            for j in range(len(ObjectDocument.Objects)):
-                                childObject = ObjectDocument.Objects[j]
-                                # If the documentObject is one of the allowed types, add it to the list of child objects
-                                try:
-                                    if childObject.objectType == "a2pPart":
-                                        subchildObjects.append(childObject)
-                                except Exception:
-                                    pass
-
-                            if len(subchildObjects) > 0:
-                                self.__mainList[len(self.__mainList) - 1][
-                                    "Type"
-                                ] = AssemblyType
-                                # Go the the child objects with a separate function for the child objects
-                                # This way you can go through multiple levels
-                                self.__GoThrough_ChildObjects(
-                                    ChilddocObjects=subchildObjects,
-                                    ParentDocument=ParentDocument,
-                                    ChildItemNumber=0,
-                                    ParentNumber=ItemNumberString,
-                                    Parts=Parts,
-                                )
-
-                    if AssemblyType == "Assembly3":
-                        # Create a list with child objects as DocumentObjects
-                        subchildObjects = []
-                        # Make sure that the list is empty. (probally overkill)
-                        subchildObjects.clear()
-                        # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                        for k in range(len(childObject.getSubObjects())):
-                            if (
-                                childObject.getSubObject(
-                                    subname=childObject.getSubObjects()[k], retType=1
-                                )
-                                is not None
-                            ):
-                                subchildObjects.append(
+                            # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                            for k in range(len(childObject.getSubObjects())):
+                                if (
                                     childObject.getSubObject(
                                         subname=childObject.getSubObjects()[k],
                                         retType=1,
-                                    ),
-                                )
-                        if len(subchildObjects) > 0:
-                            self.__mainList[len(self.__mainList) - 1][
-                                "Type"
-                            ] = AssemblyType
-                            # Go the the child objects with a separate function for the child objects
-                            # This way you can go through multiple levels
-                            self.__GoThrough_ChildObjects(
-                                ChilddocObjects=subchildObjects,
-                                ParentDocument=ParentDocument,
-                                ChildItemNumber=0,
-                                ParentNumber=ItemNumberString,
-                                Parts=Parts,
-                            )
-
-                    if AssemblyType == "Assembly4":
-                        # If the object is an container, go through the sub items, (a.k.a child objects)
-                        if (
-                            childObject.TypeId == "App::LinkGroup"
-                            or childObject.TypeId == "App::Link"
-                            or childObject.TypeId == "App::Part"
-                        ):
-                            # Create a list with child objects as DocumentObjects
-                            subchildObjects = []
-                            # Make sure that the list is empty. (probally overkill)
-                            subchildObjects.clear()
-                            # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                            for j in range(len(childObject.getSubObjects())):
-                                if (
-                                    childObject.getSubObject(
-                                        subname=childObject.getSubObjects()[j],
-                                        retType=1,
-                                    )
-                                    is not None
-                                ):
-                                    # Go through the parts folder and compare the parts with the subobjects.
-                                    for k in range(len(Parts)):
-                                        # If filtering with the parts in the part folder results in an document object,
-                                        # this is a part. Add it the the child object list.
-                                        if (
-                                            self.__FilterLinkedParts_A4(
-                                                ObjectDocument=childObject.getSubObject(
-                                                    subname=childObject.getSubObjects()[
-                                                        j
-                                                    ],
-                                                    retType=1,
-                                                ),
-                                                objectComparison=Parts[k],
-                                            )
-                                            is not None
-                                        ):
-                                            if self.__AllowedObjectType(
-                                                objectID=childObject.getSubObject(
-                                                    subname=childObject.getSubObjects()[
-                                                        j
-                                                    ],
-                                                    retType=1,
-                                                ).TypeId,
-                                                AssemblyType=AssemblyType,
-                                            ):
-                                                subchildObjects.append(
-                                                    childObject.getSubObject(
-                                                        subname=childObject.getSubObjects()[
-                                                            j
-                                                        ],
-                                                        retType=1,
-                                                    )
-                                                )
-                            if len(subchildObjects) > 0:
-                                self.__mainList[len(self.__mainList) - 1][
-                                    "Type"
-                                ] = AssemblyType
-                                # Go the the child objects with a separate function for the child objects
-                                # This way you can go through multiple levels
-                                self.__GoThrough_ChildObjects(
-                                    ChilddocObjects=subchildObjects,
-                                    ParentDocument=ParentDocument,
-                                    ChildItemNumber=0,
-                                    ParentNumber=ItemNumberString,
-                                    Parts=Parts,
-                                )
-
-                    if AssemblyType == "AppLink":
-                        # If the object is an container, go through the sub items, (a.k.a child objects)
-                        if (
-                            childObject.TypeId == "App::LinkGroup"
-                            or childObject.TypeId == "App::Link"
-                        ):
-                            # Create a list with child objects as DocumentObjects
-                            subchildObjects = []
-                            # Make sure that the list is empty. (probally overkill)
-                            subchildObjects.clear()
-                            # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                            for j in range(len(childObject.getSubObjects())):
-                                if childObject.getSubObjects()[j] is not None:
-                                    subchildObjects.append(
-                                        childObject.getSubObject(
-                                            childObject.getSubObjects()[j], 1
-                                        ),
-                                    )
-                            if len(subchildObjects) > 0:
-                                self.__mainList[len(self.__mainList) - 1][
-                                    "Type"
-                                ] = AssemblyType
-                                # Go the the child objects with a separate function for the child objects
-                                # This way you can go through multiple levels
-                                self.__GoThrough_ChildObjects(
-                                    ChilddocObjects=subchildObjects,
-                                    ParentDocument=ParentDocument,
-                                    ChildItemNumber=0,
-                                    ParentNumber=ItemNumberString,
-                                    Parts=Parts,
-                                )
-
-                    if AssemblyType == "AppPart":
-                        # If the object is an container, go through the sub items, (a.k.a child objects)
-                        if childObject.TypeId == "App::Part":
-                            # Create a list with child objects as DocumentObjects
-                            subchildObjects = []
-                            # Make sure that the list is empty. (probally overkill)
-                            subchildObjects.clear()
-
-                            # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                            for j in range(len(childObject.Group)):
-                                if (
-                                    self.__AllowedObjectType(
-                                        objectID=childObject.Group[j].TypeId,
-                                        AssemblyType=AssemblyType,
-                                    )
-                                    is True
-                                ):
-                                    subchildObjects.append(childObject.Group[j])
-
-                            if len(subchildObjects) > 0:
-                                self.__mainList[len(self.__mainList) - 1]["Type"] = str(
-                                    AssemblyType
-                                )
-                                # Go the the child objects with a separate function for the child objects
-                                # This way you can go through multiple levels
-                                self.__GoThrough_ChildObjects(
-                                    ParentDocument=ParentDocument,
-                                    ChilddocObjects=subchildObjects,
-                                    ChildItemNumber=0,
-                                    ParentNumber=ItemNumberString,
-                                    Parts=Parts,
-                                )
-
-                    if AssemblyType == "Internal":
-                        # If the object is an container, go through the sub items, (a.k.a child objects)
-                        if (
-                            childObject.TypeId == "App::LinkGroup"
-                            or childObject.TypeId == "App::Link"
-                            or childObject.TypeId == "App::Part"
-                            or childObject.TypeId == "Assembly::AssemblyObject"
-                        ):
-                            # Create a list with child objects as DocumentObjects
-                            subchildObjects = []
-                            # Make sure that the list is empty. (probally overkill)
-                            subchildObjects.clear()
-                            # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                            for j in range(len(childObject.getSubObjects())):
-                                if (
-                                    childObject.getSubObject(
-                                        subname=childObject.getSubObjects()[j],
-                                        retType=1,
                                     )
                                     is not None
                                 ):
                                     subchildObjects.append(
                                         childObject.getSubObject(
-                                            subname=childObject.getSubObjects()[j],
+                                            subname=childObject.getSubObjects()[k],
                                             retType=1,
                                         ),
                                     )
@@ -1129,12 +1010,185 @@ class BomFunctions:
                                 # Go the the child objects with a separate function for the child objects
                                 # This way you can go through multiple levels
                                 self.__GoThrough_ChildObjects(
-                                    ChilddocObjects == subchildObjects,
+                                    ChilddocObjects=subchildObjects,
                                     ParentDocument=ParentDocument,
                                     ChildItemNumber=0,
                                     ParentNumber=ItemNumberString,
                                     Parts=Parts,
                                 )
+
+                        if AssemblyType == "Assembly4":
+                            # If the object is an container, go through the sub items, (a.k.a child objects)
+                            if (
+                                childObject.TypeId == "App::LinkGroup"
+                                or childObject.TypeId == "App::Link"
+                                or childObject.TypeId == "App::Part"
+                            ):
+                                # Create a list with child objects as DocumentObjects
+                                subchildObjects = []
+                                # Make sure that the list is empty. (probally overkill)
+                                subchildObjects.clear()
+                                # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                                for j in range(len(childObject.getSubObjects())):
+                                    if (
+                                        childObject.getSubObject(
+                                            subname=childObject.getSubObjects()[j],
+                                            retType=1,
+                                        )
+                                        is not None
+                                    ):
+                                        # Go through the parts folder and compare the parts with the subobjects.
+                                        for k in range(len(Parts)):
+                                            # If filtering with the parts in the part folder results in an document object,
+                                            # this is a part. Add it the the child object list.
+                                            if (
+                                                self.__FilterLinkedParts_A4(
+                                                    ObjectDocument=childObject.getSubObject(
+                                                        subname=childObject.getSubObjects()[
+                                                            j
+                                                        ],
+                                                        retType=1,
+                                                    ),
+                                                    objectComparison=Parts[k],
+                                                )
+                                                is not None
+                                            ):
+                                                if self.__AllowedObjectType(
+                                                    objectID=childObject.getSubObject(
+                                                        subname=childObject.getSubObjects()[
+                                                            j
+                                                        ],
+                                                        retType=1,
+                                                    ).TypeId,
+                                                    AssemblyType=AssemblyType,
+                                                ):
+                                                    subchildObjects.append(
+                                                        childObject.getSubObject(
+                                                            subname=childObject.getSubObjects()[
+                                                                j
+                                                            ],
+                                                            retType=1,
+                                                        )
+                                                    )
+                                if len(subchildObjects) > 0:
+                                    self.__mainList[len(self.__mainList) - 1][
+                                        "Type"
+                                    ] = AssemblyType
+                                    # Go the the child objects with a separate function for the child objects
+                                    # This way you can go through multiple levels
+                                    self.__GoThrough_ChildObjects(
+                                        ChilddocObjects=subchildObjects,
+                                        ParentDocument=ParentDocument,
+                                        ChildItemNumber=0,
+                                        ParentNumber=ItemNumberString,
+                                        Parts=Parts,
+                                    )
+
+                        if AssemblyType == "AppLink":
+                            # If the object is an container, go through the sub items, (a.k.a child objects)
+                            if (
+                                childObject.TypeId == "App::LinkGroup"
+                                or childObject.TypeId == "App::Link"
+                            ):
+                                # Create a list with child objects as DocumentObjects
+                                subchildObjects = []
+                                # Make sure that the list is empty. (probally overkill)
+                                subchildObjects.clear()
+                                # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                                for j in range(len(childObject.getSubObjects())):
+                                    if childObject.getSubObjects()[j] is not None:
+                                        subchildObjects.append(
+                                            childObject.getSubObject(
+                                                childObject.getSubObjects()[j], 1
+                                            ),
+                                        )
+                                if len(subchildObjects) > 0:
+                                    self.__mainList[len(self.__mainList) - 1][
+                                        "Type"
+                                    ] = AssemblyType
+                                    # Go the the child objects with a separate function for the child objects
+                                    # This way you can go through multiple levels
+                                    self.__GoThrough_ChildObjects(
+                                        ChilddocObjects=subchildObjects,
+                                        ParentDocument=ParentDocument,
+                                        ChildItemNumber=0,
+                                        ParentNumber=ItemNumberString,
+                                        Parts=Parts,
+                                    )
+
+                        if AssemblyType == "AppPart":
+                            # If the object is an container, go through the sub items, (a.k.a child objects)
+                            if childObject.TypeId == "App::Part":
+                                # Create a list with child objects as DocumentObjects
+                                subchildObjects = []
+                                # Make sure that the list is empty. (probally overkill)
+                                subchildObjects.clear()
+
+                                # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                                for j in range(len(childObject.Group)):
+                                    if (
+                                        self.__AllowedObjectType(
+                                            objectID=childObject.Group[j].TypeId,
+                                            AssemblyType=AssemblyType,
+                                        )
+                                        is True
+                                    ):
+                                        subchildObjects.append(childObject.Group[j])
+
+                                if len(subchildObjects) > 0:
+                                    self.__mainList[len(self.__mainList) - 1][
+                                        "Type"
+                                    ] = str(AssemblyType)
+                                    # Go the the child objects with a separate function for the child objects
+                                    # This way you can go through multiple levels
+                                    self.__GoThrough_ChildObjects(
+                                        ParentDocument=ParentDocument,
+                                        ChilddocObjects=subchildObjects,
+                                        ChildItemNumber=0,
+                                        ParentNumber=ItemNumberString,
+                                        Parts=Parts,
+                                    )
+
+                        if AssemblyType == "Internal":
+                            # If the object is an container, go through the sub items, (a.k.a child objects)
+                            if (
+                                childObject.TypeId == "App::LinkGroup"
+                                or childObject.TypeId == "App::Link"
+                                or childObject.TypeId == "App::Part"
+                                or childObject.TypeId == "Assembly::AssemblyObject"
+                            ):
+                                # Create a list with child objects as DocumentObjects
+                                subchildObjects = []
+                                # Make sure that the list is empty. (probally overkill)
+                                subchildObjects.clear()
+                                # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                                for j in range(len(childObject.getSubObjects())):
+                                    if (
+                                        childObject.getSubObject(
+                                            subname=childObject.getSubObjects()[j],
+                                            retType=1,
+                                        )
+                                        is not None
+                                    ):
+                                        subchildObjects.append(
+                                            childObject.getSubObject(
+                                                subname=childObject.getSubObjects()[j],
+                                                retType=1,
+                                            ),
+                                        )
+                                if len(subchildObjects) > 0:
+                                    self.__mainList[len(self.__mainList) - 1][
+                                        "Type"
+                                    ] = AssemblyType
+                                    # Go the the child objects with a separate function for the child objects
+                                    # This way you can go through multiple levels
+                                    self.__GoThrough_ChildObjects(
+                                        ChilddocObjects == subchildObjects,
+                                        ParentDocument=ParentDocument,
+                                        ChildItemNumber=0,
+                                        ParentNumber=ItemNumberString,
+                                        Parts=Parts,
+                                    )
             except Exception as e:
                 raise e
         return
@@ -1691,6 +1745,35 @@ class BomFunctions:
         else:
             App.Console.PrintMessage(Input + "\n")
 
+    @classmethod
+    def correctQtyAssemblies(self, BOMList) -> list:
+        # Define AssemblyQty and AssemblyNumber
+        AssemblyQty = 1
+        AssemblyNumber = ""
+
+        # Go trough the Bom list
+        for i in range(1, len(BOMList)):
+            # Define the property objects
+            ItemObject = BOMList[i]
+            ItemNumber = ItemObject["ItemNumber"]
+
+            # Define the property objects of the next row
+            ItemObjectPrevious = BOMList[i - 1]
+            ItemNumberPrevious = ItemObjectPrevious["ItemNumber"]
+            ItemTypePrevious = ItemObjectPrevious["Type"]
+
+            # If the previous item is an assembly, store its qty and itemnumber
+            if ItemTypePrevious == "Assembly":
+                AssemblyQty = ItemObjectPrevious["Qty"]
+                AssemblyNumber = ItemNumberPrevious
+
+            # if the item is a child of the stored assembly,
+            # divede the quantity of this item with the quantity of its parent assembly.
+            if ItemNumber.rsplit(".", 1)[0] == AssemblyNumber:
+                BOMList[i]["Qty"] = int(BOMList[i]["Qty"]) / int(AssemblyQty)
+
+        return BOMList
+
     # endregion
 
     # region -- Functions to create the various BoM types
@@ -1883,9 +1966,12 @@ class BomFunctions:
                 AllowFeaturePython=True,
             )
 
+        # correct the quantities for the parts in subassemblies
+        TemporaryList = self.correctQtyAssemblies(TemporaryList)
+
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
-            TemporaryList = self.__CorrectItemNumbers(TemporaryList, True)
+            TemporaryList = self.__CorrectItemNumbers(TemporaryList)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:
