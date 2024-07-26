@@ -3,14 +3,14 @@
  <class>Dialog</class>
  <widget class="QDialog" name="Dialog">
   <property name="windowModality">
-   <enum>Qt::WindowModality::NonModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>602</width>
-    <height>501</height>
+    <width>606</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -51,34 +51,8 @@
    </property>
    <layout class="QGridLayout" name="gridLayout_3">
     <property name="sizeConstraint">
-     <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+     <enum>QLayout::SetDefaultConstraint</enum>
     </property>
-    <item row="4" column="1">
-     <widget class="QDialogButtonBox" name="buttonBox">
-      <property name="standardButtons">
-       <set>QDialogButtonBox::StandardButton::Apply|QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok|QDialogButtonBox::StandardButton::Reset</set>
-      </property>
-      <property name="centerButtons">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="2">
-     <spacer name="horizontalSpacer_8">
-      <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Policy::Fixed</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>5</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
     <item row="2" column="1">
      <layout class="QGridLayout" name="gridLayout_4">
       <property name="verticalSpacing">
@@ -111,13 +85,13 @@
       </item>
      </layout>
     </item>
-    <item row="4" column="0">
-     <spacer name="horizontalSpacer_7">
+    <item row="3" column="2">
+     <spacer name="horizontalSpacer_8">
       <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
+       <enum>Qt::Vertical</enum>
       </property>
       <property name="sizeType">
-       <enum>QSizePolicy::Policy::Fixed</enum>
+       <enum>QSizePolicy::Fixed</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
@@ -127,15 +101,18 @@
       </property>
      </spacer>
     </item>
-    <item row="3" column="2">
-     <spacer name="horizontalSpacer_5">
+    <item row="3" column="0">
+     <spacer name="horizontalSpacer_7">
       <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>40</width>
-        <height>5</height>
+        <width>5</width>
+        <height>20</height>
        </size>
       </property>
      </spacer>
@@ -143,7 +120,7 @@
     <item row="0" column="1">
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="sizeConstraint">
-       <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+       <enum>QLayout::SetDefaultConstraint</enum>
       </property>
       <property name="horizontalSpacing">
        <number>0</number>
@@ -165,7 +142,7 @@
       <item row="2" column="0">
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
+         <enum>Qt::Vertical</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -178,10 +155,10 @@
       <item row="2" column="5">
        <spacer name="horizontalSpacer_4">
         <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
+         <enum>Qt::Vertical</enum>
         </property>
         <property name="sizeType">
-         <enum>QSizePolicy::Policy::Fixed</enum>
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -228,7 +205,7 @@
          </size>
         </property>
         <property name="sizeAdjustPolicy">
-         <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
+         <enum>QAbstractScrollArea::AdjustIgnored</enum>
         </property>
         <property name="dragEnabled">
          <bool>true</bool>
@@ -237,16 +214,16 @@
          <bool>false</bool>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
+         <enum>QAbstractItemView::NoSelection</enum>
         </property>
         <property name="movement">
-         <enum>QListView::Movement::Static</enum>
+         <enum>QListView::Static</enum>
         </property>
         <property name="resizeMode">
-         <enum>QListView::ResizeMode::Adjust</enum>
+         <enum>QListView::Fixed</enum>
         </property>
         <property name="layoutMode">
-         <enum>QListView::LayoutMode::Batched</enum>
+         <enum>QListView::SinglePass</enum>
         </property>
         <property name="sortingEnabled">
          <bool>false</bool>
@@ -269,7 +246,7 @@
         <item row="3" column="0">
          <spacer name="verticalSpacer">
           <property name="orientation">
-           <enum>Qt::Orientation::Vertical</enum>
+           <enum>Qt::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -295,10 +272,10 @@
       <item row="2" column="7">
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
+         <enum>Qt::Vertical</enum>
         </property>
         <property name="sizeType">
-         <enum>QSizePolicy::Policy::Expanding</enum>
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -311,10 +288,10 @@
       <item row="2" column="2" colspan="2">
        <spacer name="horizontalSpacer_3">
         <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
+         <enum>Qt::Vertical</enum>
         </property>
         <property name="sizeType">
-         <enum>QSizePolicy::Policy::Fixed</enum>
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -327,10 +304,10 @@
       <item row="2" column="11">
        <spacer name="horizontalSpacer_6">
         <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
+         <enum>Qt::Vertical</enum>
         </property>
         <property name="sizeType">
-         <enum>QSizePolicy::Policy::Fixed</enum>
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -366,22 +343,22 @@
          </sizepolicy>
         </property>
         <property name="sizeAdjustPolicy">
-         <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
+         <enum>QAbstractScrollArea::AdjustIgnored</enum>
         </property>
         <property name="alternatingRowColors">
          <bool>false</bool>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
+         <enum>QAbstractItemView::NoSelection</enum>
         </property>
         <property name="movement">
-         <enum>QListView::Movement::Static</enum>
+         <enum>QListView::Static</enum>
         </property>
         <property name="resizeMode">
-         <enum>QListView::ResizeMode::Adjust</enum>
+         <enum>QListView::Fixed</enum>
         </property>
         <property name="layoutMode">
-         <enum>QListView::LayoutMode::Batched</enum>
+         <enum>QListView::SinglePass</enum>
         </property>
         <property name="sortingEnabled">
          <bool>true</bool>
@@ -403,6 +380,28 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="3" column="1">
+     <widget class="QDialogButtonBox" name="buttonBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>9</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="standardButtons">
+       <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+      </property>
+      <property name="centerButtons">
+       <bool>false</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
