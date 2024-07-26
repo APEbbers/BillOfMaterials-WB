@@ -65,8 +65,8 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName("Dialog")
-        Dialog.setWindowModality(Qt.WindowModality.NonModal)
-        Dialog.resize(602, 501)
+        Dialog.setWindowModality(Qt.NonModal)
+        Dialog.resize(606, 500)
         sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -81,26 +81,8 @@ class Ui_Dialog(object):
         self.layoutWidget.setGeometry(QRect(10, 10, 586, 481))
         self.gridLayout_3 = QGridLayout(self.layoutWidget)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        self.gridLayout_3.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
+        self.gridLayout_3.setSizeConstraint(QLayout.SetDefaultConstraint)
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.buttonBox = QDialogButtonBox(self.layoutWidget)
-        self.buttonBox.setObjectName("buttonBox")
-        self.buttonBox.setStandardButtons(
-            QDialogButtonBox.StandardButton.Apply
-            | QDialogButtonBox.StandardButton.Cancel
-            | QDialogButtonBox.StandardButton.Ok
-            | QDialogButtonBox.StandardButton.Reset
-        )
-        self.buttonBox.setCenterButtons(False)
-
-        self.gridLayout_3.addWidget(self.buttonBox, 4, 1, 1, 1)
-
-        self.horizontalSpacer_8 = QSpacerItem(
-            5, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Minimum
-        )
-
-        self.gridLayout_3.addItem(self.horizontalSpacer_8, 4, 2, 1, 1)
-
         self.gridLayout_4 = QGridLayout()
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.gridLayout_4.setVerticalSpacing(0)
@@ -126,21 +108,21 @@ class Ui_Dialog(object):
 
         self.gridLayout_3.addLayout(self.gridLayout_4, 2, 1, 1, 1)
 
+        self.horizontalSpacer_8 = QSpacerItem(
+            5, 20, QSizePolicy.Minimum, QSizePolicy.Fixed
+        )
+
+        self.gridLayout_3.addItem(self.horizontalSpacer_8, 3, 2, 1, 1)
+
         self.horizontalSpacer_7 = QSpacerItem(
-            5, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Minimum
+            5, 20, QSizePolicy.Minimum, QSizePolicy.Fixed
         )
 
-        self.gridLayout_3.addItem(self.horizontalSpacer_7, 4, 0, 1, 1)
-
-        self.horizontalSpacer_5 = QSpacerItem(
-            40, 5, QSizePolicy.Expanding, QSizePolicy.Minimum
-        )
-
-        self.gridLayout_3.addItem(self.horizontalSpacer_5, 3, 2, 1, 1)
+        self.gridLayout_3.addItem(self.horizontalSpacer_7, 3, 0, 1, 1)
 
         self.gridLayout_2 = QGridLayout()
         self.gridLayout_2.setObjectName("gridLayout_2")
-        self.gridLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
+        self.gridLayout_2.setSizeConstraint(QLayout.SetDefaultConstraint)
         self.gridLayout_2.setHorizontalSpacing(0)
         self.gridLayout_2.setVerticalSpacing(6)
         self.Sort_ZA = QPushButton(self.layoutWidget)
@@ -152,13 +134,13 @@ class Ui_Dialog(object):
         self.gridLayout_2.addWidget(self.Sort_ZA, 2, 14, 1, 1)
 
         self.horizontalSpacer = QSpacerItem(
-            50, 20, QSizePolicy.Expanding, QSizePolicy.Minimum
+            5, 20, QSizePolicy.Minimum, QSizePolicy.Fixed
         )
 
         self.gridLayout_2.addItem(self.horizontalSpacer, 2, 0, 1, 1)
 
         self.horizontalSpacer_4 = QSpacerItem(
-            5, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Minimum
+            5, 5, QSizePolicy.Minimum, QSizePolicy.Fixed
         )
 
         self.gridLayout_2.addItem(self.horizontalSpacer_4, 2, 5, 1, 1)
@@ -189,17 +171,13 @@ class Ui_Dialog(object):
         )
         self.Columns_Present.setSizePolicy(sizePolicy1)
         self.Columns_Present.setSizeIncrement(QSize(1, 0))
-        self.Columns_Present.setSizeAdjustPolicy(
-            QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored
-        )
+        self.Columns_Present.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
         self.Columns_Present.setDragEnabled(True)
         self.Columns_Present.setAlternatingRowColors(False)
-        self.Columns_Present.setSelectionMode(
-            QAbstractItemView.SelectionMode.ExtendedSelection
-        )
-        self.Columns_Present.setMovement(QListView.Movement.Static)
-        self.Columns_Present.setResizeMode(QListView.ResizeMode.Adjust)
-        self.Columns_Present.setLayoutMode(QListView.LayoutMode.Batched)
+        self.Columns_Present.setSelectionMode(QAbstractItemView.NoSelection)
+        self.Columns_Present.setMovement(QListView.Static)
+        self.Columns_Present.setResizeMode(QListView.Fixed)
+        self.Columns_Present.setLayoutMode(QListView.SinglePass)
         self.Columns_Present.setSortingEnabled(False)
 
         self.gridLayout_2.addWidget(self.Columns_Present, 1, 5, 1, 10)
@@ -215,7 +193,7 @@ class Ui_Dialog(object):
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
         self.verticalSpacer = QSpacerItem(
-            10, 40, QSizePolicy.Expanding, QSizePolicy.Minimum
+            10, 40, QSizePolicy.Minimum, QSizePolicy.Expanding
         )
 
         self.gridLayout.addItem(self.verticalSpacer, 3, 0, 1, 1)
@@ -236,19 +214,19 @@ class Ui_Dialog(object):
         self.gridLayout_2.addWidget(self.Sort_AZ, 2, 12, 1, 2)
 
         self.horizontalSpacer_2 = QSpacerItem(
-            5, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Minimum
+            5, 20, QSizePolicy.Minimum, QSizePolicy.Fixed
         )
 
         self.gridLayout_2.addItem(self.horizontalSpacer_2, 2, 7, 1, 1)
 
         self.horizontalSpacer_3 = QSpacerItem(
-            5, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Minimum
+            5, 5, QSizePolicy.Minimum, QSizePolicy.Fixed
         )
 
         self.gridLayout_2.addItem(self.horizontalSpacer_3, 2, 2, 1, 2)
 
         self.horizontalSpacer_6 = QSpacerItem(
-            5, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Minimum
+            5, 20, QSizePolicy.Minimum, QSizePolicy.Fixed
         )
 
         self.gridLayout_2.addItem(self.horizontalSpacer_6, 2, 11, 1, 1)
@@ -272,16 +250,12 @@ class Ui_Dialog(object):
             self.Columns_To_Add.sizePolicy().hasHeightForWidth()
         )
         self.Columns_To_Add.setSizePolicy(sizePolicy1)
-        self.Columns_To_Add.setSizeAdjustPolicy(
-            QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored
-        )
+        self.Columns_To_Add.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
         self.Columns_To_Add.setAlternatingRowColors(False)
-        self.Columns_To_Add.setSelectionMode(
-            QAbstractItemView.SelectionMode.ExtendedSelection
-        )
-        self.Columns_To_Add.setMovement(QListView.Movement.Static)
-        self.Columns_To_Add.setResizeMode(QListView.ResizeMode.Adjust)
-        self.Columns_To_Add.setLayoutMode(QListView.LayoutMode.Batched)
+        self.Columns_To_Add.setSelectionMode(QAbstractItemView.NoSelection)
+        self.Columns_To_Add.setMovement(QListView.Static)
+        self.Columns_To_Add.setResizeMode(QListView.Fixed)
+        self.Columns_To_Add.setLayoutMode(QListView.SinglePass)
         self.Columns_To_Add.setSortingEnabled(True)
 
         self.gridLayout_2.addWidget(self.Columns_To_Add, 1, 0, 1, 4)
@@ -297,6 +271,24 @@ class Ui_Dialog(object):
         self.gridLayout_2.addWidget(self.label, 0, 0, 1, 4)
 
         self.gridLayout_3.addLayout(self.gridLayout_2, 0, 1, 1, 1)
+
+        self.buttonBox = QDialogButtonBox(self.layoutWidget)
+        self.buttonBox.setObjectName("buttonBox")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(9)
+        sizePolicy3.setHeightForWidth(self.buttonBox.sizePolicy().hasHeightForWidth())
+        self.buttonBox.setSizePolicy(sizePolicy3)
+        self.buttonBox.setMinimumSize(QSize(0, 20))
+        self.buttonBox.setStandardButtons(
+            QDialogButtonBox.Apply
+            | QDialogButtonBox.Cancel
+            | QDialogButtonBox.Ok
+            | QDialogButtonBox.Reset
+        )
+        self.buttonBox.setCenterButtons(False)
+
+        self.gridLayout_3.addWidget(self.buttonBox, 3, 1, 1, 1)
 
         self.retranslateUi(Dialog)
 
