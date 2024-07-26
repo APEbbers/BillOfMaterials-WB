@@ -148,7 +148,7 @@
          <bool>false</bool>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::NoSelection</enum>
+         <enum>QAbstractItemView::MultiSelection</enum>
         </property>
         <property name="movement">
          <enum>QListView::Static</enum>
@@ -273,7 +273,7 @@
          <bool>false</bool>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::NoSelection</enum>
+         <enum>QAbstractItemView::MultiSelection</enum>
         </property>
         <property name="movement">
          <enum>QListView::Static</enum>
