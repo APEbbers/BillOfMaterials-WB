@@ -163,7 +163,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         # endregion
 
         # region - Set the correct icons depending on the color of the main window
-        BackGround_AddAll = Gui.getMainWindow().palette().color(QPalette.ColorRole.Background).getRgb()
+        BackGround_AddAll = Gui.getMainWindow().palette().color(QPalette.ColorRole.Window).getRgb()
         if Standard_Functions.LightOrDark(rgbColor=BackGround_AddAll) == "dark":
             # Add/Remove buttons
             self.form.AddItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "+ sign.svg")))
