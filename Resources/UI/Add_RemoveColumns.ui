@@ -141,6 +141,9 @@
         <property name="sizeAdjustPolicy">
          <enum>QAbstractScrollArea::AdjustIgnored</enum>
         </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+        </property>
         <property name="dragEnabled">
          <bool>true</bool>
         </property>
@@ -148,7 +151,7 @@
          <bool>false</bool>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::NoSelection</enum>
+         <enum>QAbstractItemView::MultiSelection</enum>
         </property>
         <property name="movement">
          <enum>QListView::Static</enum>
@@ -269,11 +272,14 @@
         <property name="sizeAdjustPolicy">
          <enum>QAbstractScrollArea::AdjustIgnored</enum>
         </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+        </property>
         <property name="alternatingRowColors">
          <bool>false</bool>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::NoSelection</enum>
+         <enum>QAbstractItemView::MultiSelection</enum>
         </property>
         <property name="movement">
          <enum>QListView::Static</enum>

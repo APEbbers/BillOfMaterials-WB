@@ -130,9 +130,14 @@ class Ui_Dialog(object):
         self.Columns_Present.setSizePolicy(sizePolicy1)
         self.Columns_Present.setSizeIncrement(QSize(1, 0))
         self.Columns_Present.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
+        self.Columns_Present.setEditTriggers(
+            QAbstractItemView.DoubleClicked
+            | QAbstractItemView.EditKeyPressed
+            | QAbstractItemView.SelectedClicked
+        )
         self.Columns_Present.setDragEnabled(True)
         self.Columns_Present.setAlternatingRowColors(False)
-        self.Columns_Present.setSelectionMode(QAbstractItemView.NoSelection)
+        self.Columns_Present.setSelectionMode(QAbstractItemView.MultiSelection)
         self.Columns_Present.setMovement(QListView.Static)
         self.Columns_Present.setResizeMode(QListView.Fixed)
         self.Columns_Present.setLayoutMode(QListView.SinglePass)
@@ -209,8 +214,13 @@ class Ui_Dialog(object):
         )
         self.Columns_To_Add.setSizePolicy(sizePolicy1)
         self.Columns_To_Add.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
+        self.Columns_To_Add.setEditTriggers(
+            QAbstractItemView.DoubleClicked
+            | QAbstractItemView.EditKeyPressed
+            | QAbstractItemView.SelectedClicked
+        )
         self.Columns_To_Add.setAlternatingRowColors(False)
-        self.Columns_To_Add.setSelectionMode(QAbstractItemView.NoSelection)
+        self.Columns_To_Add.setSelectionMode(QAbstractItemView.MultiSelection)
         self.Columns_To_Add.setMovement(QListView.Static)
         self.Columns_To_Add.setResizeMode(QListView.Fixed)
         self.Columns_To_Add.setLayoutMode(QListView.SinglePass)
