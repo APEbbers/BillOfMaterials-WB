@@ -72,7 +72,20 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
 
         self.form.setWindowIcon(QIcon(os.path.join(PATH_TB_ICONS, "SetColumns.svg")))
 
+        # Make sure that the dialog stays on top
+        self.form.setWindowFlags(Qt.WindowStaysOnTopHint)
+
         # region - Add the connections
+        #
+        # Load ---------------------------------------------------------------------------------
+        def LoadProperties():
+            self.on_LoadProperties_clicked(self)
+
+        self.form.LoadProperties.connect(
+            self.form.LoadProperties, SIGNAL("clicked()"), LoadProperties
+        )
+
+        # -----------------------------------------------------------------------------------------
         #
         # AddItem ---------------------------------------------------------------------------------
         def AddItem():
@@ -218,6 +231,10 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             )
         # endregion
 
+        return
+
+    @staticmethod
+    def on_LoadProperties_clicked(self):
         # Get the properties from the active document
         doc = App.ActiveDocument
         sel = Gui.Selection.getSelection()
@@ -232,10 +249,13 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         CustomHeaders = General_BOM_Functions.General_BOM.customHeaders.split(";")
 
         # Fill the list "Columns_Present" with the custom headers that are currently present
+        self.form.Columns_Present.clear()
         for Header in CustomHeaders:
             if Header != "":
                 self.form.Columns_Present.addItem(Header)
 
+        # Clear the list first.
+        self.form.Columns_To_Add.clear()
         # Fill the List "Columns_To_Add" with the properties that are not already a custom header.
         for Property in PropertyList:
             IsInList = False
