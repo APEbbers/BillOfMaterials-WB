@@ -168,7 +168,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
 
         # region - Set the correct icons depending on the color of the main window
         BackGround_AddAll = (
-            Gui.getMainWindow().palette().color(QPalette.window).getRgb()
+            Gui.getMainWindow().palette().color(QPalette.ColorRole.Background).getRgb()
         )
         if Standard_Functions.LightOrDark(rgbColor=BackGround_AddAll) == "dark":
             # Add/Remove buttons
