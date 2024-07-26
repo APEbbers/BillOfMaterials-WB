@@ -26,9 +26,9 @@ import os
 from inspect import getsourcefile
 import General_BOM_Functions
 import Standard_Functions_BOM_WB as Standard_Functions
-from PySide2.QtGui import QPalette, QIcon
-from PySide6.QtWidgets import QListWidgetItem, QDialogButtonBox
-from PySide6.QtCore import SIGNAL, Qt
+from PySide.QtGui import QPalette, QIcon
+from PySide.QtWidgets import QListWidgetItem, QDialogButtonBox
+from PySide.QtCore import SIGNAL, Qt
 import Settings_BoM
 from Settings_BoM import ENABLE_DEBUG
 import BoM_WB_Locator
@@ -163,7 +163,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         # endregion
 
         # region - Set the correct icons depending on the color of the main window
-        BackGround_AddAll = Gui.getMainWindow().palette().color(QPalette.window).getRgb()
+        BackGround_AddAll = Gui.getMainWindow().palette().color(QPalette.ColorRole.Background).getRgb()
         if Standard_Functions.LightOrDark(rgbColor=BackGround_AddAll) == "dark":
             # Add/Remove buttons
             self.form.AddItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "+ sign.svg")))
