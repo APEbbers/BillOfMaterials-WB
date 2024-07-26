@@ -134,6 +134,7 @@ class General_BOM:
         for key, value in Headers.items():
             sheet.set(key, value)
             # set the width based on the headers
+
             Standard_Functions.SetColumnWidth_SpreadSheet(
                 sheet=sheet, column=key[:1], cellValue=value
             )
@@ -201,12 +202,14 @@ class General_BOM:
                                 rowList["DocumentObject"], Headers[Column + "1"]
                             )[0],
                         )
+
                         # NewHeader = ""
                         # Unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
                         # # if Unit != "":
                         # #     NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
                         # # if sheet.getContents(Column + "1") != NewHeader:
                         # #     sheet.set(Column + "1", NewHeader)
+
                     except Exception as e:
                         # print(e)
                         pass
@@ -550,7 +553,6 @@ class General_BOM:
                 len(ItemNumber.split(".")) == 1
                 and len(BomList[i]["ItemNumber"].split(".")) == 1
             ):
-                # if BomList[i]["ItemNumber"].rsplit(".", 1)[0] == ItemNumber.rsplit(".", 1)[0]:
                 if ListItem["Type"] == "Part":
                     if ObjectNameValuePart == "Object":
                         if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
@@ -1188,6 +1190,81 @@ class General_BOM:
             return result
         except Exception:
             return ""
+
+    # function to summarize, subassemblies with their children
+    @classmethod
+    def ReplacesAssembly(self, BoMList: list):
+        # Define the result list
+        resultList = []
+        # Define a list to hold items that are used to replace duplicates
+        ReplaceList = []
+        # Create a shadow list with items that has te be skipped
+        shadowList = []
+
+        # Go through the BoM
+        for i in range(len(BoMList)):
+            # getContents the row item
+            BoMListItem = BoMList[i]
+            # Get the itemnumber
+            itemNumber = str(BoMListItem["ItemNumber"])
+            # GEt the internal name of the item
+            itemName = BoMListItem["ObjectLabel"]
+
+            # Add always the first item to the replace list
+            if i == 0:
+                ReplaceList.append(BoMList[i])
+
+            # Go trhough the replace list to see if there are duplicate items that must be replaced.
+            for j in range(len(ReplaceList)):
+                # Set skip to false as default
+                skip = False
+
+                # if you at the end of the replace list: if the item is not in the shadowlist,
+                # add it to the result list.
+                if j == len(ReplaceList) - 1:
+                    # Go through the shadow list. If the current item is in the shadow list, skip it.
+                    for k in range(len(shadowList)):
+                        if shadowList[k]["ItemNumber"] == itemNumber:
+                            skip = True
+                    # If the item is not to be skipped, add the item from the replace list to the result list.
+                    if skip is False:
+                        resultList.append(BoMListItem)
+                        ReplaceList.append(BoMListItem)
+                    break
+
+                # If the itemnumber consists of multiple parts go here. (1.1.1 for example)
+                if len(itemNumber.split(".")) > 1:
+                    # if the part of the itemnumber minus the last digit is equeal to the
+                    # itemnumber minus the last digit in the BoMList go through here
+                    if (
+                        ReplaceList[j]["ItemNumber"].rsplit(".", 1)[0]
+                        == itemNumber.rsplit(".", 1)[0]
+                        and ReplaceList[j]["ObjectLabel"] == itemName
+                    ):
+                        # Go through the BoMList. Every item that starts with current itemnumber
+                        # is a child of the current item. Add it to the shadow list
+                        for k in range(len(BoMList)):
+                            if BoMList[k]["ItemNumber"].rsplit(".", 1)[0] == itemNumber:
+                                shadowList.append(BoMList[k])
+
+                        # Go through the shadow list. If the current item is in the shadow list, skip it.
+                        for k in range(len(shadowList)):
+                            if shadowList[k]["ItemNumber"] == itemNumber:
+                                skip = True
+
+                        # If the item is not to be skipped, add the item from the replace list to the result list.
+                        if skip is False:
+                            resultList.append(ReplaceList[j])
+                        break
+
+                if len(itemNumber.split(".")) == 1:
+                    if (
+                        ReplaceList[j]["ItemNumber"] == itemNumber
+                        and ReplaceList[j]["ObjectName"] == itemName
+                    ):
+                        resultList.append(ReplaceList[j])
+                        break
+        return resultList
 
     @classmethod
     def correctQtyAssemblies(self, BOMList) -> list:

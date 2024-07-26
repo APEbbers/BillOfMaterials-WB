@@ -434,6 +434,9 @@ class BomFunctions:
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
 
+        # summarize duplicate subassemblies
+        CopyMainList = General_BOM.ReplacesAssembly(CopyMainList)
+
         # Create a temporary list
         TemporaryList = []
 
@@ -855,8 +858,8 @@ class BomFunctions:
                             title="Bill of Materials",
                             style=1,
                         )
-                    if Answer == "yes":
-                        IncludeBodies = True
+                        if Answer == "yes":
+                            IncludeBodies = True
                     General_BOM.createBoMSpreadsheet(
                         self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies)
                     )
