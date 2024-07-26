@@ -210,6 +210,7 @@ class Ui_Dialog(object):
 
         self.label_4 = QLabel(self.layoutWidget)
         self.label_4.setObjectName(u"label_4")
+        self.label_4.setWordWrap(True)
         self.label_4.setMargin(10)
 
         self.gridLayout_2.addWidget(self.label_4, 0, 1, 1, 14)

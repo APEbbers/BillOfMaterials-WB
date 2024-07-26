@@ -199,43 +199,6 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             self.form.Move_Down.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Dark.svg")))
         # endregion
 
-        # # Get the properties from the active document
-        # doc = App.ActiveDocument
-        # sel = Gui.Selection.getSelection()
-        # if sel is not None:
-        #     try:
-        #         doc = sel[0]
-        #     except Exception:
-        #         doc = App.ActiveDocument
-        # PropertyList = doc.PropertiesList
-
-        # # Get the currently applied custom columns
-        # CustomHeaders = General_BOM_Functions.General_BOM.customHeaders.split(";")
-
-        # # Fill the list "Columns_Present" with the custom headers that are currently present
-        # for Header in CustomHeaders:
-        #     if Header != "":
-        #         self.form.Columns_Present.addItem(Header)
-
-        # # Fill the List "Columns_To_Add" with the properties that are not already a custom header.
-        # for Property in PropertyList:
-        #     IsInList = False
-        #     for CurrentProperty in CustomHeaders:
-        #         if Property == CurrentProperty:
-        #             IsInList = True
-        #             break
-        #     if IsInList is False:
-        #         if Property != "Shape":
-        #             self.form.Columns_To_Add.addItem(Property)
-        #         if Property == "Shape":
-        #             self.form.Columns_To_Add.addItem("Shape - Length")
-        #             self.form.Columns_To_Add.addItem("Shape - Width")
-        #             self.form.Columns_To_Add.addItem("Shape - Height")
-        #             self.form.Columns_To_Add.addItem("Shape - Volume")
-        #             self.form.Columns_To_Add.addItem("Shape - Area")
-        #             self.form.Columns_To_Add.addItem("Shape - CenterOfGravity")
-        #             self.form.Columns_To_Add.addItem("Shape - Mass")
-
         return
 
     @staticmethod
@@ -254,6 +217,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         CustomHeaders = General_BOM_Functions.General_BOM.customHeaders.split(";")
 
         # Fill the list "Columns_Present" with the custom headers that are currently present
+        self.form.Columns_Present.clear()
         for Header in CustomHeaders:
             if Header != "":
                 self.form.Columns_Present.addItem(Header)
