@@ -66,13 +66,22 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         super(LoadDialog, self).__init__()
 
         # # this will create a Qt widget from our ui file
-        self.form = Gui.PySideUic.loadUi(
-            os.path.join(PATH_TB_UI, "Add_RemoveColumns.ui")
-        )
+        self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB_UI, "Add_RemoveColumns.ui"))
 
         self.form.setWindowIcon(QIcon(os.path.join(PATH_TB_ICONS, "SetColumns.svg")))
 
+        # Make sure that the dialog stays on top
+        self.form.setWindowFlags(Qt.WindowStaysOnTopHint)
+
         # region - Add the connections
+        #
+        # Load ---------------------------------------------------------------------------------
+        def LoadProperties():
+            self.on_LoadProperties_clicked(self)
+
+        self.form.LoadProperties.connect(self.form.LoadProperties, SIGNAL("clicked()"), LoadProperties)
+
+        # -----------------------------------------------------------------------------------------
         #
         # AddItem ---------------------------------------------------------------------------------
         def AddItem():
@@ -86,9 +95,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         def RemoveItem():
             self.on_RemoveItem_clicked(self)
 
-        self.form.RemoveItem.connect(
-            self.form.RemoveItem, SIGNAL("clicked()"), RemoveItem
-        )
+        self.form.RemoveItem.connect(self.form.RemoveItem, SIGNAL("clicked()"), RemoveItem)
 
         # -----------------------------------------------------------------------------------------
         #
@@ -167,57 +174,72 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         # endregion
 
         # region - Set the correct icons depending on the color of the main window
-        BackGround_AddAll = (
-            Gui.getMainWindow().palette().color(QPalette.ColorRole.Window).getRgb()
-        )
+        BackGround_AddAll = Gui.getMainWindow().palette().color(QPalette.ColorRole.Window).getRgb()
         if Standard_Functions.LightOrDark(rgbColor=BackGround_AddAll) == "dark":
             # Add/Remove buttons
             self.form.AddItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "+ sign.svg")))
-            self.form.RemoveItem.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg"))
-            )
-            self.form.AddManual.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg"))
-            )
+            self.form.RemoveItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg")))
+            self.form.AddManual.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg")))
             # Sort buttons
-            self.form.Sort_AZ.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Light.png"))
-            )
-            self.form.Sort_ZA.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Light.png"))
-            )
+            self.form.Sort_AZ.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Light.png")))
+            self.form.Sort_ZA.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Light.png")))
             # Move up/down buttons
-            self.form.Move_Up.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg"))
-            )
-            self.form.Move_Down.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Light.svg"))
-            )
+            self.form.Move_Up.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg")))
+            self.form.Move_Down.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Light.svg")))
         if Standard_Functions.LightOrDark(rgbColor=BackGround_AddAll) != "dark":
             # Add/Remove buttons
             self.form.AddItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "+ sign.svg")))
-            self.form.RemoveItem.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg"))
-            )
-            self.form.AddManual.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg"))
-            )
+            self.form.RemoveItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg")))
+            self.form.AddManual.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg")))
             # Sort buttons
-            self.form.Sort_AZ.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Dark.png"))
-            )
-            self.form.Sort_ZA.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Dark.png"))
-            )
+            self.form.Sort_AZ.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Dark.png")))
+            self.form.Sort_ZA.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Dark.png")))
             # Move up/down buttons
-            self.form.Move_Up.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg"))
-            )
-            self.form.Move_Down.setIcon(
-                QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Dark.svg"))
-            )
+            self.form.Move_Up.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg")))
+            self.form.Move_Down.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Dark.svg")))
         # endregion
 
+        # # Get the properties from the active document
+        # doc = App.ActiveDocument
+        # sel = Gui.Selection.getSelection()
+        # if sel is not None:
+        #     try:
+        #         doc = sel[0]
+        #     except Exception:
+        #         doc = App.ActiveDocument
+        # PropertyList = doc.PropertiesList
+
+        # # Get the currently applied custom columns
+        # CustomHeaders = General_BOM_Functions.General_BOM.customHeaders.split(";")
+
+        # # Fill the list "Columns_Present" with the custom headers that are currently present
+        # for Header in CustomHeaders:
+        #     if Header != "":
+        #         self.form.Columns_Present.addItem(Header)
+
+        # # Fill the List "Columns_To_Add" with the properties that are not already a custom header.
+        # for Property in PropertyList:
+        #     IsInList = False
+        #     for CurrentProperty in CustomHeaders:
+        #         if Property == CurrentProperty:
+        #             IsInList = True
+        #             break
+        #     if IsInList is False:
+        #         if Property != "Shape":
+        #             self.form.Columns_To_Add.addItem(Property)
+        #         if Property == "Shape":
+        #             self.form.Columns_To_Add.addItem("Shape - Length")
+        #             self.form.Columns_To_Add.addItem("Shape - Width")
+        #             self.form.Columns_To_Add.addItem("Shape - Height")
+        #             self.form.Columns_To_Add.addItem("Shape - Volume")
+        #             self.form.Columns_To_Add.addItem("Shape - Area")
+        #             self.form.Columns_To_Add.addItem("Shape - CenterOfGravity")
+        #             self.form.Columns_To_Add.addItem("Shape - Mass")
+
+        return
+
+    @staticmethod
+    def on_LoadProperties_clicked(self):
         # Get the properties from the active document
         doc = App.ActiveDocument
         sel = Gui.Selection.getSelection()
@@ -236,6 +258,8 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             if Header != "":
                 self.form.Columns_Present.addItem(Header)
 
+        # Clear the list first.
+        self.form.Columns_To_Add.clear()
         # Fill the List "Columns_To_Add" with the properties that are not already a custom header.
         for Property in PropertyList:
             IsInList = False
@@ -304,9 +328,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
 
             # If debug is enabled, log the action.
             if ENABLE_DEBUG is True:
-                Text = translate(
-                    "BoM Workbench", f"{itemText} removed from the columns."
-                )
+                Text = translate("BoM Workbench", f"{itemText} removed from the columns.")
 
                 Standard_Functions.Print(Text, "Log")
 
@@ -404,9 +426,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         if ENABLE_DEBUG is True:
             if result == "":
                 result = "None"
-            Text = translate(
-                "BoM Workbench", f"The extra columns are:{result.replace(';', ', ')}."
-            )
+            Text = translate("BoM Workbench", f"The extra columns are:{result.replace(';', ', ')}.")
             Standard_Functions.Print(Text, "Log")
 
         # Close the form
@@ -431,9 +451,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         if ENABLE_DEBUG is True:
             if result == "":
                 result = "None"
-            Text = translate(
-                "BoM Workbench", f"The extra columns are: {result.replace(';', ', ')}."
-            )
+            Text = translate("BoM Workbench", f"The extra columns are: {result.replace(';', ', ')}.")
             Standard_Functions.Print(Text, "Log")
 
         # Remove the focus from the control
