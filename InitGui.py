@@ -148,8 +148,11 @@ class BillOfMaterialsWB(Gui.Workbench):
         # Create the toolbar for the other workbenches and hide it.
         for key, value in AllOtherWorkbenches.items():
             try:
-                ToolbarName = BoM_CreateUI.CreateWorkBenchToolbar(key, WorkbenchToolbar)
-                BoM_CreateUI.HideToolbars(ToolbarName, key)
+                if key != "":
+                    ToolbarName = BoM_CreateUI.CreateWorkBenchToolbar(
+                        key, WorkbenchToolbar
+                    )
+                    BoM_CreateUI.HideToolbars(ToolbarName, key)
             except Exception:
                 pass
         # endregion ----------------------------------------------------------------------------------------------------
