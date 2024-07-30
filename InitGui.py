@@ -87,13 +87,9 @@ class BillOfMaterialsWB(Gui.Workbench):
         SettingsList = BoM_CreateUI.DefineMenus()["SettingsMenu"]
 
         # Append the menues
+        self.appendMenu(QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList)  # creates a new menu
         self.appendMenu(
-            QT_TRANSLATE_NOOP("BoM Workbench", "Bill of Materials"), MainList
-        )  # creates a new menu
-        self.appendMenu(
-            QT_TRANSLATE_NOOP(
-                "BoM Workbench", ["Bill of Materials", "Separate commands "]
-            ),
+            QT_TRANSLATE_NOOP("BoM Workbench", ["Bill of Materials", "Separate commands "]),
             SeparateFunctionsList,
         )
         self.appendMenu(
@@ -148,8 +144,9 @@ class BillOfMaterialsWB(Gui.Workbench):
         # Create the toolbar for the other workbenches and hide it.
         for key, value in AllOtherWorkbenches.items():
             try:
-                ToolbarName = BoM_CreateUI.CreateWorkBenchToolbar(key, WorkbenchToolbar)
-                BoM_CreateUI.HideToolbars(ToolbarName, key)
+                if key != "":
+                    ToolbarName = BoM_CreateUI.CreateWorkBenchToolbar(key, WorkbenchToolbar)
+                    BoM_CreateUI.HideToolbars(ToolbarName, key)
             except Exception:
                 pass
         # endregion ----------------------------------------------------------------------------------------------------
