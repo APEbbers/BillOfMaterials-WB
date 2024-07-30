@@ -122,7 +122,9 @@ def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list) -> str:
     # Define the name for the toolbar
     ToolBarName = "BoM Toolbar - " + WorkBench
     # define the parameter path for the toolbar
-    WorkbenchToolBarsParamPath = "User parameter:BaseApp/Workbench/" + WorkBench + "/Toolbar/"
+    WorkbenchToolBarsParamPath = (
+        "User parameter:BaseApp/Workbench/" + WorkBench + "/Toolbar/"
+    )
 
     # endregion
 
@@ -170,7 +172,9 @@ def RemoveWorkBenchToolbars(WorkBench: str) -> None:
     return
 
 
-def ReplaceButtons(ToolbarGroupName: str, WorkbenchToolBarsParamPath: str, ButtonList: list) -> None:
+def ReplaceButtons(
+    ToolbarGroupName: str, WorkbenchToolBarsParamPath: str, ButtonList: list
+) -> None:
     # Get the toolbar
     TechDrawToolbar = App.ParamGet(WorkbenchToolBarsParamPath + ToolbarGroupName)
 
