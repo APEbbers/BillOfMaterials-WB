@@ -1011,8 +1011,8 @@ class General_BOM:
                 # Get the value from the shape
                 #
                 # Get the boundingbox from the item as if it is not transformed
-                # BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
-                BoundingBox = DocObject.Shape.BoundBox
+                BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
+                # BoundingBox = DocObject.Shape.BoundBox
                 # Get the dimensions
                 if PropertyName.split(" - ", 1)[1] == "Length":
                     value = str(
