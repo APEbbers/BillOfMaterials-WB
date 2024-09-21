@@ -39,6 +39,8 @@ class General_BOM:
     if customHeaders[:1] == ";":
         customHeaders = customHeaders[1:]
 
+    currentScheme = App.Units.getSchema()
+
     # Function to create BoM. standard, a raw BoM will befrom the main list.
     # If a modified list is created, this function can be used to write it the a spreadsheet.
     # You can add a dict for the headers of this list
@@ -1014,21 +1016,21 @@ class General_BOM:
             try:
                 shapeObject = DocObject.Shape
                 currentScheme = App.Units.getSchema()
-                print(currentScheme)
 
                 # Get the value from the shape
                 #
                 # Get the boundingbox from the item as if it is not transformed
                 BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
                 try:
-                    BoundingBox = DocObject.Shape.BoundBox
+                    if DocObject.TypeId.endswith("Body"):
+                        BoundingBox = shapeObject.BoundBox
                 except Exception:
+                    BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
                     print("viewObjects boundingbox is used")
                     pass
 
                 # Get the dimensions
                 if PropertyName.split(" - ", 1)[1] == "Length":
-                    print(f"{BoundingBox.XLength}, {App.Units.Length}")
                     value = str(
                         App.Units.schemaTranslate(
                             App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
