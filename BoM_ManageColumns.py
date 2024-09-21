@@ -186,36 +186,24 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             # Add/Remove buttons
             self.form.AddItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "+ sign.svg")))
             self.form.RemoveItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg")))
-            # self.form.AddManual.setIcon(
-            #     QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg"))
-            # )
+            self.form.AddManual.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg")))
             # Sort buttons
             self.form.Sort_AZ.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Light.png")))
             self.form.Sort_ZA.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Light.png")))
-            # # Move up/down buttons
-            # self.form.Move_Up.setIcon(
-            #     QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg"))
-            # )
-            # self.form.Move_Down.setIcon(
-            #     QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Light.svg"))
-            # )
+            # Move up/down buttons
+            self.form.Move_Up.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Light.svg")))
+            self.form.Move_Down.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Light.svg")))
         if Standard_Functions.LightOrDark(rgbColor=BackGround_AddAll) != "dark":
             # Add/Remove buttons
             self.form.AddItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "+ sign.svg")))
             self.form.RemoveItem.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "- sign.svg")))
-            # self.form.AddManual.setIcon(
-            #     QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg"))
-            # )
+            self.form.AddManual.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg")))
             # Sort buttons
             self.form.Sort_AZ.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_AZ_Dark.png")))
             self.form.Sort_ZA.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "Sort_ZA_Dark.png")))
-            # # Move up/down buttons
-            # self.form.Move_Up.setIcon(
-            #     QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg"))
-            # )
-            # self.form.Move_Down.setIcon(
-            #     QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Dark.svg"))
-            # )
+            # Move up/down buttons
+            self.form.Move_Up.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Up_Dark.svg")))
+            self.form.Move_Down.setIcon(QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Dark.svg")))
         # endregion
 
         return
