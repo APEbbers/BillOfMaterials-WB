@@ -167,14 +167,11 @@ class BomFunctions:
         for i in range(len(docObjects)):
             # Get the documentObject
             Object = docObjects[i]
-            print(len(docObjects))
             if Object.TypeId == "App::DocumentObjectGroup" and Object.Name != "Parts":
                 GroupItems = General_BOM.GetObjectsFromGroups(Object)
                 if len(GroupItems) > 0:
                     for j in range(len(GroupItems)):
                         docObjects.insert(i + j + 1, GroupItems[j])
-                        print(GroupItems[j].Label)
-                print(len(docObjects))
 
         for i in range(len(docObjects)):
             # Get the documentObject
@@ -299,14 +296,11 @@ class BomFunctions:
         for i in range(len(ChilddocObjects)):
             # Get the documentObject
             Object = ChilddocObjects[i]
-            print(len(ChilddocObjects))
             if Object.TypeId == "App::DocumentObjectGroup" and Object.Name != "Parts":
                 GroupItems = General_BOM.GetObjectsFromGroups(Object)
                 if len(GroupItems) > 0:
                     for j in range(len(GroupItems)):
                         ChilddocObjects.insert(i + j + 1, GroupItems[j])
-                        print(GroupItems[j].Label)
-                print(len(ChilddocObjects))
 
         for i in range(len(ChilddocObjects)):
             # Get the childDocumentObject
@@ -660,7 +654,6 @@ class BomFunctions:
 
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
-                # print(f"{shadowRow['Item1'], shadowRow['Item2']}")
                 if (
                     General_BOM.ListContainsCheck(
                         List=ShadowList,
@@ -670,7 +663,6 @@ class BomFunctions:
                     )
                     is False
                 ):
-                    # print(f'{shadowRow["Item1"]}, {shadowRow["Item2"]}, {shadowRow["Item3"]}')
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
