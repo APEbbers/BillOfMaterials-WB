@@ -25,6 +25,7 @@ import FreeCAD as App
 import FreeCADGui as Gui
 from inspect import getsourcefile
 import BoM_WB_Locator
+import sys
 
 
 __title__ = "Bill of Materials"
@@ -36,28 +37,29 @@ __url__ = "https://github.com/APEbbers/BillOfMaterials-WB.git"
 translate = App.Qt.translate
 # endregion
 
-# get the path of the current python script
-PATH_TB = os.path.dirname(BoM_WB_Locator.__file__)
-
+global PATH_TB
 global PATH_TB_ICONS
 global PATH_TB_RESOURCES
 global PATH_TB_UI
+global PATH_TB_PREFERENCES
+
+# get the path of the current python script
+PATH_TB = os.path.dirname(BoM_WB_Locator.__file__)
 
 PATH_TB_RESOURCES = os.path.join(PATH_TB, "Resources")
 PATH_TB_ICONS = os.path.join(PATH_TB_RESOURCES, "Icons")
 PATH_TB_UI = os.path.join(PATH_TB_RESOURCES, "UI")
+PATH_TB_PREFERENCES = os.path.join(PATH_TB_UI, "PreferencesUI_BoM.ui")
+
+Gui.addIconPath(PATH_TB_ICONS)
+Gui.addResourcePath(PATH_TB_ICONS)
+Gui.addPreferencePage(PATH_TB_PREFERENCES, "Bill of Materials")
 
 
 class BillOfMaterialsWB(Gui.Workbench):
     MenuText = "Bill of Materials"
     ToolTip = "A workbench for creating a Bill of Materials"
     Icon = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
-
-    Gui.addIconPath(PATH_TB_ICONS)
-    Gui.addPreferencePage(
-        os.path.join(PATH_TB_UI, "PreferencesUI_BoM.ui"),
-        "Bill of Materials",
-    )
 
     def GetClassName(self):
         # This function is mandatory if this is a full Python workbench
@@ -148,8 +150,11 @@ class BillOfMaterialsWB(Gui.Workbench):
         # Create the toolbar for the other workbenches and hide it.
         for key, value in AllOtherWorkbenches.items():
             try:
-                ToolbarName = BoM_CreateUI.CreateWorkBenchToolbar(key, WorkbenchToolbar)
-                BoM_CreateUI.HideToolbars(ToolbarName, key)
+                if key != "":
+                    ToolbarName = BoM_CreateUI.CreateWorkBenchToolbar(
+                        key, WorkbenchToolbar
+                    )
+                    BoM_CreateUI.HideToolbars(ToolbarName, key)
             except Exception:
                 pass
         # endregion ----------------------------------------------------------------------------------------------------

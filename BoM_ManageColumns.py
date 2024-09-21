@@ -273,6 +273,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
                     self.form.Columns_To_Add.addItem("Shape - Volume")
                     self.form.Columns_To_Add.addItem("Shape - Area")
                     self.form.Columns_To_Add.addItem("Shape - CenterOfGravity")
+                if Property == "ShapeMaterial":
                     self.form.Columns_To_Add.addItem("Shape - Mass")
 
         return
