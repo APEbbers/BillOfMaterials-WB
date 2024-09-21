@@ -905,6 +905,13 @@ class General_BOM:
         resultUnit: str
         result: list
 
+        # if there is a linked object, use that.
+        # Otherwise use the provided document.
+        try:
+            DocObject = DocObject.getLinkedObject()
+        except Exception:
+            pass
+
         isShapeProperty = False
         if PropertyName.startswith("Shape - ") is True:
             isShapeProperty = True
@@ -943,14 +950,21 @@ class General_BOM:
             try:
                 shapeObject = DocObject.Shape
                 currentScheme = App.Units.getSchema()
+                print(currentScheme)
 
                 # Get the value from the shape
                 #
                 # Get the boundingbox from the item as if it is not transformed
                 BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
-                # BoundingBox = DocObject.Shape.BoundBox
+                try:
+                    BoundingBox = DocObject.Shape.BoundBox
+                except Exception:
+                    print("viewObjects boundingbox is used")
+                    pass
+
                 # Get the dimensions
                 if PropertyName.split(" - ", 1)[1] == "Length":
+                    print(f"{BoundingBox.XLength}, {App.Units.Length}")
                     value = str(
                         App.Units.schemaTranslate(
                             App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
