@@ -75,6 +75,13 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         # Make sure that the dialog stays on top
         self.form.setWindowFlags(Qt.WindowStaysOnTopHint)
 
+        # Get the style from the main window and use it for this form
+        mw = Gui.getMainWindow()
+        palette = mw.palette()
+        self.form.setPalette(palette)
+        Style = mw.style()
+        self.form.setStyle(Style)
+
         # region - Add the connections
         #
         # Load ---------------------------------------------------------------------------------

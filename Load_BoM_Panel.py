@@ -26,13 +26,14 @@ import os
 from inspect import getsourcefile
 from PySide.QtCore import SIGNAL, QSize
 from PySide.QtGui import QIcon
-from PySide.QtWidgets import QDialogButtonBox
+from PySide.QtWidgets import QDialogButtonBox, QMenu
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
 import sys
 import Settings_BoM
 import Standard_Functions_BOM_WB as Standard_Functions
+import webbrowser
 
 # Define the translation
 translate = App.Qt.translate
@@ -62,6 +63,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     manualChange = False
     currentSheet = None
 
+    ReproAdress: str = ""
+
     def __init__(self):
         # Makes "self.on_CreateBOM_clicked" listen to the changed control values instead initial values
         super(LoadWidget, self).__init__()
@@ -77,7 +80,17 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg"))
         )
 
+        # Get the adress of the reporisaty adress
+        self.ReproAdress = Standard_Functions.getReproAdress(os.path.dirname(__file__))
+        print(f"Bill of Materials Workbench: {self.ReproAdress}")
+
         # region - Connect controls with functions
+        # Connect the help buttons
+        def Help():
+            self.on_Helpbutton_clicked(self)
+
+        self.form.HelpButton.connect(self.form.HelpButton, SIGNAL("clicked()"), Help)
+
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
         self.form.AssemblyType.currentTextChanged.connect(
             self.on_AssemblyType_TextChanged
@@ -153,6 +166,15 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # endregion
 
         # region - add icons to the buttons
+        #
+        # Get the icon from the FreeCAD help
+        mw = Gui.getMainWindow()
+        helpMenu = mw.findChildren(QMenu, "&Help")[0]
+        helpAction = helpMenu.actions()[0]
+        helpAction.icon()
+        icon_HelpButton = helpAction.icon()
+        self.form.HelpButton.setIcon(icon_HelpButton)
+
         icon_TotalBoM = QIcon()
         icon_TotalBoM.addFile(
             os.path.join(PATH_TB_ICONS, "Total.svg"),
@@ -356,6 +378,16 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         Gui.Control.closeDialog()
 
         return True
+
+    @staticmethod
+    def on_Helpbutton_clicked(self):
+        if self.ReproAdress != "" or self.ReproAdress is not None:
+            if not self.ReproAdress.endswith("/"):
+                self.ReproAdress = self.ReproAdress + "/"
+
+            AboutAdress = self.ReproAdress + "wiki"
+            webbrowser.open(AboutAdress, new=2, autoraise=True)
+        return
 
     # Hide or show the settings
     def on_toolButton_Settings_clicked(self):
