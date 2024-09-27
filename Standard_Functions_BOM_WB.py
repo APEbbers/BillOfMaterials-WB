@@ -310,9 +310,7 @@ def OpenFile(FileName: str):
         raise e
 
 
-def SetColumnWidth_SpreadSheet(
-    sheet, column: str, cellValue: str, factor: int = 10
-) -> bool:
+def SetColumnWidth_SpreadSheet(sheet, column: str, cellValue: str, factor: int = 10) -> bool:
     """_summary_
 
     Args:
@@ -409,6 +407,20 @@ def toggleToolbars(ToolbarName: str, WorkBench: str = ""):
             ToolBar.setVisible(True)
             return
     return
+
+
+def getReproAdress(base_path):
+    import pathlib
+    import os
+
+    if base_path == "":
+        base_path = os.path.dirname(__file__)
+
+    git_dir = pathlib.Path(base_path) / ".git"
+    with (git_dir / "FETCH_HEAD").open("r") as head:
+        ref = head.readline().split(" ")[-1].strip()
+
+        return ref
 
 
 def PartFeatureList():

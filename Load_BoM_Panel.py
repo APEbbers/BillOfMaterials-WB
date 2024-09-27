@@ -26,13 +26,14 @@ import os
 from inspect import getsourcefile
 from PySide.QtCore import SIGNAL, QSize
 from PySide.QtGui import QIcon
-from PySide.QtWidgets import QDialogButtonBox
+from PySide.QtWidgets import QDialogButtonBox, QMenu
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
 import sys
 import Settings_BoM
 import Standard_Functions_BOM_WB as Standard_Functions
+import webbrowser
 
 # Define the translation
 translate = App.Qt.translate
@@ -62,6 +63,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     manualChange = False
     currentSheet = None
 
+    ReproAdress: str = ""
+
     def __init__(self):
         # Makes "self.on_CreateBOM_clicked" listen to the changed control values instead initial values
         super(LoadWidget, self).__init__()
@@ -73,15 +76,21 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.getCurrentBoM()
 
         # Set the icon
-        self.form.setWindowIcon(
-            QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg"))
-        )
+        self.form.setWindowIcon(QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")))
+
+        # Get the adress of the reporisaty adress
+        self.ReproAdress = Standard_Functions.getReproAdress(os.path.dirname(__file__))
+        print(f"Bill of Materials Workbench: {self.ReproAdress}")
 
         # region - Connect controls with functions
+        # Connect the help buttons
+        def Help():
+            self.on_Helpbutton_clicked(self)
+
+        self.form.HelpButton.connect(self.form.HelpButton, SIGNAL("clicked()"), Help)
+
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
-        self.form.AssemblyType.currentTextChanged.connect(
-            self.on_AssemblyType_TextChanged
-        )
+        self.form.AssemblyType.currentTextChanged.connect(self.on_AssemblyType_TextChanged)
 
         # This will create a connection between the pushbutton "DectAssemblyType" and def "on_DectAssemblyType_clicked"
         self.form.DetectAssemblyType.connect(
@@ -105,19 +114,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         )
 
         # This will create a connection between the pushbutton "Set extra columns" and def "on_SetColumns_clicked"
-        self.form.SetColumns.connect(
-            self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked
-        )
+        self.form.SetColumns.connect(self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked)
 
         # This will create a connection between the pushbutton "Create Total BoM" and def "on_CreateTotal_clicked"
-        self.form.CreateTotal.connect(
-            self.form.CreateTotal, SIGNAL("pressed()"), self.on_CreateTotal_clicked
-        )
+        self.form.CreateTotal.connect(self.form.CreateTotal, SIGNAL("pressed()"), self.on_CreateTotal_clicked)
 
         # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
-        self.form.CreateSummary.connect(
-            self.form.CreateSummary, SIGNAL("pressed()"), self.on_CreateSummary_clicked
-        )
+        self.form.CreateSummary.connect(self.form.CreateSummary, SIGNAL("pressed()"), self.on_CreateSummary_clicked)
 
         # This will create a connection between the pushbutton "Create parts only BoM" and def "on_CreatePartsOnly_clicked"
         self.form.CreatePartsOnly.connect(
@@ -134,9 +137,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         )
 
         # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
-        self.form.CreateRaw.connect(
-            self.form.CreateRaw, SIGNAL("pressed()"), self.on_CreateRaw_clicked
-        )
+        self.form.CreateRaw.connect(self.form.CreateRaw, SIGNAL("pressed()"), self.on_CreateRaw_clicked)
         # endregion
 
         # region - Debug settings
@@ -153,6 +154,15 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # endregion
 
         # region - add icons to the buttons
+        #
+        # Get the icon from the FreeCAD help
+        mw = Gui.getMainWindow()
+        helpMenu = mw.findChildren(QMenu, "&Help")[0]
+        helpAction = helpMenu.actions()[0]
+        helpAction.icon()
+        icon_HelpButton = helpAction.icon()
+        self.form.HelpButton.setIcon(icon_HelpButton)
+
         icon_TotalBoM = QIcon()
         icon_TotalBoM.addFile(
             os.path.join(PATH_TB_ICONS, "Total.svg"),
@@ -223,9 +233,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             QIcon.Off,
         )
         icon_AppLink = QIcon()
-        icon_AppLink.addFile(
-            os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off
-        )
+        icon_AppLink.addFile(os.path.join(PATH_TB_ICONS, "Link.svg"), QSize(), QIcon.Normal, QIcon.Off)
         icon_Asm3 = QIcon()
         icon_Asm3.addFile(
             os.path.join(PATH_TB_ICONS, "Assembly3_workbench_icon.svg"),
@@ -356,6 +364,16 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         Gui.Control.closeDialog()
 
         return True
+
+    @staticmethod
+    def on_Helpbutton_clicked(self):
+        if self.ReproAdress != "" or self.ReproAdress is not None:
+            if not self.ReproAdress.endswith("/"):
+                self.ReproAdress = self.ReproAdress + "/"
+
+            AboutAdress = self.ReproAdress + "wiki"
+            webbrowser.open(AboutAdress, new=2, autoraise=True)
+        return
 
     # Hide or show the settings
     def on_toolButton_Settings_clicked(self):
@@ -519,22 +537,15 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Arch":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(
-                CheckAssemblyType=not self.manualChange
-            )
+            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=not self.manualChange)
         if AssemblyType_Selected == "MultiBody":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(
-                CheckAssemblyType=not self.manualChange
-            )
+            GetBOM_MultiBody_Arch.BomFunctions.Start(CheckAssemblyType=not self.manualChange)
         return
 
     def on_AssemblyType_TextChanged(self):
         self.manualChange = True
         AssemblyType_Selected = str(self.form.AssemblyType.currentText())
-        if (
-            AssemblyType_Selected == "App:Part"
-            or AssemblyType_Selected == "App:LinkGroup"
-        ):
+        if AssemblyType_Selected == "App:Part" or AssemblyType_Selected == "App:LinkGroup":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
         elif AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
