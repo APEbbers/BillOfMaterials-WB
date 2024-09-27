@@ -9,7 +9,7 @@ With this workbench, different types of the BoM can be created:
 * a parts only BoM.
 * a first level BoM (useful for assembly pages.
 * a raw BoM. (This is a BoM, just as is. No summation of parts and assemblies. Can be used for testing or creating your own BoM in programs like Excel.)\
-* Since version 0.1.3.0 patterns are also supported for Assembly 4.
+* Patterns are supported for Assembly 4.
 Standard the following columns are added to the (BoM):
 * Number.
 * Quantity.
@@ -17,14 +17,7 @@ Standard the following columns are added to the (BoM):
   For example in an assembly 3 assembly, parts are named like "Link001". This will be replaced with their original label like "bearing", "axis", etc).
 * Description -> This is label2 in the property view.
 
-Optionally, every property from the property view can be added from either the assembly document or a document selected in the tree.\
-For debugging the option "Enable extra columns for debug" can be enabled. This option will add the following columns:
-* Original label. -> The original name in the assembly. For example in an assembly 3 assembly this will be "Link001", "Link002", etc.
-* Type. -> Part or Assembly
-* Internal name.
-* Fullname.
-* TypeId.
-
+Optionally, every property from the property view can be added from either the assembly document or a document selected in the tree.  
 
 ## Supported assembly types:
 * a2plus
@@ -34,17 +27,6 @@ For debugging the option "Enable extra columns for debug" can be enabled. This o
 * Applink / ApplinkGroup assemblies
 * AppPart assemblies
 * Multi body parts
-
-
-This workbench is still under development. Therefore there are some limitations.\
-Support for the following assemblies, workbenches and futures are planned:
-* ~~Improvement on assembly type detection, so assemblies can be placed in groups.~~ -> Done
-* Support for the Arch WB
-* ~~Support for multi-body parts (Part WB)~~ -> Done
-* One function to support a mixed structure of all assembly workbenches
-* A function to add the BoM to a TechDraw page template
-* Mass calculation based on shape and material
-* ~~outer dimensions of items~~ -> Done
 
 ## License:
 LGPL2.+
