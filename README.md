@@ -8,13 +8,14 @@ With this workbench, different types of the BoM can be created:
 * a summary BoM.
 * a parts only BoM.
 * a first level BoM (useful for assembly pages.
-* a raw BoM. (This is a BoM, just as is. No summation of parts and assemblies. Can be used for testing or creating your own BoM in programs like Excel.)\
+* a raw BoM. (This is a BoM, just as is. No summation of parts and assemblies. Can be used for testing or creating your own BoM in programs like Excel or OpenOffice.)
 * Patterns are supported for Assembly 4.
 Standard the following columns are added to the (BoM):
 * Number.
 * Quantity.
-* Label. -> This will be the label of the original part or assembly.\
-  For example in an assembly 3 assembly, parts are named like "Link001". This will be replaced with their original label like "bearing", "axis", etc).
+* Label. -> This will be the label of the original part or assembly.  
+  For example in an assembly 3 assembly, parts are named like "Link001".  
+  This will be replaced with their original label like "bearing", "axis", etc).
 * Description -> This is label2 in the property view.
 
 Optionally, every property from the property view can be added from either the assembly document or a document selected in the tree.  
