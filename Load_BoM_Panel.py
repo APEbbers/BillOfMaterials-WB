@@ -82,7 +82,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
         # Get the adress of the reporisaty adress
         self.ReproAdress = Standard_Functions.getReproAdress(os.path.dirname(__file__))
-        print(f"Bill of Materials Workbench: {self.ReproAdress}")
+        if self.ReproAdress != "" or self.ReproAdress is not None:
+            print(f"Bill of Materials Workbench: {self.ReproAdress}")
+        else:
+            print("Bill of Materials Workbench: Repro adress unknown")
 
         # region - Connect controls with functions
         # Connect the help buttons
