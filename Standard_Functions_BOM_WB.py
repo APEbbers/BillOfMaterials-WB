@@ -310,9 +310,7 @@ def OpenFile(FileName: str):
         raise e
 
 
-def SetColumnWidth_SpreadSheet(
-    sheet, column: str, cellValue: str, factor: int = 10
-) -> bool:
+def SetColumnWidth_SpreadSheet(sheet, column: str, cellValue: str, factor: int = 10) -> bool:
     """_summary_
 
     Args:
@@ -415,14 +413,17 @@ def getReproAdress(base_path):
     import pathlib
     import os
 
-    if base_path == "":
-        base_path = os.path.dirname(__file__)
+    try:
+        if base_path == "":
+            base_path = os.path.dirname(__file__)
 
-    git_dir = pathlib.Path(base_path) / ".git"
-    with (git_dir / "FETCH_HEAD").open("r") as head:
-        ref = head.readline().split(" ")[-1].strip()
+        git_dir = pathlib.Path(base_path) / ".git"
+        with (git_dir / "FETCH_HEAD").open("r") as head:
+            ref = head.readline().split(" ")[-1].strip()
 
-        return ref
+            return ref
+    except Exception:
+        return
 
 
 def PartFeatureList():
