@@ -79,12 +79,11 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form.setWindowIcon(QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")))
 
         # Get the adress of the reporisaty adress
-        try:
-            self.ReproAdress = Standard_Functions.getReproAdress(os.path.dirname(__file__))
+        self.ReproAdress = Standard_Functions.getReproAdress(os.path.dirname(__file__))
+        if self.ReproAdress != "" or self.ReproAdress is not None:
             print(f"Bill of Materials Workbench: {self.ReproAdress}")
-        except Exception:
+        else:
             print("Bill of Materials Workbench: Repro adress unkown")
-            pass
 
         # region - Connect controls with functions
         # Connect the help buttons
