@@ -83,7 +83,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if self.ReproAdress != "" or self.ReproAdress is not None:
             print(f"Bill of Materials Workbench: {self.ReproAdress}")
         else:
-            print("Bill of Materials Workbench: Repro adress unkown")
+            print("Bill of Materials Workbench: Repro adress unknown")
 
         # region - Connect controls with functions
         # Connect the help buttons
