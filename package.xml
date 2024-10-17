@@ -3,7 +3,7 @@
 
   <name>Bill of Materials Workbench</name>
 
-  <description>An extension for the TechDraw workbench to fill a TitleBlock with the aid of the Spreadsheet workbench.</description>
+  <description>A workbench to create Bill of Materials (BoM) independent of the assembly workbench of your choice.</description>
 
   <version>1.0.1</version>
 
