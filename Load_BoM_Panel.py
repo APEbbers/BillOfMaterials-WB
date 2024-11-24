@@ -551,6 +551,21 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if AssemblyType_Selected == "App:Part" or AssemblyType_Selected == "App:LinkGroup":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
+
+            self.form.CreatePartsOnly.setEnabled(True)
+            self.form.label_7.setStyleSheet("")
+
+            self.form.CreateSummary.setEnabled(True)
+            self.form.label_4.setStyleSheet("")
+
+            self.form.CreateFirstLevel.setEnabled(True)
+            self.form.label_11.setStyleSheet("")
+
+            self.form.IndentedNumbering.setEnabled(True)
+
+            self.form.MaxLevel.setEnabled(True)
+            self.form.label_5.setStyleSheet("")
+            self.form.label_6.setStyleSheet("")
         elif AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
