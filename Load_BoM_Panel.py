@@ -24,9 +24,9 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide.QtCore import SIGNAL, QSize
-from PySide.QtGui import QIcon
-from PySide.QtWidgets import QDialogButtonBox, QMenu
+from PySide6.QtCore import SIGNAL, QSize
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QDialogButtonBox, QMenu, QComboBox
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -93,7 +93,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form.HelpButton.connect(self.form.HelpButton, SIGNAL("clicked()"), Help)
 
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
-        self.form.AssemblyType.currentTextChanged.connect(self.on_AssemblyType_TextChanged)
+        self.form.AssemblyType.currentIndexChanged.connect(self.on_AssemblyType_TextChanged)
 
         # This will create a connection between the pushbutton "DectAssemblyType" and def "on_DectAssemblyType_clicked"
         self.form.DetectAssemblyType.connect(
