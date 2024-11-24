@@ -234,10 +234,11 @@ class BomFunctions:
             if i > 0:
                 if Quantity == 1:
                     TemporaryList.append(rowListNew)
-                    ShadowList.append(rowList)
                 if Quantity > 1:
                     TemporaryList.pop()
                     TemporaryList.append(rowListNew)
+
+            ShadowList.append(rowList)
 
         # Create the spreadsheet
         if Headers == "":

@@ -26,7 +26,7 @@ import os
 from inspect import getsourcefile
 from PySide.QtCore import SIGNAL, QSize
 from PySide.QtGui import QIcon
-from PySide.QtWidgets import QDialogButtonBox, QMenu
+from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -95,7 +95,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form.HelpButton.connect(self.form.HelpButton, SIGNAL("clicked()"), Help)
 
         # This will create a connection between the combobox "AssemblyType" and def "on_AssemblyType_TextChanged"
-        self.form.AssemblyType.currentTextChanged.connect(
+        self.form.AssemblyType.currentIndexChanged.connect(
             self.on_AssemblyType_TextChanged
         )
 
@@ -572,14 +572,35 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         ):
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
+
+            self.form.CreatePartsOnly.setEnabled(True)
+            self.form.label_7.setStyleSheet("")
+
+            self.form.CreateSummary.setEnabled(True)
+            self.form.label_4.setStyleSheet("")
+
+            self.form.CreateFirstLevel.setEnabled(True)
+            self.form.label_11.setStyleSheet("")
+
+            self.form.IndentedNumbering.setEnabled(True)
+
+            self.form.MaxLevel.setEnabled(True)
+            self.form.label_5.setStyleSheet("")
+            self.form.label_6.setStyleSheet("")
         elif AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
 
-            self.form.label.setStyleSheet("""color: #787878;""")
+            self.form.CreatePartsOnly.setEnabled(False)
+            self.form.label_7.setStyleSheet("""color: #787878;""")
+
+            self.form.CreateSummary.setEnabled(False)
+            self.form.label_4.setStyleSheet("""color: #787878;""")
+
+            self.form.CreateFirstLevel.setEnabled(False)
+            self.form.label_11.setStyleSheet("""color: #787878;""")
 
             self.form.IndentedNumbering.setEnabled(False)
-            self.form.label_4.setStyleSheet("""color: #787878;""")
 
             self.form.MaxLevel.setEnabled(False)
             self.form.label_5.setStyleSheet("""color: #787878;""")
@@ -588,10 +609,16 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.IncludeBodies.setEnabled(True)
             self.form.label_3.setStyleSheet("")
 
-            self.form.label.setStyleSheet("")
+            self.form.CreatePartsOnly.setEnabled(True)
+            self.form.label_7.setStyleSheet("")
+
+            self.form.CreateSummary.setEnabled(True)
+            self.form.label_4.setStyleSheet("")
+
+            self.form.CreateFirstLevel.setEnabled(True)
+            self.form.label_11.setStyleSheet("")
 
             self.form.IndentedNumbering.setEnabled(True)
-            self.form.label_4.setStyleSheet("")
 
             self.form.MaxLevel.setEnabled(True)
             self.form.label_5.setStyleSheet("")
