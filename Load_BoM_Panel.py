@@ -573,10 +573,16 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.IncludeBodies.setEnabled(True)
             self.form.label_3.setStyleSheet("")
 
-            self.form.label.setStyleSheet("")
+            self.form.CreatePartsOnly.setEnabled(True)
+            self.form.label_7.setStyleSheet("")
+
+            self.form.CreateSummary.setEnabled(True)
+            self.form.label_4.setStyleSheet("")
+
+            self.form.CreateFirstLevel.setEnabled(True)
+            self.form.label_11.setStyleSheet("")
 
             self.form.IndentedNumbering.setEnabled(True)
-            self.form.label_4.setStyleSheet("")
 
             self.form.MaxLevel.setEnabled(True)
             self.form.label_5.setStyleSheet("")
