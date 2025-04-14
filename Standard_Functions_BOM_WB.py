@@ -310,9 +310,7 @@ def OpenFile(FileName: str):
         raise e
 
 
-def SetColumnWidth_SpreadSheet(
-    sheet, column: str, cellValue: str, factor: int = 10
-) -> bool:
+def SetColumnWidth_SpreadSheet(sheet, column: str, cellValue: str, factor: int = 10) -> bool:
     """_summary_
 
     Args:
@@ -431,6 +429,7 @@ def getReproAdress(base_path):
 def PartFeatureList():
     result = [
         "Part::PartFeature",
+        "Part::Feature",
         "Part::Extrusion",
         "Part::CustomFeature",
         "Part::Chamfer",
