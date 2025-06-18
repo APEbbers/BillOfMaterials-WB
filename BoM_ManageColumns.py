@@ -265,6 +265,8 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.Columns_To_Add.clear()
         # Fill the List "Columns_To_Add" with the properties that are not already a custom header.
         for Property in PropertyList:
+            if Property == "Label":
+                continue
             IsInList = False
             for CurrentProperty in CustomHeaders:
                 if Property == CurrentProperty:

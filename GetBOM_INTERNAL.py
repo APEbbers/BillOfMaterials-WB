@@ -369,6 +369,7 @@ class BomFunctions:
             "ObjectName": docObject.getLinkedObject().Name,
             "Qty": RowItem["Qty"],
             "Type": RowItem["Type"],
+            "Parent": docObject.getLinkedObject().FullName.split("#", 1)[0]
         }
 
         return rowListNew
@@ -518,11 +519,14 @@ class BomFunctions:
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
+                # Get the parent
+                shadowParent = rowList["Parent"]
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowLabel,
                     "Item3": shadowType,
+                    "Item4": shadowParent
                 }
 
                 # Find the quantity for the item
@@ -544,6 +548,7 @@ class BomFunctions:
                     "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
                     "Type": rowList["Type"],
+                    "Parent": rowList["Parent"]
                 }
 
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
@@ -554,6 +559,7 @@ class BomFunctions:
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
                     )
                     is False
                 ):
@@ -581,8 +587,9 @@ class BomFunctions:
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
-                    "Item2": shadowLabel,
-                    "Item3": shadowType,
+                    "Item2": rowList["ObjectLabel"],
+                    "Item3": rowList["Type"],
+                    "Item4": rowList["Parent"]
                 }
 
                 # Find the quantity for the item
@@ -609,6 +616,7 @@ class BomFunctions:
                     "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
                     "Type": rowList["Type"],
+                    "Parent": rowList["Parent"]
                 }
 
                 if (
@@ -617,6 +625,7 @@ class BomFunctions:
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
                     )
                     is False
                 ):
@@ -720,6 +729,7 @@ class BomFunctions:
                 "ObjectName": rowList["ObjectName"],
                 "Qty": QtyValue,
                 "Type": rowList["Type"],
+                "Parent": rowList["Parent"]
             }
 
             # Create the row item for the shadow list.
@@ -727,6 +737,7 @@ class BomFunctions:
                 "Item1": rowList[ObjectNameField],
                 "Item2": rowList["DocumentObject"].TypeId,
                 "Item3": rowList["Type"],
+                "Item4": rowList["Parent"]
             }
             # Add the rowItem if it is not in the shadow list.
             if (
@@ -735,6 +746,7 @@ class BomFunctions:
                     Item1=shadowRow["Item1"],
                     Item2=shadowRow["Item2"],
                     Item3=shadowRow["Item3"],
+                    Item4=shadowRow["Item4"],
                 )
                 is False
             ):
@@ -830,6 +842,7 @@ class BomFunctions:
                     "ObjectName": rowList["ObjectName"],
                     "Qty": QtyValue,
                     "Type": rowList["Type"],
+                    "Parent": rowList["Parent"]
                 }
 
                 # Create the row item for the shadow list.
@@ -837,6 +850,7 @@ class BomFunctions:
                     "Item1": rowList[ObjectNameField],
                     "Item2": rowList["DocumentObject"].TypeId,
                     "Item3": rowList["Type"],
+                    "Item4": rowList["Parent"]
                 }
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
@@ -847,6 +861,7 @@ class BomFunctions:
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
                     )
                     is False
                 ):
