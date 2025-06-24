@@ -170,8 +170,12 @@ class General_BOM:
                 "D" + str(Row),
                 self.ReturnDocProperty(rowList["DocumentObject"], "Label2"),
             )  # This will be the description
+            sheet.set(
+                "E" + str(Row),
+                self.ReturnDocProperty(rowList["DocumentObject"], "Parent"),
+            )  # This will be the description
 
-            # The debug headers
+            # The debug headers and custom headers
             for i in range(4, len(Headers) + 1):
                 Column = Standard_Functions.GetLetterFromNumber(i)
                 if Headers[Column + "1"] == "Type":
@@ -196,14 +200,59 @@ class General_BOM:
                         Column + str(Row),
                         self.ReturnDocProperty(rowList["DocumentObject"], "TypeId"),
                     )
-                else:
+                else: # The custom headers
                     try:
-                        sheet.set(
-                            Column + str(Row),
-                            self.ReturnViewProperty(
-                                rowList["DocumentObject"], Headers[Column + "1"]
-                            )[0],
-                        )
+                        if Headers[Column + "1"] == "FileName":
+                            listObjecttypes = [
+                                "Part::FeaturePython",
+                                "Part::Feature",
+                                "PartDesign::Body",
+                                "Part::PartFeature",
+                                "Part::Feature",
+                                'Assembly::AssemblyObject',
+                            ]
+                            IsBody = False
+                            for Object in listObjecttypes:
+                                if rowList["DocumentObject"].TypeId == Object:
+                                    IsBody = True
+                                                                    
+                            if IsBody is True:
+                                sheet.set(
+                                    Column + str(Row),
+                                    os.path.basename(rowList["DocumentObject"].Document.FileName))
+                            else:
+                                sheet.set(
+                                    Column + str(Row),
+                                    os.path.basename(rowList["DocumentObject"].FileName))
+                        elif Headers[Column + "1"] == "Parent":
+                            listObjecttypes = [
+                                "Part::FeaturePython",
+                                "Part::Feature",
+                                "PartDesign::Body",
+                                "Part::PartFeature",
+                                "Part::Feature",
+                                'Assembly::AssemblyObject',
+                            ]
+                            IsBody = False
+                            for Object in listObjecttypes:
+                                if rowList["DocumentObject"].TypeId == Object:
+                                    IsBody = True
+                                                                    
+                            if IsBody is True:
+                                sheet.set(
+                                    Column + str(Row),
+                                    os.path.basename(rowList["DocumentObject"].Document.Name))
+                            else:
+                                sheet.set(
+                                    Column + str(Row),
+                                    os.path.basename(rowList["DocumentObject"].Name))
+                        else:
+                            sheet.set(
+                                Column + str(Row),
+                                self.ReturnViewProperty(
+                                    rowList["DocumentObject"], Headers[Column + "1"]
+                                )[0],
+                            )
 
                         # NewHeader = ""
                         # Unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
@@ -213,7 +262,7 @@ class General_BOM:
                         # #     sheet.set(Column + "1", NewHeader)
 
                     except Exception as e:
-                        # print(e)
+                        print(e)
                         pass
 
             # Create the total number of items for the summary
@@ -366,8 +415,8 @@ class General_BOM:
         sheet.setAlignment(f"A{str(Row)}:C{str(Row + 3)}", "left", "keep")
 
         # Style the table
-        RangeStyleHeader = f"A{str(Row)}:D{str(Row)}"
-        RangeStyleTable = f"A{str(Row+1)}:D{str(Row+3)}"
+        RangeStyleHeader = f"A{str(Row)}:E{str(Row)}"
+        RangeStyleTable = f"A{str(Row+1)}:E{str(Row+3)}"
         self.FormatTableColors(
             sheet=sheet,
             HeaderRange=RangeStyleHeader,
@@ -574,16 +623,21 @@ class General_BOM:
         return counter
 
     @classmethod
-    def ListContainsCheck(self, List: list, Item1, Item2, Item3, Item4) -> bool:
+    def ListContainsCheck(self, List: list, Item1, Item2, Item3, Item4 = "") -> bool:
         for i in range(len(List)):
             rowItem = List[i]
             ListItem1 = rowItem["Item1"]
             ListItem2 = rowItem["Item2"]
             ListItem3 = rowItem["Item3"]
-            ListItem3 = rowItem["Item4"]
+            if Item4 != "":
+                ListItem3 = rowItem["Item4"]
 
-            if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem4 == Item4:
-                return True
+            if Item4 == "":
+                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
+                    return True
+            else:
+                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem4 == Item4:
+                    return True
 
         return False
 
@@ -964,6 +1018,8 @@ class General_BOM:
                 result = DocObject.TypeId
             if PropertyName == "Name":
                 result = DocObject.Name
+            if PropertyName == "Parent":
+                result = DocObject.Document.Name
 
             return result
         except Exception:

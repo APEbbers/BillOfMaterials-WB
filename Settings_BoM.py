@@ -172,6 +172,7 @@ def ReturnHeaders(Headers: dict = None, AdditionalHeaders: dict = None):
                     "B1": "Qty",
                     "C1": "Label",
                     "D1": "Description",
+                    "E1": "Parent",
             }
     """
     if Headers is None or bool(Headers) is False:
@@ -180,6 +181,7 @@ def ReturnHeaders(Headers: dict = None, AdditionalHeaders: dict = None):
             "B1": "Qty",
             "C1": "Label",
             "D1": "Description",
+            "E1": "Parent",
         }
 
     if AdditionalHeaders is not None or bool(AdditionalHeaders) is True:
