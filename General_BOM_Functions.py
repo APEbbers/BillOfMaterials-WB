@@ -623,16 +623,21 @@ class General_BOM:
         return counter
 
     @classmethod
-    def ListContainsCheck(self, List: list, Item1, Item2, Item3, Item4) -> bool:
+    def ListContainsCheck(self, List: list, Item1, Item2, Item3, Item4 = "") -> bool:
         for i in range(len(List)):
             rowItem = List[i]
             ListItem1 = rowItem["Item1"]
             ListItem2 = rowItem["Item2"]
             ListItem3 = rowItem["Item3"]
-            ListItem3 = rowItem["Item4"]
+            if Item4 != "":
+                ListItem3 = rowItem["Item4"]
 
-            if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem4 == Item4:
-                return True
+            if Item4 == "":
+                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
+                    return True
+            else:
+                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem4 == Item4:
+                    return True
 
         return False
 
