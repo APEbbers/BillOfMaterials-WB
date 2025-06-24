@@ -219,10 +219,12 @@ class General_BOM:
                                 sheet.set(
                                     Column + str(Row),
                                     rowList["DocumentObject"].Document.FileName)
+                                print(rowList["DocumentObject"].Document.FileName)
                             else:
                                 sheet.set(
                                     Column + str(Row),
                                     rowList["DocumentObject"].FileName)
+                                print(rowList["DocumentObject"].FileName)
                         else:
                             sheet.set(
                                 Column + str(Row),
@@ -239,7 +241,7 @@ class General_BOM:
                         # #     sheet.set(Column + "1", NewHeader)
 
                     except Exception as e:
-                        # print(e)
+                        print(e)
                         pass
 
             # Create the total number of items for the summary
