@@ -220,6 +220,10 @@ class General_BOM:
                                 sheet.set(
                                     Column + str(Row),
                                     os.path.basename(rowList["DocumentObject"].Document.FileName))
+                            elif rowList["DocumentObject"].TypeId == 'App::Link':
+                                sheet.set(
+                                    Column + str(Row),
+                                    os.path.basename(rowList["DocumentObject"].getLinkedObject().Document.FileName))
                             else:
                                 sheet.set(
                                     Column + str(Row),
@@ -232,6 +236,7 @@ class General_BOM:
                                 "Part::PartFeature",
                                 "Part::Feature",
                                 'Assembly::AssemblyObject',
+                                'App::Link',
                             ]
                             IsBody = False
                             for Object in listObjecttypes:
