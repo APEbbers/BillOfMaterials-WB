@@ -209,22 +209,43 @@ class General_BOM:
                                 "PartDesign::Body",
                                 "Part::PartFeature",
                                 "Part::Feature",
+                                'Assembly::AssemblyObject',
                             ]
                             IsBody = False
                             for Object in listObjecttypes:
-                                if rowList["DocumentObject"].TypeID == Object:
+                                if rowList["DocumentObject"].TypeId == Object:
                                     IsBody = True
                                                                     
                             if IsBody is True:
                                 sheet.set(
                                     Column + str(Row),
-                                    rowList["DocumentObject"].Document.FileName)
-                                print(rowList["DocumentObject"].Document.FileName)
+                                    os.path.basename(rowList["DocumentObject"].Document.FileName))
                             else:
                                 sheet.set(
                                     Column + str(Row),
-                                    rowList["DocumentObject"].FileName)
-                                print(rowList["DocumentObject"].FileName)
+                                    os.path.basename(rowList["DocumentObject"].FileName))
+                        elif Headers[Column + "1"] == "Parent":
+                            listObjecttypes = [
+                                "Part::FeaturePython",
+                                "Part::Feature",
+                                "PartDesign::Body",
+                                "Part::PartFeature",
+                                "Part::Feature",
+                                'Assembly::AssemblyObject',
+                            ]
+                            IsBody = False
+                            for Object in listObjecttypes:
+                                if rowList["DocumentObject"].TypeId == Object:
+                                    IsBody = True
+                                                                    
+                            if IsBody is True:
+                                sheet.set(
+                                    Column + str(Row),
+                                    os.path.basename(rowList["DocumentObject"].Document.Name))
+                            else:
+                                sheet.set(
+                                    Column + str(Row),
+                                    os.path.basename(rowList["DocumentObject"].Name))
                         else:
                             sheet.set(
                                 Column + str(Row),
