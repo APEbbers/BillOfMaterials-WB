@@ -634,8 +634,9 @@ class General_BOM:
             ListItem1 = rowItem["Item1"]
             ListItem2 = rowItem["Item2"]
             ListItem3 = rowItem["Item3"]
+            print(Item4)
             if Item4 != "":
-                ListItem3 = rowItem["Item4"]
+                ListItem4 = rowItem["Item4"]
 
             if Item4 == "":
                 if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
