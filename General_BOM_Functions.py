@@ -634,7 +634,6 @@ class General_BOM:
             ListItem1 = rowItem["Item1"]
             ListItem2 = rowItem["Item2"]
             ListItem3 = rowItem["Item3"]
-            print(Item4)
             if Item4 != "":
                 ListItem4 = rowItem["Item4"]
 

@@ -62,7 +62,7 @@ class BomFunctions:
 
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
-
+        
         # Go Through all objects
         self.GoThrough_Objects(docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber)
 
@@ -211,7 +211,7 @@ class BomFunctions:
             for j in range(len(ShadowList)):
                 shadowItem = ShadowList[j]
                 test = self.CompareBodies(rowList["DocumentObject"], shadowItem["DocumentObject"])
-                if test is True:
+                if test is True and j > 0:
                     Quantity = Quantity + 1
 
             rowListNew = {
@@ -224,7 +224,7 @@ class BomFunctions:
             }
 
             if i > 0:
-                if Quantity == 1:
+                if Quantity <= 1:
                     TemporaryList.append(rowListNew)
                 if Quantity > 1:
                     TemporaryList.pop()
