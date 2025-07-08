@@ -999,12 +999,12 @@ class General_BOM:
         resultList = []
         try:
             Objects = Group.Group
-
-            for Object in Objects:
-                if Object.TypeId != "App::DocumentObjectGroup":
-                    resultList.append(Object)
-                if Object.TypeId == "App::DocumentObjectGroup":
-                    resultList.extend(self.GetObjectsFromGroups(Object))
+            if Objects[0].TypeId != 'Assembly::JointGroup':
+                for Object in Objects:
+                    if Object.TypeId != "App::DocumentObjectGroup":
+                        resultList.append(Object)
+                    if Object.TypeId == "App::DocumentObjectGroup":
+                        resultList.extend(self.GetObjectsFromGroups(Object))
         except Exception:
             pass
         return resultList
