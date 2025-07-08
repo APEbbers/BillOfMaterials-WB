@@ -489,7 +489,7 @@ class BomFunctions:
                 # write the itemnumber of the subassy for the shadow list.
                 shadowItemNumber = itemNumber.rsplit(".", 1)[0]
                 # Define the shadow item.
-                shadowLabel = rowList["ObjectLabel"]
+                shadowLabel = rowList["ObjectName"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Create the row item for the shadow list.
@@ -540,7 +540,7 @@ class BomFunctions:
                 # write the itemnumber of the subassy for the shadow list.
                 shadowItemNumber = itemNumber.rsplit(".", 1)[0]
                 # Define the shadow item.
-                shadowLabel = rowList["ObjectLabel"]
+                shadowLabel = rowList["ObjectName"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Create the row item for the shadow list.
@@ -600,7 +600,7 @@ class BomFunctions:
             )
 
         # correct the quantities for the parts in subassemblies
-        TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
+        # TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:

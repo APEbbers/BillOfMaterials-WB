@@ -220,6 +220,10 @@ class General_BOM:
                                 sheet.set(
                                     Column + str(Row),
                                     os.path.basename(rowList["DocumentObject"].Document.FileName))
+                            elif rowList["DocumentObject"].TypeId == 'App::Link':
+                                sheet.set(
+                                    Column + str(Row),
+                                    os.path.basename(rowList["DocumentObject"].getLinkedObject().Document.FileName))
                             else:
                                 sheet.set(
                                     Column + str(Row),
@@ -232,6 +236,7 @@ class General_BOM:
                                 "Part::PartFeature",
                                 "Part::Feature",
                                 'Assembly::AssemblyObject',
+                                'App::Link',
                             ]
                             IsBody = False
                             for Object in listObjecttypes:
@@ -630,7 +635,7 @@ class General_BOM:
             ListItem2 = rowItem["Item2"]
             ListItem3 = rowItem["Item3"]
             if Item4 != "":
-                ListItem3 = rowItem["Item4"]
+                ListItem4 = rowItem["Item4"]
 
             if Item4 == "":
                 if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
@@ -994,12 +999,12 @@ class General_BOM:
         resultList = []
         try:
             Objects = Group.Group
-
-            for Object in Objects:
-                if Object.TypeId != "App::DocumentObjectGroup":
-                    resultList.append(Object)
-                if Object.TypeId == "App::DocumentObjectGroup":
-                    resultList.extend(self.GetObjectsFromGroups(Object))
+            if Objects[0].TypeId != 'Assembly::JointGroup':
+                for Object in Objects:
+                    if Object.TypeId != "App::DocumentObjectGroup":
+                        resultList.append(Object)
+                    if Object.TypeId == "App::DocumentObjectGroup":
+                        resultList.extend(self.GetObjectsFromGroups(Object))
         except Exception:
             pass
         return resultList
