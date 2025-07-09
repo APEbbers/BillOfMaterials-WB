@@ -999,7 +999,7 @@ class General_BOM:
         resultList = []
         try:
             Objects = Group.Group
-            if Objects[0].TypeId != 'Assembly::JointGroup':
+            if Objects[0].TypeId != 'Assembly::JointGroup' and Objects.TypeId == 'App::DocumentObjectGroup':
                 for Object in Objects:
                     if Object.TypeId != "App::DocumentObjectGroup":
                         resultList.append(Object)
