@@ -76,10 +76,32 @@ class General_BOM:
         # Copy the main list
         CopyMainList = mainList
 
-        # Set the colors for the table
+        # Set the backup colors for the table
         HeaderColorRGB = [243, 202, 98]
         FirstColorRGB = [169, 169, 169]
         SecondColorRGB = [128, 128, 128]
+        
+        # Get the fontstyles from settings
+        HeaderStyle = ""
+        if Settings_BoM.SPREADSHEET_HEADERFONTSTYLE_BOLD is True:
+            HeaderStyle = HeaderStyle + "|bold"
+        if Settings_BoM.SPREADSHEET_HEADERFONTSTYLE_ITALIC is True:
+            HeaderStyle = HeaderStyle + "|italic"
+        if Settings_BoM.SPREADSHEET_HEADERFONTSTYLE_UNDERLINE is True:
+            HeaderStyle = HeaderStyle + "|underline"
+        if HeaderStyle.startswith("|"):
+            HeaderStyle = HeaderStyle[1:]
+            
+        TableStyle = ""
+        if Settings_BoM.SPREADSHEET_TABLEFONTSTYLE_BOLD is True:
+            TableStyle = TableStyle + "|bold"
+        if Settings_BoM.SPREADSHEET_TABLEFONTSTYLE_ITALIC is True:
+            TableStyle = TableStyle + "|italic"
+        if Settings_BoM.SPREADSHEET_TABLEFONTSTYLE_UNDERLINE is True:
+            TableStyle = TableStyle + "|underline"
+        if TableStyle.startswith("|"):
+            TableStyle = TableStyle[1:]
+
 
         # region -  Set the headers in the spreadsheet
         # If Headers is None, Set the default headers
@@ -306,6 +328,8 @@ class General_BOM:
             HeaderColorRGB=HeaderColorRGB,
             FirstColorRGB=FirstColorRGB,
             SecondColorRGB=SecondColorRGB,
+            TableStyle=TableStyle,
+            HeaderStyle=HeaderStyle,
         )
 
         # Define NoRows. This is needed for the next functions
@@ -381,6 +405,8 @@ class General_BOM:
                 HeaderColorRGB=HeaderColorRGB,
                 FirstColorRGB=FirstColorRGB,
                 SecondColorRGB=SecondColorRGB,
+                TableStyle=TableStyle,
+                HeaderStyle=HeaderStyle,
             )
 
         # Add the end of the BoM add indentifaction data
@@ -429,6 +455,8 @@ class General_BOM:
             HeaderColorRGB=HeaderColorRGB,
             FirstColorRGB=FirstColorRGB,
             SecondColorRGB=SecondColorRGB,
+            TableStyle=TableStyle,
+            HeaderStyle=HeaderStyle,
         )
 
         # Recompute the document
@@ -483,12 +511,20 @@ class General_BOM:
         if HeaderStyle != "":
             sheet.setStyle(HeaderRange, HeaderStyle)  # \bold|italic|underline'
         # Set the colors for the header
-        sheet.setBackground(
-            HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB)
-        )
-        sheet.setForeground(
-            HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB)
-        )  # RGBA
+        if Settings_BoM.SPREADSHEET_HEADERFOREGROUND == "" or Settings_BoM.SPREADSHEET_HEADERFOREGROUND is None:
+            sheet.setForeground(
+                HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB)
+            )
+        else:
+            sheet.setForeground(HeaderRange, Settings_BoM.SPREADSHEET_HEADERFOREGROUND)
+        
+        if Settings_BoM.SPREADSHEET_HEADERBACKGROUND == "" or Settings_BoM.SPREADSHEET_HEADERBACKGROUND is None:
+            sheet.setBackground(
+                HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB)
+            )  # RGBA
+        else:
+            sheet.setBackground(HeaderRange, Settings_BoM.SPREADSHEET_HEADERBACKGROUND)
+            
         # ------------------------------------------------------------------------------------------------------------------
 
         # Format the table -------------------------------------------------------------------------------------------------
@@ -521,19 +557,29 @@ class General_BOM:
 
             # if the first and second rows are within the range, set the colors
             if i <= DeltaRange:
-                sheet.setBackground(
-                    FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB)
-                )
-                sheet.setForeground(
-                    FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable)
-                )
+                if Settings_BoM.SPREADSHEET_TABLEBACKGROUND_1 == "" or Settings_BoM.SPREADSHEET_TABLEBACKGROUND_1 is None:
+                    sheet.setBackground(
+                        FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB)
+                    )
+                else:
+                    sheet.setBackground(FirstRow, Settings_BoM.SPREADSHEET_TABLEBACKGROUND_1)
+                if Settings_BoM.SPREADSHEET_TABLEFOREGROUND == "" or Settings_BoM.SPREADSHEET_TABLEFOREGROUND is None:
+                    sheet.setForeground(
+                        FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable)
+                    )
+                else:
+                    sheet.setForeground(FirstRow, Settings_BoM.SPREADSHEET_TABLEFOREGROUND)
             if i + 1 <= DeltaRange:
-                sheet.setBackground(
-                    SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB)
-                )
-                sheet.setForeground(
-                    SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable)
-                )
+                if Settings_BoM.SPREADSHEET_TABLEBACKGROUND_2 == "" or Settings_BoM.SPREADSHEET_TABLEBACKGROUND_2 is None:
+                    sheet.setBackground(
+                        SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB)
+                    )
+                else:
+                    sheet.setBackground(SecondRow, Settings_BoM.SPREADSHEET_TABLEBACKGROUND_2)
+                if Settings_BoM.SPREADSHEET_TABLEFOREGROUND == "" or Settings_BoM.SPREADSHEET_TABLEFOREGROUND is None:
+                    sheet.setForeground(
+                        SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable)
+                    )
 
             # Set the font style for the table
             if TableStyle != "":
