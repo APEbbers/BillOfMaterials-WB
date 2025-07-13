@@ -107,7 +107,7 @@ class BomFunctions:
             "Part::Feature",
         ]
         listObjecttypes.extend(Standard_Functions.PartFeatureList())
-        listObjecttypes.extend(Standard_Functions.PartDesingFeatureList())
+        listObjecttypes.extend(Standard_Functions.PartDesignFeatureList())
 
         # Go through the list and compare the object ID's in the list with the ObjectId.
         # If they are the same, the result is true. Exit the for statement.
