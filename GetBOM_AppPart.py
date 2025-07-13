@@ -56,11 +56,6 @@ class BomFunctions:
             if doc.RootObjects[i].Visibility is True:
                 docObjects.append(doc.RootObjects[i])
 
-        # Check if there are groups with items. create a list from it and add it to the docObjects.
-        for docObject in docObjects:
-            if docObject.TypeId == "App::DocumentObjectGroup":
-                docObjects.extend(General_BOM.GetObjectsFromGroups(docObject))
-
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
 
@@ -114,13 +109,10 @@ class BomFunctions:
         Returns:
                 True
         """
-        for i in range(len(docObjects)):
-            # Get the documentObject
-            Object = docObjects[i]
-            GroupItems = General_BOM.GetObjectsFromGroups(Object)
-            if len(GroupItems) > 0:
-                for j in range(len(GroupItems)):
-                    docObjects.insert(i + j + 1, GroupItems[j])
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for docObject in docObjects:
+            if docObject.TypeId == 'App::DocumentObjectGroup':
+                docObjects.extend(General_BOM.GetObjectsFromGroups(docObject))
 
         for i in range(len(docObjects)):
             # Get the documentObject
@@ -194,13 +186,10 @@ class BomFunctions:
         Returns:
                 True
         """
-        for i in range(len(ChilddocObjects)):
-            # Get the documentObject
-            Object = ChilddocObjects[i]
-            GroupItems = General_BOM.GetObjectsFromGroups(Object)
-            if len(GroupItems) > 0:
-                for j in range(len(GroupItems)):
-                    ChilddocObjects.insert(i + j + 1, GroupItems[j])
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for ChildDocObject in ChilddocObjects:
+            if ChildDocObject.TypeId == 'App::DocumentObjectGroup':
+                ChildDocObject.extend(General_BOM.GetObjectsFromGroups(ChildDocObject))
 
         for i in range(len(ChilddocObjects)):
             # Get the childDocumentObject
