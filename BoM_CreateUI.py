@@ -242,7 +242,7 @@ def ToggleToolbars(ToolbarName: str, WorkBench: str = ""):
 def HideToolbars(ToolbarName: str, WorkBench: str = ""):
     """Used for hide/show a toolbar on startup (InitGui.py)"""
     # define the parameter path for the toolbar
-    ToolBarGroupPath = "User parameter:BaseApp/MainWindow/ToolBars/"
+    ToolBarGroupPath = "User parameter:BaseApp/MainWindow/Toolbars/"
     # add the ToolbarGroup in the FreeCAD Parameters
     ToolbarGroup = App.ParamGet(ToolBarGroupPath)
     # Set the toolbar active

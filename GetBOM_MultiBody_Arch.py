@@ -35,6 +35,21 @@ class BomFunctions:
     StartRow = 0
     mainList = []
     Type = ""
+    
+    @classmethod
+    def GetObjectsFromGroups(self, Group):
+        resultList = []
+        try:
+            Objects = Group.Group
+            if Objects[0].TypeId != 'Assembly::JointGroup':
+                for Object in Objects:
+                    if Object.TypeId != "App::DocumentObjectGroup":
+                        resultList.append(Object)
+                    if Object.TypeId == "App::DocumentObjectGroup":
+                        resultList.extend(self.GetObjectsFromGroups(Object))
+        except Exception:
+            pass
+        return resultList
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
@@ -55,7 +70,14 @@ class BomFunctions:
             self.Type = "Arch"
 
         # Get the list with rootobjects
-        docObjects = doc.Objects
+        docObjects = doc.RootObjects
+        
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for docObject in docObjects:
+            if docObject.TypeId == "App::DocumentObjectGroup":
+                docObjects.extend(self.GetObjectsFromGroups(docObject))
+                
+        print(docObjects)
 
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
@@ -227,7 +249,9 @@ class BomFunctions:
                 if Quantity <= 1:
                     TemporaryList.append(rowListNew)
                 if Quantity > 1:
-                    TemporaryList.pop()
+                    replacedItem = TemporaryList.pop()
+                    rowListNew["ObjectLabel"] = replacedItem["ObjectLabel"]
+                    rowListNew["ObjectName"] = replacedItem["ObjectName"]
                     TemporaryList.append(rowListNew)
 
             ShadowList.append(rowList)

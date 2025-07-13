@@ -127,7 +127,7 @@ class BomFunctions:
             Object = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
-            if self.AllowedObjectType(objectID=Object.TypeId) is True:
+            if self.AllowedObjectType(objectID=Object.TypeId) is True and Object.Visibility is True:
                 # Increase the itemnumber
                 ItemNumber = int(ItemNumber) + 1
 
@@ -210,7 +210,7 @@ class BomFunctions:
             self.StartRow = self.StartRow + 1
 
             # If the childDocumentObject is one of the allowed types, continue
-            if self.AllowedObjectType(objectID=childObject.TypeId) is True:
+            if self.AllowedObjectType(objectID=childObject.TypeId) is True and childObject.Visibility is True:
                 # Increase the itemnumber for the child
                 ChildItemNumber = int(ChildItemNumber) + 1
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)

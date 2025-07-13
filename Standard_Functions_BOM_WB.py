@@ -479,7 +479,7 @@ def PartFeatureList():
     return result
 
 
-def PartDesingFeatureList():
+def PartDesignFeatureList():
     result = [
         "PartDesign::Pad",
         "PartDesign::Pocket",
