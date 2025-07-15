@@ -1047,7 +1047,7 @@ class General_BOM:
             Objects = Group.Group
             if Objects[0].TypeId != 'Assembly::JointGroup':
                 for Object in Objects:
-                    if Object.TypeId != "App::DocumentObjectGroup":
+                    if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
                         resultList.append(Object)
                     if Object.TypeId == "App::DocumentObjectGroup":
                         resultList.extend(self.GetObjectsFromGroups(Object))
@@ -1337,6 +1337,7 @@ class General_BOM:
             itemNumber = str(BoMListItem["ItemNumber"])
             # GEt the internal name of the item
             itemName = BoMListItem["ObjectLabel"]
+            itemType = BoMListItem["Type"]
 
             # Add always the first item to the replace list
             if i == 0:
@@ -1367,7 +1368,7 @@ class General_BOM:
                     if (
                         ReplaceList[j]["ItemNumber"].rsplit(".", 1)[0]
                         == itemNumber.rsplit(".", 1)[0]
-                        and ReplaceList[j]["ObjectLabel"] == itemName
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType
                     ):
                         # Go through the BoMList. Every item that starts with current itemnumber
                         # is a child of the current item. Add it to the shadow list
@@ -1388,7 +1389,7 @@ class General_BOM:
                 if len(itemNumber.split(".")) == 1:
                     if (
                         ReplaceList[j]["ItemNumber"] == itemNumber
-                        and ReplaceList[j]["ObjectName"] == itemName
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType
                     ):
                         resultList.append(ReplaceList[j])
                         break

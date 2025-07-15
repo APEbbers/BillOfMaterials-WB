@@ -598,7 +598,7 @@ class BomFunctions:
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
-                        ObjectBasedPart=False,
+                        ObjectBasedPart=True,
                         ObjectBasedAssy=False,
                     )
                 )
