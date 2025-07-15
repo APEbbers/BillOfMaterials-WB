@@ -633,21 +633,21 @@ class General_BOM:
                         if ObjectNameValuePart == "Object":
                             if (
                                 BomList[i]["DocumentObject"]
-                                == ListItem["DocumentObject"]
+                                == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
                             ):
                                 counter = counter + 1
                         if ObjectNameValuePart == "ObjectLabel":
-                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
                                 counter = counter + 1
                     if ListItem["Type"] == "Assembly":
                         if ObjectNameValueAssy == "Object":
                             if (
                                 BomList[i]["DocumentObject"]
-                                == ListItem["DocumentObject"]
+                                == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
                             ):
                                 counter = counter + 1
                         if ObjectNameValueAssy == "ObjectLabel":
-                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
                                 counter = counter + 1
 
             # If the itemnumber is one level deep:
@@ -657,17 +657,17 @@ class General_BOM:
             ):
                 if ListItem["Type"] == "Part":
                     if ObjectNameValuePart == "Object":
-                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
                             counter = counter + 1
                     if ObjectNameValuePart == "ObjectLabel":
-                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
                             counter = counter + 1
                 if ListItem["Type"] == "Assembly":
                     if ObjectNameValueAssy == "Object":
-                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
                             counter = counter + 1
                     if ObjectNameValueAssy == "ObjectLabel":
-                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
                             counter = counter + 1
 
         # Return the counter

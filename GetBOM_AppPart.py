@@ -649,12 +649,12 @@ class BomFunctions:
                 if command == "PartsOnly":
                     self.PartsOnly(
                         CreateSpreadSheet=True,
-                        ObjectNameBased=False,
+                        ObjectNameBased=True,
                     )
                 if command == "Summarized":
                     self.SummarizedBoM(
                         CreateSpreadSheet=True,
-                        ObjectNameBased=False,
+                        ObjectNameBased=True,
                     )
         except Exception as e:
             raise e
