@@ -461,6 +461,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
         # Get the assembly type
         doc = App.ActiveDocument
+        AssemblyType_Selected = ""
         if General_BOM.CheckAssemblyType(doc) == "A2plus":
             AssemblyType_Selected = "A2plus"
         if General_BOM.CheckAssemblyType(doc) == "AppLink":
@@ -477,6 +478,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             AssemblyType_Selected = "Arch"
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             AssemblyType_Selected = "MultiBody"
+        
+        if AssemblyType_Selected == "":
+            return
 
         # Get the values from the controls
         IncludeBodies_Checked = self.form.IncludeBodies.isChecked()
