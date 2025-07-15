@@ -76,8 +76,6 @@ class BomFunctions:
         for docObject in docObjects:
             if docObject.TypeId == "App::DocumentObjectGroup":
                 docObjects.extend(self.GetObjectsFromGroups(docObject))
-                
-        print(docObjects)
 
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
@@ -237,7 +235,7 @@ class BomFunctions:
                     Quantity = Quantity + 1
 
             rowListNew = {
-                "ItemNumber": len(TemporaryList),
+                "ItemNumber": len(TemporaryList) + 1,
                 "DocumentObject": rowList["DocumentObject"],
                 "ObjectLabel": rowList["ObjectLabel"],
                 "ObjectName": rowList["ObjectName"],
@@ -255,6 +253,9 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
 
             ShadowList.append(rowList)
+        
+        # Correct the itemnumbers
+        TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
 
         # Create the spreadsheet
         if Headers == "":
