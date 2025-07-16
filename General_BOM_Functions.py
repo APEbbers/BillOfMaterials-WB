@@ -513,7 +513,7 @@ class General_BOM:
         # Set the colors for the header
         if Settings_BoM.SPREADSHEET_HEADERFOREGROUND == "" or Settings_BoM.SPREADSHEET_HEADERFOREGROUND is None:
             sheet.setForeground(
-                HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB)
+                HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB)
             )
         else:
             sheet.setForeground(HeaderRange, Settings_BoM.SPREADSHEET_HEADERFOREGROUND)
