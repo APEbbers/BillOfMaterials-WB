@@ -52,7 +52,7 @@ class BomFunctions:
                 return
 
         # Get the list with rootobjects
-        RootObjects = doc.RootObjects
+        RootObjects = General_BOM.GetRootObjects()
         docObjects = []
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.

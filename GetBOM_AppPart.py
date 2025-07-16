@@ -52,9 +52,10 @@ class BomFunctions:
 
         # Get the list with rootobjects
         docObjects = []
-        for i in range(len(doc.RootObjects)):
-            if doc.RootObjects[i].Visibility is True:
-                docObjects.append(doc.RootObjects[i])
+        rootObjects = General_BOM.GetRootObjects()
+        for i in range(len(rootObjects)):
+            if rootObjects[i].Visibility is True:
+                docObjects.append(rootObjects[i])
 
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
