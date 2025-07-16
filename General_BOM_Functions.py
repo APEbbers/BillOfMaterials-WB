@@ -1423,3 +1423,21 @@ class General_BOM:
                 BOMList[i]["Qty"] = int(BOMList[i]["Qty"]) / int(AssemblyQty)
 
         return BOMList
+
+
+    @classmethod
+    def GetRootObjects(self):
+        # Get the active document
+        doc = App.ActiveDocument
+        
+        #Get all the objects
+        Objects = doc.Objects
+        
+        RootObjects = []
+        
+        # Get all toplevel objects
+        for Object in Objects:
+            if len(Object.Parents) == 0:
+                RootObjects.append(Object)
+        
+        return RootObjects
