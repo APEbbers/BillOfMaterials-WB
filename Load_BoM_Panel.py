@@ -153,6 +153,16 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form.CreateRaw.connect(
             self.form.CreateRaw, SIGNAL("pressed()"), self.on_CreateRaw_clicked
         )
+        
+        # This will create a connection between the pushbutton "UpdateDescription" and def "on_UpdateDescription_clicked"
+        self.form.UpdateDescription.connect(
+            self.form.UpdateDescription, SIGNAL("pressed()"), self.UpdateDescription
+        )
+        
+        # This will create a connection between the pushbutton "UpdateRemarks" and def "on_UpdateRemarks_clicked"
+        self.form.UpdateRemarks.connect(
+            self.form.UpdateRemarks, SIGNAL("pressed()"), self.UpdateRemarks
+        )
         # endregion
 
         # region - Debug settings
@@ -447,6 +457,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
     def on_CreateRaw_clicked(self):
         self.CreateBOM("Raw BoM")
+        
+    def on_UpdateDescription_clicked(self):
+        self.UpdateDescription()
 
     # A function to execute the BoM scripts based on the input from the controls.
     def CreateBOM(self, TypeOfBoM):
@@ -653,3 +666,37 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.currentSheet = currentSheet
 
         return
+
+    def UpdateDescription(self):
+        # Get the properties from the active document
+        doc = App.ActiveDocument
+        sel = Gui.Selection.getSelection()
+        if sel is not None:
+            try:
+                doc = sel[0]
+                
+                if 'Description' in doc.PropertiesList is False:
+                    doc.addProperty("App:PropertyString", "Description")
+
+                doc.Description = self.form.DescriptionText.text()
+                    
+            except Exception:
+                return
+        return
+    
+    def UpdateRemarks(self):
+        # Get the properties from the active document
+        doc = App.ActiveDocument
+        sel = Gui.Selection.getSelection()
+        if sel is not None:
+            try:
+                doc = sel[0]
+                
+                if 'Remarks' in doc.PropertiesList is False:
+                    doc.addProperty("App:PropertyString", "Remarks")
+                
+                doc.Description = self.form.RemarkText.text()
+                    
+            except Exception:
+                doc = App.ActiveDocument
+                
