@@ -284,6 +284,9 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
                     self.form.Columns_To_Add.addItem("Shape - CenterOfGravity")
                 if Property == "ShapeMaterial":
                     self.form.Columns_To_Add.addItem("Shape - Mass")
+        if "ShapeMaterial" in PropertyList:
+            for key, value in doc.ShapeMaterial.Properties.items():
+                self.form.Columns_To_Add.addItem("Material - " + key)
 
         return
 

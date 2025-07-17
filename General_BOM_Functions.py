@@ -1088,179 +1088,193 @@ class General_BOM:
             DocObject = DocObject.getLinkedObject()
         except Exception:
             pass
+        
+        MaterialProperties = {}
+        MaterialProperties = DocObject.ShapeMaterial.Properties
+        isMaterialProperty = False
+        for key in MaterialProperties.keys():
+            if "Material - " + key == PropertyName:
+                isMaterialProperty = True
+        
+        if isMaterialProperty is True:
+            resultValue = MaterialProperties[PropertyName.replace("Material - ", "")]
+            result = (resultValue, "")
+            return result
+            
 
-        isShapeProperty = False
-        if PropertyName.startswith("Shape - ") is True:
-            isShapeProperty = True
+        if isMaterialProperty is False:
+            isShapeProperty = False
+            if PropertyName.startswith("Shape - ") is True:
+                isShapeProperty = True
 
-        if isShapeProperty is False:
-            try:
+            if isShapeProperty is False:
                 try:
-                    resultValue = DocObject.getPropertyByName(PropertyName)
+                    try:
+                        resultValue = DocObject.getPropertyByName(PropertyName)
+                    except Exception:
+                        resultValue = None
+
+                    if isinstance(resultValue, int):
+                        resultValue = str(resultValue)
+                    elif isinstance(resultValue, list):
+                        resultString = ""
+                        for item in resultValue:
+                            resultString = resultString + self.ObjectToString(item) + ", "
+                        resultValue = str(resultValue)
+                    elif isinstance(resultValue, dict):
+                        resultString = ""
+                        for item in resultValue:
+                            resultString = resultString + self.ObjectToString(item) + ", "
+                        resultValue = str(resultValue)
+                    else:
+                        resultValue = str(resultValue)
+
+                    if resultValue is None or resultValue == "None":
+                        resultValue = ""
+
+                    result = (resultValue, "")
+                    return result
                 except Exception:
-                    resultValue = None
+                    return ("", "")
 
-                if isinstance(resultValue, int):
-                    resultValue = str(resultValue)
-                elif isinstance(resultValue, list):
-                    resultString = ""
-                    for item in resultValue:
-                        resultString = resultString + self.ObjectToString(item) + ", "
-                    resultValue = str(resultValue)
-                elif isinstance(resultValue, dict):
-                    resultString = ""
-                    for item in resultValue:
-                        resultString = resultString + self.ObjectToString(item) + ", "
-                    resultValue = str(resultValue)
-                else:
-                    resultValue = str(resultValue)
-
-                if resultValue is None or resultValue == "None":
-                    resultValue = ""
-
-                result = (resultValue, "")
-                return result
-            except Exception:
-                return ("", "")
-
-        if isShapeProperty is True:
-            try:
-                shapeObject = DocObject.Shape
-                currentScheme = App.Units.getSchema()
-
-                # Get the value from the shape
-                #
-                # Get the boundingbox from the item as if it is not transformed
-                BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
+            if isShapeProperty is True:
                 try:
-                    if DocObject.TypeId.endswith("Body"):
-                        BoundingBox = shapeObject.BoundBox
-                except Exception:
+                    shapeObject = DocObject.Shape
+                    currentScheme = App.Units.getSchema()
+
+                    # Get the value from the shape
+                    #
+                    # Get the boundingbox from the item as if it is not transformed
                     BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
-                    print("viewObjects boundingbox is used")
-                    pass
+                    try:
+                        if DocObject.TypeId.endswith("Body"):
+                            BoundingBox = shapeObject.BoundBox
+                    except Exception:
+                        BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
+                        print("viewObjects boundingbox is used")
+                        pass
 
-                # Get the dimensions
-                if PropertyName.split(" - ", 1)[1] == "Length":
-                    value = str(
-                        App.Units.schemaTranslate(
+                    # Get the dimensions
+                    if PropertyName.split(" - ", 1)[1] == "Length":
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
                             App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
                             currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
-                if PropertyName.split(" - ", 1)[1] == "Width":
-                    value = str(
-                        App.Units.schemaTranslate(
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
+                    if PropertyName.split(" - ", 1)[1] == "Width":
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(BoundingBox.YLength, App.Units.Length),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
                             App.Units.Quantity(BoundingBox.YLength, App.Units.Length),
                             currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(BoundingBox.YLength, App.Units.Length),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
-                if PropertyName.split(" - ", 1)[1] == "Height":
-                    value = str(
-                        App.Units.schemaTranslate(
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
+                    if PropertyName.split(" - ", 1)[1] == "Height":
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(BoundingBox.ZLength, App.Units.Length),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
                             App.Units.Quantity(BoundingBox.ZLength, App.Units.Length),
                             currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(BoundingBox.ZLength, App.Units.Length),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
-                # Get the other properties
-                if PropertyName.split(" - ", 1)[1] == "Volume":
-                    value = str(
-                        App.Units.schemaTranslate(
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
+                    # Get the other properties
+                    if PropertyName.split(" - ", 1)[1] == "Volume":
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(shapeObject.Volume, App.Units.Volume),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
                             App.Units.Quantity(shapeObject.Volume, App.Units.Volume),
                             currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(shapeObject.Volume, App.Units.Volume),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
-                if PropertyName.split(" - ", 1)[1] == "Area":
-                    value = str(
-                        App.Units.schemaTranslate(
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
+                    if PropertyName.split(" - ", 1)[1] == "Area":
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(shapeObject.Area, App.Units.Area),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
                             App.Units.Quantity(shapeObject.Area, App.Units.Area),
                             currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(shapeObject.Area, App.Units.Area),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
-                if PropertyName.split(" - ", 1)[1] == "CenterOfGravity":
-                    ValueX = str(
-                        App.Units.schemaTranslate(
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
+                    if PropertyName.split(" - ", 1)[1] == "CenterOfGravity":
+                        ValueX = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(
+                                    App.Vector(shapeObject.CenterOfGravity).x,
+                                    App.Units.Length,
+                                ),
+                                currentScheme,
+                            )[0]
+                        )
+                        ValueY = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(
+                                    App.Vector(shapeObject.CenterOfGravity).y,
+                                    App.Units.Length,
+                                ),
+                                currentScheme,
+                            )[0]
+                        )
+                        ValueZ = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(
+                                    App.Vector(shapeObject.CenterOfGravity).z,
+                                    App.Units.Length,
+                                ),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
                             App.Units.Quantity(
-                                App.Vector(shapeObject.CenterOfGravity).x,
-                                App.Units.Length,
+                                App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length
                             ),
                             currentScheme,
-                        )[0]
-                    )
-                    ValueY = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(
-                                App.Vector(shapeObject.CenterOfGravity).y,
-                                App.Units.Length,
-                            ),
-                            currentScheme,
-                        )[0]
-                    )
-                    ValueZ = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(
-                                App.Vector(shapeObject.CenterOfGravity).z,
-                                App.Units.Length,
-                            ),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(
-                            App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length
-                        ),
-                        currentScheme,
-                    )[2]
-                    resultValue = f"Vector ({ValueX}, {ValueY}, {ValueZ}"
-                    resultUnit = unit
-                if PropertyName.split(" - ", 1)[1] == "Mass":
-                    value = str(
-                        App.Units.schemaTranslate(
+                        )[2]
+                        resultValue = f"Vector ({ValueX}, {ValueY}, {ValueZ}"
+                        resultUnit = unit
+                    if PropertyName.split(" - ", 1)[1] == "Mass":
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(shapeObject.Mass, App.Units.Mass),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
                             App.Units.Quantity(shapeObject.Mass, App.Units.Mass),
                             currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(shapeObject.Mass, App.Units.Mass),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
 
-                result = (resultValue, resultUnit)
-                return result
-            except Exception:
-                return ""
+                    result = (resultValue, resultUnit)
+                    return result
+                except Exception:
+                    return ""
 
     @classmethod
     def ObjectToString(self, item):
