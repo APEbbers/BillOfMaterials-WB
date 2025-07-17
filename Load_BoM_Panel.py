@@ -675,8 +675,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             try:
                 doc = sel[0]
                 
-                if 'Description' in doc.PropertiesList is False:
-                    doc.addProperty("App:PropertyString", "Description")
+                if not 'Description' in doc.PropertiesList:
+                    doc.addProperty("App::PropertyString", "Description", group="Custom")
 
                 doc.Description = self.form.DescriptionText.text()
                     
@@ -692,10 +692,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             try:
                 doc = sel[0]
                 
-                if 'Remarks' in doc.PropertiesList is False:
-                    doc.addProperty("App:PropertyString", "Remarks")
+                if not 'Remarks' in doc.PropertiesList:
+                    doc.addProperty("App::PropertyString", "Remarks", group="Custom")
                 
-                doc.Description = self.form.RemarkText.text()
+                doc.Remarks = self.form.RemarkText.text()
                     
             except Exception:
                 doc = App.ActiveDocument

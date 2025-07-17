@@ -1089,19 +1089,21 @@ class General_BOM:
         except Exception:
             pass
         
-        MaterialProperties = {}
-        MaterialProperties = DocObject.ShapeMaterial.Properties
         isMaterialProperty = False
-        for key in MaterialProperties.keys():
-            if "Material - " + key == PropertyName:
-                isMaterialProperty = True
+        try:
+            MaterialProperties = {}
+            MaterialProperties = DocObject.ShapeMaterial.Properties
+            for key in MaterialProperties.keys():
+                if "Material - " + key == PropertyName:
+                    isMaterialProperty = True
         
-        if isMaterialProperty is True:
-            resultValue = MaterialProperties[PropertyName.replace("Material - ", "")]
-            result = (resultValue, "")
-            return result
+            if isMaterialProperty is True:
+                resultValue = MaterialProperties[PropertyName.replace("Material - ", "")]
+                result = (resultValue, "")
+                return result
+        except Exception:
+            pass
             
-
         if isMaterialProperty is False:
             isShapeProperty = False
             if PropertyName.startswith("Shape - ") is True:
@@ -1111,6 +1113,7 @@ class General_BOM:
                 try:
                     try:
                         resultValue = DocObject.getPropertyByName(PropertyName)
+                        print(resultValue)
                     except Exception:
                         resultValue = None
 
