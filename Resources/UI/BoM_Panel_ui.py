@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelBkkAcf.ui'
+## Form generated from reading UI file 'BoM_PanelSQDldh.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -341,14 +341,14 @@ class Ui_Dialog(object):
 
         self.gridLayout_15.addWidget(self.SettingsFrame, 1, 0, 1, 1)
 
-        self.frame_4 = QFrame(self.frame_3)
-        self.frame_4.setObjectName(u"frame_4")
-        self.frame_4.setMinimumSize(QSize(0, 200))
-        self.frame_4.setFrameShape(QFrame.Shape.Box)
-        self.frame_4.setFrameShadow(QFrame.Shadow.Raised)
-        self.gridLayout_16 = QGridLayout(self.frame_4)
+        self.DebugFrame = QFrame(self.frame_3)
+        self.DebugFrame.setObjectName(u"DebugFrame")
+        self.DebugFrame.setMinimumSize(QSize(0, 200))
+        self.DebugFrame.setFrameShape(QFrame.Shape.Box)
+        self.DebugFrame.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_16 = QGridLayout(self.DebugFrame)
         self.gridLayout_16.setObjectName(u"gridLayout_16")
-        self.toolButton_Debug = QToolButton(self.frame_4)
+        self.toolButton_Debug = QToolButton(self.DebugFrame)
         self.toolButton_Debug.setObjectName(u"toolButton_Debug")
         self.toolButton_Debug.setFocusPolicy(Qt.FocusPolicy.TabFocus)
         self.toolButton_Debug.setAutoFillBackground(False)
@@ -363,7 +363,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_16.addWidget(self.toolButton_Debug, 0, 0, 1, 1)
 
-        self.DetectAssemblyType = QPushButton(self.frame_4)
+        self.DetectAssemblyType = QPushButton(self.DebugFrame)
         self.DetectAssemblyType.setObjectName(u"DetectAssemblyType")
         sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy6.setHorizontalStretch(0)
@@ -375,7 +375,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_5 = QGridLayout()
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.AssemblyType = QComboBox(self.frame_4)
+        self.AssemblyType = QComboBox(self.DebugFrame)
         icon5 = QIcon()
         icon5.addFile(u":/Resources/Icons/A2p_workbench.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.AssemblyType.addItem(icon5, "")
@@ -412,7 +412,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_5.addWidget(self.AssemblyType, 0, 0, 1, 1)
 
-        self.label_2 = QLabel(self.frame_4)
+        self.label_2 = QLabel(self.DebugFrame)
         self.label_2.setObjectName(u"label_2")
 
         self.gridLayout_5.addWidget(self.label_2, 0, 1, 1, 1)
@@ -422,7 +422,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_9 = QGridLayout()
         self.gridLayout_9.setObjectName(u"gridLayout_9")
-        self.CreateRaw = QPushButton(self.frame_4)
+        self.CreateRaw = QPushButton(self.DebugFrame)
         self.CreateRaw.setObjectName(u"CreateRaw")
         sizePolicy2.setHeightForWidth(self.CreateRaw.sizePolicy().hasHeightForWidth())
         self.CreateRaw.setSizePolicy(sizePolicy2)
@@ -434,7 +434,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_9.addWidget(self.CreateRaw, 0, 0, 1, 1)
 
-        self.label_5 = QLabel(self.frame_4)
+        self.label_5 = QLabel(self.DebugFrame)
         self.label_5.setObjectName(u"label_5")
 
         self.gridLayout_9.addWidget(self.label_5, 0, 1, 1, 1)
@@ -443,7 +443,7 @@ class Ui_Dialog(object):
         self.gridLayout_16.addLayout(self.gridLayout_9, 3, 0, 1, 1)
 
 
-        self.gridLayout_15.addWidget(self.frame_4, 2, 0, 1, 1)
+        self.gridLayout_15.addWidget(self.DebugFrame, 2, 0, 1, 1)
 
 
         self.verticalLayout.addWidget(self.frame_3)
