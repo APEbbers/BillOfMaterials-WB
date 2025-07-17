@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelSQDldh.ui'
+## Form generated from reading UI file 'BoM_PanelvxEpHG.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
-from PySide.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
     QFrame, QGridLayout, QLabel, QLayout,
     QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
     QSpinBox, QToolButton, QVBoxLayout, QWidget)
@@ -231,7 +231,7 @@ class Ui_Dialog(object):
         self.frame_3 = QFrame(self.MainFrame)
         self.frame_3.setObjectName(u"frame_3")
         self.frame_3.setMinimumSize(QSize(0, 200))
-        self.frame_3.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_3.setFrameShape(QFrame.Shape.Box)
         self.frame_3.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_15 = QGridLayout(self.frame_3)
         self.gridLayout_15.setObjectName(u"gridLayout_15")
@@ -239,9 +239,9 @@ class Ui_Dialog(object):
         self.SettingsFrame.setObjectName(u"SettingsFrame")
         sizePolicy1.setHeightForWidth(self.SettingsFrame.sizePolicy().hasHeightForWidth())
         self.SettingsFrame.setSizePolicy(sizePolicy1)
-        self.SettingsFrame.setMinimumSize(QSize(0, 150))
+        self.SettingsFrame.setMinimumSize(QSize(0, 0))
         self.SettingsFrame.setAutoFillBackground(False)
-        self.SettingsFrame.setFrameShape(QFrame.Shape.Box)
+        self.SettingsFrame.setFrameShape(QFrame.Shape.NoFrame)
         self.SettingsFrame.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_10 = QGridLayout(self.SettingsFrame)
         self.gridLayout_10.setObjectName(u"gridLayout_10")
@@ -326,7 +326,10 @@ class Ui_Dialog(object):
 
         self.gridLayout_10.addWidget(self.IncludeBodies, 1, 0, 1, 1)
 
-        self.toolButton_Settings = QToolButton(self.SettingsFrame)
+
+        self.gridLayout_15.addWidget(self.SettingsFrame, 1, 0, 1, 1)
+
+        self.toolButton_Settings = QToolButton(self.frame_3)
         self.toolButton_Settings.setObjectName(u"toolButton_Settings")
         self.toolButton_Settings.setIconSize(QSize(30, 16))
         self.toolButton_Settings.setCheckable(False)
@@ -336,33 +339,24 @@ class Ui_Dialog(object):
         self.toolButton_Settings.setAutoRaise(False)
         self.toolButton_Settings.setArrowType(Qt.ArrowType.DownArrow)
 
-        self.gridLayout_10.addWidget(self.toolButton_Settings, 0, 0, 1, 1)
+        self.gridLayout_15.addWidget(self.toolButton_Settings, 0, 0, 1, 1)
 
 
-        self.gridLayout_15.addWidget(self.SettingsFrame, 1, 0, 1, 1)
+        self.verticalLayout.addWidget(self.frame_3)
 
-        self.DebugFrame = QFrame(self.frame_3)
+        self.frame_4 = QFrame(self.MainFrame)
+        self.frame_4.setObjectName(u"frame_4")
+        self.frame_4.setFrameShape(QFrame.Shape.Box)
+        self.frame_4.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_17 = QGridLayout(self.frame_4)
+        self.gridLayout_17.setObjectName(u"gridLayout_17")
+        self.DebugFrame = QFrame(self.frame_4)
         self.DebugFrame.setObjectName(u"DebugFrame")
-        self.DebugFrame.setMinimumSize(QSize(0, 200))
-        self.DebugFrame.setFrameShape(QFrame.Shape.Box)
+        self.DebugFrame.setMinimumSize(QSize(0, 0))
+        self.DebugFrame.setFrameShape(QFrame.Shape.NoFrame)
         self.DebugFrame.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_16 = QGridLayout(self.DebugFrame)
         self.gridLayout_16.setObjectName(u"gridLayout_16")
-        self.toolButton_Debug = QToolButton(self.DebugFrame)
-        self.toolButton_Debug.setObjectName(u"toolButton_Debug")
-        self.toolButton_Debug.setFocusPolicy(Qt.FocusPolicy.TabFocus)
-        self.toolButton_Debug.setAutoFillBackground(False)
-        self.toolButton_Debug.setIconSize(QSize(30, 16))
-        self.toolButton_Debug.setCheckable(False)
-        self.toolButton_Debug.setChecked(False)
-        self.toolButton_Debug.setAutoRepeat(False)
-        self.toolButton_Debug.setAutoExclusive(False)
-        self.toolButton_Debug.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.toolButton_Debug.setAutoRaise(False)
-        self.toolButton_Debug.setArrowType(Qt.ArrowType.DownArrow)
-
-        self.gridLayout_16.addWidget(self.toolButton_Debug, 0, 0, 1, 1)
-
         self.DetectAssemblyType = QPushButton(self.DebugFrame)
         self.DetectAssemblyType.setObjectName(u"DetectAssemblyType")
         sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
@@ -371,7 +365,7 @@ class Ui_Dialog(object):
         sizePolicy6.setHeightForWidth(self.DetectAssemblyType.sizePolicy().hasHeightForWidth())
         self.DetectAssemblyType.setSizePolicy(sizePolicy6)
 
-        self.gridLayout_16.addWidget(self.DetectAssemblyType, 1, 0, 1, 1)
+        self.gridLayout_16.addWidget(self.DetectAssemblyType, 2, 0, 1, 1)
 
         self.gridLayout_5 = QGridLayout()
         self.gridLayout_5.setObjectName(u"gridLayout_5")
@@ -418,7 +412,7 @@ class Ui_Dialog(object):
         self.gridLayout_5.addWidget(self.label_2, 0, 1, 1, 1)
 
 
-        self.gridLayout_16.addLayout(self.gridLayout_5, 2, 0, 1, 1)
+        self.gridLayout_16.addLayout(self.gridLayout_5, 3, 0, 1, 1)
 
         self.gridLayout_9 = QGridLayout()
         self.gridLayout_9.setObjectName(u"gridLayout_9")
@@ -440,13 +434,28 @@ class Ui_Dialog(object):
         self.gridLayout_9.addWidget(self.label_5, 0, 1, 1, 1)
 
 
-        self.gridLayout_16.addLayout(self.gridLayout_9, 3, 0, 1, 1)
+        self.gridLayout_16.addLayout(self.gridLayout_9, 4, 0, 1, 1)
 
 
-        self.gridLayout_15.addWidget(self.DebugFrame, 2, 0, 1, 1)
+        self.gridLayout_17.addWidget(self.DebugFrame, 1, 1, 1, 1)
+
+        self.toolButton_Debug = QToolButton(self.frame_4)
+        self.toolButton_Debug.setObjectName(u"toolButton_Debug")
+        self.toolButton_Debug.setFocusPolicy(Qt.FocusPolicy.TabFocus)
+        self.toolButton_Debug.setAutoFillBackground(False)
+        self.toolButton_Debug.setIconSize(QSize(30, 16))
+        self.toolButton_Debug.setCheckable(False)
+        self.toolButton_Debug.setChecked(False)
+        self.toolButton_Debug.setAutoRepeat(False)
+        self.toolButton_Debug.setAutoExclusive(False)
+        self.toolButton_Debug.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self.toolButton_Debug.setAutoRaise(False)
+        self.toolButton_Debug.setArrowType(Qt.ArrowType.DownArrow)
+
+        self.gridLayout_17.addWidget(self.toolButton_Debug, 0, 1, 1, 1)
 
 
-        self.verticalLayout.addWidget(self.frame_3)
+        self.verticalLayout.addWidget(self.frame_4)
 
         self.DebugText = QLabel(self.MainFrame)
         self.DebugText.setObjectName(u"DebugText")
@@ -501,7 +510,6 @@ class Ui_Dialog(object):
         self.SetColumns.setText("")
         self.IncludeBodies.setText(QCoreApplication.translate("Dialog", u"Include bodies", None))
         self.toolButton_Settings.setText(QCoreApplication.translate("Dialog", u"Settings", None))
-        self.toolButton_Debug.setText(QCoreApplication.translate("Dialog", u"Debug settings", None))
         self.DetectAssemblyType.setText(QCoreApplication.translate("Dialog", u" Detect assembly type ", None))
         self.AssemblyType.setItemText(0, QCoreApplication.translate("Dialog", u"A2plus", None))
         self.AssemblyType.setItemText(1, QCoreApplication.translate("Dialog", u"Internal assembly", None))
@@ -515,6 +523,7 @@ class Ui_Dialog(object):
         self.label_2.setText(QCoreApplication.translate("Dialog", u"Set assemby type manually", None))
         self.CreateRaw.setText("")
         self.label_5.setText(QCoreApplication.translate("Dialog", u"Create raw BoM", None))
+        self.toolButton_Debug.setText(QCoreApplication.translate("Dialog", u"Debug settings", None))
         self.DebugText.setText(QCoreApplication.translate("Dialog", u"<html><head/><body><p><span style=\" font-style:italic;\">Enable &quot;Debug mode&quot; in preferences to enable extra functions for testing purposes.</span></p><p><br/></p></body></html>", None))
     # retranslateUi
 

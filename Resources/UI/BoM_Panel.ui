@@ -356,7 +356,7 @@
          </size>
         </property>
         <property name="frameShape">
-         <enum>QFrame::Shape::StyledPanel</enum>
+         <enum>QFrame::Shape::Box</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Shadow::Raised</enum>
@@ -373,14 +373,14 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>150</height>
+             <height>0</height>
             </size>
            </property>
            <property name="autoFillBackground">
             <bool>false</bool>
            </property>
            <property name="frameShape">
-            <enum>QFrame::Shape::Box</enum>
+            <enum>QFrame::Shape::NoFrame</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Shadow::Raised</enum>
@@ -541,96 +541,68 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QToolButton" name="toolButton_Settings">
-              <property name="text">
-               <string>Settings</string>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>30</width>
-                <height>16</height>
-               </size>
-              </property>
-              <property name="checkable">
-               <bool>false</bool>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-              <property name="popupMode">
-               <enum>QToolButton::ToolButtonPopupMode::DelayedPopup</enum>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-              </property>
-              <property name="autoRaise">
-               <bool>false</bool>
-              </property>
-              <property name="arrowType">
-               <enum>Qt::ArrowType::DownArrow</enum>
-              </property>
-             </widget>
-            </item>
            </layout>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="0" column="0">
+          <widget class="QToolButton" name="toolButton_Settings">
+           <property name="text">
+            <string>Settings</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <property name="popupMode">
+            <enum>QToolButton::ToolButtonPopupMode::DelayedPopup</enum>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+           </property>
+           <property name="autoRaise">
+            <bool>false</bool>
+           </property>
+           <property name="arrowType">
+            <enum>Qt::ArrowType::DownArrow</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame_4">
+        <property name="frameShape">
+         <enum>QFrame::Shape::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_17">
+         <item row="1" column="1">
           <widget class="QFrame" name="DebugFrame">
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>200</height>
+             <height>0</height>
             </size>
            </property>
            <property name="frameShape">
-            <enum>QFrame::Shape::Box</enum>
+            <enum>QFrame::Shape::NoFrame</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Shadow::Raised</enum>
            </property>
            <layout class="QGridLayout" name="gridLayout_16">
-            <item row="0" column="0">
-             <widget class="QToolButton" name="toolButton_Debug">
-              <property name="focusPolicy">
-               <enum>Qt::FocusPolicy::TabFocus</enum>
-              </property>
-              <property name="autoFillBackground">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Debug settings</string>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>30</width>
-                <height>16</height>
-               </size>
-              </property>
-              <property name="checkable">
-               <bool>false</bool>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-              <property name="autoRepeat">
-               <bool>false</bool>
-              </property>
-              <property name="autoExclusive">
-               <bool>false</bool>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-              </property>
-              <property name="autoRaise">
-               <bool>false</bool>
-              </property>
-              <property name="arrowType">
-               <enum>Qt::ArrowType::DownArrow</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
+            <item row="2" column="0">
              <widget class="QPushButton" name="DetectAssemblyType">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -643,7 +615,7 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
+            <item row="3" column="0">
              <layout class="QGridLayout" name="gridLayout_5">
               <item row="0" column="0">
                <widget class="QComboBox" name="AssemblyType">
@@ -763,7 +735,7 @@
               </item>
              </layout>
             </item>
-            <item row="3" column="0">
+            <item row="4" column="0">
              <layout class="QGridLayout" name="gridLayout_9">
               <item row="0" column="0">
                <widget class="QPushButton" name="CreateRaw">
@@ -801,6 +773,46 @@
              </layout>
             </item>
            </layout>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QToolButton" name="toolButton_Debug">
+           <property name="focusPolicy">
+            <enum>Qt::FocusPolicy::TabFocus</enum>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Debug settings</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <property name="autoRepeat">
+            <bool>false</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>false</bool>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+           </property>
+           <property name="autoRaise">
+            <bool>false</bool>
+           </property>
+           <property name="arrowType">
+            <enum>Qt::ArrowType::DownArrow</enum>
+           </property>
           </widget>
          </item>
         </layout>
