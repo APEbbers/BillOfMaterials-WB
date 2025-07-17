@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>373</width>
-    <height>1088</height>
+    <height>948</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,7 +32,7 @@
    <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout_6">
-   <item row="0" column="0">
+   <item row="0" column="0" alignment="Qt::AlignmentFlag::AlignTop">
     <widget class="QFrame" name="MainFrame">
      <layout class="QVBoxLayout" name="verticalLayout">
       <property name="sizeConstraint">
