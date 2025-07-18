@@ -59,7 +59,11 @@ class General_BOM:
 
         # Get or create the spreadsheet.
         IsNewSheet = False
-        sheet = doc.getObjectsByLabel("BoM")[0]
+        sheet = None
+        try:
+            sheet = doc.getObjectsByLabel("BoM")[0]
+        except Exception:
+            pass
         if sheet is not None:
             for i in range(
                 1, 16384
