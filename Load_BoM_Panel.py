@@ -24,9 +24,9 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide.QtCore import SIGNAL, QSize, QObject
+from PySide.QtCore import SIGNAL, QSize
 from PySide.QtGui import QIcon
-from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeView
+from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -331,20 +331,6 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.AssemblyType.setCurrentText("Arch")
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
-            
-        
-        # Install an event filter to catch events from the main window and act on it.
-        w = mw.findChild(QTreeView, "DocumentTreeItems")
-        # Tree.installEventFilter(EventInspector(mw))
-        def mycallback(selected_object, deselected_object):
-            name = selected_object.indexes()[0].data()
-            value = selected_object.indexes()[1].data()
-            print('mycallback', name, value)
-
-        w.selectionModel().selectionChanged.connect(mycallback)
-
-        # to disconnect the event, execute:
-        # w.selectionModel().selectionChanged.disconnect(mycallback)
 
         return
         # endregion
@@ -714,9 +700,3 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             except Exception:
                 doc = App.ActiveDocument
                 
-                
-class EventInspector(QObject):
-    def eventFilter(self, obj, event):
-        print(event.type())
-        
-        return False
