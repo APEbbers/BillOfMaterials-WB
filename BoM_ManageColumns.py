@@ -27,7 +27,7 @@ from inspect import getsourcefile
 import General_BOM_Functions
 import Standard_Functions_BOM_WB as Standard_Functions
 from PySide.QtGui import QPalette, QIcon
-from PySide.QtWidgets import QListWidgetItem, QDialogButtonBox
+from PySide.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget
 from PySide.QtCore import SIGNAL, Qt
 import Settings_BoM
 from Settings_BoM import ENABLE_DEBUG
@@ -237,6 +237,9 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
                 QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Dark.svg"))
             )
         # endregion
+        
+        # Load the current columns
+        self.on_LoadProperties_clicked(self)
 
         return
 
@@ -251,12 +254,20 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             except Exception:
                 doc = App.ActiveDocument
         PropertyList = doc.PropertiesList
+        
+        # Clear the present columns
+        self.form.Columns_Present.clear()
+        # Add the standard headers
+        StandardHeadersDict = Settings_BoM.ReturnHeaders()
+        for key, value in StandardHeadersDict.items():
+            item = QListWidgetItem()
+            item.setText(value)
+            item.setToolTip("Removal of standard header is not allowed")
+            self.form.Columns_Present.addItem(item)
 
         # Get the currently applied custom columns
         CustomHeaders = General_BOM_Functions.General_BOM.customHeaders.split(";")
-
         # Fill the list "Columns_Present" with the custom headers that are currently present
-        self.form.Columns_Present.clear()
         for Header in CustomHeaders:
             if Header != "":
                 self.form.Columns_Present.addItem(Header)
@@ -330,9 +341,14 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
 
         # Go through the items
         for Value in Values:
+            StandardHeadersDict = Settings_BoM.ReturnHeaders()
+            for k, v in StandardHeadersDict.items():
+                if v == Value.text():
+                    return
+                    
             # Get the item text
             itemText = QListWidgetItem(Value).text()
-            # Add the item to the lsit with current items
+            # Add the item to the list with current items
             self.form.Columns_To_Add.addItem(itemText)
 
             # If debug is enabled, log the action.
