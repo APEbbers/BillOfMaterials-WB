@@ -27,7 +27,7 @@ from inspect import getsourcefile
 import General_BOM_Functions
 import Standard_Functions_BOM_WB as Standard_Functions
 from PySide6.QtGui import QPalette, QIcon
-from PySide6.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget, QStyle
+from PySide6.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget, QStyle, QStyledItemDelegate, QStyleOptionViewItem
 from PySide6.QtCore import SIGNAL, Qt
 import Settings_BoM
 from Settings_BoM import ENABLE_DEBUG
@@ -263,19 +263,22 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         # Fill the list "Columns_Present" with the custom headers that are currently present
         for Header in Headers:
             if Header != "":
+                # Create the custom QListWidgetItem
+                self.delegate = ItemDelegate()
+                self.form.Columns_Present.setItemDelegate(self.delegate)
+                #
+                # Define a ListWidgetItem
                 item = QListWidgetItem()
                 item.setText(Header)
-                
                 BackGround_AddAll = (
                     Gui.getMainWindow().palette().color(QPalette.ColorRole.Window).getRgb()
                 )
-                icon = QIcon()
-                if Standard_Functions.LightOrDark(rgbColor=BackGround_AddAll) == "dark":
-                    icon.addPixmap(os.path.join(PATH_TB_ICONS, "NavigationBlender_dark.svg"))
-                else:
-                    icon.addPixmap(os.path.join(PATH_TB_ICONS, "NavigationBlender_light.svg"))
-                item.setIcon(icon)
-                self.form.Columns_Present.addItem(Header)
+                if Header in "Number;Qty;Label;Description;Parent;Remarks":
+                    icon = QIcon()
+                    icon.addPixmap(os.path.join(PATH_TB_ICONS, "Lock.svg"))
+                    item.setIcon(icon)
+                
+                self.form.Columns_Present.addItem(item)
 
         # Clear the list first.
         self.form.Columns_To_Add.clear()
@@ -544,6 +547,11 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.buttonBox.button(QDialogButtonBox.Apply).clearFocus()
         return
 
+# Delegate class for a listwidget item
+class ItemDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        option.decorationPosition = QStyleOptionViewItem.Position.Right
+        super(ItemDelegate, self).paint(painter, option, index)
 
 def main():
     # Get the form
