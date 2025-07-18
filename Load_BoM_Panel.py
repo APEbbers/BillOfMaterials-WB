@@ -24,8 +24,8 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide.QtCore import SIGNAL, QSize
-from PySide.QtGui import QIcon
+from PySide6.QtCore import SIGNAL, QSize, Qt
+from PySide6.QtGui import QIcon, QCursor
 from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
@@ -352,7 +352,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if self.currentSheet is not None:
             # remove the backup sheet
             doc.removeObject(self.currentSheet.Name)
-
+        
         # Recompute the document
         doc.recompute(None, True, True)
 
@@ -463,6 +463,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
     # A function to execute the BoM scripts based on the input from the controls.
     def CreateBOM(self, TypeOfBoM):
+        # Set the wait cursor
+        mw = Gui.getMainWindow()
+        mw.setCursor(Qt.CursorShape.WaitCursor)
+        
         # Import the BoM modules
         import GetBOM_A4
         import GetBOM_AppLink
@@ -578,6 +582,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             GetBOM_MultiBody_Arch.BomFunctions.Start(
                 CheckAssemblyType=not self.manualChange
             )
+            
+        mw.setCursor(Qt.CursorShape.ArrowCursor)
         return
 
     def on_AssemblyType_TextChanged(self):
@@ -648,20 +654,25 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         doc = App.ActiveDocument
 
         # Get the current sheet and the group it is in.
-        currentSheet = doc.getObject("BoM")
+        currentSheet = doc.getObjectsByLabel("BoM")
         Group = None
         try:
             Group = currentSheet.getParentGroup()
         except Exception:
             pass
-
+        
+        # Get a leftover backup if there is any and remove it
+        BackupSheets = doc.getObjectsByLabel("BoM_Backup")
+        for BackupSheet in BackupSheets:
+            doc.removeObject(BackupSheet.Name)            
+        
         # If there is a sheet, copy and rename it
         if currentSheet is not None:
             currentSheet = doc.copyObject(doc.getObject("BoM"), False, False)
             # If the currentSheet is in a Group, move the backup in there
             if Group is not None:
                 Group.addObject(currentSheet)
-
+            
             currentSheet.Label = "BoM_Backup"
             self.currentSheet = currentSheet
 
