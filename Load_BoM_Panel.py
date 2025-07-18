@@ -24,7 +24,7 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide.QtCore import SIGNAL, QSize, Qt, QObject
+from PySide.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
 from PySide.QtGui import QIcon, QCursor
 from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit
 from General_BOM_Functions import General_BOM
@@ -333,7 +333,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
 
-        # T = mw.findChild(QTreeWidget)
+        T = mw.findChild(QTreeWidget)
         mw.installEventFilter(EventInspector(self.form))
 
 
@@ -731,35 +731,39 @@ class EventInspector(QObject):
         super(EventInspector, self).__init__(parent)
 
     def eventFilter(self, obj, event):
-        try:
-            if len(Gui.Selection.getSelection()) > 0:
-                # Get the first item of the current selection
-                obj = Gui.Selection.getSelection()[0]
-                                
-                if obj is not None:
-                    # The panel is the form stored in init
-                    Panel = self.form
-                    
-                    # find the description label and fill the DescriptionLabelWidget if there is a value
-                    DescriptionLabelWidget = Panel.findChild(QLineEdit, "DescriptionText")
-                    # Clear the DescriptionLabelWidget first
-                    DescriptionLabelWidget.clear()
-                    try:                            
-                        Description = obj.getPropertyByName("Description")
-                        DescriptionLabelWidget.setText(Description)
-                    except Exception:
-                        pass
-                    
-                    # find the remark label and fill the RemarkLabelWidget if there is a value
-                    RemarkLabelWidget = Panel.findChild(QLineEdit, "RemarkText")
-                    # Clear the RemarkLabelWidget first
-                    RemarkLabelWidget.clear()
-                    try:                            
-                        Remark = obj.getPropertyByName("Remarks")
-                        RemarkLabelWidget.setText(Remark)
-                    except Exception:
-                        pass
+        if event.type() == QEvent.Type.ModifiedChange:
+            try:
+                if len(Gui.Selection.getSelection()) > 0:
+                    print(event)
+                    # Get the first item of the current selection
+                    obj = Gui.Selection.getSelection()[0]
+                                    
+                    if obj is not None:
+                        # The panel is the form stored in init
+                        Panel = self.form
                         
-        except Exception:
-            pass
+                        # find the description label and fill the DescriptionLabelWidget if there is a value
+                        DescriptionLabelWidget = Panel.findChild(QLineEdit, "DescriptionText")
+                        # Clear the DescriptionLabelWidget first
+                        DescriptionLabelWidget.clear()
+                        try:                            
+                            Description = obj.getPropertyByName("Description")
+                            if Description != DescriptionLabelWidget.text():
+                                DescriptionLabelWidget.setText(Description)
+                        except Exception:
+                            pass
+                        
+                        # find the remark label and fill the RemarkLabelWidget if there is a value
+                        RemarkLabelWidget = Panel.findChild(QLineEdit, "RemarkText")
+                        # Clear the RemarkLabelWidget first
+                        RemarkLabelWidget.clear()
+                        try:                            
+                            Remark = obj.getPropertyByName("Remarks")
+                            if Remark != RemarkLabelWidget.text():
+                                RemarkLabelWidget.setText(Remark)
+                        except Exception:
+                            pass
+                            
+            except Exception:
+                pass
         return False
