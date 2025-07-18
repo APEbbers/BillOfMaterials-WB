@@ -257,13 +257,13 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         
         # Clear the present columns
         self.form.Columns_Present.clear()
-        # Add the standard headers
-        StandardHeadersDict = Settings_BoM.ReturnHeaders()
-        for key, value in StandardHeadersDict.items():
-            item = QListWidgetItem()
-            item.setText(value)
-            item.setToolTip("Removal of standard header is not allowed")
-            self.form.Columns_Present.addItem(item)
+        # # Add the standard headers
+        # StandardHeadersDict = Settings_BoM.ReturnHeaders()
+        # for key, value in StandardHeadersDict.items():
+        #     item = QListWidgetItem()
+        #     item.setText(value)
+        #     item.setToolTip("Removal of standard header is not allowed")
+        #     self.form.Columns_Present.addItem(item)
 
         # Get the currently applied custom columns
         CustomHeaders = General_BOM_Functions.General_BOM.customHeaders.split(";")
