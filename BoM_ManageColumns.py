@@ -26,9 +26,9 @@ import os
 from inspect import getsourcefile
 import General_BOM_Functions
 import Standard_Functions_BOM_WB as Standard_Functions
-from PySide.QtGui import QPalette, QIcon
-from PySide.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget
-from PySide.QtCore import SIGNAL, Qt
+from PySide6.QtGui import QPalette, QIcon
+from PySide6.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget, QStyle
+from PySide6.QtCore import SIGNAL, Qt
 import Settings_BoM
 from Settings_BoM import ENABLE_DEBUG
 import BoM_WB_Locator
@@ -257,19 +257,24 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         
         # Clear the present columns
         self.form.Columns_Present.clear()
-        # # Add the standard headers
-        # StandardHeadersDict = Settings_BoM.ReturnHeaders()
-        # for key, value in StandardHeadersDict.items():
-        #     item = QListWidgetItem()
-        #     item.setText(value)
-        #     item.setToolTip("Removal of standard header is not allowed")
-        #     self.form.Columns_Present.addItem(item)
 
         # Get the currently applied custom columns
-        CustomHeaders = General_BOM_Functions.General_BOM.customHeaders.split(";")
+        Headers = General_BOM_Functions.General_BOM.customHeaders.split(";")
         # Fill the list "Columns_Present" with the custom headers that are currently present
-        for Header in CustomHeaders:
+        for Header in Headers:
             if Header != "":
+                item = QListWidgetItem()
+                item.setText(Header)
+                
+                BackGround_AddAll = (
+                    Gui.getMainWindow().palette().color(QPalette.ColorRole.Window).getRgb()
+                )
+                icon = QIcon()
+                if Standard_Functions.LightOrDark(rgbColor=BackGround_AddAll) == "dark":
+                    icon.addPixmap(os.path.join(PATH_TB_ICONS, "NavigationBlender_dark.svg"))
+                else:
+                    icon.addPixmap(os.path.join(PATH_TB_ICONS, "NavigationBlender_light.svg"))
+                item.setIcon(icon)
                 self.form.Columns_Present.addItem(Header)
 
         # Clear the list first.
@@ -279,7 +284,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             if Property == "Label":
                 continue
             IsInList = False
-            for CurrentProperty in CustomHeaders:
+            for CurrentProperty in Headers:
                 if Property == CurrentProperty:
                     IsInList = True
                     break
@@ -341,10 +346,9 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
 
         # Go through the items
         for Value in Values:
-            StandardHeadersDict = Settings_BoM.ReturnHeaders()
-            for k, v in StandardHeadersDict.items():
-                if v == Value.text():
-                    return
+            StandardHeaders = "Number;Qty;Label;Description;Parent;Remarks"
+            if Value.text() in StandardHeaders:
+                return
                     
             # Get the item text
             itemText = QListWidgetItem(Value).text()
