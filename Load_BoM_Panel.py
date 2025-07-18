@@ -24,9 +24,9 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide.QtCore import SIGNAL, QSize
+from PySide.QtCore import SIGNAL, QSize, QObject
 from PySide.QtGui import QIcon
-from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QObject, QTreeView
+from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeView
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
