@@ -694,12 +694,20 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         sel = Gui.Selection.getSelection()
         if sel is not None:
             try:
+                # Get the first item of the selection
                 doc = sel[0]
-                
                 if not 'Description' in doc.PropertiesList:
                     doc.addProperty("App::PropertyString", "Description", group="Custom")
-
                 doc.Description = self.form.DescriptionText.text()
+                
+                # if there is a linked object, add the description also
+                try:
+                    LinkedObject = doc.getLinkedObject()
+                    if not 'Description' in LinkedObject.PropertiesList:
+                        LinkedObject.addProperty("App::PropertyString", "Description", group="Custom")
+                    LinkedObject.Description = self.form.DescriptionText.text()
+                except Exception:
+                    pass
                     
             except Exception:
                 return
@@ -711,12 +719,20 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         sel = Gui.Selection.getSelection()
         if sel is not None:
             try:
+                # Get the first item of the selection
                 doc = sel[0]
-                
                 if not 'Remarks' in doc.PropertiesList:
                     doc.addProperty("App::PropertyString", "Remarks", group="Custom")
-                
                 doc.Remarks = self.form.RemarkText.text()
+                
+                # if there is a linked object, add the description also
+                try:
+                    LinkedObject = doc.getLinkedObject()
+                    if not 'Remarks' in LinkedObject.PropertiesList:
+                        LinkedObject.addProperty("App::PropertyString", "Remarks", group="Custom")
+                    LinkedObject.Remarks = self.form.RemarkText.text()
+                except Exception:
+                    pass
                     
             except Exception:
                 doc = App.ActiveDocument

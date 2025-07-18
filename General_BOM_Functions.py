@@ -148,9 +148,13 @@ class General_BOM:
             )  # add ' at the beginning to make sure it is text.
             sheet.set("B" + str(Row), str(rowList["Qty"]))
             sheet.set("C" + str(Row), rowList["ObjectLabel"])
+            # sheet.set(
+            #     "D" + str(Row),
+            #     self.ReturnDocProperty(rowList["DocumentObject"], "Label2"),
+            # )  # This will be the description
             sheet.set(
                 "D" + str(Row),
-                self.ReturnDocProperty(rowList["DocumentObject"], "Label2"),
+                self.ReturnViewProperty(rowList["DocumentObject"], "Description")[0]
             )  # This will be the description
             sheet.set(
                 "E" + str(Row),
