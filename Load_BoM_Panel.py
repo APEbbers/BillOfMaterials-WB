@@ -157,12 +157,12 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         
         # This will create a connection between the pushbutton "UpdateDescription" and def "on_UpdateDescription_clicked"
         self.form.UpdateDescription.connect(
-            self.form.UpdateDescription, SIGNAL("pressed()"), self.UpdateDescription
+            self.form.UpdateDescription, SIGNAL("pressed()"), self.on_UpdateDescription_clicked
         )
         
         # This will create a connection between the pushbutton "UpdateRemarks" and def "on_UpdateRemarks_clicked"
         self.form.UpdateRemarks.connect(
-            self.form.UpdateRemarks, SIGNAL("pressed()"), self.UpdateRemarks
+            self.form.UpdateRemarks, SIGNAL("pressed()"), self.on_UpdateRemarks_clicked
         )
         # endregion
 
@@ -465,6 +465,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         
     def on_UpdateDescription_clicked(self):
         self.UpdateDescription()
+        
+    def on_UpdateRemarks_clicked(self):
+        self.UpdateRemarks()
 
     # A function to execute the BoM scripts based on the input from the controls.
     def CreateBOM(self, TypeOfBoM):
