@@ -24,9 +24,9 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide6.QtCore import SIGNAL, QSize, Qt
-from PySide6.QtGui import QIcon, QCursor
-from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox
+from PySide.QtCore import SIGNAL, QSize, Qt, QObject
+from PySide.QtGui import QIcon, QCursor
+from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -71,6 +71,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
         # this will create a Qt widget from our ui file
         self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB_UI, "BoM_Panel.ui"))
+        self.form.setObjectName("BoM_Panel")
 
         # Get the current BoM
         self.getCurrentBoM()
@@ -331,6 +332,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.AssemblyType.setCurrentText("Arch")
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
+
+        # T = mw.findChild(QTreeWidget)
+        mw.installEventFilter(EventInspector(self.form))
+
 
         return
         # endregion
@@ -654,7 +659,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         doc = App.ActiveDocument
 
         # Get the current sheet and the group it is in.
-        currentSheet = doc.getObjectsByLabel("BoM")
+        currentSheet = doc.getObjectsByLabel("BoM")[0]
         Group = None
         try:
             Group = currentSheet.getParentGroup()
@@ -668,7 +673,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         
         # If there is a sheet, copy and rename it
         if currentSheet is not None:
-            currentSheet = doc.copyObject(doc.getObject("BoM"), False, False)
+            # currentSheet = doc.copyObject(doc.getObject("BoM"), False, False)
+            currentSheet = doc.copyObject(currentSheet)
             # If the currentSheet is in a Group, move the backup in there
             if Group is not None:
                 Group.addObject(currentSheet)
@@ -710,4 +716,46 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                     
             except Exception:
                 doc = App.ActiveDocument
-                
+
+class EventInspector(QObject):
+    # define a form
+    form = None
+    
+    def __init__(self, parent):
+        # store the parent for access by the eventFilter
+        self.form = parent
+        super(EventInspector, self).__init__(parent)
+
+    def eventFilter(self, obj, event):
+        try:
+            if len(Gui.Selection.getSelection()) > 0:
+                # Get the first item of the current selection
+                obj = Gui.Selection.getSelection()[0]
+                                
+                if obj is not None:
+                    # The panel is the form stored in init
+                    Panel = self.form
+                    
+                    # find the description label and fill the DescriptionLabelWidget if there is a value
+                    DescriptionLabelWidget = Panel.findChild(QLineEdit, "DescriptionText")
+                    # Clear the DescriptionLabelWidget first
+                    DescriptionLabelWidget.clear()
+                    try:                            
+                        Description = obj.getPropertyByName("Description")
+                        DescriptionLabelWidget.setText(Description)
+                    except Exception:
+                        pass
+                    
+                    # find the remark label and fill the RemarkLabelWidget if there is a value
+                    RemarkLabelWidget = Panel.findChild(QLineEdit, "RemarkText")
+                    # Clear the RemarkLabelWidget first
+                    RemarkLabelWidget.clear()
+                    try:                            
+                        Remark = obj.getPropertyByName("Remarks")
+                        RemarkLabelWidget.setText(Remark)
+                    except Exception:
+                        pass
+                        
+        except Exception:
+            pass
+        return False
