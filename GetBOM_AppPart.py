@@ -264,6 +264,7 @@ class BomFunctions:
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
+        ShadowList_2 = []
         # Create two lists for splitting the copy of the main list
         ItemNumberList = []
         ObjectDocumentList = []
@@ -342,18 +343,21 @@ class BomFunctions:
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
                     )
-                    is False
+                    is False and not shadowItemNumber in ShadowList_2
                 ):
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
+                else:
+                    if shadowType == "Assembly":
+                        ShadowList_2.append(itemNumber)
 
             # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
             if len(itemNumber.split(".")) == 1:
                 # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
 
                 shadowItemNumber = itemNumber
-                if rowList["Type"] == "Part":
+                if rowList["Type"] == "Part" or rowList["Type"] == "Assembly":
                     shadowItemNumber = "X"
 
                 # Define the shadow item.
@@ -397,18 +401,22 @@ class BomFunctions:
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
                     )
-                    is False
+                    is False and not shadowItemNumber in ShadowList_2
                 ):
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
+                else:
+                    if shadowType == "Assembly":
+                        ShadowList_2.append(itemNumber)
+                                       
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
             TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
 
-        # correct the quantities for the parts in subassemblies
-        TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
+        # # correct the quantities for the parts in subassemblies
+        # TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:
@@ -650,12 +658,12 @@ class BomFunctions:
                 if command == "PartsOnly":
                     self.PartsOnly(
                         CreateSpreadSheet=True,
-                        ObjectNameBased=True,
+                        ObjectNameBased=False,
                     )
                 if command == "Summarized":
                     self.SummarizedBoM(
                         CreateSpreadSheet=True,
-                        ObjectNameBased=True,
+                        ObjectNameBased=False,
                     )
         except Exception as e:
             raise e
