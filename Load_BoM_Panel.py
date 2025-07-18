@@ -659,10 +659,14 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         doc = App.ActiveDocument
 
         # Get the current sheet and the group it is in.
-        currentSheet = doc.getObjectsByLabel("BoM")[0]
-        Group = None
+        currentSheet = None
         try:
-            Group = currentSheet.getParentGroup()
+            currentSheet = doc.getObjectsByLabel("BoM")[0]
+            Group = None
+            try:
+                Group = currentSheet.getParentGroup()
+            except Exception:
+                pass
         except Exception:
             pass
         
