@@ -178,28 +178,28 @@ def ReturnHeaders(CustomHeaders = None, DebugHeaders=None):
                     "F1": "Remarks",
             }
     """
-    if CustomHeaders is None:
+    if CustomHeaders is None or CustomHeaders == "":
         CustomHeaders = "Number;Qty;Label;Description;Parent;Remarks"
         
     Headers = {}
 
     if CustomHeaders is not None:
-        # Check if the fixed columns are present
-        if not "Number" in CustomHeaders:
-            CustomHeaders = "Number;" + CustomHeaders
-        if not "Qty" in CustomHeaders:
-            CustomHeaders = "Qty;" + CustomHeaders
-        if not "Label" in CustomHeaders:
-            CustomHeaders = "Label;" + CustomHeaders
-        if not "Description" in CustomHeaders:
-            CustomHeaders = "Description;" + CustomHeaders
-        if not "Parent" in CustomHeaders:
-            CustomHeaders = "Parent;" + CustomHeaders
-        if not "Remarks" in CustomHeaders:
-            CustomHeaders = "Remarks;" + CustomHeaders
-        CustomHeaders.replace(";;", ";")
+        # # Check if the fixed columns are present
+        # if not "Number" in CustomHeaders:
+        #     CustomHeaders = "Number;" + CustomHeaders
+        # if not "Qty" in CustomHeaders:
+        #     CustomHeaders = "Qty;" + CustomHeaders
+        # if not "Label" in CustomHeaders:
+        #     CustomHeaders = "Label;" + CustomHeaders
+        # if not "Description" in CustomHeaders:
+        #     CustomHeaders = "Description;" + CustomHeaders
+        # if not "Parent" in CustomHeaders:
+        #     CustomHeaders = "Parent;" + CustomHeaders
+        # if not "Remarks" in CustomHeaders:
+        #     CustomHeaders = "Remarks;" + CustomHeaders
+        # CustomHeaders.replace(";;", ";")
             
-        HeaderList = CustomHeaders.split(";")
+        # HeaderList = CustomHeaders.split(";")
         
         
         for i in range(len(HeaderList)):
