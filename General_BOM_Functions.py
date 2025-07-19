@@ -144,30 +144,20 @@ class General_BOM:
             Row = i + rowOffset
 
             # Fill the spreadsheet
-            # The standard headers
-            sheet.set(
-                "A" + str(Row), "'" + str(rowList["ItemNumber"])
-            )  # add ' at the beginning to make sure it is text.
-            sheet.set("B" + str(Row), str(rowList["Qty"]))
-            sheet.set("C" + str(Row), rowList["ObjectLabel"])
-            # sheet.set(
-            #     "D" + str(Row),
-            #     self.ReturnDocProperty(rowList["DocumentObject"], "Label2"),
-            # )  # This will be the description
-            sheet.set(
-                "D" + str(Row),
-                self.ReturnViewProperty(rowList["DocumentObject"], "Description")[0]
-            )  # This will be the description
-            sheet.set(
-                "E" + str(Row),
-                self.ReturnDocProperty(rowList["DocumentObject"], "Parent"),
-            )  # This will be the description
-
-            # The debug headers and custom headers
-            for i in range(4, len(Headers) + 1):
-                Column = Standard_Functions.GetLetterFromNumber(i)
-                if Headers[Column + "1"] == "Type":
-                    sheet.set(Column + str(Row), rowList["Type"])
+            for j in range(1, len(Headers) + 1):
+                Column = Standard_Functions.GetLetterFromNumber(j)
+                if Headers[Column + "1"] == "Number":
+                    sheet.set(Column + str(Row), "'" + str(rowList["ItemNumber"]))
+                elif Headers[Column + "1"] == "Qty":
+                    sheet.set(Column + str(Row), "'" + str(rowList["Qty"]))
+                elif Headers[Column + "1"] == "Label":
+                    sheet.set(Column + str(Row), "'" + rowList["ObjectLabel"])
+                elif Headers[Column + "1"] == "Description":
+                    sheet.set(Column + str(Row), "'" + self.ReturnViewProperty(rowList["DocumentObject"], "Description")[0])
+                elif Headers[Column + "1"] == "Parent":
+                    sheet.set(Column + str(Row), "'" + self.ReturnDocProperty(rowList["DocumentObject"], "Parent"))
+                elif Headers[Column + "1"] == "Type":
+                    sheet.set(Column + str(Row), "'" + rowList["Type"])
                 elif Headers[Column + "1"].lower() == "label":
                     sheet.set(
                         Column + str(Row),
@@ -246,13 +236,6 @@ class General_BOM:
                                     rowList["DocumentObject"], Headers[Column + "1"]
                                 )[0],
                             )
-
-                        # NewHeader = ""
-                        # Unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
-                        # # if Unit != "":
-                        # #     NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
-                        # # if sheet.getContents(Column + "1") != NewHeader:
-                        # #     sheet.set(Column + "1", NewHeader)
 
                     except Exception as e:
                         print(e)
