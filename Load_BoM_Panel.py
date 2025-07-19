@@ -359,7 +359,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             doc.removeObject(self.currentSheet.Name)
         
         # Recompute the document
-        doc.recompute(None, True, True)
+        doc.recompute()
 
         # close the dialog
         Gui.Control.closeDialog()
@@ -373,7 +373,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             doc.removeObject("BoM")
 
         # Recompute the document
-        doc.recompute(None, True, True)
+        doc.recompute()
 
         # If there is a backup sheet, restore it
         if self.currentSheet is not None:
@@ -390,7 +390,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             )
 
             # Recompute the document
-            doc.recompute(None, True, True)
+            doc.recompute()
 
         # close the dialog
         Gui.Control.closeDialog()

@@ -409,7 +409,7 @@ class General_BOM:
         )
 
         # Recompute the document
-        doc.recompute(None, True, True)
+        doc.recompute()
 
         if IsNewSheet is False:
             Standard_Functions.Mbox(

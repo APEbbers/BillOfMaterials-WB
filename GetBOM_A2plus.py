@@ -82,7 +82,7 @@ class BomFunctions:
         # Activate the document which was active when this command started.
         try:
             doc = App.setActiveDocument(LastActiveDoc)
-            doc.recompute(None, True, True)
+            doc.recompute()
         except Exception:
             pass
         return
