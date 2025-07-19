@@ -199,7 +199,7 @@ def ReturnHeaders(CustomHeaders = None, DebugHeaders=None):
         #     CustomHeaders = "Remarks;" + CustomHeaders
         # CustomHeaders.replace(";;", ";")
             
-        # HeaderList = CustomHeaders.split(";")
+        HeaderList = CustomHeaders.split(";")
         
         
         for i in range(len(HeaderList)):
