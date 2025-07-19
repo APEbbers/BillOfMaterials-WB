@@ -84,6 +84,7 @@ class BomFunctions:
             doc = App.setActiveDocument(LastActiveDoc)
             doc.recompute()
         except Exception:
+            Standard_Functions.Print("Recompute failed!", "Error")
             pass
         return
 

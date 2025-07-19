@@ -409,7 +409,11 @@ class General_BOM:
         )
 
         # Recompute the document
-        doc.recompute()
+        try:
+            doc.recompute()
+        except Exception:
+            Standard_Functions.Print("Recompute failed!", "Error")
+            pass
 
         if IsNewSheet is False:
             Standard_Functions.Mbox(
