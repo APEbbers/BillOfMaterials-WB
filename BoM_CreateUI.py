@@ -128,17 +128,17 @@ def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list) -> str:
 
     # endregion
 
-    # region -- check if the toolbar already exits.
-    name_taken = get_toolbar_with_name(ToolBarName, WorkbenchToolBarsParamPath)
-    if name_taken:
-        i = 2  # Don't use (1), start at (2)
-        while True:
-            if get_toolbar_with_name(ToolBarName, WorkbenchToolBarsParamPath):
-                # ReplaceButtons(ToolbarGroupName, WorkbenchToolBarsParamPath, ButtonList)
-                RemoveWorkBenchToolbars(WorkBench)
-                return
-            i = i + 1
-    # endregion
+    # # region -- check if the toolbar already exits.
+    # name_taken = get_toolbar_with_name(ToolBarName, WorkbenchToolBarsParamPath)
+    # if name_taken:
+    #     i = 2  # Don't use (1), start at (2)
+    #     while True:
+    #         if get_toolbar_with_name(ToolBarName, WorkbenchToolBarsParamPath):
+    #             # ReplaceButtons(ToolbarGroupName, WorkbenchToolBarsParamPath, ButtonList)
+    #             RemoveWorkBenchToolbars(WorkBench)
+    #             return
+    #         i = i + 1
+    # # endregion
 
     # region -- Set the Toolbar up
     # add the ToolbarGroup in the FreeCAD Parameters
