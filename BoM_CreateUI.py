@@ -156,8 +156,8 @@ def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list) -> str:
 
     # Force the toolbars to be recreated
     wb = Gui.activeWorkbench()
-    if int(App.Version()[0]) == 0 and int(App.Version()[1]) > 19:
-        wb.reloadActive()
+    # if int(App.Version()[0]) == 0 and int(App.Version()[1]) > 19:
+    wb.reloadActive()
     return ToolBarName
 
 
