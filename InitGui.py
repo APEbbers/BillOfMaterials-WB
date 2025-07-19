@@ -135,7 +135,6 @@ class BillOfMaterialsWB(Gui.Workbench):
             "Assembly3Workbench",
             "AssemblyWorkbench",
             "BIMWorkbench",
-            "ArchWorkbench",
         ]
 
         # Create the toolbar for the default workbenches.

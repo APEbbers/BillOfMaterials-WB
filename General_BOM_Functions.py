@@ -36,6 +36,8 @@ translate = App.Qt.translate
 
 class General_BOM:
     customHeaders = Settings_BoM.GetStringSetting("CustomHeader")
+    if customHeaders is None:
+        customHeaders = "Number;Qty;Label;Description;Parent;Remarks"
     if customHeaders[:1] == ";":
         customHeaders = customHeaders[1:]
 

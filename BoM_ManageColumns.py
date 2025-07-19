@@ -259,7 +259,10 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.Columns_Present.clear()
 
         # Get the currently applied custom columns
-        Headers = General_BOM_Functions.General_BOM.customHeaders.split(";")
+        customHeaders = General_BOM_Functions.General_BOM.customHeaders
+        if customHeaders is None:
+            customHeaders = "Number;Qty;Label;Description;Parent;Remarks"
+        Headers = customHeaders.split(";")
         # Fill the list "Columns_Present" with the custom headers that are currently present
         for Header in Headers:
             if Header != "":
