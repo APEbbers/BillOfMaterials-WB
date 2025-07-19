@@ -134,7 +134,8 @@ def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list) -> str:
         i = 2  # Don't use (1), start at (2)
         while True:
             if get_toolbar_with_name(ToolBarName, WorkbenchToolBarsParamPath):
-                ReplaceButtons(ToolbarGroupName, WorkbenchToolBarsParamPath, ButtonList)
+                # ReplaceButtons(ToolbarGroupName, WorkbenchToolBarsParamPath, ButtonList)
+                RemoveWorkBenchToolbars(WorkBench)
                 return
             i = i + 1
     # endregion
@@ -156,8 +157,8 @@ def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list) -> str:
 
     # Force the toolbars to be recreated
     wb = Gui.activeWorkbench()
-    # if int(App.Version()[0]) == 0 and int(App.Version()[1]) > 19:
-    wb.reloadActive()
+    if int(App.Version()[0]) == 0 and int(App.Version()[1]) > 19:
+        wb.reloadActive()
     return ToolBarName
 
 
