@@ -184,7 +184,7 @@ def ReturnHeaders(CustomHeaders = None, DebugHeaders=None):
     Headers = {}
 
     if CustomHeaders is not None:
-        HeaderList = CustomHeaders.split(";")  
+        HeaderList = CustomHeaders.split(";")
         
         for i in range(len(HeaderList)):
             # Set the header
