@@ -293,7 +293,7 @@ class LoadPanel_Class:
     def GetResources(self):
         return {
             "Pixmap": "BillOfMaterialsWB.svg",  # the name of a svg file available in the resources
-            "MenuText": "Create overall BoM",
+            "MenuText": "Create BOM",
             "ToolTip": "Create an Overall Bill of Materials in a spreadsheet",
         }
 
