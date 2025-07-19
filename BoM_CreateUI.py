@@ -120,7 +120,7 @@ def CreateWorkBenchToolbar(WorkBench: str, ButtonList: list) -> str:
     # Define the name for the ToolbarGroup in the FreeCAD Parameters
     ToolbarGroupName = "BoM_Toolbar_" + WorkBench
     # Define the name for the toolbar
-    ToolBarName = "BoM Toolbar - " + WorkBench
+    ToolBarName = "Create BOM " + WorkBench
     # define the parameter path for the toolbar
     WorkbenchToolBarsParamPath = (
         "User parameter:BaseApp/Workbench/" + WorkBench + "/Toolbar/"
