@@ -261,19 +261,19 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         # Get the currently applied custom columns
         customHeaders = General_BOM_Functions.General_BOM.customHeaders
         # Check if the fixed columns are present
-        if not "Number" in CustomHeaders:
-            CustomHeaders = "Number;" + CustomHeaders
-        if not "Qty" in CustomHeaders:
-            CustomHeaders = "Qty;" + CustomHeaders
-        if not "Label" in CustomHeaders:
-            CustomHeaders = "Label;" + CustomHeaders
-        if not "Description" in CustomHeaders:
-            CustomHeaders = "Description;" + CustomHeaders
-        if not "Parent" in CustomHeaders:
-            CustomHeaders = "Parent;" + CustomHeaders
-        if not "Remarks" in CustomHeaders:
-            CustomHeaders = "Remarks;" + CustomHeaders
-        CustomHeaders.replace(";;", ";")
+        if not "Number" in customHeaders:
+            customHeaders = "Number;" + customHeaders
+        if not "Qty" in customHeaders:
+            customHeaders = "Qty;" + customHeaders
+        if not "Label" in customHeaders:
+            customHeaders = "Label;" + customHeaders
+        if not "Description" in customHeaders:
+            customHeaders = "Description;" + customHeaders
+        if not "Parent" in customHeaders:
+            customHeaders = "Parent;" + customHeaders
+        if not "Remarks" in customHeaders:
+            customHeaders = "Remarks;" + customHeaders
+        customHeaders.replace(";;", ";")
         # if there are no columns, setup the standard ones 
         if customHeaders is None or customHeaders == "":
             customHeaders = "Number;Qty;Label;Description;Parent;Remarks"
