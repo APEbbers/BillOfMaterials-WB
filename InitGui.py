@@ -131,7 +131,6 @@ class BillOfMaterialsWB(Gui.Workbench):
         WorkBenchList = [
             "A2plusWorkbench",
             "Assembly4Workbench",
-            "PartWorkbench",
             "Assembly3Workbench",
             "AssemblyWorkbench",
             "BIMWorkbench",
