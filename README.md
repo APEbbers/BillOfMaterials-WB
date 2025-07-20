@@ -13,11 +13,11 @@ The following types of BoM can be created:
 ## Supported assembly types:
 * a2plus
 * Assembly 3
-* Assembly 4
-* Internal assembly workbench (This workbench is still under development)
+* Assembly 4 (Archived and no longer under development)
+* Internal assembly workbench
 * Applink / ApplinkGroup assemblies
 * AppPart assemblies
-* Multi body parts (Part/Part Design)
+* Multi body parts (Part/Part Design, BIM)
 
 See the [wiki page](https://github.com/APEbbers/BillOfMaterials-WB/wiki) for more information.
 
