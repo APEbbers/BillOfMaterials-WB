@@ -1043,14 +1043,14 @@ class General_BOM:
         # if there is a linked object, use that.
         # Otherwise use the provided document.
         try:
-            DocObject = DocObject.getLinkedObject()
+            DocObject_Linked = DocObject.getLinkedObject()
         except Exception:
             pass
         
         isMaterialProperty = False
         try:
             MaterialProperties = {}
-            MaterialProperties = DocObject.ShapeMaterial.Properties
+            MaterialProperties = DocObject_Linked.ShapeMaterial.Properties
             for key in MaterialProperties.keys():
                 if "Material - " + key == PropertyName:
                     isMaterialProperty = True
@@ -1070,7 +1070,7 @@ class General_BOM:
             if isShapeProperty is False:             
                 try:
                     try:
-                        resultValue = DocObject.getPropertyByName(PropertyName)
+                        resultValue = DocObject_Linked.getPropertyByName(PropertyName)
                     except Exception:
                         resultValue = None
 
@@ -1099,18 +1099,18 @@ class General_BOM:
 
             if isShapeProperty is True:
                 try:
-                    shapeObject = DocObject.Shape
+                    shapeObject = DocObject_Linked.Shape
                     currentScheme = App.Units.getSchema()
 
                     # Get the value from the shape
                     #
                     # Get the boundingbox from the item as if it is not transformed
-                    BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
+                    BoundingBox = DocObject_Linked.ViewObject.getBoundingBox("", False)
                     try:
-                        if DocObject.TypeId.endswith("Body"):
+                        if DocObject_Linked.TypeId.endswith("Body"):
                             BoundingBox = shapeObject.BoundBox
                     except Exception:
-                        BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
+                        BoundingBox = DocObject_Linked.ViewObject.getBoundingBox("", False)
                         print("viewObjects boundingbox is used")
                         pass
 
