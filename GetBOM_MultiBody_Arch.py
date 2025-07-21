@@ -162,17 +162,15 @@ class BomFunctions:
             Shape_2 = DocObject_2.Shape
             Material_1 = ""
 
-            Shape_1_HasMaterial = False
+            Material_1 = None
             try:
-                Material_1 = DocObject_1.getPropertyByName("Material")
-                Shape_1_HasMaterial = True
+                Material_1 = DocObject_1.ShapeMaterial
             except Exception:
                 pass
 
-            Shape_2_HasMaterial = False
+            Material_2 = None
             try:
-                Material_2 = DocObject_2.getPropertyByName("Material")
-                Shape_2_HasMaterial = True
+                Material_2 = DocObject_2.ShapeMaterial
             except Exception:
                 pass
 
@@ -195,9 +193,8 @@ class BomFunctions:
                 Value_2 = round(List_2[i], 6)
 
                 if Value_1 == Value_2:
-                    if Shape_1_HasMaterial is True and Shape_2_HasMaterial is True:
-                        if Material_1 != Material_2:
-                            return False
+                    if Material_1 != Material_2:
+                        return False
                 if Value_1 != Value_2:
                     return False
 
