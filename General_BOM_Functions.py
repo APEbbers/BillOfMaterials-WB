@@ -1034,6 +1034,7 @@ class General_BOM:
         resultValue: object
         resultUnit: str
         result: list
+        currentScheme = App.Units.getSchema()
 
         # if there is a linked object, use that.
         # Otherwise use the provided document.
@@ -1051,8 +1052,14 @@ class General_BOM:
                     isMaterialProperty = True
         
             if isMaterialProperty is True:
-                resultValue = MaterialProperties[PropertyName.replace("Material - ", "")]
-                result = (resultValue, "")
+                if PropertyName == "Material - Density":
+                    Density = MaterialProperties[PropertyName.replace("Material - ", "")]
+                    resultValue = Density.split(" ")[0]
+                    resultUnit = Density.split(" ")[1]
+                else:
+                    resultValue = MaterialProperties[PropertyName.replace("Material - ", "")]
+                    resultUnit = ""
+                result = (resultValue, resultUnit)
                 return result
         except Exception:
             pass
@@ -1095,7 +1102,6 @@ class General_BOM:
             if isShapeProperty is True:
                 try:
                     shapeObject = DocObject_Linked.Shape
-                    currentScheme = App.Units.getSchema()
 
                     # Get the value from the shape
                     #
@@ -1185,7 +1191,7 @@ class General_BOM:
                                 ),
                                 currentScheme,
                             )[0]
-                        )
+                        ).replace(" ", "")
                         ValueY = str(
                             App.Units.schemaTranslate(
                                 App.Units.Quantity(
@@ -1194,7 +1200,7 @@ class General_BOM:
                                 ),
                                 currentScheme,
                             )[0]
-                        )
+                        ).replace(" ", "")
                         ValueZ = str(
                             App.Units.schemaTranslate(
                                 App.Units.Quantity(
@@ -1203,15 +1209,15 @@ class General_BOM:
                                 ),
                                 currentScheme,
                             )[0]
-                        )
+                        ).replace(" ", "")
                         unit = App.Units.schemaTranslate(
                             App.Units.Quantity(
                                 App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length
                             ),
                             currentScheme,
                         )[2]
-                        resultValue = f"Vector ({ValueX}, {ValueY}, {ValueZ}"
-                        resultUnit = unit
+                        resultValue = f"Vector (X={ValueX}, Y={ValueY}, Z={ValueZ})"
+                        resultUnit = ""
                     if PropertyName.split(" - ", 1)[1] == "Mass":
                         volume = shapeObject.Volume # mm^3
                         density = float(DocObject.ShapeMaterial["Density"].split(" ")[0]) # kg/mm^3
@@ -1223,7 +1229,7 @@ class General_BOM:
                             )[0]
                         )
                         unit = App.Units.schemaTranslate(
-                            App.Units.Quantity(shapeObject.Mass, App.Units.Mass),
+                            App.Units.Quantity(mass, App.Units.Mass),
                             currentScheme,
                         )[2]
                         resultValue = value.replace(" " + unit, "")
