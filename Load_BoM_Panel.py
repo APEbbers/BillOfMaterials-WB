@@ -765,7 +765,6 @@ class EventInspector(QObject):
         if event.type() == QEvent.Type.ModifiedChange:
             try:
                 if len(Gui.Selection.getSelection()) > 0:
-                    print(event)
                     # Get the first item of the current selection
                     obj = Gui.Selection.getSelection()[0]
                                     

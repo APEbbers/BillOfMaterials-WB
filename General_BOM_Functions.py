@@ -229,6 +229,10 @@ class General_BOM:
                                 sheet.set(
                                     Column + str(Row),
                                     os.path.basename(rowList["DocumentObject"].Name))
+                        elif Headers[Column + "1"] == "Shape - Mass":
+                            mass = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[0]
+                            unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
+                            sheet.set(Column + str(Row), "'" + str(mass) +  unit)                        
                         else:
                             sheet.set(
                                 Column + str(Row),
@@ -238,7 +242,8 @@ class General_BOM:
                             )
 
                     except Exception as e:
-                        print(e)
+                        if Settings_BoM.ENABLE_DEBUG is True:
+                            print(e)
                         pass
 
             # Create the total number of items for the summary
@@ -1062,11 +1067,10 @@ class General_BOM:
             if PropertyName.startswith("Shape - ") is True:
                 isShapeProperty = True
 
-            if isShapeProperty is False:
+            if isShapeProperty is False:             
                 try:
                     try:
                         resultValue = DocObject.getPropertyByName(PropertyName)
-                        print(resultValue)
                     except Exception:
                         resultValue = None
 
@@ -1214,9 +1218,12 @@ class General_BOM:
                         resultValue = f"Vector ({ValueX}, {ValueY}, {ValueZ}"
                         resultUnit = unit
                     if PropertyName.split(" - ", 1)[1] == "Mass":
+                        volume = shapeObject.Volume # mm^3
+                        density = float(DocObject.ShapeMaterial["Density"].split(" ")[0]) # kg/mm^3
+                        mass = volume * density
                         value = str(
                             App.Units.schemaTranslate(
-                                App.Units.Quantity(shapeObject.Mass, App.Units.Mass),
+                                App.Units.Quantity(mass, App.Units.Mass),
                                 currentScheme,
                             )[0]
                         )
