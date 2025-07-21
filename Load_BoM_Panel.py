@@ -485,6 +485,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     def CreateBOM(self, TypeOfBoM):
         # Set the wait cursor
         mw = Gui.getMainWindow()
+        doc = App.ActiveDocument
         mw.setCursor(Qt.CursorShape.WaitCursor)
         
         # Import the BoM modules
@@ -495,9 +496,16 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         import GetBOM_A3
         import GetBOM_A2plus
         import GetBOM_MultiBody_Arch
+        
+        # Activate the document which was active when this command started.
+        try:
+            doc.recompute()
+        except Exception:
+            Standard_Functions.Print("Recompute failed!", "Error")
+            pass
 
         # Get the assembly type
-        doc = App.ActiveDocument
+        
         AssemblyType_Selected = ""
         if General_BOM.CheckAssemblyType(doc) == "A2plus":
             AssemblyType_Selected = "A2plus"
