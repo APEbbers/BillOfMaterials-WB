@@ -173,6 +173,9 @@ class BomFunctions:
                 Material_2 = DocObject_2.ShapeMaterial
             except Exception:
                 pass
+            
+            if Material_1.Name != Material_2.Name:
+                return False
 
             List_1 = [
                 Shape_1.Area,
@@ -192,9 +195,6 @@ class BomFunctions:
                 Value_1 = round(List_1[i], 6)
                 Value_2 = round(List_2[i], 6)
 
-                if Value_1 == Value_2:
-                    if Material_1.Name != Material_2.Name:
-                        return False
                 if Value_1 != Value_2:
                     return False
 
@@ -248,6 +248,7 @@ class BomFunctions:
                     replacedItem = TemporaryList.pop()
                     rowListNew["ObjectLabel"] = replacedItem["ObjectLabel"]
                     rowListNew["ObjectName"] = replacedItem["ObjectName"]
+                    rowListNew["ItemNumber"] = replacedItem["ItemNumber"]
                     TemporaryList.append(rowListNew)
 
             ShadowList.append(rowList)

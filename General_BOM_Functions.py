@@ -228,18 +228,13 @@ class General_BOM:
                             else:
                                 sheet.set(
                                     Column + str(Row),
-                                    os.path.basename(rowList["DocumentObject"].Name))
-                        elif Headers[Column + "1"] == "Shape - Mass":
-                            mass = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[0]
-                            unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
-                            sheet.set(Column + str(Row), "'" + str(mass) +  unit)                        
+                                    os.path.basename(rowList["DocumentObject"].Name))                      
                         else:
-                            sheet.set(
-                                Column + str(Row),
-                                self.ReturnViewProperty(
+                            value = self.ReturnViewProperty(
                                     rowList["DocumentObject"], Headers[Column + "1"]
-                                )[0],
-                            )
+                                )[0]
+                            unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
+                            sheet.set(Column + str(Row), "'" + str(value) +  unit)   
 
                     except Exception as e:
                         if Settings_BoM.ENABLE_DEBUG is True:
