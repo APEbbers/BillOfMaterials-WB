@@ -193,7 +193,7 @@ class BomFunctions:
                 Value_2 = round(List_2[i], 6)
 
                 if Value_1 == Value_2:
-                    if Material_1 != Material_2:
+                    if Material_1.Name != Material_2.Name:
                         return False
                 if Value_1 != Value_2:
                     return False
