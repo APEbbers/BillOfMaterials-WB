@@ -56,7 +56,7 @@ class BomFunctions:
         docObjects = []
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
-        for RootObject in RootObjects:
+        for RootObject in RootObjects :
             if (
                 RootObject.TypeId == "App::DocumentObjectGroup"
                 and RootObject.Name != "Parts"
@@ -78,7 +78,7 @@ class BomFunctions:
         # Get items outside the parts
         for RootObject in RootObjects:
             if RootObject.Name != "Parts":
-                if self.AllowedObjectType(RootObject.TypeId) is True:
+                if self.AllowedObjectType(RootObject.TypeId) is True and RootObject.Visibility is True:
                     docObjects.append(RootObject)
 
         # Get the spreadsheet.
