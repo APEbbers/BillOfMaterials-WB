@@ -634,7 +634,7 @@ class BomFunctions:
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
                 if (
-                    self.ListContainsCheck(
+                    General_BOM.ListContainsCheck(
                         List=ShadowList,
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
