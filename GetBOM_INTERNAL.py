@@ -593,6 +593,8 @@ class BomFunctions:
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
+                # Get the parent
+                shadowParent = rowList["Parent"]
                 # Define the shadow material
                 shadowMaterial = ""
                 try:
