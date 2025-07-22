@@ -658,8 +658,6 @@ class General_BOM:
             ListItem3 = rowItem["Item3"]
             if Item4 != "":
                 ListItem4 = rowItem["Item4"]
-                
-            print(f"{Item4}, {ListItem4}")
 
             if Item4 == "":
                 if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
@@ -1384,7 +1382,7 @@ class General_BOM:
                     if (
                         ReplaceList[j]["ItemNumber"].rsplit(".", 1)[0]
                         == itemNumber.rsplit(".", 1)[0]
-                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplaceList[j]["DocumentObject"].ShapeMaterial.Name == itemMaterial
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplacedItemMaterial == itemMaterial
                     ):
                         # Go through the BoMList. Every item that starts with current itemnumber
                         # is a child of the current item. Add it to the shadow list
@@ -1405,7 +1403,7 @@ class General_BOM:
                 if len(itemNumber.split(".")) == 1:
                     if (
                         ReplaceList[j]["ItemNumber"] == itemNumber
-                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplaceList[j].ShapeMaterial.Name == itemMaterial
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplacedItemMaterial == itemMaterial
                     ):
                         resultList.append(ReplaceList[j])
                         break
