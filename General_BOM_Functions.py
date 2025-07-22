@@ -650,7 +650,7 @@ class General_BOM:
         return counter
 
     @classmethod
-    def ListContainsCheck(self, List: list, Item1, Item2, Item3, Item4 = "") -> bool:
+    def ListContainsCheck(self, List: list, Item1, Item2, Item3, Item4 = "", Item5 = "") -> bool:
         for i in range(len(List)):
             rowItem = List[i]
             ListItem1 = rowItem["Item1"]
@@ -658,12 +658,20 @@ class General_BOM:
             ListItem3 = rowItem["Item3"]
             if Item4 != "":
                 ListItem4 = rowItem["Item4"]
+            if Item5 != "":
+                ListItem5 = rowItem["Item5"]
 
-            if Item4 == "":
+            if Item4 == "" and Item5 == "":
                 if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
                     return True
+            elif Item4 != "" and Item5 == "":
+                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem4 == Item4: 
+                    return True
+            elif Item4 == "" and Item5 != "":
+                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem5 == Item5: 
+                    return True
             else:
-                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem4 == Item4:
+                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem4 == Item4 and ListItem5 == Item5:
                     return True
 
         return False

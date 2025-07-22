@@ -224,7 +224,6 @@ class BomFunctions:
                     "Qty": 1,
                     "Type": "Part",
                 }
-                print(object.Label)
 
                 # add the rowList to the mainList
                 self.mainList.append(rowList)
@@ -522,12 +521,19 @@ class BomFunctions:
                 shadowType = rowList["Type"]
                 # Get the parent
                 shadowParent = rowList["Parent"]
+                # Define the shadow material
+                shadowMaterial = ""
+                try:
+                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                except Exception:
+                    pass
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowLabel,
                     "Item3": shadowType,
-                    "Item4": shadowParent
+                    "Item4": shadowParent,
+                    "Item5": shadowMaterial,
                 }
 
                 # Find the quantity for the item
@@ -538,6 +544,7 @@ class BomFunctions:
                         BomList=CopyMainList,
                         ObjectBasedPart=True,
                         ObjectBasedAssy=False,
+                        CompareMaterial=True,
                     )
                 )
 
@@ -561,6 +568,7 @@ class BomFunctions:
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
                         Item4=shadowRow["Item4"],
+                        Item5=shadowRow["Item5"],
                     )
                     is False
                 ):
@@ -585,12 +593,19 @@ class BomFunctions:
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
+                # Define the shadow material
+                shadowMaterial = ""
+                try:
+                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                except Exception:
+                    pass
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
-                    "Item2": rowList["ObjectLabel"],
-                    "Item3": rowList["Type"],
-                    "Item4": rowList["Parent"]
+                    "Item2": shadowLabel,
+                    "Item3": shadowType,
+                    "Item4": shadowParent,
+                    "Item5": shadowMaterial,
                 }
 
                 # Find the quantity for the item
@@ -601,6 +616,7 @@ class BomFunctions:
                         BomList=CopyMainList,
                         ObjectBasedPart=True,
                         ObjectBasedAssy=False,
+                        CompareMaterial=True,
                     )
                 )
 
@@ -627,6 +643,7 @@ class BomFunctions:
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
                         Item4=shadowRow["Item4"],
+                        Item5=shadowRow["Item5"],
                     )
                     is False
                 ):
@@ -719,6 +736,7 @@ class BomFunctions:
                     RowItem=rowList,
                     mainList=CopyMainList,
                     ObjectNameBased=ObjectNameBased,
+                    CompareMaterial=True,
                 )
             )
 
@@ -732,13 +750,21 @@ class BomFunctions:
                 "Type": rowList["Type"],
                 "Parent": rowList["Parent"]
             }
+            
+            # Define the shadow material
+            shadowMaterial = ""
+            try:
+                shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+            except Exception:
+                pass
 
             # Create the row item for the shadow list.
             shadowRow = {
                 "Item1": rowList[ObjectNameField],
                 "Item2": rowList["DocumentObject"].TypeId,
                 "Item3": rowList["Type"],
-                "Item4": rowList["Parent"]
+                "Item4": rowList["Parent"],
+                "Item5": shadowMaterial,
             }
             # Add the rowItem if it is not in the shadow list.
             if (
@@ -748,6 +774,7 @@ class BomFunctions:
                     Item2=shadowRow["Item2"],
                     Item3=shadowRow["Item3"],
                     Item4=shadowRow["Item4"],
+                    Item5=shadowRow["Item5"],
                 )
                 is False
             ):
@@ -832,6 +859,7 @@ class BomFunctions:
                         RowItem=rowList,
                         mainList=CopyMainList,
                         ObjectNameBased=ObjectNameBased,
+                        CompareMaterial=True,
                     )
                 )
 
@@ -845,13 +873,21 @@ class BomFunctions:
                     "Type": rowList["Type"],
                     "Parent": rowList["Parent"]
                 }
+                
+                # Define the shadow material
+                shadowMaterial = ""
+                try:
+                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                except Exception:
+                    pass
 
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": rowList[ObjectNameField],
                     "Item2": rowList["DocumentObject"].TypeId,
                     "Item3": rowList["Type"],
-                    "Item4": rowList["Parent"]
+                    "Item4": rowList["Parent"],
+                    "Item5": shadowMaterial,
                 }
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
@@ -863,6 +899,7 @@ class BomFunctions:
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
                         Item4=shadowRow["Item4"],
+                        Item5=shadowRow["Item5"],
                     )
                     is False
                 ):
