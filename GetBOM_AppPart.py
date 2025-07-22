@@ -306,11 +306,18 @@ class BomFunctions:
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
+                # Define the shadow material
+                shadowMaterial = ""
+                try:
+                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                except Exception:
+                    pass
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowLabel,
                     "Item3": shadowType,
+                    "Item4": shadowMaterial,
                 }
 
                 # Find the quantity for the item
@@ -321,6 +328,7 @@ class BomFunctions:
                         BomList=CopyMainList,
                         ObjectBasedPart=False,
                         ObjectBasedAssy=False,
+                        CompareMaterial=True,
                     )
                 )
 
@@ -342,6 +350,7 @@ class BomFunctions:
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
                     )
                     is False and not shadowItemNumber in ShadowList_2
                 ):
@@ -359,16 +368,22 @@ class BomFunctions:
                 shadowItemNumber = itemNumber
                 if rowList["Type"] == "Part" or rowList["Type"] == "Assembly":
                     shadowItemNumber = "X"
-
                 # Define the shadow item.
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
+                # Define the shadow material
+                shadowMaterial = ""
+                try:
+                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                except Exception:
+                    pass
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowLabel,
                     "Item3": shadowType,
+                    "Item4": shadowMaterial,
                 }
 
                 # Find the quantity for the item
@@ -379,6 +394,7 @@ class BomFunctions:
                         BomList=CopyMainList,
                         ObjectBasedPart=False,
                         ObjectBasedAssy=False,
+                        CompareMaterial=True,
                     )
                 )
 
@@ -400,6 +416,7 @@ class BomFunctions:
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
                     )
                     is False and not shadowItemNumber in ShadowList_2
                 ):

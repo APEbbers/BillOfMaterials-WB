@@ -549,6 +549,7 @@ class General_BOM:
         BomList: list,
         ObjectBasedPart: bool = True,
         ObjectBasedAssy: bool = False,
+        CompareMaterial: bool = False
     ) -> int:
         """_summary_
 
@@ -573,55 +574,77 @@ class General_BOM:
         # Set the counter
         counter = 0
 
+        # Try to get the material. this only works with bodies
+        Item_Material = ""
+        try:
+            Item_Material = ListItem["DocumentObject"].ShapeMaterial.Name
+        except Exception:
+            pass
+
         # Go Through the objectList
         for i in range(len(BomList)):
-            # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
-            # If the itemnumber is more than one level deep:
-            if len(ItemNumber.split(".")) > 1:
+            BomListItem_Material = ""
+            try:
+                BomListItem_Material = BomList[i]["DocumentObject"].ShapeMaterial.Name
+            except Exception:
+                pass
+            
+            # Set MaterialCompare to True as default
+            MaterialCompare = True
+            # if material needs to be taken into account, compare the material
+            if CompareMaterial is True:
+                if BomListItem_Material != Item_Material:
+                    MaterialCompare = False            
+            
+            # if the material is equeal continue
+            if MaterialCompare is True:
+                # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
+                # If the itemnumber is more than one level deep:
+                if len(ItemNumber.split(".")) > 1:
+                    if (
+                        BomList[i]["ItemNumber"].rsplit(".", 1)[0]
+                        == ItemNumber.rsplit(".", 1)[0]
+                    ):
+                        if ListItem["Type"] == "Part":
+                            if ObjectNameValuePart == "Object":
+                                if (
+                                    BomList[i]["DocumentObject"]
+                                    == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
+                                ):
+                                    counter = counter + 1
+                            if ObjectNameValuePart == "ObjectLabel":
+                                if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
+                                    counter = counter + 1
+                        if ListItem["Type"] == "Assembly":
+                            if ObjectNameValueAssy == "Object":
+                                if (
+                                    BomList[i]["DocumentObject"]
+                                    == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
+                                ):
+                                    counter = counter + 1
+                            if ObjectNameValueAssy == "ObjectLabel":
+                                if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
+                                    counter = counter + 1
+
+                # If the itemnumber is one level deep:
                 if (
-                    BomList[i]["ItemNumber"].rsplit(".", 1)[0]
-                    == ItemNumber.rsplit(".", 1)[0]
+                    len(ItemNumber.split(".")) == 1
+                    and len(BomList[i]["ItemNumber"].split(".")) == 1
                 ):
                     if ListItem["Type"] == "Part":
                         if ObjectNameValuePart == "Object":
-                            if (
-                                BomList[i]["DocumentObject"]
-                                == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
-                            ):
+                            if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
                                 counter = counter + 1
                         if ObjectNameValuePart == "ObjectLabel":
                             if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
                                 counter = counter + 1
                     if ListItem["Type"] == "Assembly":
                         if ObjectNameValueAssy == "Object":
-                            if (
-                                BomList[i]["DocumentObject"]
-                                == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
-                            ):
+                            if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
                                 counter = counter + 1
                         if ObjectNameValueAssy == "ObjectLabel":
                             if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
                                 counter = counter + 1
-
-            # If the itemnumber is one level deep:
-            if (
-                len(ItemNumber.split(".")) == 1
-                and len(BomList[i]["ItemNumber"].split(".")) == 1
-            ):
-                if ListItem["Type"] == "Part":
-                    if ObjectNameValuePart == "Object":
-                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
-                            counter = counter + 1
-                    if ObjectNameValuePart == "ObjectLabel":
-                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
-                            counter = counter + 1
-                if ListItem["Type"] == "Assembly":
-                    if ObjectNameValueAssy == "Object":
-                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
-                            counter = counter + 1
-                    if ObjectNameValueAssy == "ObjectLabel":
-                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
-                            counter = counter + 1
 
         # Return the counter
         return counter
@@ -635,6 +658,8 @@ class General_BOM:
             ListItem3 = rowItem["Item3"]
             if Item4 != "":
                 ListItem4 = rowItem["Item4"]
+                
+            print(f"{Item4}, {ListItem4}")
 
             if Item4 == "":
                 if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
@@ -1316,6 +1341,12 @@ class General_BOM:
             # GEt the internal name of the item
             itemName = BoMListItem["ObjectLabel"]
             itemType = BoMListItem["Type"]
+            # Try to get the material. Set as empty string as default
+            itemMaterial = ""
+            try:
+                itemMaterial = BoMListItem["DocumentObject"].ShapeMaterial.Name
+            except Exception:
+                pass
 
             # Add always the first item to the replace list
             if i == 0:
@@ -1325,6 +1356,13 @@ class General_BOM:
             for j in range(len(ReplaceList)):
                 # Set skip to false as default
                 skip = False
+                
+                # Get the material from the replaced item. Set as empty string as default
+                ReplacedItemMaterial = ""
+                try:
+                    ReplacedItemMaterial = ReplaceList[j].ShapeMaterial.Name
+                except Exception:
+                    pass
 
                 # if you at the end of the replace list: if the item is not in the shadowlist,
                 # add it to the result list.
@@ -1346,7 +1384,7 @@ class General_BOM:
                     if (
                         ReplaceList[j]["ItemNumber"].rsplit(".", 1)[0]
                         == itemNumber.rsplit(".", 1)[0]
-                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplaceList[j]["DocumentObject"].ShapeMaterial.Name == itemMaterial
                     ):
                         # Go through the BoMList. Every item that starts with current itemnumber
                         # is a child of the current item. Add it to the shadow list
@@ -1367,7 +1405,7 @@ class General_BOM:
                 if len(itemNumber.split(".")) == 1:
                     if (
                         ReplaceList[j]["ItemNumber"] == itemNumber
-                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplaceList[j].ShapeMaterial.Name == itemMaterial
                     ):
                         resultList.append(ReplaceList[j])
                         break

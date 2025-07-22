@@ -228,7 +228,7 @@ class BomFunctions:
             Quantity = 1
             for j in range(len(ShadowList)):
                 shadowItem = ShadowList[j]
-                test = self.CompareBodies(rowList["DocumentObject"], shadowItem["DocumentObject"])
+                test = General_BOM.CompareBodies(rowList["DocumentObject"], shadowItem["DocumentObject"])
                 if test is True and j > 0:
                     Quantity = Quantity + 1
 
