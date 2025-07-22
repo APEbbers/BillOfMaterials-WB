@@ -676,6 +676,7 @@ class General_BOM:
         RowItem: dict = None,
         mainList: list = None,
         ObjectNameBased: bool = True,
+        CompareMaterial: bool = False
     ) -> int:
         """_summary_
         Use this function only two ways:\n
@@ -707,28 +708,72 @@ class General_BOM:
 
         # Set the counter
         counter = 0
-
+        
         # Go Through the mainList
         # If ObjectBased is True, compare the objects
         if ObjectBased is True:
+            # Try to get the material. this only works with bodies
+            Item_Material = ""
+            try:
+                Item_Material = DocObject["DocumentObject"].ShapeMaterial.Name
+            except Exception:
+                pass
+            
             for i in range(len(mainList)):
-                # If the document object  in the list is equal to DocObject, increase the counter by one.
-                if mainList[i]["DocumentObject"] == DocObject:
-                    counter = counter + 1
+                BomListItem_Material = ""
+                try:
+                    BomListItem_Material = mainList[i]["DocumentObject"].ShapeMaterial.Name
+                except Exception:
+                    pass
+                
+                # Set MaterialCompare to True as default
+                MaterialCompare = True
+                # if material needs to be taken into account, compare the material
+                if CompareMaterial is True:
+                    if BomListItem_Material != Item_Material:
+                        MaterialCompare = False  
+                
+                # if the material is equal continue
+                if MaterialCompare is True:
+                    # If the document object  in the list is equal to DocObject, increase the counter by one.
+                    if mainList[i]["DocumentObject"] == DocObject:
+                        counter = counter + 1
 
         # If ListRowBased is True, compare the name and type of the objects. These are stored in the list items.
         if ListRowBased is True:
+            # Try to get the material. this only works with bodies
+            Item_Material = ""
+            try:
+                Item_Material = RowItem["DocumentObject"].ShapeMaterial.Name
+            except Exception:
+                pass
+            
             for i in range(len(mainList)):
-                ObjectName = mainList[i][ObjectNameValue]
-                ObjectType = mainList[i]["DocumentObject"].TypeId
+                BomListItem_Material = ""
+                try:
+                    BomListItem_Material = mainList[i]["DocumentObject"].ShapeMaterial.Name
+                except Exception:
+                    pass
+                
+                # Set MaterialCompare to True as default
+                MaterialCompare = True
+                # if material needs to be taken into account, compare the material
+                if CompareMaterial is True:
+                    if BomListItem_Material != Item_Material:
+                        MaterialCompare = False 
+                
+                # if the material is equal continue
+                if MaterialCompare is True:
+                    ObjectName = mainList[i][ObjectNameValue]
+                    ObjectType = mainList[i]["DocumentObject"].TypeId
 
-                # If the object name and type of the object in the list are equal to that of the DocObject,
-                # increase the counter by one
-                if (
-                    RowItem[ObjectNameValue] == ObjectName
-                    and RowItem["DocumentObject"].TypeId == ObjectType
-                ):
-                    counter = counter + 1
+                    # If the object name and type of the object in the list are equal to that of the DocObject,
+                    # increase the counter by one
+                    if (
+                        RowItem[ObjectNameValue] == ObjectName
+                        and RowItem["DocumentObject"].TypeId == ObjectType
+                    ):
+                        counter = counter + 1
 
         # Return the counter
         return counter
