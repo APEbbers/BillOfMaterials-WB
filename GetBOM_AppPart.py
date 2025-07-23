@@ -307,17 +307,17 @@ class BomFunctions:
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Define the shadow material
-                shadowMaterial = ""
+                shadowBodyProperties = ""
                 try:
-                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
                 except Exception:
                     pass
-                # Create the row item for the shadow list.
+                  # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowLabel,
                     "Item3": shadowType,
-                    "Item4": shadowMaterial,
+                    "Item4": shadowBodyProperties,
                 }
 
                 # Find the quantity for the item
@@ -373,9 +373,9 @@ class BomFunctions:
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Define the shadow material
-                shadowMaterial = ""
+                shadowBodyProperties = ""
                 try:
-                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])                    
                 except Exception:
                     pass
                 # Create the row item for the shadow list.
@@ -383,7 +383,7 @@ class BomFunctions:
                     "Item1": shadowItemNumber,
                     "Item2": shadowLabel,
                     "Item3": shadowType,
-                    "Item4": shadowMaterial,
+                    "Item4": shadowBodyProperties,
                 }
 
                 # Find the quantity for the item

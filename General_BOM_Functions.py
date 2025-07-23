@@ -567,25 +567,25 @@ class General_BOM:
         if ObjectBasedPart is False:
             ObjectNameValuePart = "ObjectLabel"
 
-        ObjectNameValueAssy = "Object"
-        if ObjectBasedAssy is False:
-            ObjectNameValueAssy = "ObjectLabel"
+        # ObjectNameValueAssy = "Object"
+        # if ObjectBasedAssy is False:
+        #     ObjectNameValueAssy = "ObjectLabel"
 
         # Set the counter
         counter = 0
 
         # Try to get the material. this only works with bodies
-        Item_Material = ""
+        Item_Properties = ""
         try:
-            Item_Material = ListItem["DocumentObject"].ShapeMaterial.Name
+            Item_Properties = self.ReturnBodyProperties(ListItem["DocumentObject"])
         except Exception:
             pass
 
         # Go Through the objectList
         for i in range(len(BomList)):
-            BomListItem_Material = ""
+            BomListItem_Properties = ""
             try:
-                BomListItem_Material = BomList[i]["DocumentObject"].ShapeMaterial.Name
+                BomListItem_Properties = self.ReturnBodyProperties(BomList[i]["DocumentObject"])
             except Exception:
                 pass
             
@@ -593,7 +593,7 @@ class General_BOM:
             MaterialCompare = True
             # if material needs to be taken into account, compare the material
             if CompareMaterial is True:
-                if BomListItem_Material != Item_Material:
+                if BomListItem_Properties != Item_Properties:
                     MaterialCompare = False            
             
             # if the material is equeal continue
@@ -605,62 +605,68 @@ class General_BOM:
                         BomList[i]["ItemNumber"].rsplit(".", 1)[0]
                         == ItemNumber.rsplit(".", 1)[0]
                     ):
-                        if ListItem["Type"] == "Part":
-                            if ObjectNameValuePart == "Object":
-                                if (
-                                    BomList[i]["DocumentObject"]
-                                    == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
-                                ):
-                                    counter = counter + 1
-                            if ObjectNameValuePart == "ObjectLabel":
-                                if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
-                                    counter = counter + 1
-                        if ListItem["Type"] == "Assembly":
-                            if ObjectNameValueAssy == "Object":
-                                if (
-                                    BomList[i]["DocumentObject"]
-                                    == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
-                                ):
-                                    counter = counter + 1
-                            if ObjectNameValueAssy == "ObjectLabel":
-                                if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
-                                    counter = counter + 1
+                        # if ListItem["Type"] == "Part":
+                        if ObjectNameValuePart == "Object":
+                            if (
+                                BomList[i]["DocumentObject"]
+                                == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
+                            ):
+                                counter = counter + 1
+                        if ObjectNameValuePart == "ObjectLabel":
+                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
+                                counter = counter + 1
+                        # if ListItem["Type"] == "Assembly":
+                        #     if ObjectNameValueAssy == "Object":
+                        #         if (
+                        #             BomList[i]["DocumentObject"]
+                        #             == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
+                        #         ):
+                        #             counter = counter + 1
+                        #     if ObjectNameValueAssy == "ObjectLabel":
+                        #         if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
+                        #             counter = counter + 1
 
                 # If the itemnumber is one level deep:
                 if (
                     len(ItemNumber.split(".")) == 1
                     and len(BomList[i]["ItemNumber"].split(".")) == 1
                 ):
-                    if ListItem["Type"] == "Part":
-                        if ObjectNameValuePart == "Object":
-                            if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
-                                counter = counter + 1
-                        if ObjectNameValuePart == "ObjectLabel":
-                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
-                                counter = counter + 1
-                    if ListItem["Type"] == "Assembly":
-                        if ObjectNameValueAssy == "Object":
-                            if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
-                                counter = counter + 1
-                        if ObjectNameValueAssy == "ObjectLabel":
-                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
-                                counter = counter + 1
+                    # if ListItem["Type"] == "Part":
+                    if ObjectNameValuePart == "Object":
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
+                            counter = counter + 1
+                    if ObjectNameValuePart == "ObjectLabel":
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
+                            counter = counter + 1
+                    # if ListItem["Type"] == "Assembly":
+                    #     if ObjectNameValueAssy == "Object":
+                    #         if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
+                    #             counter = counter + 1
+                    #     if ObjectNameValueAssy == "ObjectLabel":
+                    #         if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
+                    #             counter = counter + 1
 
         # Return the counter
         return counter
 
     @classmethod
-    def ListContainsCheck(self, List: list, Item1, Item2, Item3, Item4 = "", Item5 = "") -> bool:
+    def ListContainsCheck(self, List: list, Item1, Item2, Item3, Item4 = None, Item5 = None) -> bool:
         for i in range(len(List)):
             rowItem = List[i]
             ListItem1 = rowItem["Item1"]
             ListItem2 = rowItem["Item2"]
             ListItem3 = rowItem["Item3"]
-            if Item4 != "":
+            ListItem4 = ""
+            ListItem5 = ""
+            if Item4 != "" and Item4 is not None:
                 ListItem4 = rowItem["Item4"]
-            if Item5 != "":
+            else:
+                Item4 = ""
+            if Item5 != "" and Item5 is not None:
                 ListItem5 = rowItem["Item5"]
-
+            else:
+                Item5 = ""
+                
             if Item4 == "" and Item5 == "":
                 if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
                     return True
@@ -721,16 +727,16 @@ class General_BOM:
         # If ObjectBased is True, compare the objects
         if ObjectBased is True:
             # Try to get the material. this only works with bodies
-            Item_Material = ""
+            Item_Properties = ""
             try:
-                Item_Material = DocObject["DocumentObject"].ShapeMaterial.Name
+                Item_Properties = self.ReturnBodyProperties(DocObject["DocumentObject"])
             except Exception:
                 pass
             
             for i in range(len(mainList)):
-                BomListItem_Material = ""
+                BomListItem_Properties = ""
                 try:
-                    BomListItem_Material = mainList[i]["DocumentObject"].ShapeMaterial.Name
+                    BomListItem_Properties = self.ReturnBodyProperties(mainList[i]["DocumentObject"])
                 except Exception:
                     pass
                 
@@ -738,7 +744,7 @@ class General_BOM:
                 MaterialCompare = True
                 # if material needs to be taken into account, compare the material
                 if CompareMaterial is True:
-                    if BomListItem_Material != Item_Material:
+                    if len(list(set(BomListItem_Properties)) - list(set(Item_Properties))) > 0:
                         MaterialCompare = False  
                 
                 # if the material is equal continue
@@ -750,16 +756,16 @@ class General_BOM:
         # If ListRowBased is True, compare the name and type of the objects. These are stored in the list items.
         if ListRowBased is True:
             # Try to get the material. this only works with bodies
-            Item_Material = ""
+            Item_Properties = ""
             try:
-                Item_Material = RowItem["DocumentObject"].ShapeMaterial.Name
+                Item_Properties = self.ReturnBodyProperties(RowItem["DocumentObject"])
             except Exception:
                 pass
             
             for i in range(len(mainList)):
-                BomListItem_Material = ""
+                BomListItem_Properties = ""
                 try:
-                    BomListItem_Material = mainList[i]["DocumentObject"].ShapeMaterial.Name
+                    BomListItem_Properties = self.ReturnBodyProperties(mainList[i]["DocumentObject"])
                 except Exception:
                     pass
                 
@@ -767,7 +773,7 @@ class General_BOM:
                 MaterialCompare = True
                 # if material needs to be taken into account, compare the material
                 if CompareMaterial is True:
-                    if BomListItem_Material != Item_Material:
+                    if BomListItem_Properties != Item_Properties:
                         MaterialCompare = False 
                 
                 # if the material is equal continue
@@ -1508,3 +1514,76 @@ class General_BOM:
                 RootObjects.append(Object)
         
         return RootObjects
+    
+    # Function to compare bodies
+    @classmethod
+    def CompareBodies(self, DocObject_1, DocObject_2) -> bool:
+        try:
+            Shape_1 = DocObject_1.Shape
+            Shape_2 = DocObject_2.Shape
+            Material_1 = ""
+
+            Material_1 = None
+            try:
+                Material_1 = DocObject_1.ShapeMaterial
+            except Exception:
+                pass
+
+            Material_2 = None
+            try:
+                Material_2 = DocObject_2.ShapeMaterial
+            except Exception:
+                pass
+            
+            if Material_1.Name != Material_2.Name:
+                return False
+
+            List_1 = [
+                Shape_1.Area,
+                Shape_1.Length,
+                Shape_1.Volume,
+            ]
+
+            List_2 = [
+                Shape_2.Area,
+                Shape_2.Length,
+                Shape_2.Volume,
+            ]
+
+            for i in range(len(List_1)):
+                Value_1 = round(List_1[i], 6)
+                Value_2 = round(List_2[i], 6)
+
+                if Value_1 != Value_2:
+                    return False
+
+            return True
+        except Exception:
+            return False
+        
+    
+    # Function to return body properties as a list
+    @classmethod
+    def ReturnBodyProperties(self, DocObject):
+        try:
+            Shape = DocObject.Shape
+            Material = ""
+            try:
+                Material = DocObject.ShapeMaterial
+            except Exception:
+                pass
+            
+            List = [
+                str(Shape.Area),
+                str(Shape.Length),
+                str(Shape.Volume),
+                str(Material),
+            ]
+
+
+            return List
+        except Exception as e:
+            if Settings_BoM.ENABLE_DEBUG is True:
+                print(e)
+            return
+        
