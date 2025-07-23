@@ -567,10 +567,6 @@ class General_BOM:
         if ObjectBasedPart is False:
             ObjectNameValuePart = "ObjectLabel"
 
-        # ObjectNameValueAssy = "Object"
-        # if ObjectBasedAssy is False:
-        #     ObjectNameValueAssy = "ObjectLabel"
-
         # Set the counter
         counter = 0
 
@@ -605,7 +601,6 @@ class General_BOM:
                         BomList[i]["ItemNumber"].rsplit(".", 1)[0]
                         == ItemNumber.rsplit(".", 1)[0]
                     ):
-                        # if ListItem["Type"] == "Part":
                         if ObjectNameValuePart == "Object":
                             if (
                                 BomList[i]["DocumentObject"]
@@ -615,16 +610,6 @@ class General_BOM:
                         if ObjectNameValuePart == "ObjectLabel":
                             if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
                                 counter = counter + 1
-                        # if ListItem["Type"] == "Assembly":
-                        #     if ObjectNameValueAssy == "Object":
-                        #         if (
-                        #             BomList[i]["DocumentObject"]
-                        #             == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
-                        #         ):
-                        #             counter = counter + 1
-                        #     if ObjectNameValueAssy == "ObjectLabel":
-                        #         if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
-                        #             counter = counter + 1
 
                 # If the itemnumber is one level deep:
                 if (
@@ -638,13 +623,7 @@ class General_BOM:
                     if ObjectNameValuePart == "ObjectLabel":
                         if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
                             counter = counter + 1
-                    # if ListItem["Type"] == "Assembly":
-                    #     if ObjectNameValueAssy == "Object":
-                    #         if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
-                    #             counter = counter + 1
-                    #     if ObjectNameValueAssy == "ObjectLabel":
-                    #         if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
-                    #             counter = counter + 1
+
 
         # Return the counter
         return counter
@@ -1569,17 +1548,16 @@ class General_BOM:
             Shape = DocObject.Shape
             Material = ""
             try:
-                Material = DocObject.ShapeMaterial
+                Material = DocObject.ShapeMaterial.Name
             except Exception:
                 pass
             
             List = [
-                str(Shape.Area),
-                str(Shape.Length),
-                str(Shape.Volume),
-                str(Material),
+                round(Shape.Area, 6),
+                round(Shape.Length, 6),
+                round(Shape.Volume, 6),
+                Material,
             ]
-
 
             return List
         except Exception as e:

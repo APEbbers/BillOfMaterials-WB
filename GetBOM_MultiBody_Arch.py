@@ -154,53 +154,6 @@ class BomFunctions:
                 self.mainList.append(rowList)
         return
 
-    # Function to compare bodies
-    @classmethod
-    def CompareBodies(self, DocObject_1, DocObject_2) -> bool:
-        try:
-            Shape_1 = DocObject_1.Shape
-            Shape_2 = DocObject_2.Shape
-            Material_1 = ""
-
-            Material_1 = None
-            try:
-                Material_1 = DocObject_1.ShapeMaterial
-            except Exception:
-                pass
-
-            Material_2 = None
-            try:
-                Material_2 = DocObject_2.ShapeMaterial
-            except Exception:
-                pass
-            
-            if Material_1.Name != Material_2.Name:
-                return False
-
-            List_1 = [
-                Shape_1.Area,
-                Shape_1.Length,
-                Shape_1.Mass,
-                Shape_1.Volume,
-            ]
-
-            List_2 = [
-                Shape_2.Area,
-                Shape_2.Length,
-                Shape_2.Mass,
-                Shape_2.Volume,
-            ]
-
-            for i in range(len(List_1)):
-                Value_1 = round(List_1[i], 6)
-                Value_2 = round(List_2[i], 6)
-
-                if Value_1 != Value_2:
-                    return False
-
-            return True
-        except Exception:
-            return False
 
     @classmethod
     def CreateTotalBoM(self, CreateSpreadSheet: bool = True, Headers=""):
@@ -228,7 +181,7 @@ class BomFunctions:
             Quantity = 1
             for j in range(len(ShadowList)):
                 shadowItem = ShadowList[j]
-                test = self.CompareBodies(rowList["DocumentObject"], shadowItem["DocumentObject"])
+                test = General_BOM.CompareBodies(rowList["DocumentObject"], shadowItem["DocumentObject"])
                 if test is True and j > 0:
                     Quantity = Quantity + 1
 

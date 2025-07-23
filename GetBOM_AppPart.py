@@ -513,9 +513,9 @@ class BomFunctions:
             }
             
             # Define the shadow material
-            shadowMaterial = ""
+            shadowBodyProperties = ""
             try:
-                shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
             except Exception:
                 pass
 
@@ -524,7 +524,7 @@ class BomFunctions:
                 "Item1": rowList[ObjectNameField],
                 "Item2": rowList["DocumentObject"].TypeId,
                 "Item3": rowList["Type"],
-                "Item4": shadowMaterial,
+                "Item4": shadowBodyProperties,
             }
             # Add the rowItem if it is not in the shadow list.
             if (
@@ -615,9 +615,9 @@ class BomFunctions:
                 )
                 
                 # Define the shadow material
-                shadowMaterial = ""
+                shadowBodyProperties = ""
                 try:
-                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
                 except Exception:
                     pass
 
@@ -636,7 +636,7 @@ class BomFunctions:
                     "Item1": rowList[ObjectNameField],
                     "Item2": rowList["DocumentObject"].TypeId,
                     "Item3": rowList["Type"],
-                    "Item4": shadowMaterial,
+                    "Item4": shadowBodyProperties,
                 }
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
