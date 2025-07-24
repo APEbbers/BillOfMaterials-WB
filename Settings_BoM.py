@@ -216,9 +216,8 @@ def ReturnHeaders(CustomHeaders = None, DebugHeaders=None):
             
     if DebugHeaders is not None:
         DebugHeaderList = DebugHeaders.split(";")
-        for i in range(len(DebugHeaders)):
-            # Set the header
-            Header = DebugHeaderList[i]
+        i = len(Headers.keys())
+        for Header in DebugHeaderList:
             # Set the column
             Column = Standard_Functions.GetLetterFromNumber(
                 i + 1

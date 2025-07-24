@@ -1379,7 +1379,7 @@ class General_BOM:
             # Try to get the material. Set as empty string as default
             itemMaterial = ""
             try:
-                itemMaterial = BoMListItem["DocumentObject"].ShapeMaterial.Name
+                itemMaterial = self.ReturnBodyProperties(BoMListItem["DocumentObject"])
             except Exception:
                 pass
 
@@ -1393,9 +1393,9 @@ class General_BOM:
                 skip = False
                 
                 # Get the material from the replaced item. Set as empty string as default
-                ReplacedItemMaterial = ""
+                ReplacedItem_Properties = ""
                 try:
-                    ReplacedItemMaterial = ReplaceList[j].ShapeMaterial.Name
+                    ReplacedItem_Properties = self.ReturnBodyProperties(ReplaceList[j]["DocumentObject"])
                 except Exception:
                     pass
 
@@ -1419,7 +1419,7 @@ class General_BOM:
                     if (
                         ReplaceList[j]["ItemNumber"].rsplit(".", 1)[0]
                         == itemNumber.rsplit(".", 1)[0]
-                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplacedItemMaterial == itemMaterial
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplacedItem_Properties == itemMaterial
                     ):
                         # Go through the BoMList. Every item that starts with current itemnumber
                         # is a child of the current item. Add it to the shadow list
@@ -1440,7 +1440,7 @@ class General_BOM:
                 if len(itemNumber.split(".")) == 1:
                     if (
                         ReplaceList[j]["ItemNumber"] == itemNumber
-                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplacedItemMaterial == itemMaterial
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplacedItem_Properties == itemMaterial
                     ):
                         resultList.append(ReplaceList[j])
                         break
