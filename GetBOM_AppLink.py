@@ -103,12 +103,12 @@ class BomFunctions:
         try:
             # Get the linked object
             object = docObject.LinkedObject
-            # Rename the linked object. Add _master to indicate that this is the master assembly.
-            # If _masters is already added. do nothing
-            if object.Label[-7:] != "_master":
-                object.Label = object.Label + "_master"
-            # Rename the docObject by replacing the Label with that from the master assembly, but without "_master".
-            docObject.Label = object.Label[:-7]
+            # # Rename the linked object. Add _master to indicate that this is the master assembly.
+            # # If _masters is already added. do nothing
+            # if object.Label[-7:] != "_master":
+            #     object.Label = object.Label + "_master"
+            # # Rename the docObject by replacing the Label with that from the master assembly, but without "_master".
+            # docObject.Label = object.Label[:-7]
             # return the result
             result = object
         except Exception:
@@ -459,6 +459,7 @@ class BomFunctions:
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
+        ShadowList_2 = []
         # Create two lists for splitting the copy of the main list
         ItemNumberList = []
         ObjectDocumentList = []
@@ -515,7 +516,7 @@ class BomFunctions:
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
-                        ObjectBasedPart=False,
+                        ObjectBasedPart=True,
                         CompareMaterial=True,
                     )
                 )
@@ -540,11 +541,14 @@ class BomFunctions:
                         Item3=shadowRow["Item3"],
                         Item4=shadowRow["Item4"],
                     )
-                    is False
+                    is False and not shadowItemNumber in ShadowList_2
                 ):
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
+                else:
+                    if shadowType == "Assembly":
+                        ShadowList_2.append(itemNumber)
 
             # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
             if len(itemNumber.split(".")) == 1:
@@ -557,8 +561,8 @@ class BomFunctions:
                 ]
 
                 shadowItemNumber = itemNumber
-                if TypeListParts.__contains__(rowList["DocumentObject"].TypeId) is True:
-                    shadowItemNumber = "0"
+                if rowList["Type"] == "Assembly":
+                    shadowItemNumber = "X"
                 # Define the shadow item.
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
@@ -583,16 +587,11 @@ class BomFunctions:
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
-                        ObjectBasedPart=False,
+                        ObjectBasedPart=True,
                         CompareMaterial=True,
                     )
                 )
 
-                if (
-                    TypeListParts.__contains__(rowList["DocumentObject"].TypeId)
-                    is False
-                ):
-                    QtyValue = "1"
                 # Create a new row item for the temporary row.
                 rowListNew = {
                     "ItemNumber": itemNumber,
@@ -617,14 +616,17 @@ class BomFunctions:
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
                     ShadowList.append(shadowRow)
+                else:
+                    if shadowType == "Assembly":
+                        ShadowList_2.append(itemNumber)
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
         if IncludeBodies is False and Level > 1:
             TemporaryList = self.FilterBodies(BOMList=TemporaryList, Level=Level)
 
-        # correct the quantities for the parts in subassemblies
-        TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
+        # # correct the quantities for the parts in subassemblies
+        # TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:

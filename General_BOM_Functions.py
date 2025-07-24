@@ -548,7 +548,6 @@ class General_BOM:
         ItemNumber: str,
         BomList: list,
         ObjectBasedPart: bool = True,
-        ObjectBasedAssy: bool = False,
         CompareMaterial: bool = False
     ) -> int:
         """_summary_
