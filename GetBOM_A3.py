@@ -490,7 +490,7 @@ class BomFunctions:
                 # write the itemnumber of the subassy for the shadow list.
                 shadowItemNumber = itemNumber.rsplit(".", 1)[0]
                 # Define the shadow item.
-                shadowLabel = rowList["ObjectName"]
+                shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Define the shadow body properties
@@ -550,7 +550,7 @@ class BomFunctions:
                 # write the itemnumber of the subassy for the shadow list.
                 shadowItemNumber = itemNumber.rsplit(".", 1)[0]
                 # Define the shadow item.
-                shadowLabel = rowList["ObjectName"]
+                shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Define the shadow body properties
