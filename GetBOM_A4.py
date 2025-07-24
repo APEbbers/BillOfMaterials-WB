@@ -514,19 +514,6 @@ class BomFunctions:
         # return the filtered list.
         return BOMList
 
-    @classmethod
-    def ListContainsCheck(self, List: list, Item1, Item2, Item3) -> bool:
-        for i in range(len(List)):
-            rowItem = List[i]
-            ListItem1 = rowItem["Item1"]
-            ListItem2 = rowItem["Item2"]
-            ListItem3 = rowItem["Item3"]
-
-            if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
-                return True
-
-        return False
-
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
@@ -592,7 +579,7 @@ class BomFunctions:
                 # write the itemnumber of the subassy for the shadow list.
                 shadowItemNumber = itemNumber.rsplit(".", 1)[0]
                 # Define the shadow item.
-                shadowObject = rowList["DocumentObject"]
+                shadowObject = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Define the shadow body properties
@@ -654,7 +641,7 @@ class BomFunctions:
                 # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
                 shadowItemNumber = "X"
                 # Define the shadow item.
-                shadowObject = rowList["DocumentObject"]
+                shadowObject = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Define the shadow body properties
