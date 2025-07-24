@@ -385,18 +385,18 @@ class BomFunctions:
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
-                # Define the shadow material
-                shadowMaterial = ""
+                # Define the shadow body properties
+                shadowBodyProperties = ""
                 try:
-                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
                 except Exception:
                     pass
-                # Create the row item for the shadow list.
+                  # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowLabel,
                     "Item3": shadowType,
-                    "Item4": shadowMaterial,
+                    "Item4": shadowBodyProperties,
                 }
 
                 # Find the quantity for the item
@@ -446,18 +446,18 @@ class BomFunctions:
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
-                # Define the shadow material
-                shadowMaterial = ""
+                # Define the shadow body properties
+                shadowBodyProperties = ""
                 try:
-                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
                 except Exception:
                     pass
-                # Create the row item for the shadow list.
+                  # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowLabel,
                     "Item3": shadowType,
-                    "Item4": shadowMaterial,
+                    "Item4": shadowBodyProperties,
                 }
 
                 # Find the quantity for the item
@@ -585,10 +585,10 @@ class BomFunctions:
                 "Type": rowList["Type"],
             }
             
-            # Define the shadow material
-            shadowMaterial = ""
+            # Define the shadow body properties
+            shadowBodyProperties = ""
             try:
-                shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
             except Exception:
                 pass
 
@@ -597,7 +597,7 @@ class BomFunctions:
                 "Item1": rowList[ObjectNameField],
                 "Item2": rowList["DocumentObject"].TypeId,
                 "Item3": rowList["Type"],
-                "Item4": shadowMaterial,
+                "Item4": shadowBodyProperties,
             }
             # Add the rowItem if it is not in the shadow list.
             if (
@@ -688,13 +688,6 @@ class BomFunctions:
                         CompareMaterial=True,
                     )
                 )
-                
-                # Define the shadow material
-                shadowMaterial = ""
-                try:
-                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
-                except Exception:
-                    pass
 
                 # Create a new row item for the temporary row.
                 rowListNew = {
@@ -706,12 +699,19 @@ class BomFunctions:
                     "Type": rowList["Type"],
                 }
 
+                # Define the shadow body properties
+                shadowBodyProperties = ""
+                try:
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                except Exception:
+                    pass
+
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": rowList[ObjectNameField],
                     "Item2": rowList["DocumentObject"].TypeId,
                     "Item3": rowList["Type"],
-                    "Item4": shadowMaterial,
+                    "Item4": shadowBodyProperties,
                 }
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.

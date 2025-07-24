@@ -521,10 +521,10 @@ class BomFunctions:
                 shadowType = rowList["Type"]
                 # Get the parent
                 shadowParent = rowList["Parent"]
-                # Define the shadow material
-                shadowMaterial = ""
+                # Define the shadow body properties
+                shadowBodyProperties = ""
                 try:
-                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
                 except Exception:
                     pass
                 # Create the row item for the shadow list.
@@ -533,7 +533,7 @@ class BomFunctions:
                     "Item2": shadowLabel,
                     "Item3": shadowType,
                     "Item4": shadowParent,
-                    "Item5": shadowMaterial,
+                    "Item5": shadowBodyProperties,
                 }
 
                 # Find the quantity for the item
@@ -595,10 +595,10 @@ class BomFunctions:
                 shadowType = rowList["Type"]
                 # Get the parent
                 shadowParent = rowList["Parent"]
-                # Define the shadow material
-                shadowMaterial = ""
+                # Define the shadow body properties
+                shadowBodyProperties = ""
                 try:
-                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
                 except Exception:
                     pass
                 # Create the row item for the shadow list.
@@ -607,7 +607,7 @@ class BomFunctions:
                     "Item2": shadowLabel,
                     "Item3": shadowType,
                     "Item4": shadowParent,
-                    "Item5": shadowMaterial,
+                    "Item5": shadowBodyProperties,
                 }
 
                 # Find the quantity for the item
@@ -753,10 +753,10 @@ class BomFunctions:
                 "Parent": rowList["Parent"]
             }
             
-            # Define the shadow material
-            shadowMaterial = ""
+            # Define the shadow body properties
+            shadowBodyProperties = ""
             try:
-                shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
             except Exception:
                 pass
 
@@ -766,7 +766,7 @@ class BomFunctions:
                 "Item2": rowList["DocumentObject"].TypeId,
                 "Item3": rowList["Type"],
                 "Item4": rowList["Parent"],
-                "Item5": shadowMaterial,
+                "Item5": shadowBodyProperties,
             }
             # Add the rowItem if it is not in the shadow list.
             if (
@@ -876,10 +876,10 @@ class BomFunctions:
                     "Parent": rowList["Parent"]
                 }
                 
-                # Define the shadow material
-                shadowMaterial = ""
+                # Define the shadow body properties
+                shadowBodyProperties = ""
                 try:
-                    shadowMaterial = rowList["DocumentObject"].ShapeMaterial.Name
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
                 except Exception:
                     pass
 
@@ -889,7 +889,7 @@ class BomFunctions:
                     "Item2": rowList["DocumentObject"].TypeId,
                     "Item3": rowList["Type"],
                     "Item4": rowList["Parent"],
-                    "Item5": shadowMaterial,
+                    "Item5": shadowBodyProperties,
                 }
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.

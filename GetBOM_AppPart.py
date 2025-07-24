@@ -306,7 +306,7 @@ class BomFunctions:
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
-                # Define the shadow material
+                # Define the shadow body properties
                 shadowBodyProperties = ""
                 try:
                     shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
@@ -372,7 +372,7 @@ class BomFunctions:
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
-                # Define the shadow material
+                # Define the shadow properties
                 shadowBodyProperties = ""
                 try:
                     shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])                    
