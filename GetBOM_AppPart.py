@@ -512,7 +512,7 @@ class BomFunctions:
                 "Type": rowList["Type"],
             }
             
-            # Define the shadow material
+            # Define the shadow body properties
             shadowBodyProperties = ""
             try:
                 shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
@@ -613,13 +613,6 @@ class BomFunctions:
                         CompareMaterial=True,
                     )
                 )
-                
-                # Define the shadow material
-                shadowBodyProperties = ""
-                try:
-                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
-                except Exception:
-                    pass
 
                 # Create a new row item for the temporary row.
                 rowListNew = {
@@ -630,6 +623,13 @@ class BomFunctions:
                     "Qty": QtyValue,
                     "Type": rowList["Type"],
                 }
+
+                # Define the shadow body properties
+                shadowBodyProperties = ""
+                try:
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                except Exception:
+                    pass
 
                 # Create the row item for the shadow list.
                 shadowRow = {
