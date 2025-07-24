@@ -162,6 +162,7 @@ class BomFunctions:
             "PartDesign::Body",
             "App::Part",
             "Assembly::AssemblyObject",
+            'Assembly::AssemblyLink',
         ]
 
         # Go through the list and compare the object ID's in the list with the ObjectId.
@@ -234,6 +235,7 @@ class BomFunctions:
                     or object.TypeId == "App::Link"
                     or object.TypeId == "App::Part"
                     or object.TypeId == "Assembly::AssemblyObject"
+                    or object.TypeId == 'Assembly::AssemblyLink'
                 ):
                     # Create a list with child objects as DocumentObjects
                     childObjects = []
@@ -320,6 +322,7 @@ class BomFunctions:
                     or childObject.TypeId == "App::Link"
                     or childObject.TypeId == "App::Part"
                     or childObject.TypeId == "Assembly::AssemblyObject"
+                    or childObject.TypeId == 'Assembly::AssemblyLink'
                 ):
                     # Create a list with sub child objects as DocumentObjects
                     subChildObjects = []
@@ -475,9 +478,6 @@ class BomFunctions:
             CopyMainList_2.append(self.ReturnLinkedObject(CopyMainList[i]))
         CopyMainList = CopyMainList_2
 
-        # summarize duplicate subassemblies
-        CopyMainList = General_BOM.ReplacesAssembly(CopyMainList)
-
         # Create a temporary list
         TemporaryList = []
 
@@ -543,7 +543,6 @@ class BomFunctions:
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
                         ObjectBasedPart=True,
-                        ObjectBasedAssy=False,
                         CompareMaterial=True,
                     )
                 )
@@ -617,7 +616,6 @@ class BomFunctions:
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
                         ObjectBasedPart=True,
-                        ObjectBasedAssy=False,
                         CompareMaterial=True,
                     )
                 )
@@ -659,12 +657,11 @@ class BomFunctions:
                 BOMList=TemporaryList, AllowAllBodies=IncludeBodies
             )
 
-        # correct the quantities for the parts in subassemblies
-        TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
+        # # correct the quantities for the parts in subassemblies
+        # TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
 
         # Correct the itemnumbers if indentation is wanted.
-        if IndentNumbering is True:
-            TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
+        TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:

@@ -406,7 +406,6 @@ class BomFunctions:
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
                         ObjectBasedPart=False,
-                        ObjectBasedAssy=False,
                         CompareMaterial=True,
                     )
                 )
@@ -467,7 +466,6 @@ class BomFunctions:
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
                         ObjectBasedPart=False,
-                        ObjectBasedAssy=False,
                         CompareMaterial=True,
                     )
                 )

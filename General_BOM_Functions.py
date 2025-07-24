@@ -624,7 +624,6 @@ class General_BOM:
                         if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
                             counter = counter + 1
 
-
         # Return the counter
         return counter
 
@@ -788,7 +787,7 @@ class General_BOM:
         for i in range(len(BoMList)):
             TemporaryList.append(BoMList[i])
 
-            if i > 1:
+            if i > 0:
                 # Get the list item from the new temporary list
                 rowItem = TemporaryList[i]
 
@@ -1489,7 +1488,7 @@ class General_BOM:
         
         # Get all toplevel objects
         for Object in Objects:
-            if len(Object.Parents) == 0:
+            if len(Object.Parents) == 0 and Object.Visibility is True:
                 RootObjects.append(Object)
         
         return RootObjects
