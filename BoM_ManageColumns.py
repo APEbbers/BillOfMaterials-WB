@@ -60,7 +60,7 @@ PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI")
 initalHeaders = General_BOM_Functions.General_BOM.customHeaders
 
 
-class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
+class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
     def __init__(self):
         # Makes "self.on_CreateBOM_clicked" listen to the changed control values instead initial values
         super(LoadDialog, self).__init__()
