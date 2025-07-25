@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'Add_RemoveColumnsPXNSlx.ui'
+## Form generated from reading UI file 'Add_RemoveColumnsOXoOya.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -25,7 +25,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(705, 580)
+        Form.resize(705, 569)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -265,12 +265,9 @@ class Ui_Form(object):
 
         self.frame1 = QFrame(self.frame)
         self.frame1.setObjectName(u"frame1")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.frame1.sizePolicy().hasHeightForWidth())
-        self.frame1.setSizePolicy(sizePolicy4)
-        self.frame1.setMinimumSize(QSize(0, 25))
+        sizePolicy.setHeightForWidth(self.frame1.sizePolicy().hasHeightForWidth())
+        self.frame1.setSizePolicy(sizePolicy)
+        self.frame1.setMinimumSize(QSize(0, 0))
         self.gridLayout_7 = QGridLayout(self.frame1)
         self.gridLayout_7.setSpacing(0)
         self.gridLayout_7.setContentsMargins(6, 6, 6, 6)
@@ -278,11 +275,11 @@ class Ui_Form(object):
         self.gridLayout_7.setContentsMargins(0, 0, 0, 0)
         self.SaveColumns = QPushButton(self.frame1)
         self.SaveColumns.setObjectName(u"SaveColumns")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(self.SaveColumns.sizePolicy().hasHeightForWidth())
-        self.SaveColumns.setSizePolicy(sizePolicy5)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.SaveColumns.sizePolicy().hasHeightForWidth())
+        self.SaveColumns.setSizePolicy(sizePolicy4)
         self.SaveColumns.setMinimumSize(QSize(0, 20))
         self.SaveColumns.setMaximumSize(QSize(16777215, 30))
 
@@ -290,8 +287,8 @@ class Ui_Form(object):
 
         self.LoadColumns = QPushButton(self.frame1)
         self.LoadColumns.setObjectName(u"LoadColumns")
-        sizePolicy5.setHeightForWidth(self.LoadColumns.sizePolicy().hasHeightForWidth())
-        self.LoadColumns.setSizePolicy(sizePolicy5)
+        sizePolicy4.setHeightForWidth(self.LoadColumns.sizePolicy().hasHeightForWidth())
+        self.LoadColumns.setSizePolicy(sizePolicy4)
         self.LoadColumns.setMinimumSize(QSize(0, 20))
         self.LoadColumns.setMaximumSize(QSize(16777215, 30))
 
@@ -299,13 +296,14 @@ class Ui_Form(object):
 
         self.ColumnsConfigList = QComboBox(self.frame1)
         self.ColumnsConfigList.setObjectName(u"ColumnsConfigList")
-        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
-        sizePolicy6.setHorizontalStretch(0)
-        sizePolicy6.setVerticalStretch(0)
-        sizePolicy6.setHeightForWidth(self.ColumnsConfigList.sizePolicy().hasHeightForWidth())
-        self.ColumnsConfigList.setSizePolicy(sizePolicy6)
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.ColumnsConfigList.sizePolicy().hasHeightForWidth())
+        self.ColumnsConfigList.setSizePolicy(sizePolicy5)
         self.ColumnsConfigList.setMinimumSize(QSize(0, 20))
         self.ColumnsConfigList.setMaximumSize(QSize(16777215, 30))
+        self.ColumnsConfigList.setEditable(True)
 
         self.gridLayout_7.addWidget(self.ColumnsConfigList, 1, 0, 1, 1)
 
