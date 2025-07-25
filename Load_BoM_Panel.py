@@ -24,9 +24,9 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide6.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
-from PySide6.QtGui import QIcon, QCursor
-from PySide6.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton
+from PySide.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
+from PySide.QtGui import QIcon, QCursor
+from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -347,12 +347,14 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form.ColumnsConfigList.setCurrentText("")
         
         # Add a eventfilter to show properties for remarks and description if there are already in the object properties
-        T = mw.findChild(QTreeWidget)
-        mw.installEventFilter(EventInspector(self.form))
+        mw.installEventFilter(EventInspector_Panel(self.form))
+        
+        # Add a event filter to the qcombobox ColumnsConfigList. This updates the items after a new config is made
+        self.form.ColumnsConfigList.installEventFilter(EventInspector_ComboBox(self.form))
 
         return
         # endregion
-
+    
     # Define Icon.
     def getIcon(self):
         iconPath = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
@@ -547,10 +549,17 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 
             # Set an confirmation icon
             self.form.LoadColumns.setIcon(Gui.getIcon("edit_OK.svg"))
+        
+        # Close the json file
+        JsonFile.close()
+        
         return            
 
     def on_ColumnsConfigList_currentTextChanged(self):
         self.form.LoadColumns.setIcon(QIcon())
+        
+        return
+            
 
     # A function to execute the BoM scripts based on the input from the controls.
     def CreateBOM(self, TypeOfBoM):
@@ -831,14 +840,14 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             except Exception:
                 doc = App.ActiveDocument
 
-class EventInspector(QObject):
+class EventInspector_Panel(QObject):
     # define a form
     form = None
     
     def __init__(self, parent):
         # store the parent for access by the eventFilter
         self.form = parent
-        super(EventInspector, self).__init__(parent)
+        super(EventInspector_Panel, self).__init__(parent)
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Type.ModifiedChange:
@@ -872,7 +881,38 @@ class EventInspector(QObject):
                                 RemarkLabelWidget.setText(Remark)
                         except Exception:
                             pass
-                            
+        
             except Exception:
                 pass
+            
+        
+        return False
+    
+class EventInspector_ComboBox(QObject):
+    # define a form
+    form = None
+    
+    def __init__(self, parent):
+        # store the parent for access by the eventFilter
+        self.form = parent
+        super(EventInspector_ComboBox, self).__init__(parent)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusIn:
+            if self.form.ColumnsConfigList.underMouse():
+                self.form.ColumnsConfigList.clear()
+            
+                # Get the json file
+                JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+                data = json.load(JsonFile)
+                
+                # Add the keys to the dropdown    
+                for key in data.keys():
+                    self.form.ColumnsConfigList.addItem(key)
+                self.form.ColumnsConfigList.setCurrentText("")
+                
+                # Close the json file
+                JsonFile.close()
+                return False
+        
         return False

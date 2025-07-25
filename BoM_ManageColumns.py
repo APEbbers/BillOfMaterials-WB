@@ -26,9 +26,9 @@ import os
 from inspect import getsourcefile
 import General_BOM_Functions
 import Standard_Functions_BOM_WB as Standard_Functions
-from PySide6.QtGui import QPalette, QIcon
-from PySide6.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget, QStyle, QStyledItemDelegate, QStyleOptionViewItem, QComboBox
-from PySide6.QtCore import SIGNAL, Qt, QSize
+from PySide.QtGui import QPalette, QIcon
+from PySide.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget, QStyle, QStyledItemDelegate, QStyleOptionViewItem, QComboBox
+from PySide.QtCore import SIGNAL, Qt, QSize
 import Settings_BoM
 from Settings_BoM import ENABLE_DEBUG
 import BoM_WB_Locator
@@ -630,6 +630,9 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
             json.dump(data, outfile, indent=4)
 
         outfile.close()
+        
+        # Add the saved name also to the combobox
+        self.form.ColumnsConfigList.addItem(name)
         return
     
     def on_LoadColumns_clicked(self):        
