@@ -681,7 +681,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
                     
         return
     
-    def on_LoadColumns_clicked(self):
+    def on_RemoveColumns_clicked(self):
         # Get the name for the columnsConfig
         name = self.form.ColumnsConfigList.currentText()
         
@@ -691,11 +691,19 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
             data = json.load(JsonFile)
             
             data.pop(name)
-            for i in len(self.form.ColumnsConfigList).count():
-                Item = self.form.ColumnsConfigList[i]
-                if Item.text() == name:
+            for i in range(self.form.ColumnsConfigList.count()):                
+                if self.form.ColumnsConfigList.itemText(i) == name:
                     self.form.ColumnsConfigList.removeItem(i)
-            self.form.ColumnsConfigList.removeItem()
+            self.form.ColumnsConfigList.removeItem(i)
+            # Close the json file
+            JsonFile.close()
+            
+            # Writing to sample.json
+            with open(os.path.join(PATH_TB, "ColumConfigurations.json"), "w") as outfile:
+                json.dump(data, outfile, indent=4)
+
+            outfile.close()
+            
         return
         
 
