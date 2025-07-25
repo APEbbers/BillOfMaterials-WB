@@ -179,7 +179,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
 
         # -----------------------------------------------------------------------------------------
         #
-        # Apply -----------------------------------------------------------------------------------
+        # Reset -----------------------------------------------------------------------------------
         def Reset():
             self.on_ButtonBox_Resetted(self)
 
@@ -623,18 +623,18 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
         outfile.close()
         return
     
-    def on_LoadColumns_clicked(self):
-        # Clear the present columns
-        self.form.Columns_Present.clear()
-        
-        # Get the json file
-        JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
-        data = json.load(JsonFile)
-        
+    def on_LoadColumns_clicked(self):        
         # Get the name for the columnsConfig
         name = self.form.ColumnsConfigList.currentText()
         
         if name != "":
+            # Clear the present columns
+            self.form.Columns_Present.clear()
+            
+            # Get the json file
+            JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+            data = json.load(JsonFile)
+            
             # Get the list with columns
             columnList: list = data[name]
             

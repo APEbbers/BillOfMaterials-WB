@@ -24,9 +24,9 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
-from PySide.QtGui import QIcon, QCursor
-from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit
+from PySide6.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
+from PySide6.QtGui import QIcon, QCursor
+from PySide6.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -34,6 +34,7 @@ import sys
 import Settings_BoM
 import Standard_Functions_BOM_WB as Standard_Functions
 import webbrowser
+import json
 
 # Define the translation
 translate = App.Qt.translate
@@ -164,6 +165,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form.UpdateRemarks.connect(
             self.form.UpdateRemarks, SIGNAL("pressed()"), self.on_UpdateRemarks_clicked
         )
+        
+        self.form.LoadColumns.connect(self.form.LoadColumns, SIGNAL("pressed()"), self.on_LoadColumns_clicked)
+        self.form.ColumnsConfigList.currentTextChanged.connect(self.on_ColumnsConfigList_currentTextChanged)
         # endregion
 
         # region - Debug settings
@@ -333,9 +337,18 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
 
+        # Load the list of configurations in the dropdown ColumnsConfigList
+        # Get the json file
+        JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+        data = json.load(JsonFile)    
+        # Add the keys to the dropdown    
+        for key in data.keys():
+            self.form.ColumnsConfigList.addItem(key)
+        self.form.ColumnsConfigList.setCurrentText("")
+        
+        # Add a eventfilter to show properties for remarks and description if there are already in the object properties
         T = mw.findChild(QTreeWidget)
         mw.installEventFilter(EventInspector(self.form))
-
 
         return
         # endregion
@@ -456,7 +469,12 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
         return
 
-    def on_SetColumns_clicked(self):
+    def on_SetColumns_clicked(self):  
+        # clear the text of QComboBox ColumnsConfigList
+        self.form.ColumnsConfigList.setCurrentText("")
+        # remove any icon from the load button
+        self.form.LoadColumns.setIcon(QIcon())
+        
         BoM_ManageColumns.main()
         return
 
@@ -480,6 +498,59 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         
     def on_UpdateRemarks_clicked(self):
         self.UpdateRemarks()
+        
+    def on_LoadColumns_clicked(self):        
+        # Get the json file
+        JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+        data = json.load(JsonFile)
+        
+        # Get the name for the columnsConfig
+        name = self.form.ColumnsConfigList.currentText()
+        
+        if name != "":
+            # Get the list with columns
+            columnList: list = data[name]
+            
+            # Check if the fixed columns are present
+            if not "Number" in columnList:
+                columnList.insert(0,"Number")
+            if not "Qty" in columnList:
+                columnList.insert(0,"Qty")
+            if not "Label" in columnList:
+                columnList.insert(0,"Label")
+            if not "Description" in columnList:
+                columnList.insert(0,"Description")
+            if not "Parent" in columnList:
+                columnList.insert(0,"Parent")
+            if not "Remarks" in columnList:
+                columnList.insert(0,"Remarks")
+            
+            # Create the result string from the items present
+            result = ""
+            for column in columnList:
+                result = result + ";" + column
+            if result[:1] == ";":
+                result = result[1:]
+                
+            # Set the custom headers for the current session
+            General_BOM.customHeaders = result
+            # Write the custom headers to preferences, for next time
+            Settings_BoM.SetStringSetting("CustomHeader", result)
+            # If debug is enabled, log the action.
+            if ENABLE_DEBUG is True:
+                if result == "":
+                    result = "None"
+                Text = translate(
+                    "BoM Workbench", f"The extra columns are:{result.replace(';', ', ')}."
+                )
+                Standard_Functions.Print(Text, "Log")
+                
+            # Set an confirmation icon
+            self.form.LoadColumns.setIcon(Gui.getIcon("edit_OK.svg"))
+        return            
+
+    def on_ColumnsConfigList_currentTextChanged(self):
+        self.form.LoadColumns.setIcon(QIcon())
 
     # A function to execute the BoM scripts based on the input from the controls.
     def CreateBOM(self, TypeOfBoM):
