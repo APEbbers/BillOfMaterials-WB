@@ -1,1 +1,14 @@
-{}
+{
+    "Default": [
+        "Number",
+        "Qty",
+        "Label",
+        "Description",
+        "Remarks",
+        "Parent",
+        "Material - Name",
+        "Material - Density",
+        "Shape - CenterOfGravity",
+        "Shape - Mass"
+    ]
+}

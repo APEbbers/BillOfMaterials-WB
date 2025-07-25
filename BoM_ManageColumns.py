@@ -204,6 +204,15 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
 
         self.form.LoadColumns.clicked.connect(LoadColumns)
         
+        # -----------------------------------------------------------------------------------------
+        #
+        # Remove columns ----------------------------------------------------------------------------
+        def RemoveColumns():
+            self.on_RemoveColumns_clicked()
+
+        self.form.RemoveColumns.clicked.connect(RemoveColumns)
+        
+        
         # endregion
 
         # region - Set the correct icons depending on the color of the main window
@@ -670,6 +679,23 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
                     
                     self.form.Columns_Present.addItem(item)
                     
+        return
+    
+    def on_LoadColumns_clicked(self):
+        # Get the name for the columnsConfig
+        name = self.form.ColumnsConfigList.currentText()
+        
+        if name != "":
+            # Get the json file
+            JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+            data = json.load(JsonFile)
+            
+            data.pop(name)
+            for i in len(self.form.ColumnsConfigList).count():
+                Item = self.form.ColumnsConfigList[i]
+                if Item.text() == name:
+                    self.form.ColumnsConfigList.removeItem(i)
+            self.form.ColumnsConfigList.removeItem()
         return
         
 
