@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>373</width>
-    <height>948</height>
+    <width>424</width>
+    <height>1056</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,8 +31,8 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout_6">
-   <item row="0" column="0" alignment="Qt::AlignmentFlag::AlignTop">
+  <layout class="QGridLayout" name="gridLayout_20">
+   <item row="0" column="0">
     <widget class="QFrame" name="MainFrame">
      <layout class="QVBoxLayout" name="verticalLayout">
       <property name="sizeConstraint">
@@ -308,6 +308,12 @@
            </item>
            <item row="1" column="0" colspan="2">
             <widget class="QLabel" name="label_13">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
              <property name="font">
               <font>
                <pointsize>8</pointsize>
@@ -349,6 +355,12 @@
       </item>
       <item>
        <widget class="QFrame" name="frame_3">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -434,6 +446,23 @@
             <enum>QFrame::Shadow::Raised</enum>
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
+            <item row="2" column="0">
+             <widget class="QCheckBox" name="IndentedNumbering">
+              <property name="text">
+               <string>Indented numbering</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="IncludeBodies">
+              <property name="text">
+               <string>Include bodies</string>
+              </property>
+             </widget>
+            </item>
             <item row="3" column="0">
              <layout class="QGridLayout" name="gridLayout">
               <property name="verticalSpacing">
@@ -450,7 +479,7 @@
                 <property name="minimumSize">
                  <size>
                   <width>20</width>
-                  <height>0</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="maximumSize">
@@ -522,7 +551,7 @@
                 <property name="minimumSize">
                  <size>
                   <width>200</width>
-                  <height>0</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="text">
@@ -537,16 +566,6 @@
                </widget>
               </item>
              </layout>
-            </item>
-            <item row="2" column="0">
-             <widget class="QCheckBox" name="IndentedNumbering">
-              <property name="text">
-               <string>Indented numbering</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
             </item>
             <item row="4" column="0">
              <layout class="QGridLayout" name="gridLayout_3">
@@ -582,11 +601,79 @@
               </item>
              </layout>
             </item>
-            <item row="1" column="0">
-             <widget class="QCheckBox" name="IncludeBodies">
-              <property name="text">
-               <string>Include bodies</string>
+            <item row="5" column="0">
+             <widget class="QFrame" name="">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_6">
+               <item row="1" column="0">
+                <widget class="QComboBox" name="ColumnsConfigList">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="editable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QPushButton" name="LoadColumns">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Load</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>Load saved column configurations</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
