@@ -192,7 +192,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
         #
         # SaveColumns
         def SaveColumns():
-            self.on_SaveColumns_clicked(self)
+            self.on_SaveColumns_clicked()
 
         self.form.SaveColumns.clicked.connect(SaveColumns)
         
