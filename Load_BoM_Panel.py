@@ -337,13 +337,27 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
 
-        # Load the list of configurations in the dropdown ColumnsConfigList
-        # Get the json file
-        JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
-        data = json.load(JsonFile)    
-        # Add the keys to the dropdown    
-        for key in data.keys():
-            self.form.ColumnsConfigList.addItem(key)
+        
+        # Get the json file. If it doesn't exists, create a new one with a default configuration
+        if os.path.exists(os.path.join(PATH_TB, "ColumConfigurations.json")) is False:
+            DefaultDict = {
+                "default": [
+                    "Number",
+                    "Qty",
+                    "Label",
+                    "Description",
+                    "Parent",
+                    "Remarks"
+                ]
+            }
+            with open(os.path.join(PATH_TB, "ColumConfigurations.json"), "w") as outfile:
+                json.dump(DefaultDict, outfile, indent=4)
+        # Open the json file
+        with open(os.path.join(PATH_TB, "ColumConfigurations.json"), "r") as JsonFile:
+            data = json.load(JsonFile)    
+            # Load the list of configurations in the dropdown ColumnsConfigList
+            for key in data.keys():
+                self.form.ColumnsConfigList.addItem(key)
         self.form.ColumnsConfigList.setCurrentText("")
         
         # Add a eventfilter to show properties for remarks and description if there are already in the object properties
