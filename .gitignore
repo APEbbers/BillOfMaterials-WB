@@ -169,3 +169,5 @@ cython_debug/
 # Archived icons
 /Recources/Icons/Archive
 Wiki pictures.pptx
+
+*.json

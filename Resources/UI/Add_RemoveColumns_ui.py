@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'Add_RemoveColumnsOXoOya.ui'
+## Form generated from reading UI file 'Add_RemoveColumnsQwGKIW.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -269,9 +269,11 @@ class Ui_Form(object):
         self.frame1.setSizePolicy(sizePolicy)
         self.frame1.setMinimumSize(QSize(0, 0))
         self.gridLayout_7 = QGridLayout(self.frame1)
-        self.gridLayout_7.setSpacing(0)
+        self.gridLayout_7.setSpacing(6)
         self.gridLayout_7.setContentsMargins(6, 6, 6, 6)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
+        self.gridLayout_7.setHorizontalSpacing(6)
+        self.gridLayout_7.setVerticalSpacing(0)
         self.gridLayout_7.setContentsMargins(0, 0, 0, 0)
         self.SaveColumns = QPushButton(self.frame1)
         self.SaveColumns.setObjectName(u"SaveColumns")

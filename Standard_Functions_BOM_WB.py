@@ -425,6 +425,33 @@ def getReproAdress(base_path):
     except Exception:
         return
 
+# # Add or update the dict for the Ribbon command panel
+#         self.add_keys_nested_dict(
+#             self.Dict_RibbonCommandPanel,
+#             ["workbenches", WorkBenchName, "toolbars", Toolbar, "order"],
+#         )
+def add_keys_nested_dict(dict, keys, default=1):
+    """_summary_
+
+    Args:
+        dict (_type_): Enter dict to create or modify
+        keys (_type_): Enter key or list of keys
+
+    Returns:
+        bool: True if a new dict is created or modified. Otherwise False
+    """
+    for key in keys:
+        result = False
+        if key not in dict:
+            dict[key] = {}
+            result = True
+        dict = dict[key]
+    try:
+        dict.setdefault(keys[-1], default)
+    except Exception:
+        pass
+    return result
+
 
 def PartFeatureList():
     result = [

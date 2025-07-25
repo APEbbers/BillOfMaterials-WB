@@ -33,6 +33,7 @@ import Settings_BoM
 from Settings_BoM import ENABLE_DEBUG
 import BoM_WB_Locator
 import sys
+import json
 
 # get the path of the current python script
 PATH_TB = os.path.dirname(BoM_WB_Locator.__file__)
@@ -184,6 +185,18 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
 
         self.form.buttonBox.button(QDialogButtonBox.Reset).clicked.connect(Reset)
         # -----------------------------------------------------------------------------------------
+        
+        # -----------------------------------------------------------------------------------------
+        #
+        # Save and load columns -------------------------------------------------------------------------------
+        #
+        # SaveColumns
+        def SaveColumns():
+            self.on_SaveColumns_clicked(self)
+
+        self.form.SaveColumns.clicked.connect(SaveColumns)
+        
+        
         # endregion
 
         # region - Set the correct icons depending on the color of the main window
@@ -566,6 +579,35 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
 
         # Remove the focus from the control
         self.form.buttonBox.button(QDialogButtonBox.Apply).clearFocus()
+        return
+
+    def on_SaveColumns_clicked(self):
+        # Get the name for the columnsConfig
+        name = self.form.ColumnsConfigList.currentText
+        
+        # Create a list of the current columns
+        ColumnList = []
+        for i in range(self.form.Columns_Present.count()):
+            # Get the item
+            item = self.form.Columns_Present.item(i)
+            ColumnList.append(item.text())
+            
+        # Get the json file
+        JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+        data = json.load(JsonFile)
+        
+        # Create a key if it doesn't exists yet
+        Standard_Functions.add_keys_nested_dict(data, name)
+        # Update the dict with the new data
+        data[name] = ColumnList
+        # Close the json file
+        JsonFile.close()
+        
+        # Writing to sample.json
+        with open(JsonFile, "w") as outfile:
+            json.dump(data, outfile, indent=4)
+
+        outfile.close()
         return
 
 # Delegate class for a listwidget item
