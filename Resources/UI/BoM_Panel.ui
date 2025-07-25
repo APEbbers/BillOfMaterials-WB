@@ -429,230 +429,244 @@
           </layout>
          </item>
          <item row="1" column="0">
-          <layout class="QGridLayout" name="SettingsFrame">
-           <item row="3" column="0" colspan="2">
-            <widget class="QCheckBox" name="IndentedNumbering">
-             <property name="text">
-              <string>Indented numbering</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="2">
-            <widget class="QCheckBox" name="IncludeBodies">
-             <property name="text">
-              <string>Include bodies</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_12">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>20</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set deepest level for BoM&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0" colspan="2">
-            <widget class="QSpinBox" name="MaxLevel">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-               <horstretch>20</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="baseSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set to &amp;quot;0&amp;quot;, all levels will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="minimum">
-              <number>0</number>
-             </property>
-             <property name="value">
-              <number>0</number>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0" colspan="2">
-            <widget class="QLabel" name="label_6">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>200</width>
-               <height>20</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:7pt; font-style:italic;&quot;&gt;(When set to &amp;quot;0&amp;quot;, all levels will be displayed.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="0" colspan="2">
-            <layout class="QGridLayout" name="gridLayout_3">
-             <item row="0" column="1">
-              <widget class="QLabel" name="label_3">
-               <property name="text">
-                <string> Set extra columns </string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QPushButton" name="SetColumns">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>:/Resources/Icons/SetColumns.svg</normaloff>:/Resources/Icons/SetColumns.svg</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>32</width>
-                 <height>32</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <spacer name="horizontalSpacer_7">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-           <item row="4" column="1">
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="0" colspan="2">
-            <widget class="QLabel" name="label_14">
-             <property name="text">
-              <string>Load saved column configurations</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="0" colspan="2">
-            <layout class="QGridLayout" name="gridLayout_6">
-             <item row="0" column="1">
-              <widget class="QPushButton" name="LoadColumns">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>20</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>30</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Load</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QComboBox" name="ColumnsConfigList">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>20</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>30</height>
-                </size>
-               </property>
-               <property name="editable">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
+          <widget class="QFrame" name="SettingsFrame">
+           <layout class="QGridLayout" name="gridLayout_24">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="3" column="0" colspan="2">
+             <widget class="QCheckBox" name="IndentedNumbering">
+              <property name="text">
+               <string>Indented numbering</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <widget class="QCheckBox" name="IncludeBodies">
+              <property name="text">
+               <string>Include bodies</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_12">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set deepest level for BoM&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0" colspan="2">
+             <widget class="QSpinBox" name="MaxLevel">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+                <horstretch>20</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="baseSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set to &amp;quot;0&amp;quot;, all levels will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="suffix">
+               <string/>
+              </property>
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="value">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0" colspan="2">
+             <widget class="QLabel" name="label_6">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>200</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:7pt; font-style:italic;&quot;&gt;(When set to &amp;quot;0&amp;quot;, all levels will be displayed.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0" colspan="2">
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string> Set extra columns </string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="SetColumns">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>:/Resources/Icons/SetColumns.svg</normaloff>:/Resources/Icons/SetColumns.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item row="4" column="1">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="0" colspan="2">
+             <widget class="QLabel" name="label_14">
+              <property name="text">
+               <string>Load saved column configurations</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0" colspan="2">
+             <layout class="QGridLayout" name="gridLayout_6">
+              <item row="0" column="1">
+               <widget class="QPushButton" name="LoadColumns">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Load</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QComboBox" name="ColumnsConfigList">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -724,178 +738,198 @@
           </layout>
          </item>
          <item row="1" column="0">
-          <layout class="QGridLayout" name="DebugFrame">
-           <item row="0" column="0">
-            <widget class="QPushButton" name="DetectAssemblyType">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string> Detect assembly type </string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <layout class="QGridLayout" name="gridLayout_5">
-             <item row="0" column="0">
-              <widget class="QComboBox" name="AssemblyType">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>100</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>120</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="sizeIncrement">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="baseSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="sizeAdjustPolicy">
-                <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
-               </property>
-               <item>
+          <widget class="QFrame" name="DebugFrame">
+           <property name="frameShape">
+            <enum>QFrame::Shape::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Plain</enum>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_22">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>1</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QPushButton" name="DetectAssemblyType">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string> Detect assembly type </string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <layout class="QGridLayout" name="gridLayout_5">
+              <item row="0" column="0">
+               <widget class="QComboBox" name="AssemblyType">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>100</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>120</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="sizeIncrement">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="baseSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="sizeAdjustPolicy">
+                 <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>A2plus</string>
+                 </property>
+                 <property name="icon">
+                  <iconset>
+                   <normaloff>:/Resources/Icons/A2p_workbench.svg</normaloff>:/Resources/Icons/A2p_workbench.svg</iconset>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Internal assembly</string>
+                 </property>
+                 <property name="icon">
+                  <iconset>
+                   <normaloff>:/Resources/Icons/Assembly4_workbench_icon.svg</normaloff>:/Resources/Icons/Assembly4_workbench_icon.svg</iconset>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Assembly 3</string>
+                 </property>
+                 <property name="icon">
+                  <iconset>
+                   <normaloff>:/Resources/Icons/Assembly3_workbench_icon.svg</normaloff>:/Resources/Icons/Assembly3_workbench_icon.svg</iconset>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Assembly 4</string>
+                 </property>
+                 <property name="icon">
+                  <iconset>
+                   <normaloff>:/Resources/Icons/Assembly4_workbench_icon.svg</normaloff>:/Resources/Icons/Assembly4_workbench_icon.svg</iconset>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>App:LinkGroup</string>
+                 </property>
+                 <property name="icon">
+                  <iconset>
+                   <normaloff>:/Resources/Icons/Link.svg</normaloff>:/Resources/Icons/Link.svg</iconset>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>App:Part</string>
+                 </property>
+                 <property name="icon">
+                  <iconset>
+                   <normaloff>:/Resources/Icons/Geofeaturegroup.svg</normaloff>:/Resources/Icons/Geofeaturegroup.svg</iconset>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>MultiBody</string>
+                 </property>
+                 <property name="icon">
+                  <iconset>
+                   <normaloff>:/Resources/Icons/Part_Transformed.svg</normaloff>:/Resources/Icons/Part_Transformed.svg</iconset>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Arch</string>
+                 </property>
+                 <property name="icon">
+                  <iconset>
+                   <normaloff>:/Resources/Icons/ArchWorkbench.svg</normaloff>:/Resources/Icons/ArchWorkbench.svg</iconset>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_2">
                 <property name="text">
-                 <string>A2plus</string>
+                 <string>Set assemby type manually</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="2" column="0">
+             <layout class="QGridLayout" name="gridLayout_9">
+              <item row="0" column="0">
+               <widget class="QPushButton" name="CreateRaw">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>:/Resources/Icons/A2p_workbench.svg</normaloff>:/Resources/Icons/A2p_workbench.svg</iconset>
+                  <normaloff>:/Resources/Icons/Raw.svg</normaloff>:/Resources/Icons/Raw.svg</iconset>
                 </property>
-               </item>
-               <item>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_5">
                 <property name="text">
-                 <string>Internal assembly</string>
+                 <string>Create raw BoM</string>
                 </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Resources/Icons/Assembly4_workbench_icon.svg</normaloff>:/Resources/Icons/Assembly4_workbench_icon.svg</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Assembly 3</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Resources/Icons/Assembly3_workbench_icon.svg</normaloff>:/Resources/Icons/Assembly3_workbench_icon.svg</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Assembly 4</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Resources/Icons/Assembly4_workbench_icon.svg</normaloff>:/Resources/Icons/Assembly4_workbench_icon.svg</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>App:LinkGroup</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Resources/Icons/Link.svg</normaloff>:/Resources/Icons/Link.svg</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>App:Part</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Resources/Icons/Geofeaturegroup.svg</normaloff>:/Resources/Icons/Geofeaturegroup.svg</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>MultiBody</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Resources/Icons/Part_Transformed.svg</normaloff>:/Resources/Icons/Part_Transformed.svg</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Arch</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Resources/Icons/ArchWorkbench.svg</normaloff>:/Resources/Icons/ArchWorkbench.svg</iconset>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>Set assemby type manually</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="2" column="0">
-            <layout class="QGridLayout" name="gridLayout_9">
-             <item row="0" column="0">
-              <widget class="QPushButton" name="CreateRaw">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>:/Resources/Icons/Raw.svg</normaloff>:/Resources/Icons/Raw.svg</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>32</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="checkable">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>Create raw BoM</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </widget>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelrTsMva.ui'
+## Form generated from reading UI file 'BoM_PanelkBIBFt.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -263,28 +263,31 @@ class Ui_Dialog(object):
 
         self.gridLayout_19.addLayout(self.gridLayout_15, 0, 0, 1, 1)
 
-        self.SettingsFrame = QGridLayout()
+        self.SettingsFrame = QFrame(self.frame_3)
         self.SettingsFrame.setObjectName(u"SettingsFrame")
-        self.IndentedNumbering = QCheckBox(self.frame_3)
+        self.gridLayout_24 = QGridLayout(self.SettingsFrame)
+        self.gridLayout_24.setObjectName(u"gridLayout_24")
+        self.gridLayout_24.setContentsMargins(0, 0, 0, 0)
+        self.IndentedNumbering = QCheckBox(self.SettingsFrame)
         self.IndentedNumbering.setObjectName(u"IndentedNumbering")
         self.IndentedNumbering.setChecked(True)
 
-        self.SettingsFrame.addWidget(self.IndentedNumbering, 3, 0, 1, 2)
+        self.gridLayout_24.addWidget(self.IndentedNumbering, 3, 0, 1, 2)
 
-        self.IncludeBodies = QCheckBox(self.frame_3)
+        self.IncludeBodies = QCheckBox(self.SettingsFrame)
         self.IncludeBodies.setObjectName(u"IncludeBodies")
 
-        self.SettingsFrame.addWidget(self.IncludeBodies, 2, 0, 1, 2)
+        self.gridLayout_24.addWidget(self.IncludeBodies, 2, 0, 1, 2)
 
-        self.label_12 = QLabel(self.frame_3)
+        self.label_12 = QLabel(self.SettingsFrame)
         self.label_12.setObjectName(u"label_12")
         sizePolicy1.setHeightForWidth(self.label_12.sizePolicy().hasHeightForWidth())
         self.label_12.setSizePolicy(sizePolicy1)
         self.label_12.setMinimumSize(QSize(0, 20))
 
-        self.SettingsFrame.addWidget(self.label_12, 4, 0, 1, 1)
+        self.gridLayout_24.addWidget(self.label_12, 4, 0, 1, 1)
 
-        self.MaxLevel = QSpinBox(self.frame_3)
+        self.MaxLevel = QSpinBox(self.SettingsFrame)
         self.MaxLevel.setObjectName(u"MaxLevel")
         sizePolicy4 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding)
         sizePolicy4.setHorizontalStretch(20)
@@ -297,9 +300,9 @@ class Ui_Dialog(object):
         self.MaxLevel.setMinimum(0)
         self.MaxLevel.setValue(0)
 
-        self.SettingsFrame.addWidget(self.MaxLevel, 5, 0, 1, 2)
+        self.gridLayout_24.addWidget(self.MaxLevel, 5, 0, 1, 2)
 
-        self.label_6 = QLabel(self.frame_3)
+        self.label_6 = QLabel(self.SettingsFrame)
         self.label_6.setObjectName(u"label_6")
         sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy5.setHorizontalStretch(0)
@@ -310,16 +313,16 @@ class Ui_Dialog(object):
         self.label_6.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.label_6.setWordWrap(True)
 
-        self.SettingsFrame.addWidget(self.label_6, 6, 0, 1, 2)
+        self.gridLayout_24.addWidget(self.label_6, 6, 0, 1, 2)
 
         self.gridLayout_3 = QGridLayout()
         self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.label_3 = QLabel(self.frame_3)
+        self.label_3 = QLabel(self.SettingsFrame)
         self.label_3.setObjectName(u"label_3")
 
         self.gridLayout_3.addWidget(self.label_3, 0, 1, 1, 1)
 
-        self.SetColumns = QPushButton(self.frame_3)
+        self.SetColumns = QPushButton(self.SettingsFrame)
         self.SetColumns.setObjectName(u"SetColumns")
         sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
         sizePolicy6.setHorizontalStretch(0)
@@ -338,20 +341,20 @@ class Ui_Dialog(object):
         self.gridLayout_3.addItem(self.horizontalSpacer_7, 0, 2, 1, 1)
 
 
-        self.SettingsFrame.addLayout(self.gridLayout_3, 7, 0, 1, 2)
+        self.gridLayout_24.addLayout(self.gridLayout_3, 7, 0, 1, 2)
 
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.SettingsFrame.addItem(self.horizontalSpacer, 4, 1, 1, 1)
+        self.gridLayout_24.addItem(self.horizontalSpacer, 4, 1, 1, 1)
 
-        self.label_14 = QLabel(self.frame_3)
+        self.label_14 = QLabel(self.SettingsFrame)
         self.label_14.setObjectName(u"label_14")
 
-        self.SettingsFrame.addWidget(self.label_14, 0, 0, 1, 2)
+        self.gridLayout_24.addWidget(self.label_14, 0, 0, 1, 2)
 
         self.gridLayout_6 = QGridLayout()
         self.gridLayout_6.setObjectName(u"gridLayout_6")
-        self.LoadColumns = QPushButton(self.frame_3)
+        self.LoadColumns = QPushButton(self.SettingsFrame)
         self.LoadColumns.setObjectName(u"LoadColumns")
         sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy7.setHorizontalStretch(0)
@@ -363,7 +366,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_6.addWidget(self.LoadColumns, 0, 1, 1, 1)
 
-        self.ColumnsConfigList = QComboBox(self.frame_3)
+        self.ColumnsConfigList = QComboBox(self.SettingsFrame)
         self.ColumnsConfigList.setObjectName(u"ColumnsConfigList")
         sizePolicy.setHeightForWidth(self.ColumnsConfigList.sizePolicy().hasHeightForWidth())
         self.ColumnsConfigList.setSizePolicy(sizePolicy)
@@ -374,10 +377,10 @@ class Ui_Dialog(object):
         self.gridLayout_6.addWidget(self.ColumnsConfigList, 0, 0, 1, 1)
 
 
-        self.SettingsFrame.addLayout(self.gridLayout_6, 8, 0, 1, 2)
+        self.gridLayout_24.addLayout(self.gridLayout_6, 8, 0, 1, 2)
 
 
-        self.gridLayout_19.addLayout(self.SettingsFrame, 1, 0, 1, 1)
+        self.gridLayout_19.addWidget(self.SettingsFrame, 1, 0, 1, 1)
 
 
         self.verticalLayout.addWidget(self.frame_3)
@@ -412,9 +415,14 @@ class Ui_Dialog(object):
 
         self.gridLayout_18.addLayout(self.gridLayout_17, 0, 0, 1, 1)
 
-        self.DebugFrame = QGridLayout()
+        self.DebugFrame = QFrame(self.frame_4)
         self.DebugFrame.setObjectName(u"DebugFrame")
-        self.DetectAssemblyType = QPushButton(self.frame_4)
+        self.DebugFrame.setFrameShape(QFrame.Shape.NoFrame)
+        self.DebugFrame.setFrameShadow(QFrame.Shadow.Plain)
+        self.gridLayout_22 = QGridLayout(self.DebugFrame)
+        self.gridLayout_22.setObjectName(u"gridLayout_22")
+        self.gridLayout_22.setContentsMargins(0, 1, 0, 0)
+        self.DetectAssemblyType = QPushButton(self.DebugFrame)
         self.DetectAssemblyType.setObjectName(u"DetectAssemblyType")
         sizePolicy8 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy8.setHorizontalStretch(0)
@@ -422,11 +430,11 @@ class Ui_Dialog(object):
         sizePolicy8.setHeightForWidth(self.DetectAssemblyType.sizePolicy().hasHeightForWidth())
         self.DetectAssemblyType.setSizePolicy(sizePolicy8)
 
-        self.DebugFrame.addWidget(self.DetectAssemblyType, 0, 0, 1, 1)
+        self.gridLayout_22.addWidget(self.DetectAssemblyType, 0, 0, 1, 1)
 
         self.gridLayout_5 = QGridLayout()
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.AssemblyType = QComboBox(self.frame_4)
+        self.AssemblyType = QComboBox(self.DebugFrame)
         icon5 = QIcon()
         icon5.addFile(u":/Resources/Icons/A2p_workbench.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.AssemblyType.addItem(icon5, "")
@@ -463,17 +471,17 @@ class Ui_Dialog(object):
 
         self.gridLayout_5.addWidget(self.AssemblyType, 0, 0, 1, 1)
 
-        self.label_2 = QLabel(self.frame_4)
+        self.label_2 = QLabel(self.DebugFrame)
         self.label_2.setObjectName(u"label_2")
 
         self.gridLayout_5.addWidget(self.label_2, 0, 1, 1, 1)
 
 
-        self.DebugFrame.addLayout(self.gridLayout_5, 1, 0, 1, 1)
+        self.gridLayout_22.addLayout(self.gridLayout_5, 1, 0, 1, 1)
 
         self.gridLayout_9 = QGridLayout()
         self.gridLayout_9.setObjectName(u"gridLayout_9")
-        self.CreateRaw = QPushButton(self.frame_4)
+        self.CreateRaw = QPushButton(self.DebugFrame)
         self.CreateRaw.setObjectName(u"CreateRaw")
         sizePolicy2.setHeightForWidth(self.CreateRaw.sizePolicy().hasHeightForWidth())
         self.CreateRaw.setSizePolicy(sizePolicy2)
@@ -485,16 +493,16 @@ class Ui_Dialog(object):
 
         self.gridLayout_9.addWidget(self.CreateRaw, 0, 0, 1, 1)
 
-        self.label_5 = QLabel(self.frame_4)
+        self.label_5 = QLabel(self.DebugFrame)
         self.label_5.setObjectName(u"label_5")
 
         self.gridLayout_9.addWidget(self.label_5, 0, 1, 1, 1)
 
 
-        self.DebugFrame.addLayout(self.gridLayout_9, 2, 0, 1, 1)
+        self.gridLayout_22.addLayout(self.gridLayout_9, 2, 0, 1, 1)
 
 
-        self.gridLayout_18.addLayout(self.DebugFrame, 1, 0, 1, 1)
+        self.gridLayout_18.addWidget(self.DebugFrame, 1, 0, 1, 1)
 
 
         self.verticalLayout.addWidget(self.frame_4)
