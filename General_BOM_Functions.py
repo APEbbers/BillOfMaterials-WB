@@ -48,7 +48,7 @@ class General_BOM:
     # You can add a dict for the headers of this list
     @classmethod
     def createBoMSpreadsheet(
-        self, mainList: list, Headers: dict = None, Summary: bool = False, IFCData=None
+        self, mainList: list, Headers: dict = None, Summary: bool = False, IFCData=None, AssemblyType = ""
     ):
         # If the Mainlist is empty, return.
         if mainList is None:
@@ -367,6 +367,8 @@ class General_BOM:
         sheet.mergeCells(f"A{str(Row+1)}:D{str(Row+1)}")
         sheet.mergeCells(f"A{str(Row+2)}:D{str(Row+2)}")
         sheet.mergeCells(f"A{str(Row+3)}:D{str(Row+3)}")
+        if AssemblyType != "":
+            sheet.mergeCells(f"A{str(Row+4)}:D{str(Row+4)}")
 
         # Define the created by value. If no document information is available, use the OS account info.
         CreatedBy = doc.LastModifiedBy
@@ -390,13 +392,20 @@ class General_BOM:
             "A" + str(Row + 3),
             f"{translate('BoM Workbench', 'BoM created for file')}:   ../{os.path.basename(doc.FileName)}",
         )
+        if AssemblyType != "":
+            sheet.set(
+                "A" + str(Row + 4),
+                f"{translate('BoM Workbench', 'Assembly type')}:   {AssemblyType}",
+            )
 
         # Align the cells
         sheet.setAlignment(f"A{str(Row)}:C{str(Row + 3)}", "left", "keep")
 
         # Style the table
-        RangeStyleHeader = f"A{str(Row)}:E{str(Row)}"
-        RangeStyleTable = f"A{str(Row+1)}:E{str(Row+3)}"
+        RangeStyleHeader = f"A{str(Row)}:D{str(Row)}"
+        RangeStyleTable = f"A{str(Row+1)}:D{str(Row+3)}"
+        if AssemblyType != "":
+            RangeStyleTable = f"A{str(Row+1)}:D{str(Row+4)}"
         self.FormatTableColors(
             sheet=sheet,
             HeaderRange=RangeStyleHeader,

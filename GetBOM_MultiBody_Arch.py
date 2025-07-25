@@ -214,7 +214,7 @@ class BomFunctions:
             Headers = Settings_BoM.ReturnHeaders()
 
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList, Headers)
+            General_BOM.createBoMSpreadsheet(TemporaryList, Headers, AssemblyType="BIM/Multibody")
         return
 
     # Function to start the other functions based on a command string that is passed.
