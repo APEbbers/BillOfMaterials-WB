@@ -114,7 +114,7 @@ class General_BOM:
         )
 
         # Define the header range based on Headers
-        HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers))}1"
+        HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers)-1)}1"
 
         # Create the headers and set the width
         for key, value in Headers.items():
@@ -259,7 +259,7 @@ class General_BOM:
         if Row > 1:
             sheet.setAlignment(
                 "A1:"
-                + str(Standard_Functions.GetLetterFromNumber(len(Headers)))
+                + str(Standard_Functions.GetLetterFromNumber(len(Headers)-1))
                 + str(Row),
                 "center",
                 "keep",
@@ -268,7 +268,7 @@ class General_BOM:
         # Style the table
         RangeStyleHeader = HeaderRange
         RangeStyleTable = (
-            "A2:" + str(Standard_Functions.GetLetterFromNumber(len(Headers))) + str(Row)
+            "A2:" + str(Standard_Functions.GetLetterFromNumber(len(Headers)-1)) + str(Row)
         )
         self.FormatTableColors(
             sheet=sheet,
