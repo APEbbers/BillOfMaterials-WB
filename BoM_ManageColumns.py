@@ -27,7 +27,7 @@ from inspect import getsourcefile
 import General_BOM_Functions
 import Standard_Functions_BOM_WB as Standard_Functions
 from PySide6.QtGui import QPalette, QIcon
-from PySide6.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget, QStyle, QStyledItemDelegate, QStyleOptionViewItem
+from PySide6.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget, QStyle, QStyledItemDelegate, QStyleOptionViewItem, QComboBox
 from PySide6.QtCore import SIGNAL, Qt, QSize
 import Settings_BoM
 from Settings_BoM import ENABLE_DEBUG
@@ -188,7 +188,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
         
         # -----------------------------------------------------------------------------------------
         #
-        # Save and load columns -------------------------------------------------------------------------------
+        # Save and load columns -------------------------------------------------------------------
         #
         # SaveColumns
         def SaveColumns():
@@ -196,6 +196,13 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
 
         self.form.SaveColumns.clicked.connect(SaveColumns)
         
+        # -----------------------------------------------------------------------------------------
+        #
+        # Load columns ----------------------------------------------------------------------------
+        def LoadColumns():
+            self.on_LoadColumns_clicked()
+
+        self.form.LoadColumns.clicked.connect(LoadColumns)
         
         # endregion
 
@@ -250,6 +257,14 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
                 QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Dark.svg"))
             )
         # endregion
+        
+        # Load the list of configurations in the dropdown ColumnsConfigList
+        # Get the json file
+        JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+        data = json.load(JsonFile)    
+        # Add the keys to the dropdown    
+        for key in data.keys():
+            self.form.ColumnsConfigList.addItem(key)
         
         # Load the current columns
         self.on_LoadProperties_clicked(self)
@@ -607,6 +622,56 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
 
         outfile.close()
         return
+    
+    def on_LoadColumns_clicked(self):
+        # Clear the present columns
+        self.form.Columns_Present.clear()
+        
+        # Get the json file
+        JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+        data = json.load(JsonFile)
+        
+        # Get the name for the columnsConfig
+        name = self.form.ColumnsConfigList.currentText()
+        
+        if name != "":
+            # Get the list with columns
+            columnList: list = data[name]
+            
+            # Check if the fixed columns are present
+            if not "Number" in columnList:
+                columnList.insert(0,"Number")
+            if not "Qty" in columnList:
+                columnList.insert(0,"Qty")
+            if not "Label" in columnList:
+                columnList.insert(0,"Label")
+            if not "Description" in columnList:
+                columnList.insert(0,"Description")
+            if not "Parent" in columnList:
+                columnList.insert(0,"Parent")
+            if not "Remarks" in columnList:
+                columnList.insert(0,"Remarks")
+            
+            # Fill the list "Columns_Present" with the custom headers that are currently present
+            for Header in columnList:
+                if Header != "":
+                    # Create the custom QListWidgetItem
+                    self.delegate = ItemDelegate()
+                    self.form.Columns_Present.setItemDelegate(self.delegate)
+                    #
+                    # Define a ListWidgetItem
+                    item = QListWidgetItem()
+                    item.setText(Header)
+
+                    if Header in "Number;Qty;Label;Description;Parent;Remarks":
+                        icon = QIcon()
+                        icon.addPixmap(os.path.join(PATH_TB_ICONS, "Lock.svg"))
+                        item.setIcon(icon)
+                    
+                    self.form.Columns_Present.addItem(item)
+                    
+        return
+        
 
 # Delegate class for a listwidget item
 class ItemDelegate(QStyledItemDelegate):
