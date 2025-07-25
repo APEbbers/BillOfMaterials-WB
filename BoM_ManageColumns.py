@@ -583,7 +583,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
 
     def on_SaveColumns_clicked(self):
         # Get the name for the columnsConfig
-        name = self.form.ColumnsConfigList.currentText
+        name = self.form.ColumnsConfigList.currentText()
         
         # Create a list of the current columns
         ColumnList = []
@@ -596,15 +596,13 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
         JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
         data = json.load(JsonFile)
         
-        # Create a key if it doesn't exists yet
-        Standard_Functions.add_keys_nested_dict(data, name)
         # Update the dict with the new data
         data[name] = ColumnList
         # Close the json file
         JsonFile.close()
         
         # Writing to sample.json
-        with open(JsonFile, "w") as outfile:
+        with open(os.path.join(PATH_TB, "ColumConfigurations.json"), "w") as outfile:
             json.dump(data, outfile, indent=4)
 
         outfile.close()
