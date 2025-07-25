@@ -26,9 +26,9 @@ import os
 from inspect import getsourcefile
 import General_BOM_Functions
 import Standard_Functions_BOM_WB as Standard_Functions
-from PySide.QtGui import QPalette, QIcon
-from PySide.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget, QStyle, QStyledItemDelegate, QStyleOptionViewItem
-from PySide.QtCore import SIGNAL, Qt
+from PySide6.QtGui import QPalette, QIcon
+from PySide6.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget, QStyle, QStyledItemDelegate, QStyleOptionViewItem
+from PySide6.QtCore import SIGNAL, Qt, QSize
 import Settings_BoM
 from Settings_BoM import ENABLE_DEBUG
 import BoM_WB_Locator
@@ -325,6 +325,9 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             for key, value in doc.ShapeMaterial.Properties.items():
                 self.form.Columns_To_Add.addItem("Material - " + key)
 
+        # Set the icon size for the locked items
+        size = self.form.Columns_Present.font().pointSize() * 1.8
+        self.form.Columns_Present.setIconSize(QSize(size,size))
         return
 
     @staticmethod
@@ -569,6 +572,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
 class ItemDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):
         option.decorationPosition = QStyleOptionViewItem.Position.Right
+        option
         super(ItemDelegate, self).paint(painter, option, index)
 
 def main():
