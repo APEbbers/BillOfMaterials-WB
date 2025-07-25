@@ -59,10 +59,10 @@ class BomFunctions:
                 RootObjects.append(Objects[i])
         docObjects = []
 
-        # Check if there are groups with items. create a list from it and add it to the docObjects.
-        for RootObject in RootObjects:
-            if RootObject.TypeId == "App::DocumentObjectGroup":
-                docObjects.extend(General_BOM.GetObjectsFromGroups(RootObject))
+        # # Check if there are groups with items. create a list from it and add it to the docObjects.
+        # for RootObject in RootObjects:
+        #     if RootObject.TypeId == "App::DocumentObjectGroup":
+        #         docObjects.extend(General_BOM.GetObjectsFromGroups(RootObject))
 
         # Get the folder with the parts and create a list from it.
         for RootObject in RootObjects:
