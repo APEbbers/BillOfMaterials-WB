@@ -362,7 +362,7 @@
       <item>
        <widget class="QFrame" name="frame_3">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -370,7 +370,7 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>200</height>
+          <height>0</height>
          </size>
         </property>
         <property name="frameShape">
@@ -380,6 +380,9 @@
          <enum>QFrame::Shadow::Raised</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_19">
+         <property name="sizeConstraint">
+          <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+         </property>
          <item row="0" column="0">
           <layout class="QGridLayout" name="gridLayout_15">
            <item row="0" column="0">
@@ -394,7 +397,7 @@
               </size>
              </property>
              <property name="checkable">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="checked">
               <bool>false</bool>
@@ -430,6 +433,12 @@
          </item>
          <item row="1" column="0">
           <widget class="QFrame" name="SettingsFrame">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <layout class="QGridLayout" name="gridLayout_24">
             <property name="leftMargin">
              <number>0</number>
@@ -700,7 +709,7 @@
               </size>
              </property>
              <property name="checkable">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="checked">
               <bool>false</bool>
@@ -972,5 +981,38 @@
  <resources>
   <include location="../../Icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>toolButton_Settings</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>SettingsFrame</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>111</x>
+     <y>464</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>316</x>
+     <y>519</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_Debug</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>DebugFrame</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>118</x>
+     <y>764</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>22</x>
+     <y>832</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

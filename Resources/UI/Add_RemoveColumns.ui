@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>705</width>
-    <height>569</height>
+    <height>589</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -502,13 +502,6 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Load or save column configuration:</string>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="1">
           <widget class="QPushButton" name="LoadColumns">
            <property name="sizePolicy">
@@ -534,7 +527,20 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="1" column="5">
+          <widget class="QPushButton" name="ExportColumns">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Export</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" rowspan="2">
           <widget class="QComboBox" name="ColumnsConfigList">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
@@ -545,7 +551,7 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>20</height>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
@@ -556,6 +562,13 @@
            </property>
            <property name="editable">
             <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="4">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Load or save column configuration:</string>
            </property>
           </widget>
          </item>
@@ -581,6 +594,19 @@
            </property>
            <property name="text">
             <string>Remove</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <widget class="QPushButton" name="ImportColumns">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Import</string>
            </property>
           </widget>
          </item>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'Add_RemoveColumnsLoXqtv.ui'
+## Form generated from reading UI file 'Add_RemoveColumnsRWOJdM.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -25,7 +25,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(705, 569)
+        Form.resize(705, 589)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -268,11 +268,6 @@ class Ui_Form(object):
 
         self.gridLayout_7.addWidget(self.SaveColumns, 1, 2, 1, 1)
 
-        self.label_5 = QLabel(self.frame1)
-        self.label_5.setObjectName(u"label_5")
-
-        self.gridLayout_7.addWidget(self.label_5, 0, 0, 1, 1)
-
         self.LoadColumns = QPushButton(self.frame1)
         self.LoadColumns.setObjectName(u"LoadColumns")
         sizePolicy3.setHeightForWidth(self.LoadColumns.sizePolicy().hasHeightForWidth())
@@ -282,6 +277,12 @@ class Ui_Form(object):
 
         self.gridLayout_7.addWidget(self.LoadColumns, 1, 1, 1, 1)
 
+        self.ExportColumns = QPushButton(self.frame1)
+        self.ExportColumns.setObjectName(u"ExportColumns")
+        self.ExportColumns.setMinimumSize(QSize(0, 20))
+
+        self.gridLayout_7.addWidget(self.ExportColumns, 1, 5, 1, 1)
+
         self.ColumnsConfigList = QComboBox(self.frame1)
         self.ColumnsConfigList.setObjectName(u"ColumnsConfigList")
         sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
@@ -289,11 +290,16 @@ class Ui_Form(object):
         sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(self.ColumnsConfigList.sizePolicy().hasHeightForWidth())
         self.ColumnsConfigList.setSizePolicy(sizePolicy4)
-        self.ColumnsConfigList.setMinimumSize(QSize(0, 20))
+        self.ColumnsConfigList.setMinimumSize(QSize(0, 30))
         self.ColumnsConfigList.setMaximumSize(QSize(16777215, 30))
         self.ColumnsConfigList.setEditable(True)
 
-        self.gridLayout_7.addWidget(self.ColumnsConfigList, 1, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.ColumnsConfigList, 1, 0, 2, 1)
+
+        self.label_5 = QLabel(self.frame1)
+        self.label_5.setObjectName(u"label_5")
+
+        self.gridLayout_7.addWidget(self.label_5, 0, 0, 1, 4)
 
         self.RemoveColumns = QPushButton(self.frame1)
         self.RemoveColumns.setObjectName(u"RemoveColumns")
@@ -303,6 +309,12 @@ class Ui_Form(object):
         self.RemoveColumns.setMaximumSize(QSize(16777215, 30))
 
         self.gridLayout_7.addWidget(self.RemoveColumns, 1, 3, 1, 1)
+
+        self.ImportColumns = QPushButton(self.frame1)
+        self.ImportColumns.setObjectName(u"ImportColumns")
+        self.ImportColumns.setMinimumSize(QSize(0, 20))
+
+        self.gridLayout_7.addWidget(self.ImportColumns, 1, 4, 1, 1)
 
 
         self.gridLayout_3.addWidget(self.frame1, 4, 1, 1, 1)
@@ -357,8 +369,10 @@ class Ui_Form(object):
         self.ManualProperty.setPlaceholderText(QCoreApplication.translate("Form", u"Enter column name here...", None))
         self.label_3.setText(QCoreApplication.translate("Form", u"<html><head/><body><p>Enter property manually: </p></body></html>", None))
         self.SaveColumns.setText(QCoreApplication.translate("Form", u"Save", None))
-        self.label_5.setText(QCoreApplication.translate("Form", u"Load or save column configuration:", None))
         self.LoadColumns.setText(QCoreApplication.translate("Form", u"Load", None))
+        self.ExportColumns.setText(QCoreApplication.translate("Form", u"Export", None))
+        self.label_5.setText(QCoreApplication.translate("Form", u"Load or save column configuration:", None))
         self.RemoveColumns.setText(QCoreApplication.translate("Form", u"Remove", None))
+        self.ImportColumns.setText(QCoreApplication.translate("Form", u"Import", None))
     # retranslateUi
 

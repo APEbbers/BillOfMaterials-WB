@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelkBIBFt.ui'
+## Form generated from reading UI file 'BoM_PanelpLituL.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -232,22 +232,23 @@ class Ui_Dialog(object):
 
         self.frame_3 = QFrame(self.MainFrame)
         self.frame_3.setObjectName(u"frame_3")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.frame_3.sizePolicy().hasHeightForWidth())
         self.frame_3.setSizePolicy(sizePolicy3)
-        self.frame_3.setMinimumSize(QSize(0, 200))
+        self.frame_3.setMinimumSize(QSize(0, 0))
         self.frame_3.setFrameShape(QFrame.Shape.Box)
         self.frame_3.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_19 = QGridLayout(self.frame_3)
         self.gridLayout_19.setObjectName(u"gridLayout_19")
+        self.gridLayout_19.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
         self.gridLayout_15 = QGridLayout()
         self.gridLayout_15.setObjectName(u"gridLayout_15")
         self.toolButton_Settings = QToolButton(self.frame_3)
         self.toolButton_Settings.setObjectName(u"toolButton_Settings")
         self.toolButton_Settings.setIconSize(QSize(30, 16))
-        self.toolButton_Settings.setCheckable(False)
+        self.toolButton_Settings.setCheckable(True)
         self.toolButton_Settings.setChecked(False)
         self.toolButton_Settings.setPopupMode(QToolButton.ToolButtonPopupMode.DelayedPopup)
         self.toolButton_Settings.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
@@ -265,6 +266,11 @@ class Ui_Dialog(object):
 
         self.SettingsFrame = QFrame(self.frame_3)
         self.SettingsFrame.setObjectName(u"SettingsFrame")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.SettingsFrame.sizePolicy().hasHeightForWidth())
+        self.SettingsFrame.setSizePolicy(sizePolicy4)
         self.gridLayout_24 = QGridLayout(self.SettingsFrame)
         self.gridLayout_24.setObjectName(u"gridLayout_24")
         self.gridLayout_24.setContentsMargins(0, 0, 0, 0)
@@ -289,11 +295,11 @@ class Ui_Dialog(object):
 
         self.MaxLevel = QSpinBox(self.SettingsFrame)
         self.MaxLevel.setObjectName(u"MaxLevel")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding)
-        sizePolicy4.setHorizontalStretch(20)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.MaxLevel.sizePolicy().hasHeightForWidth())
-        self.MaxLevel.setSizePolicy(sizePolicy4)
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding)
+        sizePolicy5.setHorizontalStretch(20)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.MaxLevel.sizePolicy().hasHeightForWidth())
+        self.MaxLevel.setSizePolicy(sizePolicy5)
         self.MaxLevel.setMinimumSize(QSize(20, 20))
         self.MaxLevel.setMaximumSize(QSize(16777215, 25))
         self.MaxLevel.setBaseSize(QSize(0, 0))
@@ -304,11 +310,8 @@ class Ui_Dialog(object):
 
         self.label_6 = QLabel(self.SettingsFrame)
         self.label_6.setObjectName(u"label_6")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(self.label_6.sizePolicy().hasHeightForWidth())
-        self.label_6.setSizePolicy(sizePolicy5)
+        sizePolicy3.setHeightForWidth(self.label_6.sizePolicy().hasHeightForWidth())
+        self.label_6.setSizePolicy(sizePolicy3)
         self.label_6.setMinimumSize(QSize(200, 20))
         self.label_6.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.label_6.setWordWrap(True)
@@ -398,7 +401,7 @@ class Ui_Dialog(object):
         self.toolButton_Debug.setFocusPolicy(Qt.FocusPolicy.TabFocus)
         self.toolButton_Debug.setAutoFillBackground(False)
         self.toolButton_Debug.setIconSize(QSize(30, 16))
-        self.toolButton_Debug.setCheckable(False)
+        self.toolButton_Debug.setCheckable(True)
         self.toolButton_Debug.setChecked(False)
         self.toolButton_Debug.setAutoRepeat(False)
         self.toolButton_Debug.setAutoExclusive(False)
@@ -526,6 +529,8 @@ class Ui_Dialog(object):
         QWidget.setTabOrder(self.SetColumns, self.AssemblyType)
 
         self.retranslateUi(Dialog)
+        self.toolButton_Settings.toggled.connect(self.SettingsFrame.setHidden)
+        self.toolButton_Debug.clicked["bool"].connect(self.DebugFrame.setHidden)
 
         QMetaObject.connectSlotsByName(Dialog)
     # setupUi
