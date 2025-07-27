@@ -453,6 +453,39 @@ def add_keys_nested_dict(dict, keys, default=1):
     return result
 
 
+def GetFileDialog(Filter="", parent=None, DefaultPath="", SaveAs: bool = True) -> str:
+    """
+    Set filter like:
+    "Images (*.png *.xpm .jpg);;Text files (.txt);;XML files (*.xml)"
+    SaveAs:\n
+        If True,  as SaveAs dialog will open and the file will be overwritten\n
+        If False, an OpenFile dialog will be open and the file will be opened.\n
+    """
+    from PySide.QtWidgets import QFileDialog
+
+    file = ""
+    if SaveAs is False:
+        file = QFileDialog.getOpenFileName(
+            parent=parent, caption="Select a file", dir=DefaultPath, filter=Filter
+        )[0]
+    if SaveAs is True:
+        file = QFileDialog.getSaveFileName(
+            parent=parent, caption="Select a file", dir=DefaultPath, filter=Filter
+        )[0]
+    return file
+
+
+def GetFolder(parent=None, DefaultPath="") -> str:
+    from PySide.QtWidgets import QFileDialog
+
+    Directory = ""
+    Directory = QFileDialog.getExistingDirectory(
+        parent=parent, caption="Select Folder", dir=DefaultPath
+    )
+
+    return Directory
+
+
 def PartFeatureList():
     result = [
         "Part::PartFeature",

@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'Add_RemoveColumnsRWOJdM.ui'
+## Form generated from reading UI file 'Add_RemoveColumnskOsQur.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
-from PySide.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide.QtWidgets import (QAbstractButton, QAbstractItemView, QAbstractScrollArea, QApplication,
+from PySide6.QtWidgets import (QAbstractButton, QAbstractItemView, QAbstractScrollArea, QApplication,
     QComboBox, QDialogButtonBox, QFrame, QGridLayout,
     QLabel, QLayout, QLineEdit, QListView,
     QListWidget, QListWidgetItem, QPushButton, QSizePolicy,
@@ -25,18 +25,16 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(705, 589)
+        Form.resize(733, 624)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
         Form.setSizePolicy(sizePolicy)
-        self.gridLayout_6 = QGridLayout(Form)
-        self.gridLayout_6.setSpacing(6)
-        self.gridLayout_6.setContentsMargins(6, 6, 6, 6)
-        self.gridLayout_6.setObjectName(u"gridLayout_6")
-        self.gridLayout_6.setVerticalSpacing(0)
-        self.gridLayout_6.setContentsMargins(0, -1, 0, 0)
+        self.gridLayout_9 = QGridLayout(Form)
+        self.gridLayout_9.setSpacing(6)
+        self.gridLayout_9.setContentsMargins(6, 6, 6, 6)
+        self.gridLayout_9.setObjectName(u"gridLayout_9")
         self.frame = QFrame(Form)
         self.frame.setObjectName(u"frame")
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -49,20 +47,55 @@ class Ui_Form(object):
         self.gridLayout_3.setSpacing(6)
         self.gridLayout_3.setContentsMargins(6, 6, 6, 6)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.verticalSpacer_2 = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+
+        self.gridLayout_3.addItem(self.verticalSpacer_2, 2, 1, 1, 1)
+
+        self.horizontalSpacer_7 = QSpacerItem(5, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+
+        self.gridLayout_3.addItem(self.horizontalSpacer_7, 3, 0, 1, 1)
+
+        self.buttonBox = QDialogButtonBox(self.frame)
+        self.buttonBox.setObjectName(u"buttonBox")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(9)
+        sizePolicy2.setHeightForWidth(self.buttonBox.sizePolicy().hasHeightForWidth())
+        self.buttonBox.setSizePolicy(sizePolicy2)
+        self.buttonBox.setMinimumSize(QSize(0, 20))
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Apply|QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok|QDialogButtonBox.StandardButton.Reset)
+        self.buttonBox.setCenterButtons(False)
+
+        self.gridLayout_3.addWidget(self.buttonBox, 3, 1, 1, 1)
+
+        self.horizontalSpacer_8 = QSpacerItem(5, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+
+        self.gridLayout_3.addItem(self.horizontalSpacer_8, 3, 2, 1, 1)
+
+        self.frame_2 = QFrame(self.frame)
+        self.frame_2.setObjectName(u"frame_2")
+        sizePolicy.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
+        self.frame_2.setSizePolicy(sizePolicy)
+        self.frame_2.setFrameShape(QFrame.Shape.Box)
+        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_8 = QGridLayout(self.frame_2)
+        self.gridLayout_8.setSpacing(6)
+        self.gridLayout_8.setContentsMargins(6, 6, 6, 6)
+        self.gridLayout_8.setObjectName(u"gridLayout_8")
         self.gridLayout_5 = QGridLayout()
         self.gridLayout_5.setSpacing(6)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.LoadProperties = QPushButton(self.frame)
+        self.LoadProperties = QPushButton(self.frame_2)
         self.LoadProperties.setObjectName(u"LoadProperties")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.LoadProperties.sizePolicy().hasHeightForWidth())
-        self.LoadProperties.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.LoadProperties.sizePolicy().hasHeightForWidth())
+        self.LoadProperties.setSizePolicy(sizePolicy3)
 
         self.gridLayout_5.addWidget(self.LoadProperties, 0, 0, 1, 1)
 
-        self.label_4 = QLabel(self.frame)
+        self.label_4 = QLabel(self.frame_2)
         self.label_4.setObjectName(u"label_4")
         sizePolicy.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
         self.label_4.setSizePolicy(sizePolicy)
@@ -73,7 +106,7 @@ class Ui_Form(object):
         self.gridLayout_5.addWidget(self.label_4, 0, 1, 1, 1)
 
 
-        self.gridLayout_3.addLayout(self.gridLayout_5, 0, 1, 1, 1)
+        self.gridLayout_8.addLayout(self.gridLayout_5, 0, 0, 1, 1)
 
         self.gridLayout_2 = QGridLayout()
         self.gridLayout_2.setSpacing(6)
@@ -81,123 +114,39 @@ class Ui_Form(object):
         self.gridLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.gridLayout_2.setHorizontalSpacing(0)
         self.gridLayout_2.setVerticalSpacing(6)
-        self.Sort_ZA = QPushButton(self.frame)
-        self.Sort_ZA.setObjectName(u"Sort_ZA")
-        sizePolicy2.setHeightForWidth(self.Sort_ZA.sizePolicy().hasHeightForWidth())
-        self.Sort_ZA.setSizePolicy(sizePolicy2)
-        icon = QIcon()
-        icon.addFile(u"../Icons/Sort_ZA_Dark.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.Sort_ZA.setIcon(icon)
-
-        self.gridLayout_2.addWidget(self.Sort_ZA, 2, 13, 1, 1)
-
-        self.Move_Down = QPushButton(self.frame)
-        self.Move_Down.setObjectName(u"Move_Down")
-        icon1 = QIcon()
-        icon1.addFile(u"../Icons/SingleArrow_Down_Dark.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.Move_Down.setIcon(icon1)
-
-        self.gridLayout_2.addWidget(self.Move_Down, 2, 9, 1, 1)
-
-        self.Move_Up = QPushButton(self.frame)
-        self.Move_Up.setObjectName(u"Move_Up")
-        icon2 = QIcon()
-        icon2.addFile(u"../Icons/SingleArrow_Up_Dark.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.Move_Up.setIcon(icon2)
-
-        self.gridLayout_2.addWidget(self.Move_Up, 2, 8, 1, 1)
-
-        self.Columns_To_Add = QListWidget(self.frame)
-        self.Columns_To_Add.setObjectName(u"Columns_To_Add")
-        sizePolicy1.setHeightForWidth(self.Columns_To_Add.sizePolicy().hasHeightForWidth())
-        self.Columns_To_Add.setSizePolicy(sizePolicy1)
-        self.Columns_To_Add.setMinimumSize(QSize(0, 300))
-        self.Columns_To_Add.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored)
-        self.Columns_To_Add.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked|QAbstractItemView.EditTrigger.EditKeyPressed|QAbstractItemView.EditTrigger.SelectedClicked)
-        self.Columns_To_Add.setAlternatingRowColors(False)
-        self.Columns_To_Add.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
-        self.Columns_To_Add.setMovement(QListView.Movement.Static)
-        self.Columns_To_Add.setResizeMode(QListView.ResizeMode.Fixed)
-        self.Columns_To_Add.setLayoutMode(QListView.LayoutMode.SinglePass)
-        self.Columns_To_Add.setSortingEnabled(True)
-
-        self.gridLayout_2.addWidget(self.Columns_To_Add, 1, 0, 1, 4)
-
-        self.horizontalSpacer = QSpacerItem(5, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_2.addItem(self.horizontalSpacer, 2, 0, 1, 1)
-
-        self.label = QLabel(self.frame)
-        self.label.setObjectName(u"label")
-
-        self.gridLayout_2.addWidget(self.label, 0, 0, 1, 4)
-
-        self.RemoveItem = QPushButton(self.frame)
+        self.RemoveItem = QPushButton(self.frame_2)
         self.RemoveItem.setObjectName(u"RemoveItem")
-        sizePolicy2.setHeightForWidth(self.RemoveItem.sizePolicy().hasHeightForWidth())
-        self.RemoveItem.setSizePolicy(sizePolicy2)
-        icon3 = QIcon()
-        icon3.addFile(u"../Icons/- sign.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.RemoveItem.setIcon(icon3)
+        sizePolicy3.setHeightForWidth(self.RemoveItem.sizePolicy().hasHeightForWidth())
+        self.RemoveItem.setSizePolicy(sizePolicy3)
+        icon = QIcon()
+        icon.addFile(u"../Icons/- sign.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.RemoveItem.setIcon(icon)
 
         self.gridLayout_2.addWidget(self.RemoveItem, 2, 6, 1, 1)
-
-        self.horizontalSpacer_6 = QSpacerItem(5, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_2.addItem(self.horizontalSpacer_6, 2, 10, 1, 1)
-
-        self.gridLayout = QGridLayout()
-        self.gridLayout.setSpacing(6)
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.verticalSpacer = QSpacerItem(10, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.gridLayout.addItem(self.verticalSpacer, 3, 0, 1, 1)
-
-
-        self.gridLayout_2.addLayout(self.gridLayout, 1, 4, 1, 1)
 
         self.horizontalSpacer_3 = QSpacerItem(5, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_2.addItem(self.horizontalSpacer_3, 2, 2, 1, 2)
 
-        self.label_2 = QLabel(self.frame)
-        self.label_2.setObjectName(u"label_2")
+        self.Sort_ZA = QPushButton(self.frame_2)
+        self.Sort_ZA.setObjectName(u"Sort_ZA")
+        sizePolicy3.setHeightForWidth(self.Sort_ZA.sizePolicy().hasHeightForWidth())
+        self.Sort_ZA.setSizePolicy(sizePolicy3)
+        icon1 = QIcon()
+        icon1.addFile(u"../Icons/Sort_ZA_Dark.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.Sort_ZA.setIcon(icon1)
 
-        self.gridLayout_2.addWidget(self.label_2, 0, 5, 1, 9)
+        self.gridLayout_2.addWidget(self.Sort_ZA, 2, 13, 1, 1)
 
-        self.AddItem = QPushButton(self.frame)
-        self.AddItem.setObjectName(u"AddItem")
-        sizePolicy2.setHeightForWidth(self.AddItem.sizePolicy().hasHeightForWidth())
-        self.AddItem.setSizePolicy(sizePolicy2)
-        icon4 = QIcon()
-        icon4.addFile(u"../Icons/+ sign.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.AddItem.setIcon(icon4)
+        self.horizontalSpacer = QSpacerItem(5, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_2.addWidget(self.AddItem, 2, 1, 1, 1)
-
-        self.horizontalSpacer_2 = QSpacerItem(20, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_2.addItem(self.horizontalSpacer_2, 2, 7, 1, 1)
+        self.gridLayout_2.addItem(self.horizontalSpacer, 2, 0, 1, 1)
 
         self.horizontalSpacer_4 = QSpacerItem(5, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_2.addItem(self.horizontalSpacer_4, 2, 5, 1, 1)
 
-        self.Sort_AZ = QPushButton(self.frame)
-        self.Sort_AZ.setObjectName(u"Sort_AZ")
-        sizePolicy2.setHeightForWidth(self.Sort_AZ.sizePolicy().hasHeightForWidth())
-        self.Sort_AZ.setSizePolicy(sizePolicy2)
-        icon5 = QIcon()
-        icon5.addFile(u":/Resources/Icons/Sort_AZ_Dark.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.Sort_AZ.setIcon(icon5)
-
-        self.gridLayout_2.addWidget(self.Sort_AZ, 2, 11, 1, 2)
-
-        self.horizontalSpacer_5 = QSpacerItem(450, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_2.addItem(self.horizontalSpacer_5, 3, 0, 1, 14)
-
-        self.Columns_Present = QListWidget(self.frame)
+        self.Columns_Present = QListWidget(self.frame_2)
         self.Columns_Present.setObjectName(u"Columns_Present")
         sizePolicy1.setHeightForWidth(self.Columns_Present.sizePolicy().hasHeightForWidth())
         self.Columns_Present.setSizePolicy(sizePolicy1)
@@ -214,82 +163,137 @@ class Ui_Form(object):
 
         self.gridLayout_2.addWidget(self.Columns_Present, 1, 6, 1, 8)
 
+        self.horizontalSpacer_6 = QSpacerItem(5, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_3.addLayout(self.gridLayout_2, 1, 1, 1, 1)
+        self.gridLayout_2.addItem(self.horizontalSpacer_6, 2, 10, 1, 1)
+
+        self.label_2 = QLabel(self.frame_2)
+        self.label_2.setObjectName(u"label_2")
+
+        self.gridLayout_2.addWidget(self.label_2, 0, 5, 1, 9)
+
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setSpacing(6)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.verticalSpacer = QSpacerItem(10, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.gridLayout.addItem(self.verticalSpacer, 3, 0, 1, 1)
+
+
+        self.gridLayout_2.addLayout(self.gridLayout, 1, 4, 1, 1)
+
+        self.label = QLabel(self.frame_2)
+        self.label.setObjectName(u"label")
+
+        self.gridLayout_2.addWidget(self.label, 0, 0, 1, 4)
+
+        self.Columns_To_Add = QListWidget(self.frame_2)
+        self.Columns_To_Add.setObjectName(u"Columns_To_Add")
+        sizePolicy1.setHeightForWidth(self.Columns_To_Add.sizePolicy().hasHeightForWidth())
+        self.Columns_To_Add.setSizePolicy(sizePolicy1)
+        self.Columns_To_Add.setMinimumSize(QSize(0, 300))
+        self.Columns_To_Add.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored)
+        self.Columns_To_Add.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked|QAbstractItemView.EditTrigger.EditKeyPressed|QAbstractItemView.EditTrigger.SelectedClicked)
+        self.Columns_To_Add.setAlternatingRowColors(False)
+        self.Columns_To_Add.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
+        self.Columns_To_Add.setMovement(QListView.Movement.Static)
+        self.Columns_To_Add.setResizeMode(QListView.ResizeMode.Fixed)
+        self.Columns_To_Add.setLayoutMode(QListView.LayoutMode.SinglePass)
+        self.Columns_To_Add.setSortingEnabled(True)
+
+        self.gridLayout_2.addWidget(self.Columns_To_Add, 1, 0, 1, 4)
+
+        self.Move_Up = QPushButton(self.frame_2)
+        self.Move_Up.setObjectName(u"Move_Up")
+        icon2 = QIcon()
+        icon2.addFile(u"../Icons/SingleArrow_Up_Dark.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.Move_Up.setIcon(icon2)
+
+        self.gridLayout_2.addWidget(self.Move_Up, 2, 8, 1, 1)
+
+        self.AddItem = QPushButton(self.frame_2)
+        self.AddItem.setObjectName(u"AddItem")
+        sizePolicy3.setHeightForWidth(self.AddItem.sizePolicy().hasHeightForWidth())
+        self.AddItem.setSizePolicy(sizePolicy3)
+        icon3 = QIcon()
+        icon3.addFile(u"../Icons/+ sign.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.AddItem.setIcon(icon3)
+
+        self.gridLayout_2.addWidget(self.AddItem, 2, 1, 1, 1)
+
+        self.Sort_AZ = QPushButton(self.frame_2)
+        self.Sort_AZ.setObjectName(u"Sort_AZ")
+        sizePolicy3.setHeightForWidth(self.Sort_AZ.sizePolicy().hasHeightForWidth())
+        self.Sort_AZ.setSizePolicy(sizePolicy3)
+        icon4 = QIcon()
+        icon4.addFile(u":/Resources/Icons/Sort_AZ_Dark.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.Sort_AZ.setIcon(icon4)
+
+        self.gridLayout_2.addWidget(self.Sort_AZ, 2, 11, 1, 2)
+
+        self.Move_Down = QPushButton(self.frame_2)
+        self.Move_Down.setObjectName(u"Move_Down")
+        icon5 = QIcon()
+        icon5.addFile(u"../Icons/SingleArrow_Down_Dark.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.Move_Down.setIcon(icon5)
+
+        self.gridLayout_2.addWidget(self.Move_Down, 2, 9, 1, 1)
+
+        self.horizontalSpacer_2 = QSpacerItem(20, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_2.addItem(self.horizontalSpacer_2, 2, 7, 1, 1)
+
+
+        self.gridLayout_8.addLayout(self.gridLayout_2, 1, 0, 1, 1)
 
         self.gridLayout_4 = QGridLayout()
         self.gridLayout_4.setSpacing(6)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.gridLayout_4.setVerticalSpacing(0)
-        self.AddManual = QPushButton(self.frame)
+        self.AddManual = QPushButton(self.frame_2)
         self.AddManual.setObjectName(u"AddManual")
         self.AddManual.setIcon(icon2)
 
         self.gridLayout_4.addWidget(self.AddManual, 0, 2, 1, 1)
 
-        self.ManualProperty = QLineEdit(self.frame)
+        self.ManualProperty = QLineEdit(self.frame_2)
         self.ManualProperty.setObjectName(u"ManualProperty")
 
         self.gridLayout_4.addWidget(self.ManualProperty, 0, 1, 1, 1)
 
-        self.label_3 = QLabel(self.frame)
+        self.label_3 = QLabel(self.frame_2)
         self.label_3.setObjectName(u"label_3")
 
         self.gridLayout_4.addWidget(self.label_3, 0, 0, 1, 1)
 
 
-        self.gridLayout_3.addLayout(self.gridLayout_4, 2, 1, 1, 1)
+        self.gridLayout_8.addLayout(self.gridLayout_4, 2, 0, 1, 1)
 
-        self.verticalSpacer_3 = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.gridLayout_3.addItem(self.verticalSpacer_3, 3, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.frame_2, 0, 1, 1, 1)
 
         self.frame1 = QFrame(self.frame)
         self.frame1.setObjectName(u"frame1")
-        sizePolicy.setHeightForWidth(self.frame1.sizePolicy().hasHeightForWidth())
-        self.frame1.setSizePolicy(sizePolicy)
-        self.frame1.setMinimumSize(QSize(0, 0))
-        self.gridLayout_7 = QGridLayout(self.frame1)
-        self.gridLayout_7.setSpacing(6)
-        self.gridLayout_7.setContentsMargins(6, 6, 6, 6)
-        self.gridLayout_7.setObjectName(u"gridLayout_7")
-        self.gridLayout_7.setHorizontalSpacing(6)
-        self.gridLayout_7.setVerticalSpacing(0)
-        self.gridLayout_7.setContentsMargins(0, 0, 0, 0)
-        self.SaveColumns = QPushButton(self.frame1)
-        self.SaveColumns.setObjectName(u"SaveColumns")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.SaveColumns.sizePolicy().hasHeightForWidth())
-        self.SaveColumns.setSizePolicy(sizePolicy3)
-        self.SaveColumns.setMinimumSize(QSize(0, 20))
-        self.SaveColumns.setMaximumSize(QSize(16777215, 30))
-
-        self.gridLayout_7.addWidget(self.SaveColumns, 1, 2, 1, 1)
-
-        self.LoadColumns = QPushButton(self.frame1)
-        self.LoadColumns.setObjectName(u"LoadColumns")
-        sizePolicy3.setHeightForWidth(self.LoadColumns.sizePolicy().hasHeightForWidth())
-        self.LoadColumns.setSizePolicy(sizePolicy3)
-        self.LoadColumns.setMinimumSize(QSize(0, 20))
-        self.LoadColumns.setMaximumSize(QSize(16777215, 30))
-
-        self.gridLayout_7.addWidget(self.LoadColumns, 1, 1, 1, 1)
-
-        self.ExportColumns = QPushButton(self.frame1)
-        self.ExportColumns.setObjectName(u"ExportColumns")
-        self.ExportColumns.setMinimumSize(QSize(0, 20))
-
-        self.gridLayout_7.addWidget(self.ExportColumns, 1, 5, 1, 1)
-
-        self.ColumnsConfigList = QComboBox(self.frame1)
-        self.ColumnsConfigList.setObjectName(u"ColumnsConfigList")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.ColumnsConfigList.sizePolicy().hasHeightForWidth())
-        self.ColumnsConfigList.setSizePolicy(sizePolicy4)
+        sizePolicy4.setHeightForWidth(self.frame1.sizePolicy().hasHeightForWidth())
+        self.frame1.setSizePolicy(sizePolicy4)
+        self.frame1.setMinimumSize(QSize(0, 0))
+        self.frame1.setFrameShape(QFrame.Shape.Box)
+        self.frame1.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_7 = QGridLayout(self.frame1)
+        self.gridLayout_7.setSpacing(0)
+        self.gridLayout_7.setContentsMargins(6, 6, 6, 6)
+        self.gridLayout_7.setObjectName(u"gridLayout_7")
+        self.gridLayout_7.setContentsMargins(6, 6, 6, 6)
+        self.ColumnsConfigList = QComboBox(self.frame1)
+        self.ColumnsConfigList.setObjectName(u"ColumnsConfigList")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.ColumnsConfigList.sizePolicy().hasHeightForWidth())
+        self.ColumnsConfigList.setSizePolicy(sizePolicy5)
         self.ColumnsConfigList.setMinimumSize(QSize(0, 30))
         self.ColumnsConfigList.setMaximumSize(QSize(16777215, 30))
         self.ColumnsConfigList.setEditable(True)
@@ -301,51 +305,59 @@ class Ui_Form(object):
 
         self.gridLayout_7.addWidget(self.label_5, 0, 0, 1, 4)
 
+        self.gridLayout_6 = QGridLayout()
+        self.gridLayout_6.setSpacing(6)
+        self.gridLayout_6.setObjectName(u"gridLayout_6")
         self.RemoveColumns = QPushButton(self.frame1)
         self.RemoveColumns.setObjectName(u"RemoveColumns")
-        sizePolicy3.setHeightForWidth(self.RemoveColumns.sizePolicy().hasHeightForWidth())
-        self.RemoveColumns.setSizePolicy(sizePolicy3)
+        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(self.RemoveColumns.sizePolicy().hasHeightForWidth())
+        self.RemoveColumns.setSizePolicy(sizePolicy6)
         self.RemoveColumns.setMinimumSize(QSize(0, 20))
         self.RemoveColumns.setMaximumSize(QSize(16777215, 30))
 
-        self.gridLayout_7.addWidget(self.RemoveColumns, 1, 3, 1, 1)
+        self.gridLayout_6.addWidget(self.RemoveColumns, 0, 2, 1, 1)
 
         self.ImportColumns = QPushButton(self.frame1)
         self.ImportColumns.setObjectName(u"ImportColumns")
         self.ImportColumns.setMinimumSize(QSize(0, 20))
 
-        self.gridLayout_7.addWidget(self.ImportColumns, 1, 4, 1, 1)
+        self.gridLayout_6.addWidget(self.ImportColumns, 0, 3, 1, 1)
+
+        self.SaveColumns = QPushButton(self.frame1)
+        self.SaveColumns.setObjectName(u"SaveColumns")
+        sizePolicy6.setHeightForWidth(self.SaveColumns.sizePolicy().hasHeightForWidth())
+        self.SaveColumns.setSizePolicy(sizePolicy6)
+        self.SaveColumns.setMinimumSize(QSize(0, 20))
+        self.SaveColumns.setMaximumSize(QSize(16777215, 30))
+
+        self.gridLayout_6.addWidget(self.SaveColumns, 0, 1, 1, 1)
+
+        self.LoadColumns = QPushButton(self.frame1)
+        self.LoadColumns.setObjectName(u"LoadColumns")
+        sizePolicy6.setHeightForWidth(self.LoadColumns.sizePolicy().hasHeightForWidth())
+        self.LoadColumns.setSizePolicy(sizePolicy6)
+        self.LoadColumns.setMinimumSize(QSize(0, 20))
+        self.LoadColumns.setMaximumSize(QSize(16777215, 30))
+
+        self.gridLayout_6.addWidget(self.LoadColumns, 0, 0, 1, 1)
+
+        self.ExportColumns = QPushButton(self.frame1)
+        self.ExportColumns.setObjectName(u"ExportColumns")
+        self.ExportColumns.setMinimumSize(QSize(0, 20))
+
+        self.gridLayout_6.addWidget(self.ExportColumns, 0, 4, 1, 1)
 
 
-        self.gridLayout_3.addWidget(self.frame1, 4, 1, 1, 1)
-
-        self.verticalSpacer_2 = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-
-        self.gridLayout_3.addItem(self.verticalSpacer_2, 5, 1, 1, 1)
-
-        self.horizontalSpacer_7 = QSpacerItem(5, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-
-        self.gridLayout_3.addItem(self.horizontalSpacer_7, 6, 0, 1, 1)
-
-        self.buttonBox = QDialogButtonBox(self.frame)
-        self.buttonBox.setObjectName(u"buttonBox")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(9)
-        sizePolicy5.setHeightForWidth(self.buttonBox.sizePolicy().hasHeightForWidth())
-        self.buttonBox.setSizePolicy(sizePolicy5)
-        self.buttonBox.setMinimumSize(QSize(0, 20))
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Apply|QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok|QDialogButtonBox.StandardButton.Reset)
-        self.buttonBox.setCenterButtons(False)
-
-        self.gridLayout_3.addWidget(self.buttonBox, 6, 1, 1, 1)
-
-        self.horizontalSpacer_8 = QSpacerItem(5, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-
-        self.gridLayout_3.addItem(self.horizontalSpacer_8, 6, 2, 1, 1)
+        self.gridLayout_7.addLayout(self.gridLayout_6, 3, 0, 1, 1)
 
 
-        self.gridLayout_6.addWidget(self.frame, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.frame1, 1, 1, 1, 1)
+
+
+        self.gridLayout_9.addWidget(self.frame, 0, 0, 1, 1)
 
 
         self.retranslateUi(Form)
@@ -357,22 +369,22 @@ class Ui_Form(object):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
         self.LoadProperties.setText(QCoreApplication.translate("Form", u"Load", None))
         self.label_4.setText(QCoreApplication.translate("Form", u"<html><head/><body><p>Select an object in the tree and press &quot;Load&quot; to show the available columns for that object type.</p></body></html>", None))
-        self.Sort_ZA.setText("")
-        self.Move_Down.setText("")
-        self.Move_Up.setText("")
-        self.label.setText(QCoreApplication.translate("Form", u"Available columns:", None))
         self.RemoveItem.setText("")
+        self.Sort_ZA.setText("")
         self.label_2.setText(QCoreApplication.translate("Form", u"Selected columns:", None))
+        self.label.setText(QCoreApplication.translate("Form", u"Available columns:", None))
+        self.Move_Up.setText("")
         self.AddItem.setText("")
         self.Sort_AZ.setText("")
+        self.Move_Down.setText("")
         self.AddManual.setText("")
         self.ManualProperty.setPlaceholderText(QCoreApplication.translate("Form", u"Enter column name here...", None))
         self.label_3.setText(QCoreApplication.translate("Form", u"<html><head/><body><p>Enter property manually: </p></body></html>", None))
-        self.SaveColumns.setText(QCoreApplication.translate("Form", u"Save", None))
-        self.LoadColumns.setText(QCoreApplication.translate("Form", u"Load", None))
-        self.ExportColumns.setText(QCoreApplication.translate("Form", u"Export", None))
         self.label_5.setText(QCoreApplication.translate("Form", u"Load or save column configuration:", None))
         self.RemoveColumns.setText(QCoreApplication.translate("Form", u"Remove", None))
-        self.ImportColumns.setText(QCoreApplication.translate("Form", u"Import", None))
+        self.ImportColumns.setText(QCoreApplication.translate("Form", u"Import configurations", None))
+        self.SaveColumns.setText(QCoreApplication.translate("Form", u"Save", None))
+        self.LoadColumns.setText(QCoreApplication.translate("Form", u"Load", None))
+        self.ExportColumns.setText(QCoreApplication.translate("Form", u"Export configurations", None))
     # retranslateUi
 

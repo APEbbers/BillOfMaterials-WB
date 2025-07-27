@@ -46,7 +46,6 @@ def GetIntSetting(settingName: str) -> int:
         result = None
     return result
 
-
 def GetFloatSetting(settingName: str) -> int:
     result = preferences.GetFloat(settingName)
     if result == "":
@@ -107,6 +106,9 @@ CUSTOM_HEADERS = GetStringSetting("CustomHeader")
 if CUSTOM_HEADERS is "":
     CUSTOM_HEADERS = "Number;Qty;Label;Description;Parent;Remarks"
 DEBUG_HEADERS = GetStringSetting("DebugHeader")
+
+# Import/Export location for columns
+IMPORT_LOCATION = GetStringSetting("ImportLocation")
 
 # UI Settings
 SPREADSHEET_HEADERBACKGROUND = GetColorSetting("SpreadSheetHeaderBackGround")
