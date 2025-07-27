@@ -687,6 +687,9 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
         return
     
     def on_RemoveColumns_clicked(self):
+        # Apply any changes first
+        self.on_ButtonBox_Applied()
+        
         # Get the name for the columnsConfig
         name = self.form.ColumnsConfigList.currentText()
         
@@ -744,6 +747,8 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
             return
     
     def on_ExportColumns_clicked(self):
+        
+        
         FileName = Standard_Functions.GetFileDialog(
             Filter="JSON (*.json)",
             parent=self.form,
