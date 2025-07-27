@@ -461,7 +461,7 @@ def GetFileDialog(Filter="", parent=None, DefaultPath="", SaveAs: bool = True) -
         If True,  as SaveAs dialog will open and the file will be overwritten\n
         If False, an OpenFile dialog will be open and the file will be opened.\n
     """
-    from PySide.QtWidgets import QFileDialog
+    from PySide6.QtWidgets import QFileDialog
 
     file = ""
     if SaveAs is False:

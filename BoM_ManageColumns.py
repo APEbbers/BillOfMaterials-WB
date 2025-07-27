@@ -227,7 +227,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
         def ExportColumns():
             self.on_ExportColumns_clicked()
 
-        self.form.ImportColumns.clicked.connect(ExportColumns)
+        self.form.ExportColumns.clicked.connect(ExportColumns)
         
         
         # endregion
@@ -739,26 +739,13 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
             # Clear the present columns
             self.form.ColumnsConfigList.clear()
             for Header in data.keys():
-                # Create the custom QListWidgetItem
-                self.delegate = ItemDelegate()
-                self.form.Columns_Present.setItemDelegate(self.delegate)
-                #
-                # Define a ListWidgetItem
-                item = QListWidgetItem()
-                item.setText(Header)
-
-                if Header in "Number;Qty;Label;Description;Parent;Remarks":
-                    icon = QIcon()
-                    icon.addPixmap(os.path.join(PATH_TB_ICONS, "Lock.svg"))
-                    item.setIcon(icon)
-                
-                self.form.Columns_Present.addItem(item)
+                self.form.ColumnsConfigList.addItem(Header)
             
             return
     
     def on_ExportColumns_clicked(self):
         FileName = Standard_Functions.GetFileDialog(
-            Filter="RibbonStructure (*.json)",
+            Filter="JSON (*.json)",
             parent=self.form,
             DefaultPath=Settings_BoM.IMPORT_LOCATION,
             SaveAs=True,
