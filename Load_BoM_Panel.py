@@ -601,22 +601,25 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # Get the assembly type
         
         AssemblyType_Selected = ""
-        if General_BOM.CheckAssemblyType(doc) == "A2plus" or str(self.form.AssemblyType.currentText()) == "A2plus":
+        if General_BOM.CheckAssemblyType(doc) == "A2plus":
             AssemblyType_Selected = "A2plus"
-        if General_BOM.CheckAssemblyType(doc) == "AppLink" or str(self.form.AssemblyType.currentText()) == "App:Link":
+        if General_BOM.CheckAssemblyType(doc) == "AppLink":
             AssemblyType_Selected = "App:LinkGroup"
-        if General_BOM.CheckAssemblyType(doc) == "AppPart" or str(self.form.AssemblyType.currentText()) == "App:Part":
+        if General_BOM.CheckAssemblyType(doc) == "AppPart":
             AssemblyType_Selected = "App:Part"
-        if General_BOM.CheckAssemblyType(doc) == "Assembly3" or str(self.form.AssemblyType.currentText()) == "Assembly 3":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly3":
             AssemblyType_Selected = "Assembly 3"
-        if General_BOM.CheckAssemblyType(doc) == "Assembly4" or str(self.form.AssemblyType.currentText()) == "Assembly 4":
+        if General_BOM.CheckAssemblyType(doc) == "Assembly4":
             AssemblyType_Selected = "Assembly 4"
-        if General_BOM.CheckAssemblyType(doc) == "Internal" or str(self.form.AssemblyType.currentText()) == "Internal assembly":
+        if General_BOM.CheckAssemblyType(doc) == "Internal":
             AssemblyType_Selected = "Internal assembly"
-        if General_BOM.CheckAssemblyType(doc) == "Arch" or str(self.form.AssemblyType.currentText()) == "Arch":
+        if General_BOM.CheckAssemblyType(doc) == "Arch":
             AssemblyType_Selected = "Arch"
-        if General_BOM.CheckAssemblyType(doc) == "MultiBody" or str(self.form.AssemblyType.currentText()) == "MultiBody":
+        if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             AssemblyType_Selected = "MultiBody"
+        
+        if self.manualChange is True:
+            AssemblyType_Selected = str(self.form.AssemblyType.currentText())
         
         if AssemblyType_Selected == "":
             return
