@@ -689,7 +689,7 @@ class BomFunctions:
                         Level=Level,
                     )
                 if command == "Raw":
-                    General_BOM.createBoMSpreadsheet(self.mainList)
+                    General_BOM.createBoMSpreadsheet(self.mainList, AssemblyType="App::Part") 
                 if command == "PartsOnly":
                     self.PartsOnly(
                         CreateSpreadSheet=True,

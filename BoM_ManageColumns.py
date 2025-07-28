@@ -702,7 +702,6 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
             for i in range(self.form.ColumnsConfigList.count()):                
                 if self.form.ColumnsConfigList.itemText(i) == name:
                     self.form.ColumnsConfigList.removeItem(i)
-            self.form.ColumnsConfigList.removeItem(i)
             # Close the json file
             JsonFile.close()
             

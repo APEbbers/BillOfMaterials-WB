@@ -55,6 +55,7 @@ class BomFunctions:
         # docObjects = doc.RootObjects
         docObjects = []
         rootObjects = General_BOM.GetRootObjects()
+        # rootObjects = doc.RootObjects
         for i in range(len(rootObjects)):
             if rootObjects[i].Visibility is True:
                 docObjects.append(rootObjects[i])
@@ -193,16 +194,17 @@ class BomFunctions:
             # Get the documentObject
             Object = docObjects[i]
             GroupItems = General_BOM.GetObjectsFromGroups(Object)
-            if len(GroupItems) > 0:
+            if len(GroupItems) > 0 and Object.Visibility is True:
                 for j in range(len(GroupItems)):
-                    docObjects.insert(i + j + 1, GroupItems[j])
+                    if GroupItems[j].Visibility is True:
+                        docObjects.insert(i + j + 1, GroupItems[j])
 
         for i in range(len(docObjects)):
             # Get the documentObject
             object = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
-            if self.AllowedObjectType(object.TypeId) is True:
+            if self.AllowedObjectType(object.TypeId) is True and object.Visibility is True:
                 # Increase the itemnumber
                 ItemNumber = ItemNumber + 1
 
@@ -284,16 +286,18 @@ class BomFunctions:
             # Get the documentObject
             Object = ChilddocObjects[i]
             GroupItems = General_BOM.GetObjectsFromGroups(Object)
-            if len(GroupItems) > 0:
+            if len(GroupItems) > 0 and Object.Visibility is True:
                 for j in range(len(GroupItems)):
-                    ChilddocObjects.insert(i + j + 1, GroupItems[j])
+                    if GroupItems[j].Visibility is True:
+                        ChilddocObjects.insert(i + j + 1, GroupItems[j])
+                    
 
         for i in range(len(ChilddocObjects)):
             # Get the childDocumentObject
             childObject = ChilddocObjects[i]
 
             # If the childDocumentObject is one of the allowed types, continue
-            if self.AllowedObjectType(childObject.TypeId) is True:
+            if self.AllowedObjectType(childObject.TypeId) is True and childObject.Visibility is True:
                 # Increase the itemnumber for the child
                 ChildItemNumber = ChildItemNumber + 1
 
@@ -312,6 +316,8 @@ class BomFunctions:
                     "Qty": 1,
                     "Type": "Part",
                 }
+                
+                print(rowList)
 
                 # add the rowList to the mainList
                 self.mainList.append(rowList)
@@ -471,6 +477,8 @@ class BomFunctions:
 
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
+        
+        # print(CopyMainList)
 
         # Replace duplicate items with their original
         CopyMainList_2 = []
@@ -967,7 +975,7 @@ class BomFunctions:
                         if Answer == "yes":
                             IncludeBodies = True
                     General_BOM.createBoMSpreadsheet(
-                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies, AssemblyType="FreeCAD Assembly")
+                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies), AssemblyType="FreeCAD Assembly"
                     )
 
                 if command == "PartsOnly":

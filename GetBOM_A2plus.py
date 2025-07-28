@@ -38,7 +38,7 @@ class BomFunctions:
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
-    def GetTreeObjects(self, checkAssemblyType=True) -> True:
+    def GetTreeObjects(self, checkAssemblyType=True) :
         # Get the active document
         doc = App.ActiveDocument
         LastActiveDoc = doc.Name
@@ -118,7 +118,7 @@ class BomFunctions:
     @classmethod
     def GoThrough_Objects(
         self, ParentDocument, docObjects, sheet, ItemNumber, ParentNumber: str = ""
-    ) -> True:
+    ) :
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -213,7 +213,7 @@ class BomFunctions:
         sheet,
         ChildItemNumber,
         ParentNumber: str = "",
-    ) -> True:
+    ) :
         """
         Args:
                 ChilddocObjects (_type_):       list[DocumentObjects]\n

@@ -857,7 +857,7 @@ class BomFunctions:
                         if Answer == "yes":
                             IncludeBodies = True
                     General_BOM.createBoMSpreadsheet(
-                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies, AssemblyType="Assembly3")
+                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies), AssemblyType="Assembly3"
                     )
 
                 if command == "PartsOnly":

@@ -1066,12 +1066,13 @@ class General_BOM:
         resultList = []
         try:
             Objects = Group.Group
-            if Objects[0].TypeId != 'Assembly::JointGroup':
-                for Object in Objects:
-                    if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
-                        resultList.append(Object)
-                    if Object.TypeId == "App::DocumentObjectGroup":
-                        resultList.extend(self.GetObjectsFromGroups(Object))
+            if Objects.Visibility is True:
+                if Objects[0].TypeId != 'Assembly::JointGroup':
+                    for Object in Objects:
+                        if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
+                            resultList.append(Object)
+                        if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
+                            resultList.extend(self.GetObjectsFromGroups(Object))
         except Exception:
             pass
         return resultList

@@ -913,7 +913,7 @@ class BomFunctions:
                         if Answer == "yes":
                             IncludeBodies = True
                     General_BOM.createBoMSpreadsheet(
-                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies, AssemblyType="App::Link")
+                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies), AssemblyType="App::Link"
                     )
 
                 if command == "PartsOnly":
