@@ -316,8 +316,6 @@ class BomFunctions:
                     "Qty": 1,
                     "Type": "Part",
                 }
-                
-                print(rowList)
 
                 # add the rowList to the mainList
                 self.mainList.append(rowList)
