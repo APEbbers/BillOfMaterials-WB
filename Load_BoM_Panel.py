@@ -366,6 +366,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # Add a event filter to the qcombobox ColumnsConfigList. This updates the items after a new config is made
         self.form.ColumnsConfigList.installEventFilter(EventInspector_ComboBox(self.form))
 
+        self.manualChange = False
         return
         # endregion
     
