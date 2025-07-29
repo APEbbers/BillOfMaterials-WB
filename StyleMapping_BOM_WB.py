@@ -134,7 +134,7 @@ def ReturnStyleItem(ControlName, ShowCustomIcon=False, IgnoreOverlay=False):
         return result
     except Exception as e:
         print(e)
-        return None
+        return ""
 
 
 def GetIconBasedOnTag(ControlName=""):

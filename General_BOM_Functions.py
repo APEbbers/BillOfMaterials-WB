@@ -23,12 +23,16 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
+import StyleMapping_BOM_WB
 from Settings_BoM import CUSTOM_HEADERS
 from Settings_BoM import DEBUG_HEADERS
 from datetime import datetime
 import os
 import Settings_BoM
 import getpass
+
+from PySide.QtCore import Qt, QObject, Signal
+from PySide.QtWidgets import QLabel, QMainWindow
 
 # Define the translation
 translate = App.Qt.translate
@@ -48,7 +52,7 @@ class General_BOM:
     # You can add a dict for the headers of this list
     @classmethod
     def createBoMSpreadsheet(
-        self, mainList: list, Headers: dict = None, Summary: bool = False, IFCData=None, AssemblyType = ""
+        self, mainList: list = None, Headers: dict = None, Summary: bool = False, IFCData=None, AssemblyType = ""
     ):
         # If the Mainlist is empty, return.
         if mainList is None:
@@ -1573,3 +1577,14 @@ class General_BOM:
                 print(e)
             return
         
+    
+    def CounterLabel():
+        lbl = QLabel(translate("BoM Workbench", "(…) processed."))
+        lbl.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowStaysOnTopHint)
+        lbl.setMinimumSize(300, 20)
+        lbl.setContentsMargins(3, 3, 3, 3)
+        # Get the stylesheet from the main window and use it for this form
+        lbl.setStyleSheet("background-color: " + StyleMapping_BOM_WB.ReturnStyleItem("Background_Color") + ";")
+        
+        return lbl
+    
