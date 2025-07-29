@@ -21,13 +21,14 @@
 # *                                                                         *
 # ***************************************************************************/
 
+import time
 import FreeCAD as App
 import FreeCADGui as Gui
 import Standard_Functions_BOM_WB as Standard_Functions
 from General_BOM_Functions import General_BOM
 from Standard_Functions_BOM_WB import Print
-from PySide.QtCore import Qt, QObject, Signal
-from PySide.QtWidgets import QLabel, QMainWindow
+from PySide.QtCore import Qt, QObject, Signal, QEventLoop
+from PySide.QtWidgets import QLabel, QMainWindow, QProgressBar, QApplication
 import StyleMapping_BOM_WB
 
 # Define the translation
@@ -41,18 +42,16 @@ class BomFunctions:
     # The startrow number which increases with every item and child
     StartRow = 0
     mainList = []
-    counter = 0
+    counter_1 = 0
     
     # Get the mainwindow
     mw = Gui.getMainWindow()
     
-    # Define a Qlabel as a counter dialog
-    lbl = QLabel(translate("BoM Workbench", "(…) processed."))
-    lbl.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowStaysOnTopHint)
-    lbl.setMinimumSize(300, 20)
-    lbl.setContentsMargins(3, 3, 3, 3)
+    # Define a QProgressBar as a counter dialog
+    progressBar = QProgressBar(minimum=0, value=0)
+    progressBar.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowStaysOnTopHint)
     # Get the stylesheet from the main window and use it for this form
-    lbl.setStyleSheet("background-color: " + StyleMapping_BOM_WB.ReturnStyleItem("Background_Color") + ";")
+    progressBar.setStyleSheet("background-color: " + StyleMapping_BOM_WB.ReturnStyleItem("Background_Color") + ";")
     
     # Create an instance of the signal emitter
     signal_emitter = SignalEmitter_Counter()
@@ -60,7 +59,6 @@ class BomFunctions:
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
     def GetTreeObjects(self, checkAssembly=True) -> True:
-        self.counter = 0
         # Get the active document
         doc = App.ActiveDocument
 
@@ -233,6 +231,10 @@ class BomFunctions:
 
                 # Increase the global startrow to make sure the data ends up in the next row
                 self.StartRow = self.StartRow + 1
+                
+                # Increase the maximum of the progressbar
+                self.progressBar.setMaximum(self.counter_1)
+                self.counter_1 += 1
 
                 # define the itemnumber string. for toplevel this is equel to Itemnumber.
                 # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
@@ -326,6 +328,10 @@ class BomFunctions:
 
                 # Increase the global startrow to make sure the data ends up in the next row
                 self.StartRow = self.StartRow + 1
+                
+                # Increase the maximum of the progressbar
+                self.progressBar.setMaximum(self.counter_1)
+                self.counter_1 += 1
 
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
@@ -602,7 +608,7 @@ class BomFunctions:
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
                     # Emit a signal for a visual counter dialog
-                    self.signal_emitter.counter_signal.emit(self.counter)
+                    self.signal_emitter.counter_signal.emit("Object processed")
 
             # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
             if len(itemNumber.split(".")) == 1:
@@ -681,7 +687,7 @@ class BomFunctions:
                     # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
                     ShadowList.append(shadowRow)
                     # Emit a signal for a visual counter dialog
-                    self.signal_emitter.counter_signal.emit(self.counter)
+                    self.signal_emitter.counter_signal.emit("Object processed")
 
         if Level > 1:
             TemporaryList = self.FilterBodies(
@@ -811,7 +817,7 @@ class BomFunctions:
                 TemporaryList.append(rowListNew)
                 ShadowList.append(shadowRow)
                 # Emit a signal for a visual counter dialog
-                self.signal_emitter.counter_signal.emit(self.counter)
+                self.signal_emitter.counter_signal.emit("Object processed")
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
@@ -939,7 +945,7 @@ class BomFunctions:
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
                     # Emit a signal for a visual counter dialog
-                    self.signal_emitter.counter_signal.emit(self.counter)
+                    self.signal_emitter.counter_signal.emit("Object processed")
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
@@ -960,16 +966,10 @@ class BomFunctions:
     # endregion
     
     def custom_slot_counter(self):
-        self.counter += 1       
-        msg = f"{self.counter} objects processed."
-
-        self.lbl.setText(msg)
-        geo = self.lbl.geometry()
-        geo.setSize(self.lbl.sizeHint())
-        self.lbl.setGeometry(geo)
-        self.lbl.repaint()
-        Gui.updateGui()  # Probably slower with this, because it redraws the entire GUI with all tool buttons changed etc. but allows the label to actually be updated, and it looks nice and gives a quick overview of all the workbenches…
-                
+        # Get the current value of the progressbar and increase it by 1.
+        value = self.progressBar.value()
+        self.progressBar.setValue(value + 1)
+        QApplication.processEvents()
         return
 
     # Function to start the other functions based on a command string that is passed.
@@ -984,10 +984,10 @@ class BomFunctions:
         CheckAssemblyType=True,
     ):
         try:
-            # Set the counter to zero
-            self.counter = 0
             # show the processing window
-            self.lbl.show()
+            self.progressBar.setMinimum(0)
+            self.progressBar.setValue(0)
+            self.progressBar.show()
             # Connect the custom signal to the custom slot
             self.signal_emitter.counter_signal.connect(lambda i: self.custom_slot_counter(self))
             
@@ -1050,8 +1050,8 @@ class BomFunctions:
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
-            self.signal_emitter.counter_signal.disconnect()
-            self.lbl.close()
+            # Close the progressbar
+            self.progressBar.close()
         except Exception as e:
             raise e
         return
