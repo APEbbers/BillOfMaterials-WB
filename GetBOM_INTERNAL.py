@@ -60,6 +60,7 @@ class BomFunctions:
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
     def GetTreeObjects(self, checkAssembly=True) -> True:
+        self.counter = 0
         # Get the active document
         doc = App.ActiveDocument
 
@@ -224,10 +225,6 @@ class BomFunctions:
         for i in range(len(docObjects)):
             # Get the documentObject
             object = docObjects[i]
-            
-            # self.counter = self.counter + 1
-            
-            # self.signal_emitter.custom_signal.emit(self.counter)
 
             # If the documentObject is one of the allowed types, continue
             if self.AllowedObjectType(object.TypeId) is True and object.Visibility is True:
@@ -321,9 +318,6 @@ class BomFunctions:
         for i in range(len(ChilddocObjects)):
             # Get the childDocumentObject
             childObject = ChilddocObjects[i]
-            
-            # self.counter = self.counter + 1
-            # self.signal_emitter.custom_signal.emit(self.counter)
             
             # If the childDocumentObject is one of the allowed types, continue
             if self.AllowedObjectType(childObject.TypeId) is True and childObject.Visibility is True:
@@ -504,9 +498,7 @@ class BomFunctions:
 
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
-        
-        # print(CopyMainList)
-
+ 
         # Replace duplicate items with their original
         CopyMainList_2 = []
         for i in range(len(CopyMainList)):
@@ -967,9 +959,9 @@ class BomFunctions:
 
     # endregion
     
-    def custom_slot_counter(self, value):        
-        msg = f"{self.counter + 1} objects processed."
-        self.counter = self.counter + 1
+    def custom_slot_counter(self):
+        self.counter += 1       
+        msg = f"{self.counter} objects processed."
 
         self.lbl.setText(msg)
         geo = self.lbl.geometry()
@@ -992,13 +984,12 @@ class BomFunctions:
         CheckAssemblyType=True,
     ):
         try:
-            self.mainList.clear()
             # Set the counter to zero
             self.counter = 0
             # show the processing window
             self.lbl.show()
             # Connect the custom signal to the custom slot
-            self.signal_emitter.counter_signal.connect(lambda i: self.custom_slot_counter(self, self.counter))
+            self.signal_emitter.counter_signal.connect(lambda i: self.custom_slot_counter(self))
             
             # Clear the mainList to avoid double data
             self.mainList.clear()
@@ -1059,6 +1050,7 @@ class BomFunctions:
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
+            self.signal_emitter.counter_signal.disconnect()
             self.lbl.close()
         except Exception as e:
             raise e
