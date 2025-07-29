@@ -22,18 +22,36 @@
 # ***************************************************************************/
 
 import FreeCAD as App
+import FreeCADGui as Gui
 import Standard_Functions_BOM_WB as Standard_Functions
 from General_BOM_Functions import General_BOM
 from Standard_Functions_BOM_WB import Print
+from PySide.QtCore import Qt, QObject, Signal
+from PySide.QtWidgets import QLabel, QMainWindow
 
 # Define the translation
 translate = App.Qt.translate
 
+class SignalEmitter_Counter(QObject):
+    # Define a custom signal with a value
+    counter_signal = Signal(str)
 
 class BomFunctions:
     # The startrow number which increases with every item and child
     StartRow = 0
     mainList = []
+    counter = 0
+    
+    # mw = Gui.getMainWindow()
+    
+    # Define a Qlabel as a counter dialog
+    lbl = QLabel(translate("BoM Workbench", "(…) processed."))
+    lbl.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowStaysOnTopHint)
+    lbl.setMinimumSize(300, 20)
+    lbl.setContentsMargins(3, 3, 3, 3)
+    
+    # Create an instance of the signal emitter
+    signal_emitter = SignalEmitter_Counter()
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
@@ -94,7 +112,7 @@ class BomFunctions:
         self.GoThrough_Objects(
             docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber
         )
-
+        
         return
 
     # If an App::Link is created as a copy from an App:LinkGroup, return the App::Link.
@@ -202,6 +220,10 @@ class BomFunctions:
         for i in range(len(docObjects)):
             # Get the documentObject
             object = docObjects[i]
+            
+            # self.counter = self.counter + 1
+            
+            # self.signal_emitter.custom_signal.emit(self.counter)
 
             # If the documentObject is one of the allowed types, continue
             if self.AllowedObjectType(object.TypeId) is True and object.Visibility is True:
@@ -295,7 +317,10 @@ class BomFunctions:
         for i in range(len(ChilddocObjects)):
             # Get the childDocumentObject
             childObject = ChilddocObjects[i]
-
+            
+            # self.counter = self.counter + 1
+            # self.signal_emitter.custom_signal.emit(self.counter)
+            
             # If the childDocumentObject is one of the allowed types, continue
             if self.AllowedObjectType(childObject.TypeId) is True and childObject.Visibility is True:
                 # Increase the itemnumber for the child
@@ -505,7 +530,7 @@ class BomFunctions:
                     Level = len(CopyMainList[i]["ItemNumber"].split(".")) + 1
 
         # Go through the CopyMainList
-        for i in range(len(CopyMainList)):
+        for i in range(len(CopyMainList)):           
             # create a place holder for the quantity
             QtyValue = 1
 
@@ -580,6 +605,8 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
+                    # Emit a signal for a visual counter dialog
+                    self.signal_emitter.counter_signal.emit(self.counter)
 
             # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
             if len(itemNumber.split(".")) == 1:
@@ -657,6 +684,8 @@ class BomFunctions:
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
                     ShadowList.append(shadowRow)
+                    # Emit a signal for a visual counter dialog
+                    self.signal_emitter.counter_signal.emit(self.counter)
 
         if Level > 1:
             TemporaryList = self.FilterBodies(
@@ -785,6 +814,8 @@ class BomFunctions:
             ):
                 TemporaryList.append(rowListNew)
                 ShadowList.append(shadowRow)
+                # Emit a signal for a visual counter dialog
+                self.signal_emitter.counter_signal.emit(self.counter)
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
@@ -911,6 +942,8 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
+                    # Emit a signal for a visual counter dialog
+                    self.signal_emitter.counter_signal.emit(self.counter)
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
@@ -929,6 +962,19 @@ class BomFunctions:
         return
 
     # endregion
+    
+    def custom_slot_counter(self, value):        
+        msg = f"{self.counter + 1} objects processed."
+        self.counter = self.counter + 1
+
+        self.lbl.setText(msg)
+        geo = self.lbl.geometry()
+        geo.setSize(self.lbl.sizeHint())
+        self.lbl.setGeometry(geo)
+        self.lbl.repaint()
+        Gui.updateGui()  # Probably slower with this, because it redraws the entire GUI with all tool buttons changed etc. but allows the label to actually be updated, and it looks nice and gives a quick overview of all the workbenches…
+                
+        return
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
@@ -942,6 +988,11 @@ class BomFunctions:
         CheckAssemblyType=True,
     ):
         try:
+            # show the processing window
+            self.lbl.show()
+            # Connect the custom signal to the custom slot
+            self.signal_emitter.counter_signal.connect(lambda i: self.custom_slot_counter(self, self.counter))
+            
             # Clear the mainList to avoid double data
             self.mainList.clear()
             # create the mainList
@@ -957,7 +1008,7 @@ class BomFunctions:
                             title="Bill of Materials",
                             style=1,
                         )
-                    self.CreateTotalBoM(
+                    self.CreateTotalBoM(  # pyright: ignore[reportUnusedCallResult]
                         CreateSpreadSheet=True,
                         IncludeBodies=IncludeBodies,
                         IndentNumbering=IndentNumbering,
@@ -1001,6 +1052,8 @@ class BomFunctions:
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
+            self.lbl.close()
         except Exception as e:
             raise e
         return
+

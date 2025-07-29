@@ -26,7 +26,7 @@ import os
 from inspect import getsourcefile
 from PySide.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
 from PySide.QtGui import QIcon, QCursor
-from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton
+from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -35,6 +35,7 @@ import Settings_BoM
 import Standard_Functions_BOM_WB as Standard_Functions
 import webbrowser
 import json
+import time
 
 # Define the translation
 translate = App.Qt.translate
@@ -577,7 +578,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             
 
     # A function to execute the BoM scripts based on the input from the controls.
-    def CreateBOM(self, TypeOfBoM):
+    def CreateBOM(self, TypeOfBoM):                
         # Set the wait cursor
         mw = Gui.getMainWindow()
         doc = App.ActiveDocument
