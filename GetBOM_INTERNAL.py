@@ -992,6 +992,7 @@ class BomFunctions:
         CheckAssemblyType=True,
     ):
         try:
+            self.mainList.clear()
             # Set the counter to zero
             self.counter = 0
             # show the processing window
