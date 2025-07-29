@@ -28,6 +28,7 @@ from General_BOM_Functions import General_BOM
 from Standard_Functions_BOM_WB import Print
 from PySide.QtCore import Qt, QObject, Signal
 from PySide.QtWidgets import QLabel, QMainWindow
+import StyleMapping_BOM_WB
 
 # Define the translation
 translate = App.Qt.translate
@@ -42,13 +43,16 @@ class BomFunctions:
     mainList = []
     counter = 0
     
-    # mw = Gui.getMainWindow()
+    # Get the mainwindow
+    mw = Gui.getMainWindow()
     
     # Define a Qlabel as a counter dialog
     lbl = QLabel(translate("BoM Workbench", "(…) processed."))
     lbl.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowStaysOnTopHint)
     lbl.setMinimumSize(300, 20)
     lbl.setContentsMargins(3, 3, 3, 3)
+    # Get the stylesheet from the main window and use it for this form
+    lbl.setStyleSheet("background-color: " + StyleMapping_BOM_WB.ReturnStyleItem("Background_Color") + ";")
     
     # Create an instance of the signal emitter
     signal_emitter = SignalEmitter_Counter()
@@ -988,6 +992,8 @@ class BomFunctions:
         CheckAssemblyType=True,
     ):
         try:
+            # Set the counter to zero
+            self.counter = 0
             # show the processing window
             self.lbl.show()
             # Connect the custom signal to the custom slot
