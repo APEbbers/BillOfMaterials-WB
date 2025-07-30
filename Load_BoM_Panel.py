@@ -169,14 +169,18 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         # region - Debug settings
         if ENABLE_DEBUG is True:
             # Hide the debug section by default
+            self.form.frame_4.setHidden(True)
             self.form.DebugFrame.setHidden(True)
             self.form.toolButton_Debug.setHidden(False)
             self.form.DebugText.setHidden(True)
+            self.form.frame_4.setDisabled(True)
         if ENABLE_DEBUG is False:
             # Hide the debug section by default
+            self.form.frame_4.setHidden(True)
             self.form.DebugFrame.setHidden(True)
             self.form.toolButton_Debug.setHidden(True)
             self.form.DebugText.setHidden(False)
+            self.form.frame_4.setEnabled(True)
         # endregion
 
         # region - add icons to the buttons
