@@ -865,37 +865,28 @@ class EventInspector_Panel(QObject):
                     if obj is not None:
                         # The panel is the form stored in init
                         Panel = self.form
-                        
-                        skipDescription = False
-                        skipRemark = False
-                        if self.form.UpdateDescription.underMouse():
-                            skipDescription = True
-                        if self.form .UpdateRemarks.underMouse():
-                            skipRemark = True
-                        
-                        if skipDescription is False:
-                            # find the description label and fill the DescriptionLabelWidget if there is a value
-                            DescriptionLabelWidget = Panel.findChild(QLineEdit, "DescriptionText")
-                            # Clear the DescriptionLabelWidget first
-                            DescriptionLabelWidget.clear()
-                            try:                            
-                                Description = obj.getPropertyByName("Description")
-                                if Description != DescriptionLabelWidget.text():
-                                    DescriptionLabelWidget.setText(Description)
-                            except Exception:
-                                pass
-                        
-                        if skipRemark is False:
-                            # find the remark label and fill the RemarkLabelWidget if there is a value
-                            RemarkLabelWidget = Panel.findChild(QLineEdit, "RemarkText")
-                            # Clear the RemarkLabelWidget first
-                            RemarkLabelWidget.clear()
-                            try:                            
-                                Remark = obj.getPropertyByName("Remarks")
-                                if Remark != RemarkLabelWidget.text():
-                                    RemarkLabelWidget.setText(Remark)
-                            except Exception:
-                                pass
+
+                        # find the description label and fill the DescriptionLabelWidget if there is a value
+                        DescriptionLabelWidget = Panel.findChild(QLineEdit, "DescriptionText")
+                        # Clear the DescriptionLabelWidget first
+                        DescriptionLabelWidget.clear()
+                        try:                            
+                            Description = obj.getPropertyByName("Description")
+                            if Description != DescriptionLabelWidget.text():
+                                DescriptionLabelWidget.setText(Description)
+                        except Exception:
+                            pass
+                    
+                        # find the remark label and fill the RemarkLabelWidget if there is a value
+                        RemarkLabelWidget = Panel.findChild(QLineEdit, "RemarkText")
+                        # Clear the RemarkLabelWidget first
+                        RemarkLabelWidget.clear()
+                        try:                            
+                            Remark = obj.getPropertyByName("Remarks")
+                            if Remark != RemarkLabelWidget.text():
+                                RemarkLabelWidget.setText(Remark)
+                        except Exception:
+                            pass
         
             except Exception:
                 pass
