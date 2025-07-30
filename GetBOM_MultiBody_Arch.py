@@ -20,21 +20,40 @@
 # *   USA                                                                   *
 # *                                                                         *
 # ***************************************************************************/
+
 import FreeCAD as App
+import FreeCADGui as Gui
 from General_BOM_Functions import General_BOM
+import Settings_BoM
 import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
-import Settings_BoM
+import os
+
+from PySide.QtCore import Qt, QObject, Signal, QEventLoop
+from PySide.QtWidgets import QLabel, QMainWindow, QProgressBar, QApplication
 
 # Define the translation
 translate = App.Qt.translate
 
+class SignalEmitter_Counter(QObject):
+    # Define a custom signal with a value
+    counter_signal = Signal(str)
 
 class BomFunctions:
     # The startrow number which increases with every item and child
     StartRow = 0
     mainList = []
     Type = ""
+    counter = 0
+    
+    # Get the mainwindow
+    mw = Gui.getMainWindow()
+    
+    # Define a QProgressBar as a counter dialog
+    progressBar = General_BOM.ReturnProgressBar()
+    
+    # Create an instance of the signal emitter
+    signal_emitter = SignalEmitter_Counter()
     
     @classmethod
     def GetObjectsFromGroups(self, Group):
@@ -132,6 +151,10 @@ class BomFunctions:
 
                 # Increase the global startrow to make sure the data ends up in the next row
                 self.StartRow = self.StartRow + 1
+                
+                # Increase the maximum of the progressbar
+                self.progressBar.setMaximum(self.counter)
+                self.counter += 1
 
                 # define the itemnumber string. for toplevel this is equel to Itemnumber.
                 # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
@@ -205,6 +228,8 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
 
             ShadowList.append(rowList)
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
         
         # Correct the itemnumbers
         TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
@@ -216,11 +241,25 @@ class BomFunctions:
         if CreateSpreadSheet is True:
             General_BOM.createBoMSpreadsheet(TemporaryList, Headers, AssemblyType="BIM/Multibody")
         return
+    
+    def custom_slot_counter(self):
+        # Get the current value of the progressbar and increase it by 1.
+        value = self.progressBar.value()
+        self.progressBar.setValue(value + 1)
+        QApplication.processEvents()
+        return
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
     def Start(self, command="", CheckAssemblyType=True):
         try:
+            # show the processing window
+            self.progressBar.setMinimum(0)
+            self.progressBar.setValue(0)
+            self.progressBar.show()
+            # Connect the custom signal to the custom slot
+            self.signal_emitter.counter_signal.connect(lambda i: self.custom_slot_counter(self))
+            
             # Clear the mainList to avoid double data
             self.mainList.clear()
             # create the mainList
@@ -228,5 +267,7 @@ class BomFunctions:
 
             self.CreateTotalBoM()
 
+            # Close the progressbar
+            self.progressBar.close()
         except Exception as e:
             raise e
