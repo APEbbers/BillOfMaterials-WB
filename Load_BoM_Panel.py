@@ -498,24 +498,31 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
     def on_CreateTotal_clicked(self):
         self.CreateBOM("Total BoM")
+        return
 
     def on_CreateSummary_clicked(self):
         self.CreateBOM("Summary BoM")
+        return
 
     def on_CreatePartsOnly_clicked(self):
         self.CreateBOM("Parts only BoM")
+        return
 
     def on_CreateFirstLevel_clicked(self):
         self.CreateBOM("First level BoM")
+        return
 
     def on_CreateRaw_clicked(self):
         self.CreateBOM("Raw BoM")
+        return
         
     def on_UpdateDescription_clicked(self):
         self.UpdateDescription()
+        return
         
     def on_UpdateRemarks_clicked(self):
         self.UpdateRemarks()
+        return
         
     def on_LoadColumns_clicked(self):        
         # Get the json file
@@ -857,7 +864,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                     pass
                     
             except Exception:
-                doc = App.ActiveDocument
+                return
+        return
 
 class EventInspector_Panel(QObject):
     # define a form
@@ -879,27 +887,36 @@ class EventInspector_Panel(QObject):
                         # The panel is the form stored in init
                         Panel = self.form
                         
-                        # find the description label and fill the DescriptionLabelWidget if there is a value
-                        DescriptionLabelWidget = Panel.findChild(QLineEdit, "DescriptionText")
-                        # Clear the DescriptionLabelWidget first
-                        DescriptionLabelWidget.clear()
-                        try:                            
-                            Description = obj.getPropertyByName("Description")
-                            if Description != DescriptionLabelWidget.text():
-                                DescriptionLabelWidget.setText(Description)
-                        except Exception:
-                            pass
+                        skipDescription = False
+                        skipRemark = False
+                        if self.form.UpdateDescription.underMouse():
+                            skipDescription = True
+                        if self.form .UpdateRemarks.underMouse():
+                            skipRemark = True
                         
-                        # find the remark label and fill the RemarkLabelWidget if there is a value
-                        RemarkLabelWidget = Panel.findChild(QLineEdit, "RemarkText")
-                        # Clear the RemarkLabelWidget first
-                        RemarkLabelWidget.clear()
-                        try:                            
-                            Remark = obj.getPropertyByName("Remarks")
-                            if Remark != RemarkLabelWidget.text():
-                                RemarkLabelWidget.setText(Remark)
-                        except Exception:
-                            pass
+                        if skipDescription is False:
+                            # find the description label and fill the DescriptionLabelWidget if there is a value
+                            DescriptionLabelWidget = Panel.findChild(QLineEdit, "DescriptionText")
+                            # Clear the DescriptionLabelWidget first
+                            DescriptionLabelWidget.clear()
+                            try:                            
+                                Description = obj.getPropertyByName("Description")
+                                if Description != DescriptionLabelWidget.text():
+                                    DescriptionLabelWidget.setText(Description)
+                            except Exception:
+                                pass
+                        
+                        if skipRemark is False:
+                            # find the remark label and fill the RemarkLabelWidget if there is a value
+                            RemarkLabelWidget = Panel.findChild(QLineEdit, "RemarkText")
+                            # Clear the RemarkLabelWidget first
+                            RemarkLabelWidget.clear()
+                            try:                            
+                                Remark = obj.getPropertyByName("Remarks")
+                                if Remark != RemarkLabelWidget.text():
+                                    RemarkLabelWidget.setText(Remark)
+                            except Exception:
+                                pass
         
             except Exception:
                 pass
