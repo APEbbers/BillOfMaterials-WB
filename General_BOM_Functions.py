@@ -1586,7 +1586,10 @@ class General_BOM:
         progressBar.setWindowFlag(Qt.WindowType.WindowMinMaxButtonsHint, False)
         progressBar.setWindowFlag(Qt.WindowType.WindowMinimizeButtonHint, False)
         # Get the stylesheet from the main window and use it for this form
-        progressBar.setStyleSheet("background-color: " + StyleMapping_BOM_WB.ReturnStyleItem("Background_Color") + ";")
+        progressBar.setStyleSheet("background-color: " + StyleMapping_BOM_WB.ReturnStyleItem("Background_Color") + ";")        
+        progressBar.setMinimum(0)
+        progressBar.setMaximum(100)
+        progressBar.setValue(0)
         
         return progressBar
     

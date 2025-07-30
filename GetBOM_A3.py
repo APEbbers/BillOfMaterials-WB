@@ -164,7 +164,7 @@ class BomFunctions:
                 ParentNumber (_type_):  The number from the parent as a string\n
         Returns:
                 True
-        """
+        """        
         for i in range(len(docObjects)):
             # Get the documentObject
             Object = docObjects[i]
@@ -178,7 +178,7 @@ class BomFunctions:
             docObject = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
-            if self.AllowedObjectType(objectID=docObject.TypeId) is True:
+            if self.AllowedObjectType(objectID=docObject.TypeId) is True and docObject.Visibility is True:
                 # Increase the itemnumber
                 ItemNumber = int(ItemNumber) + 1
 
@@ -279,7 +279,7 @@ class BomFunctions:
             self.StartRow = self.StartRow + 1
 
             # If the childDocumentObject is one of the allowed types, continue
-            if self.AllowedObjectType(objectID=childObject.TypeId) is True:
+            if self.AllowedObjectType(objectID=childObject.TypeId) is True and childObject.Visibility is True:
                 # Increase the itemnumber for the child
                 ChildItemNumber = int(ChildItemNumber) + 1
                                 
@@ -442,9 +442,15 @@ class BomFunctions:
             for i in range(len(CopyMainList)):
                 if len(CopyMainList[i]["ItemNumber"].split(".")) > Level:
                     Level = len(CopyMainList[i]["ItemNumber"].split("."))
+                    
+        # Set the maximum for the progress bar                
+        self.progressBar.setMaximum(len(CopyMainList)-1)
 
         # Go through the CopyMainList
         for i in range(len(CopyMainList)):
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
+            
             # create a place holder for the quantity
             QtyValue = 1
 
@@ -514,8 +520,6 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
-                    # Emit a signal for a visual counter dialog
-                    self.signal_emitter.counter_signal.emit("Object processed")
 
             # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
             if len(itemNumber.split(".")) == 1:
@@ -575,8 +579,6 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
-                    # Emit a signal for a visual counter dialog
-                    self.signal_emitter.counter_signal.emit("Object processed")
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
@@ -635,9 +637,15 @@ class BomFunctions:
         ShadowList = []
         # define an item for the shadow list.
         shadowRow = dict
+        
+        # Set the maximum for the progress bar                
+        self.progressBar.setMaximum(len(CopyMainList)-1)
 
         # Go Through the object list
         for i in range(len(CopyMainList)):
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
+            
             # Get the row item
             rowList = CopyMainList[i]
 
@@ -709,8 +717,6 @@ class BomFunctions:
                 # add the shadow row to the shadow list. This prevents from adding this item an second time.
                 # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
                 ShadowList.append(shadowRow)
-                # Emit a signal for a visual counter dialog
-                self.signal_emitter.counter_signal.emit("Object processed")
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
@@ -758,8 +764,14 @@ class BomFunctions:
 
         # Create a temporary list
         TemporaryList = []
+        
+        # Set the maximum for the progress bar                
+        self.progressBar.setMaximum(len(CopyMainList)-1)
 
         for i in range(len(CopyMainList)):
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
+            
             # Get the row item
             rowList = CopyMainList[i]
 
@@ -829,8 +841,6 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
-                    # Emit a signal for a visual counter dialog
-                    self.signal_emitter.counter_signal.emit("Object processed")
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.

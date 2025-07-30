@@ -387,8 +387,13 @@ class BomFunctions:
                 if len(CopyMainList[i]["ItemNumber"].split(".")) > Level:
                     Level = len(CopyMainList[i]["ItemNumber"].split("."))
 
-        # Go through the CopyMainList
+        # Set the maximum for the progress bar                
+        self.progressBar.setMaximum(len(CopyMainList)-1)
+
         for i in range(len(CopyMainList)):
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
+            
             # create a place holder for the quantity
             QtyValue = 1
 
@@ -522,8 +527,6 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
-                    # Emit a signal for a visual counter dialog
-                    self.signal_emitter.counter_signal.emit("Object processed")
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
@@ -568,8 +571,13 @@ class BomFunctions:
         # define an item for the shadow list.
         shadowRow = dict
 
-        # Go Through the object list
+        # Set the maximum for the progress bar                
+        self.progressBar.setMaximum(len(CopyMainList)-1)
+
         for i in range(len(CopyMainList)):
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
+            
             # Get the row item
             rowList = CopyMainList[i]
 
@@ -640,8 +648,6 @@ class BomFunctions:
                 TemporaryList.append(rowListNew)
                 # add the shadow row to the shadow list. This prevents from adding this item an second time.
                 ShadowList.append(shadowRow)
-                # Emit a signal for a visual counter dialog
-                self.signal_emitter.counter_signal.emit("Object processed")
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):
@@ -689,7 +695,13 @@ class BomFunctions:
         # Create a temporary list
         TemporaryList = []
 
+        # Set the maximum for the progress bar                
+        self.progressBar.setMaximum(len(CopyMainList)-1)
+
         for i in range(len(CopyMainList)):
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
+            
             # Get the row item
             rowList = CopyMainList[i]
 
@@ -758,8 +770,6 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
-                    # Emit a signal for a visual counter dialog
-                    self.signal_emitter.counter_signal.emit("Object processed")
 
         # number the parts 1,2,3, etc.
         for k in range(len(TemporaryList)):

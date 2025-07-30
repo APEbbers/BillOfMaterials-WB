@@ -192,8 +192,14 @@ class BomFunctions:
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
+        
+        # Set the maximum for the progress bar                
+        self.progressBar.setMaximum(len(CopyMainList)-1)
 
         for i in range(len(CopyMainList)):
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
+            
             # Create a new row item for the temporary row.
             rowList = CopyMainList[i]
 
@@ -228,8 +234,6 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
 
             ShadowList.append(rowList)
-            # Emit a signal for a visual counter dialog
-            self.signal_emitter.counter_signal.emit("Object processed")
         
         # Correct the itemnumbers
         TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
