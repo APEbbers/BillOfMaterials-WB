@@ -32,7 +32,7 @@ import Settings_BoM
 import getpass
 
 from PySide.QtCore import Qt, QObject, Signal
-from PySide.QtWidgets import QLabel, QMainWindow
+from PySide.QtWidgets import QLabel, QMainWindow, QProgressBar
 
 # Define the translation
 translate = App.Qt.translate
@@ -1577,14 +1577,16 @@ class General_BOM:
                 print(e)
             return
         
-    
-    def CounterLabel():
-        lbl = QLabel(translate("BoM Workbench", "(…) processed."))
-        lbl.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowStaysOnTopHint)
-        lbl.setMinimumSize(300, 20)
-        lbl.setContentsMargins(3, 3, 3, 3)
+    @classmethod
+    def ReturnProgressBar(self):
+        progressBar = QProgressBar(minimum=0, value=0)
+        progressBar.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+        progressBar.setWindowFlag(Qt.WindowType.CustomizeWindowHint, True)
+        progressBar.setWindowFlag(Qt.WindowType.WindowCloseButtonHint, True)
+        progressBar.setWindowFlag(Qt.WindowType.WindowMinMaxButtonsHint, False)
+        progressBar.setWindowFlag(Qt.WindowType.WindowMinimizeButtonHint, False)
         # Get the stylesheet from the main window and use it for this form
-        lbl.setStyleSheet("background-color: " + StyleMapping_BOM_WB.ReturnStyleItem("Background_Color") + ";")
+        progressBar.setStyleSheet("background-color: " + StyleMapping_BOM_WB.ReturnStyleItem("Background_Color") + ";")
         
-        return lbl
+        return progressBar
     

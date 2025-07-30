@@ -22,18 +22,36 @@
 # ***************************************************************************/
 
 import FreeCAD as App
+import FreeCADGui as Gui
 from General_BOM_Functions import General_BOM
 import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
+import os
+
+from PySide.QtCore import Qt, QObject, Signal, QEventLoop
+from PySide.QtWidgets import QLabel, QMainWindow, QProgressBar, QApplication
 
 # Define the translation
 translate = App.Qt.translate
 
-
+class SignalEmitter_Counter(QObject):
+    # Define a custom signal with a value
+    counter_signal = Signal(str)
+    
 class BomFunctions:
     # The startrow number which increases with every item and child
     StartRow = 0
     mainList = []
+    counter = 0
+    
+    # Get the mainwindow
+    mw = Gui.getMainWindow()
+    
+    # Define a QProgressBar as a counter dialog
+    progressBar = General_BOM.ReturnProgressBar()
+    
+    # Create an instance of the signal emitter
+    signal_emitter = SignalEmitter_Counter()
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
@@ -195,6 +213,10 @@ class BomFunctions:
 
                 # Increase the itemnumber
                 ItemNumber = int(ItemNumber) + 1
+                
+                # Increase the maximum of the progressbar
+                self.progressBar.setMaximum(self.counter)
+                self.counter += 1
 
                 # define the itemnumber string. for toplevel this is equel to Itemnumber.
                 # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
@@ -332,6 +354,10 @@ class BomFunctions:
 
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
+                
+                # Increase the maximum of the progressbar
+                self.progressBar.setMaximum(self.counter)
+                self.counter += 1
 
                 # Set the quantity to 1.
                 Qty = 1
@@ -633,6 +659,8 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
+                    # Emit a signal for a visual counter dialog
+                    self.signal_emitter.counter_signal.emit("Object processed")
 
             # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or
             # shorter then the level wanted, continue
@@ -693,6 +721,8 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
+                    # Emit a signal for a visual counter dialog
+                    self.signal_emitter.counter_signal.emit("Object processed")
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
@@ -821,7 +851,10 @@ class BomFunctions:
                 is False
             ):
                 TemporaryList.append(rowListNew)
+                # add the shadow row to the shadow list. This prevents from adding this item an second time.
                 ShadowList.append(shadowRow)
+                # Emit a signal for a visual counter dialog
+                self.signal_emitter.counter_signal.emit("Object processed")
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
@@ -940,6 +973,8 @@ class BomFunctions:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
+                    # Emit a signal for a visual counter dialog
+                    self.signal_emitter.counter_signal.emit("Object processed")
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
@@ -958,6 +993,13 @@ class BomFunctions:
         return
 
     # endregion
+    
+    def custom_slot_counter(self):
+        # Get the current value of the progressbar and increase it by 1.
+        value = self.progressBar.value()
+        self.progressBar.setValue(value + 1)
+        QApplication.processEvents()
+        return
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
@@ -971,6 +1013,13 @@ class BomFunctions:
         CheckAssemblyType=True,
     ):
         try:
+            # show the processing window
+            self.progressBar.setMinimum(0)
+            self.progressBar.setValue(0)
+            self.progressBar.show()
+            # Connect the custom signal to the custom slot
+            self.signal_emitter.counter_signal.connect(lambda i: self.custom_slot_counter(self))
+            
             # Clear the mainList to avoid double data
             self.mainList.clear()
             # create the mainList
@@ -1029,6 +1078,8 @@ class BomFunctions:
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
+            # Close the progressbar
+            self.progressBar.close()
         except Exception as e:
             raise e
         return

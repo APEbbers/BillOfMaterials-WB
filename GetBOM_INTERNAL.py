@@ -21,15 +21,15 @@
 # *                                                                         *
 # ***************************************************************************/
 
-import time
 import FreeCAD as App
 import FreeCADGui as Gui
-import Standard_Functions_BOM_WB as Standard_Functions
 from General_BOM_Functions import General_BOM
+import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
+import os
+
 from PySide.QtCore import Qt, QObject, Signal, QEventLoop
 from PySide.QtWidgets import QLabel, QMainWindow, QProgressBar, QApplication
-import StyleMapping_BOM_WB
 
 # Define the translation
 translate = App.Qt.translate
@@ -42,16 +42,13 @@ class BomFunctions:
     # The startrow number which increases with every item and child
     StartRow = 0
     mainList = []
-    counter_1 = 0
+    counter = 0
     
     # Get the mainwindow
     mw = Gui.getMainWindow()
     
     # Define a QProgressBar as a counter dialog
-    progressBar = QProgressBar(minimum=0, value=0)
-    progressBar.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowStaysOnTopHint)
-    # Get the stylesheet from the main window and use it for this form
-    progressBar.setStyleSheet("background-color: " + StyleMapping_BOM_WB.ReturnStyleItem("Background_Color") + ";")
+    progressBar = General_BOM.ReturnProgressBar()
     
     # Create an instance of the signal emitter
     signal_emitter = SignalEmitter_Counter()
@@ -233,8 +230,8 @@ class BomFunctions:
                 self.StartRow = self.StartRow + 1
                 
                 # Increase the maximum of the progressbar
-                self.progressBar.setMaximum(self.counter_1)
-                self.counter_1 += 1
+                self.progressBar.setMaximum(self.counter)
+                self.counter += 1
 
                 # define the itemnumber string. for toplevel this is equel to Itemnumber.
                 # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
@@ -330,8 +327,8 @@ class BomFunctions:
                 self.StartRow = self.StartRow + 1
                 
                 # Increase the maximum of the progressbar
-                self.progressBar.setMaximum(self.counter_1)
-                self.counter_1 += 1
+                self.progressBar.setMaximum(self.counter)
+                self.counter += 1
 
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
@@ -815,6 +812,7 @@ class BomFunctions:
                 is False
             ):
                 TemporaryList.append(rowListNew)
+                # add the shadow row to the shadow list. This prevents from adding this item an second time.
                 ShadowList.append(shadowRow)
                 # Emit a signal for a visual counter dialog
                 self.signal_emitter.counter_signal.emit("Object processed")
