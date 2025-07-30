@@ -158,15 +158,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         )
         
         # This will create a connection between the pushbutton "UpdateDescription" and def "on_UpdateDescription_clicked"
-        self.form.UpdateDescription.connect(
-            self.form.UpdateDescription, SIGNAL("pressed()"), self.on_UpdateDescription_clicked
+        self.form.UpdateProperties.connect(
+            self.form.UpdateProperties, SIGNAL("pressed()"), self.on_UpdateProperties_clicked
         )
-        
-        # This will create a connection between the pushbutton "UpdateRemarks" and def "on_UpdateRemarks_clicked"
-        self.form.UpdateRemarks.connect(
-            self.form.UpdateRemarks, SIGNAL("pressed()"), self.on_UpdateRemarks_clicked
-        )
-        
+                
         self.form.LoadColumns.connect(self.form.LoadColumns, SIGNAL("pressed()"), self.on_LoadColumns_clicked)
         self.form.ColumnsConfigList.currentTextChanged.connect(self.on_ColumnsConfigList_currentTextChanged)
         # endregion
@@ -516,12 +511,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.CreateBOM("Raw BoM")
         return
         
-    def on_UpdateDescription_clicked(self):
-        self.UpdateDescription()
-        return
-        
-    def on_UpdateRemarks_clicked(self):
-        self.UpdateRemarks()
+    def on_UpdateProperties_clicked(self):
+        self.UpdateProperties()
         return
         
     def on_LoadColumns_clicked(self):        
@@ -817,7 +808,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
         return
 
-    def UpdateDescription(self):
+    def UpdateProperties(self):
         # Get the properties from the active document
         doc = App.ActiveDocument
         sel = Gui.Selection.getSelection()
@@ -838,18 +829,6 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 except Exception:
                     pass
                     
-            except Exception:
-                return
-        return
-    
-    def UpdateRemarks(self):
-        # Get the properties from the active document
-        doc = App.ActiveDocument
-        sel = Gui.Selection.getSelection()
-        if sel is not None:
-            try:
-                # Get the first item of the selection
-                doc = sel[0]
                 if not 'Remarks' in doc.PropertiesList:
                     doc.addProperty("App::PropertyString", "Remarks", group="Custom")
                 doc.Remarks = self.form.RemarkText.text()
