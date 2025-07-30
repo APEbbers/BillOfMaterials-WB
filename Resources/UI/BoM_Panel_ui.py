@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_Panelmuymmf.ui'
+## Form generated from reading UI file 'BoM_PanelyjOGrg.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -50,7 +50,7 @@ class Ui_Dialog(object):
         self.frame_2.setSizePolicy(sizePolicy1)
         self.frame_2.setMinimumSize(QSize(0, 200))
         self.frame_2.setAutoFillBackground(False)
-        self.frame_2.setFrameShape(QFrame.Shape.Box)
+        self.frame_2.setFrameShape(QFrame.Shape.Panel)
         self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_14 = QGridLayout(self.frame_2)
         self.gridLayout_14.setObjectName(u"gridLayout_14")
@@ -162,7 +162,7 @@ class Ui_Dialog(object):
         self.frame = QFrame(self.MainFrame)
         self.frame.setObjectName(u"frame")
         self.frame.setMinimumSize(QSize(0, 150))
-        self.frame.setFrameShape(QFrame.Shape.Box)
+        self.frame.setFrameShape(QFrame.Shape.Panel)
         self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_13 = QGridLayout(self.frame)
         self.gridLayout_13.setObjectName(u"gridLayout_13")
@@ -242,8 +242,9 @@ class Ui_Dialog(object):
         sizePolicy4.setHeightForWidth(self.frame_3.sizePolicy().hasHeightForWidth())
         self.frame_3.setSizePolicy(sizePolicy4)
         self.frame_3.setMinimumSize(QSize(0, 0))
-        self.frame_3.setFrameShape(QFrame.Shape.Box)
+        self.frame_3.setFrameShape(QFrame.Shape.Panel)
         self.frame_3.setFrameShadow(QFrame.Shadow.Raised)
+        self.frame_3.setLineWidth(1)
         self.gridLayout_19 = QGridLayout(self.frame_3)
         self.gridLayout_19.setObjectName(u"gridLayout_19")
         self.gridLayout_19.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
@@ -395,7 +396,7 @@ class Ui_Dialog(object):
 
         self.frame_4 = QFrame(self.MainFrame)
         self.frame_4.setObjectName(u"frame_4")
-        self.frame_4.setFrameShape(QFrame.Shape.Box)
+        self.frame_4.setFrameShape(QFrame.Shape.Panel)
         self.frame_4.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_18 = QGridLayout(self.frame_4)
         self.gridLayout_18.setObjectName(u"gridLayout_18")
@@ -518,6 +519,7 @@ class Ui_Dialog(object):
         self.DebugText = QLabel(self.MainFrame)
         self.DebugText.setObjectName(u"DebugText")
         self.DebugText.setWordWrap(True)
+        self.DebugText.setMargin(4)
 
         self.verticalLayout.addWidget(self.DebugText)
 
@@ -583,6 +585,6 @@ class Ui_Dialog(object):
         self.label_2.setText(QCoreApplication.translate("Dialog", u"Set assemby type manually", None))
         self.CreateRaw.setText("")
         self.label_5.setText(QCoreApplication.translate("Dialog", u"Create raw BoM", None))
-        self.DebugText.setText(QCoreApplication.translate("Dialog", u"<html><head/><body><p><span style=\" font-style:italic;\">Enable &quot;Debug mode&quot; in preferences to enable extra functions for testing purposes.</span></p><p><br/></p></body></html>", None))
+        self.DebugText.setText(QCoreApplication.translate("Dialog", u"<html><head/><body><p><span style=\" font-style:italic;\"> Enable &quot;Debug mode&quot; in preferences to enable extra functions for testing purposes.</span></p><p><br/></p></body></html>", None))
     # retranslateUi
 
