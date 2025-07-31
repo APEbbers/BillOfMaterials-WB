@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelyjOGrg.ui'
+## Form generated from reading UI file 'BoM_PanelHtoOVo.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
-from PySide.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
     QFrame, QGridLayout, QLabel, QLayout,
     QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
     QSpinBox, QToolButton, QVBoxLayout, QWidget)
@@ -50,8 +50,8 @@ class Ui_Dialog(object):
         self.frame_2.setSizePolicy(sizePolicy1)
         self.frame_2.setMinimumSize(QSize(0, 200))
         self.frame_2.setAutoFillBackground(False)
-        self.frame_2.setFrameShape(QFrame.Shape.Panel)
-        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
+        self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_2.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_14 = QGridLayout(self.frame_2)
         self.gridLayout_14.setObjectName(u"gridLayout_14")
         self.gridLayout_2 = QGridLayout()
@@ -162,8 +162,8 @@ class Ui_Dialog(object):
         self.frame = QFrame(self.MainFrame)
         self.frame.setObjectName(u"frame")
         self.frame.setMinimumSize(QSize(0, 150))
-        self.frame.setFrameShape(QFrame.Shape.Panel)
-        self.frame.setFrameShadow(QFrame.Shadow.Raised)
+        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_13 = QGridLayout(self.frame)
         self.gridLayout_13.setObjectName(u"gridLayout_13")
         self.gridLayout_11 = QGridLayout()
@@ -242,8 +242,8 @@ class Ui_Dialog(object):
         sizePolicy4.setHeightForWidth(self.frame_3.sizePolicy().hasHeightForWidth())
         self.frame_3.setSizePolicy(sizePolicy4)
         self.frame_3.setMinimumSize(QSize(0, 0))
-        self.frame_3.setFrameShape(QFrame.Shape.Panel)
-        self.frame_3.setFrameShadow(QFrame.Shadow.Raised)
+        self.frame_3.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_3.setFrameShadow(QFrame.Shadow.Sunken)
         self.frame_3.setLineWidth(1)
         self.gridLayout_19 = QGridLayout(self.frame_3)
         self.gridLayout_19.setObjectName(u"gridLayout_19")
@@ -396,8 +396,8 @@ class Ui_Dialog(object):
 
         self.frame_4 = QFrame(self.MainFrame)
         self.frame_4.setObjectName(u"frame_4")
-        self.frame_4.setFrameShape(QFrame.Shape.Panel)
-        self.frame_4.setFrameShadow(QFrame.Shadow.Raised)
+        self.frame_4.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_4.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_18 = QGridLayout(self.frame_4)
         self.gridLayout_18.setObjectName(u"gridLayout_18")
         self.gridLayout_17 = QGridLayout()

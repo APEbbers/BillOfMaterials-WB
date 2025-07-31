@@ -56,10 +56,10 @@
          <bool>false</bool>
         </property>
         <property name="frameShape">
-         <enum>QFrame::Shape::Panel</enum>
+         <enum>QFrame::Shape::StyledPanel</enum>
         </property>
         <property name="frameShadow">
-         <enum>QFrame::Shadow::Raised</enum>
+         <enum>QFrame::Shadow::Sunken</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_14">
          <item row="0" column="0">
@@ -260,10 +260,10 @@
          </size>
         </property>
         <property name="frameShape">
-         <enum>QFrame::Shape::Panel</enum>
+         <enum>QFrame::Shape::StyledPanel</enum>
         </property>
         <property name="frameShadow">
-         <enum>QFrame::Shadow::Raised</enum>
+         <enum>QFrame::Shadow::Sunken</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_13">
          <item row="0" column="0">
@@ -386,10 +386,10 @@
          </size>
         </property>
         <property name="frameShape">
-         <enum>QFrame::Shape::Panel</enum>
+         <enum>QFrame::Shape::StyledPanel</enum>
         </property>
         <property name="frameShadow">
-         <enum>QFrame::Shadow::Raised</enum>
+         <enum>QFrame::Shadow::Sunken</enum>
         </property>
         <property name="lineWidth">
          <number>1</number>
@@ -704,10 +704,10 @@
       <item>
        <widget class="QFrame" name="frame_4">
         <property name="frameShape">
-         <enum>QFrame::Shape::Panel</enum>
+         <enum>QFrame::Shape::StyledPanel</enum>
         </property>
         <property name="frameShadow">
-         <enum>QFrame::Shadow::Raised</enum>
+         <enum>QFrame::Shadow::Sunken</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_18">
          <item row="0" column="0">
