@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelPEELfv.ui'
+## Form generated from reading UI file 'BoM_PanelGygBcI.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -54,6 +54,7 @@ class Ui_Dialog(object):
         self.frame_2.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_14 = QGridLayout(self.frame_2)
         self.gridLayout_14.setObjectName(u"gridLayout_14")
+        self.gridLayout_14.setContentsMargins(0, -1, 0, -1)
         self.gridLayout_2 = QGridLayout()
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
@@ -166,6 +167,7 @@ class Ui_Dialog(object):
         self.frame.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_13 = QGridLayout(self.frame)
         self.gridLayout_13.setObjectName(u"gridLayout_13")
+        self.gridLayout_13.setContentsMargins(0, -1, 0, -1)
         self.gridLayout_11 = QGridLayout()
         self.gridLayout_11.setObjectName(u"gridLayout_11")
         self.horizontalSpacer_8 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
@@ -191,7 +193,7 @@ class Ui_Dialog(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setHorizontalSpacing(1)
         self.gridLayout.setVerticalSpacing(6)
-        self.gridLayout.setContentsMargins(6, 6, 6, 6)
+        self.gridLayout.setContentsMargins(12, 6, 6, 6)
         self.RemarkText = QLineEdit(self.CustomPropertiesFrame)
         self.RemarkText.setObjectName(u"RemarkText")
 
@@ -258,6 +260,7 @@ class Ui_Dialog(object):
         self.gridLayout_19 = QGridLayout(self.frame_3)
         self.gridLayout_19.setObjectName(u"gridLayout_19")
         self.gridLayout_19.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self.gridLayout_19.setContentsMargins(0, 6, 0, -1)
         self.gridLayout_15 = QGridLayout()
         self.gridLayout_15.setObjectName(u"gridLayout_15")
         self.toolButton_Settings = QToolButton(self.frame_3)
@@ -290,7 +293,7 @@ class Ui_Dialog(object):
         self.SettingsFrame.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_24 = QGridLayout(self.SettingsFrame)
         self.gridLayout_24.setObjectName(u"gridLayout_24")
-        self.gridLayout_24.setContentsMargins(6, 6, 6, 6)
+        self.gridLayout_24.setContentsMargins(12, 6, 6, 6)
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_24.addItem(self.horizontalSpacer, 4, 1, 1, 1)
@@ -411,6 +414,7 @@ class Ui_Dialog(object):
         self.frame_4.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_18 = QGridLayout(self.frame_4)
         self.gridLayout_18.setObjectName(u"gridLayout_18")
+        self.gridLayout_18.setContentsMargins(0, -1, 0, -1)
         self.gridLayout_17 = QGridLayout()
         self.gridLayout_17.setObjectName(u"gridLayout_17")
         self.toolButton_Debug = QToolButton(self.frame_4)
@@ -441,7 +445,7 @@ class Ui_Dialog(object):
         self.DebugFrame.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_22 = QGridLayout(self.DebugFrame)
         self.gridLayout_22.setObjectName(u"gridLayout_22")
-        self.gridLayout_22.setContentsMargins(6, 6, 6, 6)
+        self.gridLayout_22.setContentsMargins(12, 6, 6, 6)
         self.DetectAssemblyType = QPushButton(self.DebugFrame)
         self.DetectAssemblyType.setObjectName(u"DetectAssemblyType")
         sizePolicy9 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)

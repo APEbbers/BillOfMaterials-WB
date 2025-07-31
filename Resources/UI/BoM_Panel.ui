@@ -62,6 +62,12 @@
          <enum>QFrame::Shadow::Sunken</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_14">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="0" column="2">
@@ -266,6 +272,12 @@
          <enum>QFrame::Shadow::Sunken</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_13">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <layout class="QGridLayout" name="gridLayout_11">
            <item row="0" column="1">
@@ -309,7 +321,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout">
             <property name="leftMargin">
-             <number>6</number>
+             <number>12</number>
             </property>
             <property name="topMargin">
              <number>6</number>
@@ -433,6 +445,15 @@
          <property name="sizeConstraint">
           <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
          </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>6</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <layout class="QGridLayout" name="gridLayout_15">
            <item row="0" column="0">
@@ -500,7 +521,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_24">
             <property name="leftMargin">
-             <number>6</number>
+             <number>12</number>
             </property>
             <property name="topMargin">
              <number>6</number>
@@ -748,6 +769,12 @@
          <enum>QFrame::Shadow::Sunken</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_18">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <layout class="QGridLayout" name="gridLayout_17">
            <item row="0" column="0">
@@ -815,7 +842,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_22">
             <property name="leftMargin">
-             <number>6</number>
+             <number>12</number>
             </property>
             <property name="topMargin">
              <number>6</number>
