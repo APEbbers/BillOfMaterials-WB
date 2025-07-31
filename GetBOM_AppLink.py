@@ -20,23 +20,42 @@
 # *   USA                                                                   *
 # *                                                                         *
 # ***************************************************************************/
+
 import FreeCAD as App
+import FreeCADGui as Gui
 from General_BOM_Functions import General_BOM
 import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
+import os
+
+from PySide.QtCore import Qt, QObject, Signal, QEventLoop
+from PySide.QtWidgets import QLabel, QMainWindow, QProgressBar, QApplication
 
 # Define the translation
 translate = App.Qt.translate
 
+class SignalEmitter_Counter(QObject):
+    # Define a custom signal with a value
+    counter_signal = Signal(str)
 
 class BomFunctions:
     # The startrow number which increases with every item and child
     StartRow = 0
     mainList = []
+    
+    # Get the mainwindow
+    mw = Gui.getMainWindow()
+    
+    # Define a QProgressBar as a counter dialog
+    progressBar = General_BOM.ReturnProgressBar()
+    
+    # Create an instance of the signal emitter
+    signal_emitter = SignalEmitter_Counter()
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
     def GetTreeObjects(self, checkAssemblyType=True) -> True:
+        self.mainList.clear()
         # Get the active document
         doc = App.ActiveDocument
 
@@ -49,9 +68,10 @@ class BomFunctions:
 
         # Get the list with rootobjects
         docObjects = []
-        for i in range(len(doc.RootObjects)):
-            if doc.RootObjects[i].Visibility is True:
-                docObjects.append(doc.RootObjects[i])
+        rootObjects = General_BOM.GetRootObjects()
+        for i in range(len(rootObjects)):
+            if rootObjects[i].Visibility is True:
+                docObjects.append(rootObjects[i])
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for docObject in docObjects:
@@ -102,12 +122,12 @@ class BomFunctions:
         try:
             # Get the linked object
             object = docObject.LinkedObject
-            # Rename the linked object. Add _master to indicate that this is the master assembly.
-            # If _masters is already added. do nothing
-            if object.Label[-7:] != "_master":
-                object.Label = object.Label + "_master"
-            # Rename the docObject by replacing the Label with that from the master assembly, but without "_master".
-            docObject.Label = object.Label[:-7]
+            # # Rename the linked object. Add _master to indicate that this is the master assembly.
+            # # If _masters is already added. do nothing
+            # if object.Label[-7:] != "_master":
+            #     object.Label = object.Label + "_master"
+            # # Rename the docObject by replacing the Label with that from the master assembly, but without "_master".
+            # docObject.Label = object.Label[:-7]
             # return the result
             result = object
         except Exception:
@@ -197,7 +217,7 @@ class BomFunctions:
             # If the documentObject is one of the allowed types, continue
             if self.AllowedObjectType(Object.TypeId) is True:
                 # Increase the itemnumber
-                ItemNumber = ItemNumber + 1
+                ItemNumber = ItemNumber + 1                
 
                 # Increase the global startrow to make sure the data ends up in the next row
                 self.StartRow = self.StartRow + 1
@@ -458,6 +478,7 @@ class BomFunctions:
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
+        ShadowList_2 = []
         # Create two lists for splitting the copy of the main list
         ItemNumberList = []
         ObjectDocumentList = []
@@ -473,8 +494,13 @@ class BomFunctions:
                 if len(CopyMainList[i]["ItemNumber"].split(".")) > Level:
                     Level = len(CopyMainList[i]["ItemNumber"].split(".")) + 1
 
-        # Go through the CopyMainList
+        # Set the maximum for the progress bar                
+        self.progressBar.setMaximum(len(CopyMainList)-1)
+
         for i in range(len(CopyMainList)):
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
+            
             # create a place holder for the quantity
             QtyValue = 1
 
@@ -494,11 +520,18 @@ class BomFunctions:
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
-                # Create the row item for the shadow list.
+                # Define the shadow body properties
+                shadowBodyProperties = ""
+                try:
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                except Exception:
+                    pass
+                  # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowLabel,
                     "Item3": shadowType,
+                    "Item4": shadowBodyProperties,
                 }
 
                 # Find the quantity for the item
@@ -507,8 +540,8 @@ class BomFunctions:
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
-                        ObjectBasedPart=False,
-                        ObjectBasedAssy=False,
+                        ObjectBasedPart=True,
+                        CompareMaterial=True,
                     )
                 )
 
@@ -530,12 +563,16 @@ class BomFunctions:
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
                     )
-                    is False
+                    is False and not shadowItemNumber in ShadowList_2
                 ):
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
+                else:
+                    if shadowType == "Assembly":
+                        ShadowList_2.append(itemNumber)
 
             # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
             if len(itemNumber.split(".")) == 1:
@@ -548,17 +585,24 @@ class BomFunctions:
                 ]
 
                 shadowItemNumber = itemNumber
-                if TypeListParts.__contains__(rowList["DocumentObject"].TypeId) is True:
-                    shadowItemNumber = "0"
+                if rowList["Type"] == "Assembly":
+                    shadowItemNumber = "X"
                 # Define the shadow item.
                 shadowLabel = rowList["ObjectLabel"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
-                # Create the row item for the shadow list.
+                # Define the shadow body properties
+                shadowBodyProperties = ""
+                try:
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                except Exception:
+                    pass
+                  # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowLabel,
                     "Item3": shadowType,
+                    "Item4": shadowBodyProperties,
                 }
 
                 # Find the quantity for the item
@@ -567,16 +611,11 @@ class BomFunctions:
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
-                        ObjectBasedPart=False,
-                        ObjectBasedAssy=False,
+                        ObjectBasedPart=True,
+                        CompareMaterial=True,
                     )
                 )
 
-                if (
-                    TypeListParts.__contains__(rowList["DocumentObject"].TypeId)
-                    is False
-                ):
-                    QtyValue = "1"
                 # Create a new row item for the temporary row.
                 rowListNew = {
                     "ItemNumber": itemNumber,
@@ -587,15 +626,13 @@ class BomFunctions:
                     "Type": rowList["Type"],
                 }
 
-                print(QtyValue)
-                print(shadowRow)
-
                 if (
                     General_BOM.ListContainsCheck(
                         List=ShadowList,
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
                     )
                     is False
                 ):
@@ -603,14 +640,17 @@ class BomFunctions:
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
                     ShadowList.append(shadowRow)
+                else:
+                    if shadowType == "Assembly":
+                        ShadowList_2.append(itemNumber)
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
         if IncludeBodies is False and Level > 1:
             TemporaryList = self.FilterBodies(BOMList=TemporaryList, Level=Level)
 
-        # correct the quantities for the parts in subassemblies
-        TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
+        # # correct the quantities for the parts in subassemblies
+        # TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
@@ -624,7 +664,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList)
+            General_BOM.createBoMSpreadsheet(TemporaryList, AssemblyType="App::Link")
         return
 
     # Function to create a summary list of all assemblies and their parts.
@@ -657,8 +697,13 @@ class BomFunctions:
         # define an item for the shadow list.
         shadowRow = dict
 
-        # Go Through the object list
+        # Set the maximum for the progress bar                
+        self.progressBar.setMaximum(len(CopyMainList)-1)
+
         for i in range(len(CopyMainList)):
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
+            
             # Get the row item
             rowList = CopyMainList[i]
 
@@ -684,6 +729,7 @@ class BomFunctions:
                     RowItem=rowList,
                     mainList=CopyMainList,
                     ObjectNameBased=False,
+                    CompareMaterial=True,
                 )
             )
 
@@ -696,12 +742,20 @@ class BomFunctions:
                 "Qty": QtyValue,
                 "Type": rowList["Type"],
             }
+            
+            # Define the shadow body properties
+            shadowBodyProperties = ""
+            try:
+                shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+            except Exception:
+                pass
 
             # Create the row item for the shadow list.
             shadowRow = {
                 "Item1": rowList["ObjectLabel"],
                 "Item2": rowList["DocumentObject"].TypeId,
                 "Item3": rowList["Type"],
+                "Item4": shadowBodyProperties,
             }
             # Add the rowItem if it is not in the shadow list.
             if (
@@ -710,10 +764,12 @@ class BomFunctions:
                     Item1=shadowRow["Item1"],
                     Item2=shadowRow["Item2"],
                     Item3=shadowRow["Item3"],
+                    Item4=shadowRow["Item4"],
                 )
                 is False
             ):
                 TemporaryList.append(rowListNew)
+                # add the shadow row to the shadow list. This prevents from adding this item an second time.
                 ShadowList.append(shadowRow)
 
         # number the parts 1,2,3, etc.
@@ -724,7 +780,7 @@ class BomFunctions:
         # Create the spreadsheet
         if CreateSpreadSheet is True:
             General_BOM.createBoMSpreadsheet(
-                mainList=TemporaryList, Headers=None, Summary=True
+                mainList=TemporaryList, Headers=None, Summary=True, AssemblyType="App::Link"
             )
         return
 
@@ -764,7 +820,13 @@ class BomFunctions:
         # Create a temporary list
         TemporaryList = []
 
+        # Set the maximum for the progress bar                
+        self.progressBar.setMaximum(len(CopyMainList)-1)
+
         for i in range(len(CopyMainList)):
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
+            
             # Get the row item
             rowList = CopyMainList[i]
 
@@ -786,9 +848,10 @@ class BomFunctions:
                         RowItem=rowList,
                         mainList=CopyMainList,
                         ObjectNameBased=False,
+                        CompareMaterial=True,
                     )
                 )
-
+                
                 # Create a new row item for the temporary row.
                 rowListNew = {
                     "ItemNumber": itemNumber,
@@ -798,12 +861,20 @@ class BomFunctions:
                     "Qty": QtyValue,
                     "Type": rowList["Type"],
                 }
+                
+                # Define the shadow body properties
+                shadowBodyProperties = ""
+                try:
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                except Exception:
+                    pass
 
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": rowList["ObjectLabel"],
                     "Item2": rowList["DocumentObject"].TypeId,
                     "Item3": rowList["Type"],
+                    "Item4": shadowBodyProperties,
                 }
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
@@ -814,6 +885,7 @@ class BomFunctions:
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
                     )
                     is False
                 ):
@@ -828,10 +900,17 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList)
+            General_BOM.createBoMSpreadsheet(TemporaryList, AssemblyType="App::Link")
         return
 
     # endregion
+    
+    def custom_slot_counter(self):
+        # Get the current value of the progressbar and increase it by 1.
+        value = self.progressBar.value()
+        self.progressBar.setValue(value + 1)
+        QApplication.processEvents()
+        return
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
@@ -845,6 +924,13 @@ class BomFunctions:
         CheckAssemblyType=True,
     ):
         try:
+            # show the processing window
+            self.progressBar.setMinimum(0)
+            self.progressBar.setValue(0)
+            self.progressBar.show()
+            # Connect the custom signal to the custom slot
+            self.signal_emitter.counter_signal.connect(lambda i: self.custom_slot_counter(self))
+            
             # Clear the mainList to avoid double data
             self.mainList.clear()
             # create the mainList
@@ -877,7 +963,7 @@ class BomFunctions:
                         if Answer == "yes":
                             IncludeBodies = True
                     General_BOM.createBoMSpreadsheet(
-                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies)
+                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies), AssemblyType="App::Link"
                     )
 
                 if command == "PartsOnly":
@@ -903,6 +989,11 @@ class BomFunctions:
                         IncludeBodies=IncludeBodies,
                         CreateSpreadSheet=True,
                     )
+                    
+            # disconnect the signal
+            self.signal_emitter.counter_signal.disconnect()
+            # Close the progressbar
+            self.progressBar.close()
         except Exception as e:
             raise e
         return

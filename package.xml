@@ -5,11 +5,11 @@
 
   <description>A workbench to create Bill of Materials (BoM) independent of the assembly workbench of your choice.</description>
 
-  <version>1.0.3.3</version>
+  <version>1.1.0</version>
 
   <date>2024-01-03</date>
 
-  <maintainer email="paul.ebbers@gmail.com">Paul Ebbers</maintainer>
+  <maintainer email="business@apebbers.nl">Paul Ebbers</maintainer>
 
   <license file="LICENSE">LGPL-2.1-or-later</license>
 

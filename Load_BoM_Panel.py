@@ -24,9 +24,9 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide.QtCore import SIGNAL, QSize
-from PySide.QtGui import QIcon
-from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox
+from PySide.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
+from PySide.QtGui import QIcon, QCursor
+from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -34,6 +34,8 @@ import sys
 import Settings_BoM
 import Standard_Functions_BOM_WB as Standard_Functions
 import webbrowser
+import json
+import time
 
 # Define the translation
 translate = App.Qt.translate
@@ -71,6 +73,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
         # this will create a Qt widget from our ui file
         self.form = Gui.PySideUic.loadUi(os.path.join(PATH_TB_UI, "BoM_Panel.ui"))
+        self.form.setObjectName("BoM_Panel")
 
         # Get the current BoM
         self.getCurrentBoM()
@@ -153,19 +156,31 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form.CreateRaw.connect(
             self.form.CreateRaw, SIGNAL("pressed()"), self.on_CreateRaw_clicked
         )
+        
+        # This will create a connection between the pushbutton "UpdateDescription" and def "on_UpdateDescription_clicked"
+        self.form.UpdateProperties.connect(
+            self.form.UpdateProperties, SIGNAL("pressed()"), self.on_UpdateProperties_clicked
+        )
+                
+        self.form.LoadColumns.connect(self.form.LoadColumns, SIGNAL("pressed()"), self.on_LoadColumns_clicked)
+        self.form.ColumnsConfigList.currentTextChanged.connect(self.on_ColumnsConfigList_currentTextChanged)
         # endregion
 
         # region - Debug settings
         if ENABLE_DEBUG is True:
             # Hide the debug section by default
-            self.form.DebugFrame.setHidden(True)
-            self.form.toolButton_Debug.setHidden(False)
-            self.form.DebugText.setHidden(True)
+            self.form.frame_4.setVisible(True)
+            self.form.DebugFrame.setVisible(True)
+            self.form.toolButton_Debug.setVisible(True)
+            self.form.DebugText.setVisible(True)
+            self.form.frame_4.setEnabled(True)
         if ENABLE_DEBUG is False:
             # Hide the debug section by default
+            self.form.frame_4.setHidden(True)
             self.form.DebugFrame.setHidden(True)
             self.form.toolButton_Debug.setHidden(True)
             self.form.DebugText.setHidden(False)
+            self.form.frame_4.setDisabled(True)
         # endregion
 
         # region - add icons to the buttons
@@ -322,9 +337,39 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
 
+        
+        # Get the json file. If it doesn't exists, create a new one with a default configuration
+        if os.path.exists(os.path.join(PATH_TB, "ColumConfigurations.json")) is False:
+            DefaultDict = {
+                "default": [
+                    "Number",
+                    "Qty",
+                    "Label",
+                    "Description",
+                    "Parent",
+                    "Remarks"
+                ]
+            }
+            with open(os.path.join(PATH_TB, "ColumConfigurations.json"), "w") as outfile:
+                json.dump(DefaultDict, outfile, indent=4)
+        # Open the json file
+        with open(os.path.join(PATH_TB, "ColumConfigurations.json"), "r") as JsonFile:
+            data = json.load(JsonFile)    
+            # Load the list of configurations in the dropdown ColumnsConfigList
+            for key in data.keys():
+                self.form.ColumnsConfigList.addItem(key)
+        self.form.ColumnsConfigList.setCurrentText("")
+        
+        # Add a eventfilter to show properties for remarks and description if there are already in the object properties
+        mw.installEventFilter(EventInspector_Panel(self.form))
+        
+        # Add a event filter to the qcombobox ColumnsConfigList. This updates the items after a new config is made
+        self.form.ColumnsConfigList.installEventFilter(EventInspector_ComboBox(self.form))
+
+        self.manualChange = False
         return
         # endregion
-
+    
     # Define Icon.
     def getIcon(self):
         iconPath = os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg")
@@ -342,9 +387,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if self.currentSheet is not None:
             # remove the backup sheet
             doc.removeObject(self.currentSheet.Name)
-
+        
         # Recompute the document
-        doc.recompute(None, True, True)
+        try:
+            doc.recompute()
+        except Exception:
+            Standard_Functions.Print("Recompute failed!", "Error")
+            pass
 
         # close the dialog
         Gui.Control.closeDialog()
@@ -358,7 +407,11 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             doc.removeObject("BoM")
 
         # Recompute the document
-        doc.recompute(None, True, True)
+        try:
+            doc.recompute()
+        except Exception:
+            Standard_Functions.Print("Recompute failed!", "Error")
+            pass
 
         # If there is a backup sheet, restore it
         if self.currentSheet is not None:
@@ -375,7 +428,11 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             )
 
             # Recompute the document
-            doc.recompute(None, True, True)
+            try:
+                doc.recompute()
+            except Exception:
+                Standard_Functions.Print("Recompute failed!", "Error")
+                pass
 
         # close the dialog
         Gui.Control.closeDialog()
@@ -429,27 +486,106 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
         return
 
-    def on_SetColumns_clicked(self):
+    def on_SetColumns_clicked(self):  
+        # clear the text of QComboBox ColumnsConfigList
+        self.form.ColumnsConfigList.setCurrentText("")
+        # remove any icon from the load button
+        self.form.LoadColumns.setIcon(QIcon())
+        
         BoM_ManageColumns.main()
         return
 
     def on_CreateTotal_clicked(self):
         self.CreateBOM("Total BoM")
+        return
 
     def on_CreateSummary_clicked(self):
         self.CreateBOM("Summary BoM")
+        return
 
     def on_CreatePartsOnly_clicked(self):
         self.CreateBOM("Parts only BoM")
+        return
 
     def on_CreateFirstLevel_clicked(self):
         self.CreateBOM("First level BoM")
+        return
 
     def on_CreateRaw_clicked(self):
         self.CreateBOM("Raw BoM")
+        return
+        
+    def on_UpdateProperties_clicked(self):
+        self.UpdateProperties()
+        return
+        
+    def on_LoadColumns_clicked(self):        
+        # Get the json file
+        JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+        data = json.load(JsonFile)
+        
+        # Get the name for the columnsConfig
+        name = self.form.ColumnsConfigList.currentText()
+        
+        if name != "":
+            # Get the list with columns
+            columnList: list = data[name]
+            
+            # Check if the fixed columns are present
+            if not "Number" in columnList:
+                columnList.insert(0,"Number")
+            if not "Qty" in columnList:
+                columnList.insert(0,"Qty")
+            if not "Label" in columnList:
+                columnList.insert(0,"Label")
+            if not "Description" in columnList:
+                columnList.insert(0,"Description")
+            if not "Parent" in columnList:
+                columnList.insert(0,"Parent")
+            if not "Remarks" in columnList:
+                columnList.insert(0,"Remarks")
+            
+            # Create the result string from the items present
+            result = ""
+            for column in columnList:
+                result = result + ";" + column
+            if result[:1] == ";":
+                result = result[1:]
+                
+            # Set the custom headers for the current session
+            General_BOM.customHeaders = result
+            # Write the custom headers to preferences, for next time
+            Settings_BoM.SetStringSetting("CustomHeader", result)
+            # If debug is enabled, log the action.
+            if ENABLE_DEBUG is True:
+                if result == "":
+                    result = "None"
+                Text = translate(
+                    "BoM Workbench", f"The extra columns are:{result.replace(';', ', ')}."
+                )
+                Standard_Functions.Print(Text, "Log")
+                
+            # Set an confirmation icon
+            self.form.LoadColumns.setIcon(Gui.getIcon("edit_OK.svg"))
+        
+        # Close the json file
+        JsonFile.close()
+        
+        return            
+
+    def on_ColumnsConfigList_currentTextChanged(self):
+        self.form.LoadColumns.setIcon(QIcon())
+        
+        return
+            
 
     # A function to execute the BoM scripts based on the input from the controls.
-    def CreateBOM(self, TypeOfBoM):
+    def CreateBOM(self, TypeOfBoM):                
+        # Set the wait cursor
+        mw = Gui.getMainWindow()
+        doc = App.ActiveDocument
+        mw.setCursor(Qt.CursorShape.WaitCursor)
+        
         # Import the BoM modules
         import GetBOM_A4
         import GetBOM_AppLink
@@ -458,9 +594,17 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         import GetBOM_A3
         import GetBOM_A2plus
         import GetBOM_MultiBody_Arch
+        
+        # Activate the document which was active when this command started.
+        try:
+            doc.recompute()
+        except Exception:
+            Standard_Functions.Print("Recompute failed!", "Error")
+            pass
 
         # Get the assembly type
-        doc = App.ActiveDocument
+        
+        AssemblyType_Selected = ""
         if General_BOM.CheckAssemblyType(doc) == "A2plus":
             AssemblyType_Selected = "A2plus"
         if General_BOM.CheckAssemblyType(doc) == "AppLink":
@@ -477,6 +621,12 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             AssemblyType_Selected = "Arch"
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             AssemblyType_Selected = "MultiBody"
+        
+        if self.manualChange is True:
+            AssemblyType_Selected = str(self.form.AssemblyType.currentText())
+        
+        if AssemblyType_Selected == "":
+            return
 
         # Get the values from the controls
         IncludeBodies_Checked = self.form.IncludeBodies.isChecked()
@@ -561,6 +711,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             GetBOM_MultiBody_Arch.BomFunctions.Start(
                 CheckAssemblyType=not self.manualChange
             )
+            
+        mw.setCursor(Qt.CursorShape.ArrowCursor)
         return
 
     def on_AssemblyType_TextChanged(self):
@@ -631,21 +783,146 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         doc = App.ActiveDocument
 
         # Get the current sheet and the group it is in.
-        currentSheet = doc.getObject("BoM")
-        Group = None
+        currentSheet = None
         try:
-            Group = currentSheet.getParentGroup()
+            currentSheet = doc.getObjectsByLabel("BoM")[0]
+            Group = None
+            try:
+                Group = currentSheet.getParentGroup()
+            except Exception:
+                pass
         except Exception:
             pass
-
+        
+        # Get a leftover backup if there is any and remove it
+        BackupSheets = doc.getObjectsByLabel("BoM_Backup")
+        for BackupSheet in BackupSheets:
+            doc.removeObject(BackupSheet.Name)            
+        
         # If there is a sheet, copy and rename it
         if currentSheet is not None:
-            currentSheet = doc.copyObject(doc.getObject("BoM"), False, False)
+            # currentSheet = doc.copyObject(doc.getObject("BoM"), False, False)
+            currentSheet = doc.copyObject(currentSheet)
             # If the currentSheet is in a Group, move the backup in there
             if Group is not None:
                 Group.addObject(currentSheet)
-
+            
             currentSheet.Label = "BoM_Backup"
             self.currentSheet = currentSheet
 
         return
+
+    def UpdateProperties(self):
+        # Get the properties from the active document
+        doc = App.ActiveDocument
+        sel = Gui.Selection.getSelection()
+        if sel is not None:
+            try:
+                # Get the first item of the selection
+                doc = sel[0]
+                if not 'Description' in doc.PropertiesList:
+                    doc.addProperty("App::PropertyString", "Description", group="Custom")
+                doc.Description = self.form.DescriptionText.text()
+                
+                # if there is a linked object, add the description also
+                try:
+                    LinkedObject = doc.getLinkedObject()
+                    if not 'Description' in LinkedObject.PropertiesList:
+                        LinkedObject.addProperty("App::PropertyString", "Description", group="Custom")
+                    LinkedObject.Description = self.form.DescriptionText.text()
+                except Exception:
+                    pass
+                    
+                if not 'Remarks' in doc.PropertiesList:
+                    doc.addProperty("App::PropertyString", "Remarks", group="Custom")
+                doc.Remarks = self.form.RemarkText.text()
+                
+                # if there is a linked object, add the description also
+                try:
+                    LinkedObject = doc.getLinkedObject()
+                    if not 'Remarks' in LinkedObject.PropertiesList:
+                        LinkedObject.addProperty("App::PropertyString", "Remarks", group="Custom")
+                    LinkedObject.Remarks = self.form.RemarkText.text()
+                except Exception:
+                    pass
+                    
+            except Exception:
+                return
+        return
+
+class EventInspector_Panel(QObject):
+    # define a form
+    form = None
+    
+    def __init__(self, parent):
+        # store the parent for access by the eventFilter
+        self.form = parent
+        super(EventInspector_Panel, self).__init__(parent)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.ModifiedChange:
+            try:
+                if len(Gui.Selection.getSelection()) > 0:
+                    # Get the first item of the current selection
+                    obj = Gui.Selection.getSelection()[0]
+                                    
+                    if obj is not None:
+                        # The panel is the form stored in init
+                        Panel = self.form
+
+                        # find the description label and fill the DescriptionLabelWidget if there is a value
+                        DescriptionLabelWidget = Panel.findChild(QLineEdit, "DescriptionText")
+                        # Clear the DescriptionLabelWidget first
+                        DescriptionLabelWidget.clear()
+                        try:                            
+                            Description = obj.getPropertyByName("Description")
+                            if Description != DescriptionLabelWidget.text():
+                                DescriptionLabelWidget.setText(Description)
+                        except Exception:
+                            pass
+                    
+                        # find the remark label and fill the RemarkLabelWidget if there is a value
+                        RemarkLabelWidget = Panel.findChild(QLineEdit, "RemarkText")
+                        # Clear the RemarkLabelWidget first
+                        RemarkLabelWidget.clear()
+                        try:                            
+                            Remark = obj.getPropertyByName("Remarks")
+                            if Remark != RemarkLabelWidget.text():
+                                RemarkLabelWidget.setText(Remark)
+                        except Exception:
+                            pass
+        
+            except Exception:
+                pass
+            
+        
+        return False
+    
+class EventInspector_ComboBox(QObject):
+    # define a form
+    form = None
+    
+    def __init__(self, parent):
+        # store the parent for access by the eventFilter
+        self.form = parent
+        super(EventInspector_ComboBox, self).__init__(parent)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusIn:
+            if self.form.ColumnsConfigList.underMouse():
+                self.form.ColumnsConfigList.clear()
+            
+                # Get the json file
+                JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+                data = json.load(JsonFile)
+                
+                # Add the keys to the dropdown    
+                for key in data.keys():
+                    self.form.ColumnsConfigList.addItem(key)
+                self.form.ColumnsConfigList.setCurrentText("")
+                
+                # Close the json file
+                JsonFile.close()
+                return False
+        
+        return False

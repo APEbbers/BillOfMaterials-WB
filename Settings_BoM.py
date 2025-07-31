@@ -46,7 +46,6 @@ def GetIntSetting(settingName: str) -> int:
         result = None
     return result
 
-
 def GetFloatSetting(settingName: str) -> int:
     result = preferences.GetFloat(settingName)
     if result == "":
@@ -104,7 +103,12 @@ def SetBoolSetting(settingName: str, value):
 # region -- All settings from the UI
 # BoM Settings
 CUSTOM_HEADERS = GetStringSetting("CustomHeader")
+if CUSTOM_HEADERS is "":
+    CUSTOM_HEADERS = "Number;Qty;Label;Description;Parent;Remarks"
 DEBUG_HEADERS = GetStringSetting("DebugHeader")
+
+# Import/Export location for columns
+IMPORT_LOCATION = GetStringSetting("ImportLocation")
 
 # UI Settings
 SPREADSHEET_HEADERBACKGROUND = GetColorSetting("SpreadSheetHeaderBackGround")
@@ -158,7 +162,7 @@ def SetDebugHeaders():
         SetStringSetting("DebugHeader", "")
 
 
-def ReturnHeaders(Headers: dict = None, AdditionalHeaders: dict = None):
+def ReturnHeaders(CustomHeaders = None, DebugHeaders=None):
     """_summary_
 
     Args:
@@ -173,19 +177,58 @@ def ReturnHeaders(Headers: dict = None, AdditionalHeaders: dict = None):
                     "C1": "Label",
                     "D1": "Description",
                     "E1": "Parent",
+                    "F1": "Remarks",
             }
     """
-    if Headers is None or bool(Headers) is False:
-        Headers = {
-            "A1": "Number",
-            "B1": "Qty",
-            "C1": "Label",
-            "D1": "Description",
-            "E1": "Parent",
-        }
+    if CustomHeaders is None or CustomHeaders == "":
+        CustomHeaders = "Number;Qty;Label;Description;Parent;Remarks"
+        
+    Headers = {}
 
-    if AdditionalHeaders is not None or bool(AdditionalHeaders) is True:
-        Headers.update(AdditionalHeaders)
+    if CustomHeaders is not None:
+        # Check if the fixed columns are present
+        if not "Number" in CustomHeaders:
+            CustomHeaders = "Number;" + CustomHeaders
+        if not "Qty" in CustomHeaders:
+            CustomHeaders = "Qty;" + CustomHeaders
+        if not "Label" in CustomHeaders:
+            CustomHeaders = "Label;" + CustomHeaders
+        if not "Description" in CustomHeaders:
+            CustomHeaders = "Description;" + CustomHeaders
+        if not "Parent" in CustomHeaders:
+            CustomHeaders = "Parent;" + CustomHeaders
+        if not "Remarks" in CustomHeaders:
+            CustomHeaders = "Remarks;" + CustomHeaders
+        CustomHeaders.replace(";;", ";")
+            
+        HeaderList = CustomHeaders.split(";")
+        
+        
+        for i in range(len(HeaderList)):
+            # Set the header
+            Header = HeaderList[i]
+            # Set the column
+            Column = Standard_Functions.GetLetterFromNumber(
+                i + 1
+            )
+            # Set the cell
+            Cell = f"{Column}1"
+            # Add the cell and header as a dict item to the dict AdditionalHeaders
+            Headers[Cell] = Header
+            
+    if DebugHeaders is not None:
+        DebugHeaderList = DebugHeaders.split(";")
+        i = len(Headers.keys())
+        for Header in DebugHeaderList:
+            # Set the column
+            Column = Standard_Functions.GetLetterFromNumber(
+                i + 1
+            )
+            # Set the cell
+            Cell = f"{Column}1"
+            # Add the cell and header as a dict item to the dict AdditionalHeaders
+            Headers[Cell] = Header
+        
 
     return Headers
 

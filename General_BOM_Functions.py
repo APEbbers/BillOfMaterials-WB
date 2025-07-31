@@ -23,6 +23,7 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
+import StyleMapping_BOM_WB
 from Settings_BoM import CUSTOM_HEADERS
 from Settings_BoM import DEBUG_HEADERS
 from datetime import datetime
@@ -30,12 +31,17 @@ import os
 import Settings_BoM
 import getpass
 
+from PySide.QtCore import Qt, QObject, Signal
+from PySide.QtWidgets import QLabel, QMainWindow, QProgressBar
+
 # Define the translation
 translate = App.Qt.translate
 
 
 class General_BOM:
-    customHeaders = CUSTOM_HEADERS
+    customHeaders = Settings_BoM.GetStringSetting("CustomHeader")
+    if customHeaders is None:
+        customHeaders = "Number;Qty;Label;Description;Parent;Remarks"
     if customHeaders[:1] == ";":
         customHeaders = customHeaders[1:]
 
@@ -46,7 +52,7 @@ class General_BOM:
     # You can add a dict for the headers of this list
     @classmethod
     def createBoMSpreadsheet(
-        self, mainList: list, Headers: dict = None, Summary: bool = False, IFCData=None
+        self, mainList: list = None, Headers: dict = None, Summary: bool = False, IFCData=None, AssemblyType = ""
     ):
         # If the Mainlist is empty, return.
         if mainList is None:
@@ -59,13 +65,18 @@ class General_BOM:
 
         # Get or create the spreadsheet.
         IsNewSheet = False
-        sheet = doc.getObject("BoM")
-        if sheet is not None:
-            for i in range(
-                1, 16384
-            ):  # 16384 is the maximum rows of the spreadsheet module
-                doc.BoM.splitCell("A" + str(i))
-            sheet.clearAll()
+        sheet = None
+        try:
+            # sheet = doc.getObjectsByLabel("BoM")[0]
+            doc.removeObject("BoM")
+        except Exception:
+            pass
+        # if sheet is not None:
+        #     for i in range(
+        #         1, 16384
+        #     ):  # 16384 is the maximum rows of the spreadsheet module
+        #         doc.BoM.splitCell("A" + str(i))
+        #     sheet.clearAll()
         if sheet is None:
             sheet = doc.addObject("Spreadsheet::Sheet", "BoM")
             IsNewSheet = True
@@ -76,61 +87,39 @@ class General_BOM:
         # Copy the main list
         CopyMainList = mainList
 
-        # Set the colors for the table
+        # Set the backup colors for the table
         HeaderColorRGB = [243, 202, 98]
         FirstColorRGB = [169, 169, 169]
         SecondColorRGB = [128, 128, 128]
-
-        # region -  Set the headers in the spreadsheet
-        # If Headers is None, Set the default headers
-        if Headers is None:
-            Headers = Settings_BoM.ReturnHeaders()
-
-        # Create a empty dict for the aditional headers
-        DebugHeadersDict = {}
-        CustomHeadersDict = {}
-
-        # Go through the debug headers
-        if DEBUG_HEADERS != "":
-            DebugHeaderList = DEBUG_HEADERS.split(";")
-            for i in range(len(DebugHeaderList)):
-                # Set the header
-                Header = DebugHeaderList[i]
-                # Set the column
-                Column = Standard_Functions.GetLetterFromNumber(len(Headers) + i + 1)
-                # Set the cell
-                Cell = f"{Column}1"
-                # Add the cell and header as a dict item to the dict AdditionalHeaders
-                DebugHeadersDict[Cell] = Header
-
-            # Get the headers with additional headers
-            Headers = Settings_BoM.ReturnHeaders(
-                Headers=Headers, AdditionalHeaders=DebugHeadersDict
-            )
-
-        # Go through the custom headers
-        if CustomHeadersDict is not None or bool(CustomHeadersDict) is True:
-            if IFCData is None:
-                CustomHeaderList = self.customHeaders.split(";")
-                for i in range(len(CustomHeaderList)):
-                    # Set the header
-                    Header = CustomHeaderList[i]
-                    # Set the column
-                    Column = Standard_Functions.GetLetterFromNumber(
-                        len(Headers) + i + 1
-                    )
-                    # Set the cell
-                    Cell = f"{Column}1"
-                    # Add the cell and header as a dict item to the dict AdditionalHeaders
-                    CustomHeadersDict[Cell] = Header
+        
+        # Get the fontstyles from settings
+        HeaderStyle = ""
+        if Settings_BoM.SPREADSHEET_HEADERFONTSTYLE_BOLD is True:
+            HeaderStyle = HeaderStyle + "|bold"
+        if Settings_BoM.SPREADSHEET_HEADERFONTSTYLE_ITALIC is True:
+            HeaderStyle = HeaderStyle + "|italic"
+        if Settings_BoM.SPREADSHEET_HEADERFONTSTYLE_UNDERLINE is True:
+            HeaderStyle = HeaderStyle + "|underline"
+        if HeaderStyle.startswith("|"):
+            HeaderStyle = HeaderStyle[1:]
+            
+        TableStyle = ""
+        if Settings_BoM.SPREADSHEET_TABLEFONTSTYLE_BOLD is True:
+            TableStyle = TableStyle + "|bold"
+        if Settings_BoM.SPREADSHEET_TABLEFONTSTYLE_ITALIC is True:
+            TableStyle = TableStyle + "|italic"
+        if Settings_BoM.SPREADSHEET_TABLEFONTSTYLE_UNDERLINE is True:
+            TableStyle = TableStyle + "|underline"
+        if TableStyle.startswith("|"):
+            TableStyle = TableStyle[1:]
 
         # Set the headers with additional headers
         Headers = Settings_BoM.ReturnHeaders(
-            Headers=Headers, AdditionalHeaders=CustomHeadersDict
+            CustomHeaders=self.customHeaders, DebugHeaders=DEBUG_HEADERS
         )
 
         # Define the header range based on Headers
-        HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers))}1"
+        HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers)-1)}1"
 
         # Create the headers and set the width
         for key, value in Headers.items():
@@ -160,26 +149,20 @@ class General_BOM:
             Row = i + rowOffset
 
             # Fill the spreadsheet
-            # The standard headers
-            sheet.set(
-                "A" + str(Row), "'" + str(rowList["ItemNumber"])
-            )  # add ' at the beginning to make sure it is text.
-            sheet.set("B" + str(Row), str(rowList["Qty"]))
-            sheet.set("C" + str(Row), rowList["ObjectLabel"])
-            sheet.set(
-                "D" + str(Row),
-                self.ReturnDocProperty(rowList["DocumentObject"], "Label2"),
-            )  # This will be the description
-            sheet.set(
-                "E" + str(Row),
-                self.ReturnDocProperty(rowList["DocumentObject"], "Parent"),
-            )  # This will be the description
-
-            # The debug headers and custom headers
-            for i in range(4, len(Headers) + 1):
-                Column = Standard_Functions.GetLetterFromNumber(i)
-                if Headers[Column + "1"] == "Type":
-                    sheet.set(Column + str(Row), rowList["Type"])
+            for j in range(1, len(Headers) + 1):
+                Column = Standard_Functions.GetLetterFromNumber(j)
+                if Headers[Column + "1"] == "Number":
+                    sheet.set(Column + str(Row), "'" + str(rowList["ItemNumber"]))
+                elif Headers[Column + "1"] == "Qty":
+                    sheet.set(Column + str(Row), "'" + str(rowList["Qty"]))
+                elif Headers[Column + "1"] == "Label":
+                    sheet.set(Column + str(Row), "'" + rowList["ObjectLabel"])
+                elif Headers[Column + "1"] == "Description":
+                    sheet.set(Column + str(Row), "'" + self.ReturnViewProperty(rowList["DocumentObject"], "Description")[0])
+                elif Headers[Column + "1"] == "Parent":
+                    sheet.set(Column + str(Row), "'" + self.ReturnDocProperty(rowList["DocumentObject"], "Parent"))
+                elif Headers[Column + "1"] == "Type":
+                    sheet.set(Column + str(Row), "'" + rowList["Type"])
                 elif Headers[Column + "1"].lower() == "label":
                     sheet.set(
                         Column + str(Row),
@@ -250,24 +233,17 @@ class General_BOM:
                             else:
                                 sheet.set(
                                     Column + str(Row),
-                                    os.path.basename(rowList["DocumentObject"].Name))
+                                    os.path.basename(rowList["DocumentObject"].Name))                      
                         else:
-                            sheet.set(
-                                Column + str(Row),
-                                self.ReturnViewProperty(
+                            value = self.ReturnViewProperty(
                                     rowList["DocumentObject"], Headers[Column + "1"]
-                                )[0],
-                            )
-
-                        # NewHeader = ""
-                        # Unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
-                        # # if Unit != "":
-                        # #     NewHeader = Headers[Column + "1"] + " [" + Unit + "]"
-                        # # if sheet.getContents(Column + "1") != NewHeader:
-                        # #     sheet.set(Column + "1", NewHeader)
+                                )[0]
+                            unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
+                            sheet.set(Column + str(Row), "'" + str(value) +  unit)   
 
                     except Exception as e:
-                        print(e)
+                        if Settings_BoM.ENABLE_DEBUG is True:
+                            print(e)
                         pass
 
             # Create the total number of items for the summary
@@ -288,7 +264,7 @@ class General_BOM:
         if Row > 1:
             sheet.setAlignment(
                 "A1:"
-                + str(Standard_Functions.GetLetterFromNumber(len(Headers)))
+                + str(Standard_Functions.GetLetterFromNumber(len(Headers)-1))
                 + str(Row),
                 "center",
                 "keep",
@@ -297,7 +273,7 @@ class General_BOM:
         # Style the table
         RangeStyleHeader = HeaderRange
         RangeStyleTable = (
-            "A2:" + str(Standard_Functions.GetLetterFromNumber(len(Headers))) + str(Row)
+            "A2:" + str(Standard_Functions.GetLetterFromNumber(len(Headers)-1)) + str(Row)
         )
         self.FormatTableColors(
             sheet=sheet,
@@ -306,6 +282,8 @@ class General_BOM:
             HeaderColorRGB=HeaderColorRGB,
             FirstColorRGB=FirstColorRGB,
             SecondColorRGB=SecondColorRGB,
+            TableStyle=TableStyle,
+            HeaderStyle=HeaderStyle,
         )
 
         # Define NoRows. This is needed for the next functions
@@ -381,6 +359,8 @@ class General_BOM:
                 HeaderColorRGB=HeaderColorRGB,
                 FirstColorRGB=FirstColorRGB,
                 SecondColorRGB=SecondColorRGB,
+                TableStyle=TableStyle,
+                HeaderStyle=HeaderStyle,
             )
 
         # Add the end of the BoM add indentifaction data
@@ -392,6 +372,8 @@ class General_BOM:
         sheet.mergeCells(f"A{str(Row+1)}:D{str(Row+1)}")
         sheet.mergeCells(f"A{str(Row+2)}:D{str(Row+2)}")
         sheet.mergeCells(f"A{str(Row+3)}:D{str(Row+3)}")
+        if AssemblyType != "":
+            sheet.mergeCells(f"A{str(Row+4)}:D{str(Row+4)}")
 
         # Define the created by value. If no document information is available, use the OS account info.
         CreatedBy = doc.LastModifiedBy
@@ -415,13 +397,20 @@ class General_BOM:
             "A" + str(Row + 3),
             f"{translate('BoM Workbench', 'BoM created for file')}:   ../{os.path.basename(doc.FileName)}",
         )
+        if AssemblyType != "":
+            sheet.set(
+                "A" + str(Row + 4),
+                f"{translate('BoM Workbench', 'Assembly type')}:   {AssemblyType}",
+            )
 
         # Align the cells
         sheet.setAlignment(f"A{str(Row)}:C{str(Row + 3)}", "left", "keep")
 
         # Style the table
-        RangeStyleHeader = f"A{str(Row)}:E{str(Row)}"
-        RangeStyleTable = f"A{str(Row+1)}:E{str(Row+3)}"
+        RangeStyleHeader = f"A{str(Row)}:D{str(Row)}"
+        RangeStyleTable = f"A{str(Row+1)}:D{str(Row+3)}"
+        if AssemblyType != "":
+            RangeStyleTable = f"A{str(Row+1)}:D{str(Row+4)}"
         self.FormatTableColors(
             sheet=sheet,
             HeaderRange=RangeStyleHeader,
@@ -429,10 +418,16 @@ class General_BOM:
             HeaderColorRGB=HeaderColorRGB,
             FirstColorRGB=FirstColorRGB,
             SecondColorRGB=SecondColorRGB,
+            TableStyle=TableStyle,
+            HeaderStyle=HeaderStyle,
         )
 
         # Recompute the document
-        doc.recompute(None, True, True)
+        try:
+            doc.recompute()
+        except Exception:
+            Standard_Functions.Print("Recompute failed!", "Error")
+            pass
 
         if IsNewSheet is False:
             Standard_Functions.Mbox(
@@ -483,12 +478,20 @@ class General_BOM:
         if HeaderStyle != "":
             sheet.setStyle(HeaderRange, HeaderStyle)  # \bold|italic|underline'
         # Set the colors for the header
-        sheet.setBackground(
-            HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB)
-        )
-        sheet.setForeground(
-            HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB)
-        )  # RGBA
+        if Settings_BoM.SPREADSHEET_HEADERFOREGROUND == "" or Settings_BoM.SPREADSHEET_HEADERFOREGROUND is None:
+            sheet.setForeground(
+                HeaderRange, Standard_Functions.ColorConvertor(ForeGroundHeaderRGB)
+            )
+        else:
+            sheet.setForeground(HeaderRange, Settings_BoM.SPREADSHEET_HEADERFOREGROUND)
+        
+        if Settings_BoM.SPREADSHEET_HEADERBACKGROUND == "" or Settings_BoM.SPREADSHEET_HEADERBACKGROUND is None:
+            sheet.setBackground(
+                HeaderRange, Standard_Functions.ColorConvertor(HeaderColorRGB)
+            )  # RGBA
+        else:
+            sheet.setBackground(HeaderRange, Settings_BoM.SPREADSHEET_HEADERBACKGROUND)
+            
         # ------------------------------------------------------------------------------------------------------------------
 
         # Format the table -------------------------------------------------------------------------------------------------
@@ -521,19 +524,29 @@ class General_BOM:
 
             # if the first and second rows are within the range, set the colors
             if i <= DeltaRange:
-                sheet.setBackground(
-                    FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB)
-                )
-                sheet.setForeground(
-                    FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable)
-                )
+                if Settings_BoM.SPREADSHEET_TABLEBACKGROUND_1 == "" or Settings_BoM.SPREADSHEET_TABLEBACKGROUND_1 is None:
+                    sheet.setBackground(
+                        FirstRow, Standard_Functions.ColorConvertor(FirstColorRGB)
+                    )
+                else:
+                    sheet.setBackground(FirstRow, Settings_BoM.SPREADSHEET_TABLEBACKGROUND_1)
+                if Settings_BoM.SPREADSHEET_TABLEFOREGROUND == "" or Settings_BoM.SPREADSHEET_TABLEFOREGROUND is None:
+                    sheet.setForeground(
+                        FirstRow, Standard_Functions.ColorConvertor(ForeGroundTable)
+                    )
+                else:
+                    sheet.setForeground(FirstRow, Settings_BoM.SPREADSHEET_TABLEFOREGROUND)
             if i + 1 <= DeltaRange:
-                sheet.setBackground(
-                    SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB)
-                )
-                sheet.setForeground(
-                    SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable)
-                )
+                if Settings_BoM.SPREADSHEET_TABLEBACKGROUND_2 == "" or Settings_BoM.SPREADSHEET_TABLEBACKGROUND_2 is None:
+                    sheet.setBackground(
+                        SecondRow, Standard_Functions.ColorConvertor(SecondColorRGB)
+                    )
+                else:
+                    sheet.setBackground(SecondRow, Settings_BoM.SPREADSHEET_TABLEBACKGROUND_2)
+                if Settings_BoM.SPREADSHEET_TABLEFOREGROUND == "" or Settings_BoM.SPREADSHEET_TABLEFOREGROUND is None:
+                    sheet.setForeground(
+                        SecondRow, Standard_Functions.ColorConvertor(ForeGroundTable)
+                    )
 
             # Set the font style for the table
             if TableStyle != "":
@@ -549,7 +562,7 @@ class General_BOM:
         ItemNumber: str,
         BomList: list,
         ObjectBasedPart: bool = True,
-        ObjectBasedAssy: bool = False,
+        CompareMaterial: bool = False
     ) -> int:
         """_summary_
 
@@ -567,81 +580,95 @@ class General_BOM:
         if ObjectBasedPart is False:
             ObjectNameValuePart = "ObjectLabel"
 
-        ObjectNameValueAssy = "Object"
-        if ObjectBasedAssy is False:
-            ObjectNameValueAssy = "ObjectLabel"
-
         # Set the counter
         counter = 0
 
+        # Try to get the material. this only works with bodies
+        Item_Properties = ""
+        try:
+            Item_Properties = self.ReturnBodyProperties(ListItem["DocumentObject"])
+        except Exception:
+            pass
+
         # Go Through the objectList
         for i in range(len(BomList)):
-            # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
-            # If the itemnumber is more than one level deep:
-            if len(ItemNumber.split(".")) > 1:
-                if (
-                    BomList[i]["ItemNumber"].rsplit(".", 1)[0]
-                    == ItemNumber.rsplit(".", 1)[0]
-                ):
-                    if ListItem["Type"] == "Part":
+            BomListItem_Properties = ""
+            try:
+                BomListItem_Properties = self.ReturnBodyProperties(BomList[i]["DocumentObject"])
+            except Exception:
+                pass
+            
+            # Set MaterialCompare to True as default
+            MaterialCompare = True
+            # if material needs to be taken into account, compare the material
+            if CompareMaterial is True:
+                if BomListItem_Properties != Item_Properties:
+                    MaterialCompare = False            
+            
+            # if the material is equeal continue
+            if MaterialCompare is True:
+                # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
+                # If the itemnumber is more than one level deep:
+                if len(ItemNumber.split(".")) > 1:
+                    if (
+                        BomList[i]["ItemNumber"].rsplit(".", 1)[0]
+                        == ItemNumber.rsplit(".", 1)[0]
+                    ):
                         if ObjectNameValuePart == "Object":
                             if (
                                 BomList[i]["DocumentObject"]
-                                == ListItem["DocumentObject"]
+                                == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
                             ):
                                 counter = counter + 1
                         if ObjectNameValuePart == "ObjectLabel":
-                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
-                                counter = counter + 1
-                    if ListItem["Type"] == "Assembly":
-                        if ObjectNameValueAssy == "Object":
-                            if (
-                                BomList[i]["DocumentObject"]
-                                == ListItem["DocumentObject"]
-                            ):
-                                counter = counter + 1
-                        if ObjectNameValueAssy == "ObjectLabel":
-                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
                                 counter = counter + 1
 
-            # If the itemnumber is one level deep:
-            if (
-                len(ItemNumber.split(".")) == 1
-                and len(BomList[i]["ItemNumber"].split(".")) == 1
-            ):
-                if ListItem["Type"] == "Part":
+                # If the itemnumber is one level deep:
+                if (
+                    len(ItemNumber.split(".")) == 1
+                    and len(BomList[i]["ItemNumber"].split(".")) == 1
+                ):
+                    # if ListItem["Type"] == "Part":
                     if ObjectNameValuePart == "Object":
-                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
                             counter = counter + 1
                     if ObjectNameValuePart == "ObjectLabel":
-                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
-                            counter = counter + 1
-                if ListItem["Type"] == "Assembly":
-                    if ObjectNameValueAssy == "Object":
-                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"]:
-                            counter = counter + 1
-                    if ObjectNameValueAssy == "ObjectLabel":
-                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"]:
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
                             counter = counter + 1
 
         # Return the counter
         return counter
 
     @classmethod
-    def ListContainsCheck(self, List: list, Item1, Item2, Item3, Item4 = "") -> bool:
+    def ListContainsCheck(self, List: list, Item1, Item2, Item3, Item4 = None, Item5 = None) -> bool:
         for i in range(len(List)):
             rowItem = List[i]
             ListItem1 = rowItem["Item1"]
             ListItem2 = rowItem["Item2"]
             ListItem3 = rowItem["Item3"]
-            if Item4 != "":
+            ListItem4 = ""
+            ListItem5 = ""
+            if Item4 != "" and Item4 is not None:
                 ListItem4 = rowItem["Item4"]
-
-            if Item4 == "":
+            else:
+                Item4 = ""
+            if Item5 != "" and Item5 is not None:
+                ListItem5 = rowItem["Item5"]
+            else:
+                Item5 = ""
+                
+            if Item4 == "" and Item5 == "":
                 if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3:
                     return True
+            elif Item4 != "" and Item5 == "":
+                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem4 == Item4: 
+                    return True
+            elif Item4 == "" and Item5 != "":
+                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem5 == Item5: 
+                    return True
             else:
-                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem4 == Item4:
+                if ListItem1 == Item1 and ListItem2 == Item2 and ListItem3 == Item3 and ListItem4 == Item4 and ListItem5 == Item5:
                     return True
 
         return False
@@ -654,6 +681,7 @@ class General_BOM:
         RowItem: dict = None,
         mainList: list = None,
         ObjectNameBased: bool = True,
+        CompareMaterial: bool = False
     ) -> int:
         """_summary_
         Use this function only two ways:\n
@@ -685,28 +713,72 @@ class General_BOM:
 
         # Set the counter
         counter = 0
-
+        
         # Go Through the mainList
         # If ObjectBased is True, compare the objects
         if ObjectBased is True:
+            # Try to get the material. this only works with bodies
+            Item_Properties = ""
+            try:
+                Item_Properties = self.ReturnBodyProperties(DocObject["DocumentObject"])
+            except Exception:
+                pass
+            
             for i in range(len(mainList)):
-                # If the document object  in the list is equal to DocObject, increase the counter by one.
-                if mainList[i]["DocumentObject"] == DocObject:
-                    counter = counter + 1
+                BomListItem_Properties = ""
+                try:
+                    BomListItem_Properties = self.ReturnBodyProperties(mainList[i]["DocumentObject"])
+                except Exception:
+                    pass
+                
+                # Set MaterialCompare to True as default
+                MaterialCompare = True
+                # if material needs to be taken into account, compare the material
+                if CompareMaterial is True:
+                    if len(list(set(BomListItem_Properties)) - list(set(Item_Properties))) > 0:
+                        MaterialCompare = False  
+                
+                # if the material is equal continue
+                if MaterialCompare is True:
+                    # If the document object  in the list is equal to DocObject, increase the counter by one.
+                    if mainList[i]["DocumentObject"] == DocObject:
+                        counter = counter + 1
 
         # If ListRowBased is True, compare the name and type of the objects. These are stored in the list items.
         if ListRowBased is True:
+            # Try to get the material. this only works with bodies
+            Item_Properties = ""
+            try:
+                Item_Properties = self.ReturnBodyProperties(RowItem["DocumentObject"])
+            except Exception:
+                pass
+            
             for i in range(len(mainList)):
-                ObjectName = mainList[i][ObjectNameValue]
-                ObjectType = mainList[i]["DocumentObject"].TypeId
+                BomListItem_Properties = ""
+                try:
+                    BomListItem_Properties = self.ReturnBodyProperties(mainList[i]["DocumentObject"])
+                except Exception:
+                    pass
+                
+                # Set MaterialCompare to True as default
+                MaterialCompare = True
+                # if material needs to be taken into account, compare the material
+                if CompareMaterial is True:
+                    if BomListItem_Properties != Item_Properties:
+                        MaterialCompare = False 
+                
+                # if the material is equal continue
+                if MaterialCompare is True:
+                    ObjectName = mainList[i][ObjectNameValue]
+                    ObjectType = mainList[i]["DocumentObject"].TypeId
 
-                # If the object name and type of the object in the list are equal to that of the DocObject,
-                # increase the counter by one
-                if (
-                    RowItem[ObjectNameValue] == ObjectName
-                    and RowItem["DocumentObject"].TypeId == ObjectType
-                ):
-                    counter = counter + 1
+                    # If the object name and type of the object in the list are equal to that of the DocObject,
+                    # increase the counter by one
+                    if (
+                        RowItem[ObjectNameValue] == ObjectName
+                        and RowItem["DocumentObject"].TypeId == ObjectType
+                    ):
+                        counter = counter + 1
 
         # Return the counter
         return counter
@@ -728,7 +800,7 @@ class General_BOM:
         for i in range(len(BoMList)):
             TemporaryList.append(BoMList[i])
 
-            if i > 1:
+            if i > 0:
                 # Get the list item from the new temporary list
                 rowItem = TemporaryList[i]
 
@@ -999,12 +1071,13 @@ class General_BOM:
         resultList = []
         try:
             Objects = Group.Group
-            if Objects[0].TypeId != 'Assembly::JointGroup':
-                for Object in Objects:
-                    if Object.TypeId != "App::DocumentObjectGroup":
-                        resultList.append(Object)
-                    if Object.TypeId == "App::DocumentObjectGroup":
-                        resultList.extend(self.GetObjectsFromGroups(Object))
+            if Objects.Visibility is True:
+                if Objects[0].TypeId != 'Assembly::JointGroup':
+                    for Object in Objects:
+                        if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
+                            resultList.append(Object)
+                        if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
+                            resultList.extend(self.GetObjectsFromGroups(Object))
         except Exception:
             pass
         return resultList
@@ -1035,186 +1108,211 @@ class General_BOM:
         resultValue: object
         resultUnit: str
         result: list
+        currentScheme = App.Units.getSchema()
 
         # if there is a linked object, use that.
         # Otherwise use the provided document.
         try:
-            DocObject = DocObject.getLinkedObject()
+            DocObject_Linked = DocObject.getLinkedObject()
         except Exception:
             pass
-
-        isShapeProperty = False
-        if PropertyName.startswith("Shape - ") is True:
-            isShapeProperty = True
-
-        if isShapeProperty is False:
-            try:
-                try:
-                    resultValue = DocObject.getPropertyByName(PropertyName)
-                except Exception:
-                    resultValue = None
-
-                if isinstance(resultValue, int):
-                    resultValue = str(resultValue)
-                elif isinstance(resultValue, list):
-                    resultString = ""
-                    for item in resultValue:
-                        resultString = resultString + self.ObjectToString(item) + ", "
-                    resultValue = str(resultValue)
-                elif isinstance(resultValue, dict):
-                    resultString = ""
-                    for item in resultValue:
-                        resultString = resultString + self.ObjectToString(item) + ", "
-                    resultValue = str(resultValue)
+        
+        isMaterialProperty = False
+        try:
+            MaterialProperties = {}
+            MaterialProperties = DocObject_Linked.ShapeMaterial.Properties
+            for key in MaterialProperties.keys():
+                if "Material - " + key == PropertyName:
+                    isMaterialProperty = True
+        
+            if isMaterialProperty is True:
+                if PropertyName == "Material - Density":
+                    Density = MaterialProperties[PropertyName.replace("Material - ", "")]
+                    resultValue = Density.split(" ")[0]
+                    resultUnit = Density.split(" ")[1]
                 else:
-                    resultValue = str(resultValue)
-
-                if resultValue is None or resultValue == "None":
-                    resultValue = ""
-
-                result = (resultValue, "")
-                return result
-            except Exception:
-                return ("", "")
-
-        if isShapeProperty is True:
-            try:
-                shapeObject = DocObject.Shape
-                currentScheme = App.Units.getSchema()
-
-                # Get the value from the shape
-                #
-                # Get the boundingbox from the item as if it is not transformed
-                BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
-                try:
-                    if DocObject.TypeId.endswith("Body"):
-                        BoundingBox = shapeObject.BoundBox
-                except Exception:
-                    BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
-                    print("viewObjects boundingbox is used")
-                    pass
-
-                # Get the dimensions
-                if PropertyName.split(" - ", 1)[1] == "Length":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
-                if PropertyName.split(" - ", 1)[1] == "Width":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(BoundingBox.YLength, App.Units.Length),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(BoundingBox.YLength, App.Units.Length),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
-                if PropertyName.split(" - ", 1)[1] == "Height":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(BoundingBox.ZLength, App.Units.Length),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(BoundingBox.ZLength, App.Units.Length),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
-                # Get the other properties
-                if PropertyName.split(" - ", 1)[1] == "Volume":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(shapeObject.Volume, App.Units.Volume),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(shapeObject.Volume, App.Units.Volume),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
-                if PropertyName.split(" - ", 1)[1] == "Area":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(shapeObject.Area, App.Units.Area),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(shapeObject.Area, App.Units.Area),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
-                if PropertyName.split(" - ", 1)[1] == "CenterOfGravity":
-                    ValueX = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(
-                                App.Vector(shapeObject.CenterOfGravity).x,
-                                App.Units.Length,
-                            ),
-                            currentScheme,
-                        )[0]
-                    )
-                    ValueY = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(
-                                App.Vector(shapeObject.CenterOfGravity).y,
-                                App.Units.Length,
-                            ),
-                            currentScheme,
-                        )[0]
-                    )
-                    ValueZ = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(
-                                App.Vector(shapeObject.CenterOfGravity).z,
-                                App.Units.Length,
-                            ),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(
-                            App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length
-                        ),
-                        currentScheme,
-                    )[2]
-                    resultValue = f"Vector ({ValueX}, {ValueY}, {ValueZ}"
-                    resultUnit = unit
-                if PropertyName.split(" - ", 1)[1] == "Mass":
-                    value = str(
-                        App.Units.schemaTranslate(
-                            App.Units.Quantity(shapeObject.Mass, App.Units.Mass),
-                            currentScheme,
-                        )[0]
-                    )
-                    unit = App.Units.schemaTranslate(
-                        App.Units.Quantity(shapeObject.Mass, App.Units.Mass),
-                        currentScheme,
-                    )[2]
-                    resultValue = value.replace(" " + unit, "")
-                    resultUnit = unit
-
+                    resultValue = MaterialProperties[PropertyName.replace("Material - ", "")]
+                    resultUnit = ""
                 result = (resultValue, resultUnit)
                 return result
-            except Exception:
-                return ""
+        except Exception:
+            pass
+            
+        if isMaterialProperty is False:
+            isShapeProperty = False
+            if PropertyName.startswith("Shape - ") is True:
+                isShapeProperty = True
+
+            if isShapeProperty is False:             
+                try:
+                    try:
+                        resultValue = DocObject_Linked.getPropertyByName(PropertyName)
+                    except Exception:
+                        resultValue = None
+
+                    if isinstance(resultValue, int):
+                        resultValue = str(resultValue)
+                    elif isinstance(resultValue, list):
+                        resultString = ""
+                        for item in resultValue:
+                            resultString = resultString + self.ObjectToString(item) + ", "
+                        resultValue = str(resultValue)
+                    elif isinstance(resultValue, dict):
+                        resultString = ""
+                        for item in resultValue:
+                            resultString = resultString + self.ObjectToString(item) + ", "
+                        resultValue = str(resultValue)
+                    else:
+                        resultValue = str(resultValue)
+
+                    if resultValue is None or resultValue == "None":
+                        resultValue = ""
+
+                    result = (resultValue, "")
+                    return result
+                except Exception:
+                    return ("", "")
+
+            if isShapeProperty is True:
+                try:
+                    shapeObject = DocObject_Linked.Shape
+
+                    # Get the value from the shape
+                    #
+                    # Get the boundingbox from the item as if it is not transformed
+                    BoundingBox = DocObject_Linked.ViewObject.getBoundingBox("", False)
+                    try:
+                        if DocObject_Linked.TypeId.endswith("Body"):
+                            BoundingBox = shapeObject.BoundBox
+                    except Exception:
+                        BoundingBox = DocObject_Linked.ViewObject.getBoundingBox("", False)
+                        print("viewObjects boundingbox is used")
+                        pass
+
+                    # Get the dimensions
+                    if PropertyName.split(" - ", 1)[1] == "Length":
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
+                            App.Units.Quantity(BoundingBox.XLength, App.Units.Length),
+                            currentScheme,
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
+                    if PropertyName.split(" - ", 1)[1] == "Width":
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(BoundingBox.YLength, App.Units.Length),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
+                            App.Units.Quantity(BoundingBox.YLength, App.Units.Length),
+                            currentScheme,
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
+                    if PropertyName.split(" - ", 1)[1] == "Height":
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(BoundingBox.ZLength, App.Units.Length),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
+                            App.Units.Quantity(BoundingBox.ZLength, App.Units.Length),
+                            currentScheme,
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
+                    # Get the other properties
+                    if PropertyName.split(" - ", 1)[1] == "Volume":
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(shapeObject.Volume, App.Units.Volume),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
+                            App.Units.Quantity(shapeObject.Volume, App.Units.Volume),
+                            currentScheme,
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
+                    if PropertyName.split(" - ", 1)[1] == "Area":
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(shapeObject.Area, App.Units.Area),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
+                            App.Units.Quantity(shapeObject.Area, App.Units.Area),
+                            currentScheme,
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
+                    if PropertyName.split(" - ", 1)[1] == "CenterOfGravity":
+                        ValueX = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(
+                                    App.Vector(shapeObject.CenterOfGravity).x,
+                                    App.Units.Length,
+                                ),
+                                currentScheme,
+                            )[0]
+                        ).replace(" ", "")
+                        ValueY = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(
+                                    App.Vector(shapeObject.CenterOfGravity).y,
+                                    App.Units.Length,
+                                ),
+                                currentScheme,
+                            )[0]
+                        ).replace(" ", "")
+                        ValueZ = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(
+                                    App.Vector(shapeObject.CenterOfGravity).z,
+                                    App.Units.Length,
+                                ),
+                                currentScheme,
+                            )[0]
+                        ).replace(" ", "")
+                        unit = App.Units.schemaTranslate(
+                            App.Units.Quantity(
+                                App.Vector(shapeObject.CenterOfGravity).z, App.Units.Length
+                            ),
+                            currentScheme,
+                        )[2]
+                        resultValue = f"Vector (X={ValueX}, Y={ValueY}, Z={ValueZ})"
+                        resultUnit = ""
+                    if PropertyName.split(" - ", 1)[1] == "Mass":
+                        volume = shapeObject.Volume # mm^3
+                        density = float(DocObject.ShapeMaterial["Density"].split(" ")[0]) # kg/mm^3
+                        mass = volume * density
+                        value = str(
+                            App.Units.schemaTranslate(
+                                App.Units.Quantity(mass, App.Units.Mass),
+                                currentScheme,
+                            )[0]
+                        )
+                        unit = App.Units.schemaTranslate(
+                            App.Units.Quantity(mass, App.Units.Mass),
+                            currentScheme,
+                        )[2]
+                        resultValue = value.replace(" " + unit, "")
+                        resultUnit = unit
+
+                    result = (resultValue, resultUnit)
+                    return result
+                except Exception:
+                    return ""
 
     @classmethod
     def ObjectToString(self, item):
@@ -1291,6 +1389,13 @@ class General_BOM:
             itemNumber = str(BoMListItem["ItemNumber"])
             # GEt the internal name of the item
             itemName = BoMListItem["ObjectLabel"]
+            itemType = BoMListItem["Type"]
+            # Try to get the material. Set as empty string as default
+            itemMaterial = ""
+            try:
+                itemMaterial = self.ReturnBodyProperties(BoMListItem["DocumentObject"])
+            except Exception:
+                pass
 
             # Add always the first item to the replace list
             if i == 0:
@@ -1300,6 +1405,13 @@ class General_BOM:
             for j in range(len(ReplaceList)):
                 # Set skip to false as default
                 skip = False
+                
+                # Get the material from the replaced item. Set as empty string as default
+                ReplacedItem_Properties = ""
+                try:
+                    ReplacedItem_Properties = self.ReturnBodyProperties(ReplaceList[j]["DocumentObject"])
+                except Exception:
+                    pass
 
                 # if you at the end of the replace list: if the item is not in the shadowlist,
                 # add it to the result list.
@@ -1321,7 +1433,7 @@ class General_BOM:
                     if (
                         ReplaceList[j]["ItemNumber"].rsplit(".", 1)[0]
                         == itemNumber.rsplit(".", 1)[0]
-                        and ReplaceList[j]["ObjectLabel"] == itemName
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplacedItem_Properties == itemMaterial
                     ):
                         # Go through the BoMList. Every item that starts with current itemnumber
                         # is a child of the current item. Add it to the shadow list
@@ -1342,7 +1454,7 @@ class General_BOM:
                 if len(itemNumber.split(".")) == 1:
                     if (
                         ReplaceList[j]["ItemNumber"] == itemNumber
-                        and ReplaceList[j]["ObjectName"] == itemName
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplacedItem_Properties == itemMaterial
                     ):
                         resultList.append(ReplaceList[j])
                         break
@@ -1376,3 +1488,109 @@ class General_BOM:
                 BOMList[i]["Qty"] = int(BOMList[i]["Qty"]) / int(AssemblyQty)
 
         return BOMList
+
+
+    @classmethod
+    def GetRootObjects(self):
+        # Get the active document
+        doc = App.ActiveDocument
+        
+        #Get all the objects
+        Objects = doc.Objects
+        
+        RootObjects = []
+        
+        # Get all toplevel objects
+        for Object in Objects:
+            if len(Object.Parents) == 0 and Object.Visibility is True:
+                RootObjects.append(Object)
+        
+        return RootObjects
+    
+    # Function to compare bodies
+    @classmethod
+    def CompareBodies(self, DocObject_1, DocObject_2) -> bool:
+        try:
+            Shape_1 = DocObject_1.Shape
+            Shape_2 = DocObject_2.Shape
+            Material_1 = ""
+
+            Material_1 = None
+            try:
+                Material_1 = DocObject_1.ShapeMaterial
+            except Exception:
+                pass
+
+            Material_2 = None
+            try:
+                Material_2 = DocObject_2.ShapeMaterial
+            except Exception:
+                pass
+            
+            if Material_1.Name != Material_2.Name:
+                return False
+
+            List_1 = [
+                Shape_1.Area,
+                Shape_1.Length,
+                Shape_1.Volume,
+            ]
+
+            List_2 = [
+                Shape_2.Area,
+                Shape_2.Length,
+                Shape_2.Volume,
+            ]
+
+            for i in range(len(List_1)):
+                Value_1 = round(List_1[i], 6)
+                Value_2 = round(List_2[i], 6)
+
+                if Value_1 != Value_2:
+                    return False
+
+            return True
+        except Exception:
+            return False
+        
+    
+    # Function to return body properties as a list
+    @classmethod
+    def ReturnBodyProperties(self, DocObject):
+        try:
+            Shape = DocObject.Shape
+            Material = ""
+            try:
+                Material = DocObject.ShapeMaterial.Name
+            except Exception:
+                pass
+            
+            List = [
+                round(Shape.Area, 6),
+                round(Shape.Length, 6),
+                round(Shape.Volume, 6),
+                Material,
+            ]
+
+            return List
+        except Exception as e:
+            if Settings_BoM.ENABLE_DEBUG is True:
+                print(e)
+            return
+        
+    @classmethod
+    def ReturnProgressBar(self):
+        progressBar = QProgressBar(minimum=0, value=0)
+        progressBar.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+        progressBar.setWindowFlag(Qt.WindowType.CustomizeWindowHint, True)
+        progressBar.setWindowFlag(Qt.WindowType.WindowCloseButtonHint, True)
+        progressBar.setWindowFlag(Qt.WindowType.WindowMinMaxButtonsHint, False)
+        progressBar.setWindowFlag(Qt.WindowType.WindowMinimizeButtonHint, False)
+        # Get the stylesheet from the main window and use it for this form
+        progressBar.setStyleSheet("background-color: " + StyleMapping_BOM_WB.ReturnStyleItem("Background_Color") + ";")        
+        progressBar.setMinimum(0)
+        progressBar.setMaximum(100)
+        progressBar.setValue(0)
+        
+        return progressBar
+    

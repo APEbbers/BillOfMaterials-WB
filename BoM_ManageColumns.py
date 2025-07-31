@@ -27,12 +27,14 @@ from inspect import getsourcefile
 import General_BOM_Functions
 import Standard_Functions_BOM_WB as Standard_Functions
 from PySide.QtGui import QPalette, QIcon
-from PySide.QtWidgets import QListWidgetItem, QDialogButtonBox
-from PySide.QtCore import SIGNAL, Qt
+from PySide.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget, QStyle, QStyledItemDelegate, QStyleOptionViewItem, QComboBox 
+from PySide.QtCore import SIGNAL, Qt, QSize
 import Settings_BoM
 from Settings_BoM import ENABLE_DEBUG
 import BoM_WB_Locator
 import sys
+import json
+import shutil
 
 # get the path of the current python script
 PATH_TB = os.path.dirname(BoM_WB_Locator.__file__)
@@ -60,7 +62,7 @@ PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI")
 initalHeaders = General_BOM_Functions.General_BOM.customHeaders
 
 
-class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
+class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
     def __init__(self):
         # Makes "self.on_CreateBOM_clicked" listen to the changed control values instead initial values
         super(LoadDialog, self).__init__()
@@ -86,7 +88,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         #
         # Load ---------------------------------------------------------------------------------
         def LoadProperties():
-            self.on_LoadProperties_clicked(self)
+            self.on_LoadProperties_clicked()
 
         self.form.LoadProperties.connect(
             self.form.LoadProperties, SIGNAL("clicked()"), LoadProperties
@@ -96,7 +98,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         #
         # AddItem ---------------------------------------------------------------------------------
         def AddItem():
-            self.on_AddItem_clicked(self)
+            self.on_AddItem_clicked()
 
         self.form.AddItem.connect(self.form.AddItem, SIGNAL("clicked()"), AddItem)
 
@@ -104,7 +106,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         #
         # RemoveItem ------------------------------------------------------------------------------
         def RemoveItem():
-            self.on_RemoveItem_clicked(self)
+            self.on_RemoveItem_clicked()
 
         self.form.RemoveItem.connect(
             self.form.RemoveItem, SIGNAL("clicked()"), RemoveItem
@@ -114,7 +116,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         #
         # AddManual ------------------------------------------------------------------------------
         def AddManual():
-            self.on_AddManual_clicked(self)
+            self.on_AddManual_clicked()
 
         self.form.AddManual.connect(self.form.AddManual, SIGNAL("clicked()"), AddManual)
 
@@ -122,7 +124,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         #
         # SortAZ ------------------------------------------------------------------------------
         def SortAZ():
-            self.on_Sort_AZ_clicked(self)
+            self.on_Sort_AZ_clicked()
 
         self.form.Sort_AZ.connect(self.form.Sort_AZ, SIGNAL("clicked()"), SortAZ)
 
@@ -130,7 +132,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         #
         # SortZA ------------------------------------------------------------------------------
         def SortZA():
-            self.on_Sort_ZA_clicked(self)
+            self.on_Sort_ZA_clicked()
 
         self.form.Sort_ZA.connect(self.form.Sort_ZA, SIGNAL("clicked()"), SortZA)
 
@@ -138,7 +140,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         #
         # MoveUp ------------------------------------------------------------------------------
         def MoveUp():
-            self.on_Move_Up_clicked(self)
+            self.on_Move_Up_clicked()
 
         self.form.Move_Up.connect(self.form.Move_Up, SIGNAL("clicked()"), MoveUp)
 
@@ -146,7 +148,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         #
         # MoveDown ------------------------------------------------------------------------------
         def MoveDown():
-            self.on_Move_Down_clicked(self)
+            self.on_Move_Down_clicked()
 
         self.form.Move_Down.connect(self.form.Move_Down, SIGNAL("clicked()"), MoveDown)
 
@@ -156,7 +158,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         #
         # Cancel ----------------------------------------------------------------------------------
         def Cancel():
-            self.on_ButtonBox_Rejected(self)
+            self.on_ButtonBox_Rejected()
 
         self.form.buttonBox.rejected.connect(Cancel)
 
@@ -164,7 +166,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         #
         # Ok --------------------------------------------------------------------------------------
         def Ok():
-            self.on_ButtonBox_Accepted(self)
+            self.on_ButtonBox_Accepted()
 
         self.form.buttonBox.accepted.connect(Ok)
 
@@ -172,22 +174,66 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         #
         # Apply -----------------------------------------------------------------------------------
         def Apply():
-            self.on_ButtonBox_Applied(self)
+            self.on_ButtonBox_Applied()
 
         self.form.buttonBox.button(QDialogButtonBox.Apply).clicked.connect(Apply)
 
         # -----------------------------------------------------------------------------------------
         #
-        # Apply -----------------------------------------------------------------------------------
+        # Reset -----------------------------------------------------------------------------------
         def Reset():
-            self.on_ButtonBox_Resetted(self)
+            self.on_ButtonBox_Resetted()
 
         self.form.buttonBox.button(QDialogButtonBox.Reset).clicked.connect(Reset)
         # -----------------------------------------------------------------------------------------
+        
+        # -----------------------------------------------------------------------------------------
+        #
+        # Save and load columns -------------------------------------------------------------------
+        #
+        # SaveColumns
+        def SaveColumns():
+            self.on_SaveColumns_clicked()
+
+        self.form.SaveColumns.clicked.connect(SaveColumns)
+        
+        # -----------------------------------------------------------------------------------------
+        #
+        # Load columns ----------------------------------------------------------------------------
+        def LoadColumns():
+            self.on_LoadColumns_clicked()
+
+        self.form.LoadColumns.clicked.connect(LoadColumns)
+        
+        # -----------------------------------------------------------------------------------------
+        #
+        # Remove columns ----------------------------------------------------------------------------
+        def RemoveColumns():
+            self.on_RemoveColumns_clicked()
+
+        self.form.RemoveColumns.clicked.connect(RemoveColumns)
+        
+        # -----------------------------------------------------------------------------------------
+        #
+        # import columns ----------------------------------------------------------------------------
+        def ImportColumns():
+            self.on_ImportColumns_clicked()
+
+        self.form.ImportColumns.clicked.connect(ImportColumns)
+        
+        # -----------------------------------------------------------------------------------------
+        #
+        # export columns ----------------------------------------------------------------------------
+        def ExportColumns():
+            self.on_ExportColumns_clicked()
+
+        self.form.ExportColumns.clicked.connect(ExportColumns)
+        
+        
         # endregion
 
         # region - Set the correct icons depending on the color of the main window
-        BackGround_AddAll = (
+        BackGround_AddAll: str = (
             Gui.getMainWindow().palette().color(QPalette.ColorRole.Window).getRgb()
         )
         if Standard_Functions.LightOrDark(rgbColor=BackGround_AddAll) == "dark":
@@ -237,10 +283,20 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
                 QIcon(os.path.join(PATH_TB_ICONS, "SingleArrow_Down_Dark.svg"))
             )
         # endregion
+        
+        # Load the list of configurations in the dropdown ColumnsConfigList
+        # Get the json file
+        JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+        data = json.load(JsonFile)
+        # Add the keys to the dropdown    
+        for key in data.keys():
+            self.form.ColumnsConfigList.addItem(key)
+        
+        # Load the current columns
+        self.on_LoadProperties_clicked()
 
         return
 
-    @staticmethod
     def on_LoadProperties_clicked(self):
         # Get the properties from the active document
         doc = App.ActiveDocument
@@ -251,15 +307,46 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             except Exception:
                 doc = App.ActiveDocument
         PropertyList = doc.PropertiesList
+        
+        # Clear the present columns
+        self.form.Columns_Present.clear()
 
         # Get the currently applied custom columns
-        CustomHeaders = General_BOM_Functions.General_BOM.customHeaders.split(";")
-
+        customHeaders = General_BOM_Functions.General_BOM.customHeaders
+        # Check if the fixed columns are present
+        if not "Number" in customHeaders:
+            customHeaders = "Number;" + customHeaders
+        if not "Qty" in customHeaders:
+            customHeaders = "Qty;" + customHeaders
+        if not "Label" in customHeaders:
+            customHeaders = "Label;" + customHeaders
+        if not "Description" in customHeaders:
+            customHeaders = "Description;" + customHeaders
+        if not "Parent" in customHeaders:
+            customHeaders = "Parent;" + customHeaders
+        if not "Remarks" in customHeaders:
+            customHeaders = "Remarks;" + customHeaders
+        customHeaders = customHeaders.replace(";;", ";")
+        # if there are no columns, setup the standard ones 
+        if customHeaders == "":
+            customHeaders = "Number;Qty;Label;Description;Parent;Remarks"
+        Headers = customHeaders.split(";")
         # Fill the list "Columns_Present" with the custom headers that are currently present
-        self.form.Columns_Present.clear()
-        for Header in CustomHeaders:
+        for Header in Headers:
             if Header != "":
-                self.form.Columns_Present.addItem(Header)
+                # Create the custom QListWidgetItem
+                self.delegate = ItemDelegate()
+                self.form.Columns_Present.setItemDelegate(self.delegate)
+                #
+                # Define a ListWidgetItem
+                item = QListWidgetItem()
+                item.setText(Header)
+                if Header in "Number;Qty;Label;Description;Parent;Remarks":
+                    icon = QIcon()
+                    icon.addPixmap(os.path.join(PATH_TB_ICONS, "Lock.svg"))
+                    item.setIcon(icon)
+                
+                self.form.Columns_Present.addItem(item)
 
         # Clear the list first.
         self.form.Columns_To_Add.clear()
@@ -268,7 +355,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             if Property == "Label":
                 continue
             IsInList = False
-            for CurrentProperty in CustomHeaders:
+            for CurrentProperty in Headers:
                 if Property == CurrentProperty:
                     IsInList = True
                     break
@@ -284,10 +371,15 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
                     self.form.Columns_To_Add.addItem("Shape - CenterOfGravity")
                 if Property == "ShapeMaterial":
                     self.form.Columns_To_Add.addItem("Shape - Mass")
+        if "ShapeMaterial" in PropertyList:
+            for key in doc.ShapeMaterial.Properties.keys():
+                self.form.Columns_To_Add.addItem("Material - " + key)
 
+        # Set the icon size for the locked items
+        size = self.form.Columns_Present.font().pointSize() * 1.8
+        self.form.Columns_Present.setIconSize(QSize(size,size))
         return
 
-    @staticmethod
     def on_AddItem_clicked(self):
         # Get the selected item(s)
         Values = self.form.Columns_To_Add.selectedItems()
@@ -304,8 +396,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
             if ENABLE_DEBUG is True:
                 Text = translate("BoM Workbench", f"{itemText} added to the columns.")
 
-                Standard_Functions.Print(Text, "Log")
-
+                Standard_Functions.Print(Input=Text, Type="Log")
             # Go through the items on the list with items to add.
             for i in range(self.form.Columns_To_Add.count()):
                 # Get the item
@@ -320,16 +411,19 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.AddItem.clearFocus()
         return
 
-    @staticmethod
     def on_RemoveItem_clicked(self):
         # Get the selected item(s)
         Values = self.form.Columns_Present.selectedItems()
 
         # Go through the items
         for Value in Values:
+            StandardHeaders = "Number;Qty;Label;Description;Parent;Remarks"
+            if Value.text() in StandardHeaders:
+                return
+                    
             # Get the item text
             itemText = QListWidgetItem(Value).text()
-            # Add the item to the lsit with current items
+            # Add the item to the list with current items
             self.form.Columns_To_Add.addItem(itemText)
 
             # If debug is enabled, log the action.
@@ -355,14 +449,12 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
 
         return
 
-    @staticmethod
     def on_AddManual_clicked(self):
         Value = self.form.ManualProperty.text()
 
         if Value != "":
             self.form.Columns_Present.addItem(Value)
 
-    @staticmethod
     def on_Sort_AZ_clicked(self):
         # Sort the items in ascending order
         self.form.Columns_Present.sortItems(Qt.SortOrder.AscendingOrder)
@@ -371,7 +463,6 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.Sort_AZ.clearFocus()
         return
 
-    @staticmethod
     def on_Sort_ZA_clicked(self):
         # Sort the items in descending order
         self.form.Columns_Present.sortItems(Qt.SortOrder.DescendingOrder)
@@ -380,7 +471,6 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.Sort_ZA.clearFocus()
         return
 
-    @staticmethod
     def on_Move_Up_clicked(self):
         # Get the current row
         Row = self.form.Columns_Present.currentRow()
@@ -395,7 +485,6 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.Move_Up.clearFocus()
         return
 
-    @staticmethod
     def on_Move_Down_clicked(self):
         # Get the current row
         Row = self.form.Columns_Present.currentRow()
@@ -410,12 +499,11 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.Move_Down.clearFocus()
         return
 
-    @staticmethod
+
     def on_ButtonBox_Rejected(self):
         self.form.close()
         return
 
-    @staticmethod
     def on_ButtonBox_Accepted(self):
         # Create the result string from the items present
         result = ""
@@ -443,7 +531,6 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.close()
         return
 
-    @staticmethod
     def on_ButtonBox_Applied(self):
         # Create the result string from the items present
         result = ""
@@ -470,7 +557,6 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.buttonBox.button(QDialogButtonBox.Apply).clearFocus()
         return
 
-    @staticmethod
     def on_ButtonBox_Resetted(self):
         # clear the listviews, so you can repopulate them.
         self.form.Columns_Present.clear()
@@ -521,6 +607,167 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Dialog):
         self.form.buttonBox.button(QDialogButtonBox.Apply).clearFocus()
         return
 
+    def on_SaveColumns_clicked(self):
+        # Get the name for the columnsConfig
+        name = self.form.ColumnsConfigList.currentText()
+        
+        # Create a list of the current columns
+        ColumnList = []
+        for i in range(self.form.Columns_Present.count()):
+            # Get the item
+            item = self.form.Columns_Present.item(i)
+            ColumnList.append(item.text())
+            
+        # Get the json file
+        JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+        data = json.load(JsonFile)
+        
+        # Update the dict with the new data
+        data[name] = ColumnList
+        # Close the json file
+        JsonFile.close()
+        
+        # Writing to sample.json
+        with open(os.path.join(PATH_TB, "ColumConfigurations.json"), "w") as outfile:
+            json.dump(data, outfile, indent=4)
+
+        outfile.close()
+        
+        # Add the saved name also to the combobox
+        self.form.ColumnsConfigList.addItem(name)
+        return
+    
+    def on_LoadColumns_clicked(self):        
+        # Get the name for the columnsConfig
+        name = self.form.ColumnsConfigList.currentText()
+        
+        if name != "":
+            # Clear the present columns
+            self.form.Columns_Present.clear()
+            
+            # Get the json file
+            JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+            data = json.load(JsonFile)
+            
+            # Get the list with columns
+            columnList = data[name]
+            
+            # Check if the fixed columns are present
+            if not "Number" in columnList:
+                columnList.insert(0,"Number")
+            if not "Qty" in columnList:
+                columnList.insert(0,"Qty")
+            if not "Label" in columnList:
+                columnList.insert(0,"Label")
+            if not "Description" in columnList:
+                columnList.insert(0,"Description")
+            if not "Parent" in columnList:
+                columnList.insert(0,"Parent")
+            if not "Remarks" in columnList:
+                columnList.insert(0,"Remarks")
+            
+            # Fill the list "Columns_Present" with the custom headers that are currently present
+            for Header in columnList:
+                if Header != "":
+                    # Create the custom QListWidgetItem
+                    self.delegate = ItemDelegate()
+                    self.form.Columns_Present.setItemDelegate(self.delegate)
+                    #
+                    # Define a ListWidgetItem
+                    item = QListWidgetItem()
+                    item.setText(Header)
+
+                    if Header in "Number;Qty;Label;Description;Parent;Remarks":
+                        icon = QIcon()
+                        icon.addPixmap(os.path.join(PATH_TB_ICONS, "Lock.svg"))
+                        item.setIcon(icon)
+                    
+                    self.form.Columns_Present.addItem(item)
+                    
+        return
+    
+    def on_RemoveColumns_clicked(self):
+        # Apply any changes first
+        self.on_ButtonBox_Applied()
+        
+        # Get the name for the columnsConfig
+        name = self.form.ColumnsConfigList.currentText()
+        
+        if name != "":
+            # Get the json file
+            JsonFile = open(os.path.join(PATH_TB, "ColumConfigurations.json"))
+            data = json.load(JsonFile)
+            
+            data.pop(name)
+            for i in range(self.form.ColumnsConfigList.count()):                
+                if self.form.ColumnsConfigList.itemText(i) == name:
+                    self.form.ColumnsConfigList.removeItem(i)
+            # Close the json file
+            JsonFile.close()
+            
+            # Writing to sample.json
+            with open(os.path.join(PATH_TB, "ColumConfigurations.json"), "w") as outfile:
+                json.dump(data, outfile, indent=4)
+
+            outfile.close()
+            
+        return
+    
+    def on_ImportColumns_clicked(self):
+        FileName = Standard_Functions.GetFileDialog(
+            Filter="JSON (*.json)",
+            parent=self.form,
+            DefaultPath=Settings_BoM.IMPORT_LOCATION,
+            SaveAs=False,
+        )
+                
+        if FileName != "":
+            # store the path to settings
+            Settings_BoM.SetStringSetting("ImportLocation", os.path.dirname(FileName))
+            
+            JsonFile = open(FileName)
+            # Get the data
+            data = json.load(JsonFile)
+            JsonFile.close()
+            
+            # Writing to sample.json
+            with open(os.path.join(PATH_TB, "ColumConfigurations.json"), "w") as outfile:
+                json.dump(data, outfile, indent=4)
+
+            outfile.close()
+            
+            # Add the keys to the QCombobox
+            #
+            # Clear the present columns
+            self.form.ColumnsConfigList.clear()
+            for Header in data.keys():
+                self.form.ColumnsConfigList.addItem(Header)
+            
+            return
+    
+    def on_ExportColumns_clicked(self):
+        
+        
+        FileName = Standard_Functions.GetFileDialog(
+            Filter="JSON (*.json)",
+            parent=self.form,
+            DefaultPath=Settings_BoM.IMPORT_LOCATION,
+            SaveAs=True,
+        )
+        if FileName != "":
+            shutil.copy(os.path.join(PATH_TB, "ColumConfigurations.json"), FileName)
+            
+            # store the path to settings
+            Settings_BoM.SetStringSetting("ImportLocation", os.path.dirname(FileName))
+        
+        return
+        
+
+# Delegate class for a listwidget item
+class ItemDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index): 
+        option.decorationPosition = QStyleOptionViewItem.Position.Right
+        super(ItemDelegate, self).paint(painter, option, index)
 
 def main():
     # Get the form

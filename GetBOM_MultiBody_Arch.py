@@ -20,25 +20,59 @@
 # *   USA                                                                   *
 # *                                                                         *
 # ***************************************************************************/
+
 import FreeCAD as App
+import FreeCADGui as Gui
 from General_BOM_Functions import General_BOM
+import Settings_BoM
 import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
-import Settings_BoM
+import os
+
+from PySide.QtCore import Qt, QObject, Signal, QEventLoop
+from PySide.QtWidgets import QLabel, QMainWindow, QProgressBar, QApplication
 
 # Define the translation
 translate = App.Qt.translate
 
+class SignalEmitter_Counter(QObject):
+    # Define a custom signal with a value
+    counter_signal = Signal(str)
 
 class BomFunctions:
     # The startrow number which increases with every item and child
     StartRow = 0
     mainList = []
     Type = ""
+    
+    # Get the mainwindow
+    mw = Gui.getMainWindow()
+    
+    # Define a QProgressBar as a counter dialog
+    progressBar = General_BOM.ReturnProgressBar()
+    
+    # Create an instance of the signal emitter
+    signal_emitter = SignalEmitter_Counter()
+    
+    @classmethod
+    def GetObjectsFromGroups(self, Group):
+        resultList = []
+        try:
+            Objects = Group.Group
+            if Objects[0].TypeId != 'Assembly::JointGroup':
+                for Object in Objects:
+                    if Object.TypeId != "App::DocumentObjectGroup":
+                        resultList.append(Object)
+                    if Object.TypeId == "App::DocumentObjectGroup":
+                        resultList.extend(self.GetObjectsFromGroups(Object))
+        except Exception:
+            pass
+        return resultList
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
     def GetTreeObjects(self, checkAssemblyType=True) -> True:
+        self.mainList.clear()
         # Get the active document
         doc = App.ActiveDocument
 
@@ -55,7 +89,13 @@ class BomFunctions:
             self.Type = "Arch"
 
         # Get the list with rootobjects
-        docObjects = doc.Objects
+        # docObjects = doc.RootObjects
+        docObjects = General_BOM.GetRootObjects()
+        
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for docObject in docObjects:
+            if docObject.TypeId == "App::DocumentObjectGroup":
+                docObjects.extend(self.GetObjectsFromGroups(docObject))
 
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
@@ -85,7 +125,7 @@ class BomFunctions:
             "Part::Feature",
         ]
         listObjecttypes.extend(Standard_Functions.PartFeatureList())
-        listObjecttypes.extend(Standard_Functions.PartDesingFeatureList())
+        listObjecttypes.extend(Standard_Functions.PartDesignFeatureList())
 
         # Go through the list and compare the object ID's in the list with the ObjectId.
         # If they are the same, the result is true. Exit the for statement.
@@ -133,56 +173,6 @@ class BomFunctions:
                 self.mainList.append(rowList)
         return
 
-    # Function to compare bodies
-    @classmethod
-    def CompareBodies(self, DocObject_1, DocObject_2) -> bool:
-        try:
-            Shape_1 = DocObject_1.Shape
-            Shape_2 = DocObject_2.Shape
-            Material_1 = ""
-
-            Shape_1_HasMaterial = False
-            try:
-                Material_1 = DocObject_1.getPropertyByName("Material")
-                Shape_1_HasMaterial = True
-            except Exception:
-                pass
-
-            Shape_2_HasMaterial = False
-            try:
-                Material_2 = DocObject_2.getPropertyByName("Material")
-                Shape_2_HasMaterial = True
-            except Exception:
-                pass
-
-            List_1 = [
-                Shape_1.Area,
-                Shape_1.Length,
-                Shape_1.Mass,
-                Shape_1.Volume,
-            ]
-
-            List_2 = [
-                Shape_2.Area,
-                Shape_2.Length,
-                Shape_2.Mass,
-                Shape_2.Volume,
-            ]
-
-            for i in range(len(List_1)):
-                Value_1 = round(List_1[i], 6)
-                Value_2 = round(List_2[i], 6)
-
-                if Value_1 == Value_2:
-                    if Shape_1_HasMaterial is True and Shape_2_HasMaterial is True:
-                        if Material_1 != Material_2:
-                            return False
-                if Value_1 != Value_2:
-                    return False
-
-            return True
-        except Exception:
-            return False
 
     @classmethod
     def CreateTotalBoM(self, CreateSpreadSheet: bool = True, Headers=""):
@@ -198,8 +188,14 @@ class BomFunctions:
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
+        
+        # Set the maximum for the progress bar                
+        self.progressBar.setMaximum(len(CopyMainList)-1)
 
         for i in range(len(CopyMainList)):
+            # Emit a signal for a visual counter dialog
+            self.signal_emitter.counter_signal.emit("Object processed")
+            
             # Create a new row item for the temporary row.
             rowList = CopyMainList[i]
 
@@ -210,12 +206,12 @@ class BomFunctions:
             Quantity = 1
             for j in range(len(ShadowList)):
                 shadowItem = ShadowList[j]
-                test = self.CompareBodies(rowList["DocumentObject"], shadowItem["DocumentObject"])
+                test = General_BOM.CompareBodies(rowList["DocumentObject"], shadowItem["DocumentObject"])
                 if test is True and j > 0:
                     Quantity = Quantity + 1
 
             rowListNew = {
-                "ItemNumber": len(TemporaryList),
+                "ItemNumber": len(TemporaryList) + 1,
                 "DocumentObject": rowList["DocumentObject"],
                 "ObjectLabel": rowList["ObjectLabel"],
                 "ObjectName": rowList["ObjectName"],
@@ -227,23 +223,43 @@ class BomFunctions:
                 if Quantity <= 1:
                     TemporaryList.append(rowListNew)
                 if Quantity > 1:
-                    TemporaryList.pop()
+                    replacedItem = TemporaryList.pop()
+                    rowListNew["ObjectLabel"] = replacedItem["ObjectLabel"]
+                    rowListNew["ObjectName"] = replacedItem["ObjectName"]
+                    rowListNew["ItemNumber"] = replacedItem["ItemNumber"]
                     TemporaryList.append(rowListNew)
 
             ShadowList.append(rowList)
+        
+        # Correct the itemnumbers
+        TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
 
         # Create the spreadsheet
         if Headers == "":
             Headers = Settings_BoM.ReturnHeaders()
 
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList, Headers)
+            General_BOM.createBoMSpreadsheet(TemporaryList, Headers, AssemblyType="BIM/Multibody")
+        return
+    
+    def custom_slot_counter(self):
+        # Get the current value of the progressbar and increase it by 1.
+        value = self.progressBar.value()
+        self.progressBar.setValue(value + 1)
+        QApplication.processEvents()
         return
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
     def Start(self, command="", CheckAssemblyType=True):
         try:
+            # show the processing window
+            self.progressBar.setMinimum(0)
+            self.progressBar.setValue(0)
+            self.progressBar.show()
+            # Connect the custom signal to the custom slot
+            self.signal_emitter.counter_signal.connect(lambda i: self.custom_slot_counter(self))
+            
             # Clear the mainList to avoid double data
             self.mainList.clear()
             # create the mainList
@@ -251,5 +267,9 @@ class BomFunctions:
 
             self.CreateTotalBoM()
 
+            # disconnect the signal
+            self.signal_emitter.counter_signal.disconnect()
+            # Close the progressbar
+            self.progressBar.close()
         except Exception as e:
             raise e

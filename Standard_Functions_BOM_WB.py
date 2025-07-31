@@ -425,6 +425,66 @@ def getReproAdress(base_path):
     except Exception:
         return
 
+# # Add or update the dict for the Ribbon command panel
+#         self.add_keys_nested_dict(
+#             self.Dict_RibbonCommandPanel,
+#             ["workbenches", WorkBenchName, "toolbars", Toolbar, "order"],
+#         )
+def add_keys_nested_dict(dict, keys, default=1):
+    """_summary_
+
+    Args:
+        dict (_type_): Enter dict to create or modify
+        keys (_type_): Enter key or list of keys
+
+    Returns:
+        bool: True if a new dict is created or modified. Otherwise False
+    """
+    for key in keys:
+        result = False
+        if key not in dict:
+            dict[key] = {}
+            result = True
+        dict = dict[key]
+    try:
+        dict.setdefault(keys[-1], default)
+    except Exception:
+        pass
+    return result
+
+
+def GetFileDialog(Filter="", parent=None, DefaultPath="", SaveAs: bool = True) -> str:
+    """
+    Set filter like:
+    "Images (*.png *.xpm .jpg);;Text files (.txt);;XML files (*.xml)"
+    SaveAs:\n
+        If True,  as SaveAs dialog will open and the file will be overwritten\n
+        If False, an OpenFile dialog will be open and the file will be opened.\n
+    """
+    from PySide.QtWidgets import QFileDialog
+
+    file = ""
+    if SaveAs is False:
+        file = QFileDialog.getOpenFileName(
+            parent=parent, caption="Select a file", dir=DefaultPath, filter=Filter
+        )[0]
+    if SaveAs is True:
+        file = QFileDialog.getSaveFileName(
+            parent=parent, caption="Select a file", dir=DefaultPath, filter=Filter
+        )[0]
+    return file
+
+
+def GetFolder(parent=None, DefaultPath="") -> str:
+    from PySide.QtWidgets import QFileDialog
+
+    Directory = ""
+    Directory = QFileDialog.getExistingDirectory(
+        parent=parent, caption="Select Folder", dir=DefaultPath
+    )
+
+    return Directory
+
 
 def PartFeatureList():
     result = [
@@ -479,7 +539,7 @@ def PartFeatureList():
     return result
 
 
-def PartDesingFeatureList():
+def PartDesignFeatureList():
     result = [
         "PartDesign::Pad",
         "PartDesign::Pocket",

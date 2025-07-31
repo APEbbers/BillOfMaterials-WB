@@ -8,16 +8,17 @@ The following types of BoM can be created:
 * a summary BoM.
 * a parts only BoM.
 * a first level BoM (useful for drawings).
-* a raw BoM. (This is a BoM, just as is. No summation of parts and assemblies. Can be used for testing or creating your own BoM in programs like Excel or OpenOffice.)
+* a raw BoM. This is a BoM, just as is. No summation of parts and assemblies. Can be used for testing or creating your own BoM in programs like Excel or OpenOffice.
+  This function is availabue when debug mode is enabled.
 
 ## Supported assembly types:
 * a2plus
 * Assembly 3
 * Assembly 4
-* Internal assembly workbench (This workbench is still under development)
+* Internal assembly workbench
 * Applink / ApplinkGroup assemblies
 * AppPart assemblies
-* Multi body parts (Part/Part Design)
+* Multi body parts (Part/Part Design, BIM)
 
 See the [wiki page](https://github.com/APEbbers/BillOfMaterials-WB/wiki) for more information.
 
