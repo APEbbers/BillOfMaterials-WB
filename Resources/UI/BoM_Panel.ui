@@ -838,11 +838,18 @@
             </item>
             <item row="1" column="0">
              <layout class="QGridLayout" name="gridLayout_5">
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Set assemby type manually</string>
+                </property>
+               </widget>
+              </item>
               <item row="0" column="0">
                <widget class="QComboBox" name="AssemblyType">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>100</horstretch>
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
@@ -854,7 +861,7 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>120</width>
+                  <width>16777215</width>
                   <height>16777215</height>
                  </size>
                 </property>
@@ -947,12 +954,18 @@
                 </item>
                </widget>
               </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_2">
-                <property name="text">
-                 <string>Set assemby type manually</string>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
-               </widget>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </item>

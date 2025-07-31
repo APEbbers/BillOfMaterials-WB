@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelfnoHjg.ui'
+## Form generated from reading UI file 'BoM_PanelJejtch.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -445,6 +445,11 @@ class Ui_Dialog(object):
 
         self.gridLayout_5 = QGridLayout()
         self.gridLayout_5.setObjectName(u"gridLayout_5")
+        self.label_2 = QLabel(self.DebugFrame)
+        self.label_2.setObjectName(u"label_2")
+
+        self.gridLayout_5.addWidget(self.label_2, 0, 1, 1, 1)
+
         self.AssemblyType = QComboBox(self.DebugFrame)
         icon5 = QIcon()
         icon5.addFile(u":/Resources/Icons/A2p_workbench.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
@@ -469,23 +474,19 @@ class Ui_Dialog(object):
         icon11.addFile(u":/Resources/Icons/ArchWorkbench.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.AssemblyType.addItem(icon11, "")
         self.AssemblyType.setObjectName(u"AssemblyType")
-        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        sizePolicy10.setHorizontalStretch(100)
-        sizePolicy10.setVerticalStretch(0)
-        sizePolicy10.setHeightForWidth(self.AssemblyType.sizePolicy().hasHeightForWidth())
-        self.AssemblyType.setSizePolicy(sizePolicy10)
+        sizePolicy3.setHeightForWidth(self.AssemblyType.sizePolicy().hasHeightForWidth())
+        self.AssemblyType.setSizePolicy(sizePolicy3)
         self.AssemblyType.setMinimumSize(QSize(0, 0))
-        self.AssemblyType.setMaximumSize(QSize(120, 16777215))
+        self.AssemblyType.setMaximumSize(QSize(16777215, 16777215))
         self.AssemblyType.setSizeIncrement(QSize(0, 0))
         self.AssemblyType.setBaseSize(QSize(0, 0))
         self.AssemblyType.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
 
         self.gridLayout_5.addWidget(self.AssemblyType, 0, 0, 1, 1)
 
-        self.label_2 = QLabel(self.DebugFrame)
-        self.label_2.setObjectName(u"label_2")
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_5.addWidget(self.label_2, 0, 1, 1, 1)
+        self.gridLayout_5.addItem(self.horizontalSpacer_3, 0, 2, 1, 1)
 
 
         self.gridLayout_22.addLayout(self.gridLayout_5, 1, 0, 1, 1)
@@ -520,11 +521,11 @@ class Ui_Dialog(object):
 
         self.DebugText = QLabel(self.MainFrame)
         self.DebugText.setObjectName(u"DebugText")
-        sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-        sizePolicy11.setHorizontalStretch(0)
-        sizePolicy11.setVerticalStretch(0)
-        sizePolicy11.setHeightForWidth(self.DebugText.sizePolicy().hasHeightForWidth())
-        self.DebugText.setSizePolicy(sizePolicy11)
+        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+        sizePolicy10.setHorizontalStretch(0)
+        sizePolicy10.setVerticalStretch(0)
+        sizePolicy10.setHeightForWidth(self.DebugText.sizePolicy().hasHeightForWidth())
+        self.DebugText.setSizePolicy(sizePolicy10)
         self.DebugText.setWordWrap(True)
         self.DebugText.setMargin(4)
 
@@ -581,6 +582,7 @@ class Ui_Dialog(object):
         self.label_14.setText(QCoreApplication.translate("Dialog", u"Load saved column configurations", None))
         self.toolButton_Debug.setText(QCoreApplication.translate("Dialog", u"Debug settings", None))
         self.DetectAssemblyType.setText(QCoreApplication.translate("Dialog", u" Detect assembly type ", None))
+        self.label_2.setText(QCoreApplication.translate("Dialog", u"Set assemby type manually", None))
         self.AssemblyType.setItemText(0, QCoreApplication.translate("Dialog", u"A2plus", None))
         self.AssemblyType.setItemText(1, QCoreApplication.translate("Dialog", u"Internal assembly", None))
         self.AssemblyType.setItemText(2, QCoreApplication.translate("Dialog", u"Assembly 3", None))
@@ -590,7 +592,6 @@ class Ui_Dialog(object):
         self.AssemblyType.setItemText(6, QCoreApplication.translate("Dialog", u"MultiBody", None))
         self.AssemblyType.setItemText(7, QCoreApplication.translate("Dialog", u"Arch", None))
 
-        self.label_2.setText(QCoreApplication.translate("Dialog", u"Set assemby type manually", None))
         self.CreateRaw.setText("")
         self.label_5.setText(QCoreApplication.translate("Dialog", u"Create raw BoM", None))
         self.DebugText.setText(QCoreApplication.translate("Dialog", u"<html><head/><body><p><span style=\" font-style:italic;\">Enable &quot;Debug mode&quot; in preferences to enable extra functions for testing purposes.</span></p></body></html>", None))
