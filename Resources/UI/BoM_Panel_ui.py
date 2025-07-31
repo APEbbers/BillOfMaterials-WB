@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelupMQjJ.ui'
+## Form generated from reading UI file 'BoM_PanelsXIEdE.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -185,9 +185,13 @@ class Ui_Dialog(object):
 
         self.CustomPropertiesFrame = QFrame(self.frame)
         self.CustomPropertiesFrame.setObjectName(u"CustomPropertiesFrame")
-        self.CustomPropertiesFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.CustomPropertiesFrame.setFrameShape(QFrame.Shape.NoFrame)
+        self.CustomPropertiesFrame.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout = QGridLayout(self.CustomPropertiesFrame)
         self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setHorizontalSpacing(1)
+        self.gridLayout.setVerticalSpacing(6)
+        self.gridLayout.setContentsMargins(6, -1, 6, -1)
         self.RemarkText = QLineEdit(self.CustomPropertiesFrame)
         self.RemarkText.setObjectName(u"RemarkText")
 
@@ -283,9 +287,10 @@ class Ui_Dialog(object):
         sizePolicy5.setVerticalStretch(0)
         sizePolicy5.setHeightForWidth(self.SettingsFrame.sizePolicy().hasHeightForWidth())
         self.SettingsFrame.setSizePolicy(sizePolicy5)
+        self.SettingsFrame.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_24 = QGridLayout(self.SettingsFrame)
         self.gridLayout_24.setObjectName(u"gridLayout_24")
-        self.gridLayout_24.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout_24.setContentsMargins(6, 0, 6, 0)
         self.IndentedNumbering = QCheckBox(self.SettingsFrame)
         self.IndentedNumbering.setObjectName(u"IndentedNumbering")
         self.IndentedNumbering.setChecked(True)
@@ -433,10 +438,10 @@ class Ui_Dialog(object):
         self.DebugFrame = QFrame(self.frame_4)
         self.DebugFrame.setObjectName(u"DebugFrame")
         self.DebugFrame.setFrameShape(QFrame.Shape.NoFrame)
-        self.DebugFrame.setFrameShadow(QFrame.Shadow.Plain)
+        self.DebugFrame.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_22 = QGridLayout(self.DebugFrame)
         self.gridLayout_22.setObjectName(u"gridLayout_22")
-        self.gridLayout_22.setContentsMargins(0, 1, 0, 0)
+        self.gridLayout_22.setContentsMargins(6, 0, 6, 0)
         self.DetectAssemblyType = QPushButton(self.DebugFrame)
         self.DetectAssemblyType.setObjectName(u"DetectAssemblyType")
         sizePolicy9 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
