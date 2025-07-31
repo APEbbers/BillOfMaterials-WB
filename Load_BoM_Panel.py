@@ -171,7 +171,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             # Hide the debug section by default
             self.form.frame_4.setVisible(True)
             self.form.DebugFrame.setVisible(True)
-            self.form.toolButton_Debug.setVisible(False)
+            self.form.toolButton_Debug.setVisible(True)
             self.form.DebugText.setVisible(True)
             self.form.frame_4.setEnabled(True)
         if ENABLE_DEBUG is False:
