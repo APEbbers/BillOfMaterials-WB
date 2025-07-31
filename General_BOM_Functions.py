@@ -67,15 +67,16 @@ class General_BOM:
         IsNewSheet = False
         sheet = None
         try:
-            sheet = doc.getObjectsByLabel("BoM")[0]
+            # sheet = doc.getObjectsByLabel("BoM")[0]
+            doc.removeObject("BoM")
         except Exception:
             pass
-        if sheet is not None:
-            for i in range(
-                1, 16384
-            ):  # 16384 is the maximum rows of the spreadsheet module
-                doc.BoM.splitCell("A" + str(i))
-            sheet.clearAll()
+        # if sheet is not None:
+        #     for i in range(
+        #         1, 16384
+        #     ):  # 16384 is the maximum rows of the spreadsheet module
+        #         doc.BoM.splitCell("A" + str(i))
+        #     sheet.clearAll()
         if sheet is None:
             sheet = doc.addObject("Spreadsheet::Sheet", "BoM")
             IsNewSheet = True
