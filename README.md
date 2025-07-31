@@ -8,12 +8,13 @@ The following types of BoM can be created:
 * a summary BoM.
 * a parts only BoM.
 * a first level BoM (useful for drawings).
-* a raw BoM. (This is a BoM, just as is. No summation of parts and assemblies. Can be used for testing or creating your own BoM in programs like Excel or OpenOffice.)
+* a raw BoM. This is a BoM, just as is. No summation of parts and assemblies. Can be used for testing or creating your own BoM in programs like Excel or OpenOffice.
+  This function is availabue when debug mode is enabled.
 
 ## Supported assembly types:
 * a2plus
 * Assembly 3
-* Assembly 4 (Archived and no longer under development)
+* Assembly 4
 * Internal assembly workbench
 * Applink / ApplinkGroup assemblies
 * AppPart assemblies
