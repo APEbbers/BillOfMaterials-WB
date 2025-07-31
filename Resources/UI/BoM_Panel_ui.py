@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PaneljYgAff.ui'
+## Form generated from reading UI file 'BoM_PanelPEELfv.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -25,7 +25,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(583, 1172)
+        Dialog.resize(583, 1005)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
