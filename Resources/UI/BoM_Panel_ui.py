@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelcHuiVW.ui'
+## Form generated from reading UI file 'BoM_PanelfnoHjg.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -42,31 +42,6 @@ class Ui_Dialog(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
         self.verticalLayout.setContentsMargins(-1, -1, -1, 0)
-        self.gridLayout_7 = QGridLayout()
-        self.gridLayout_7.setObjectName(u"gridLayout_7")
-        self.label_7 = QLabel(self.MainFrame)
-        self.label_7.setObjectName(u"label_7")
-
-        self.gridLayout_7.addWidget(self.label_7, 0, 1, 1, 1)
-
-        self.CreatePartsOnly = QPushButton(self.MainFrame)
-        self.CreatePartsOnly.setObjectName(u"CreatePartsOnly")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.CreatePartsOnly.sizePolicy().hasHeightForWidth())
-        self.CreatePartsOnly.setSizePolicy(sizePolicy1)
-        self.CreatePartsOnly.setMaximumSize(QSize(40, 40))
-        icon = QIcon()
-        icon.addFile(u":/Resources/Icons/Parts.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.CreatePartsOnly.setIcon(icon)
-        self.CreatePartsOnly.setIconSize(QSize(32, 32))
-
-        self.gridLayout_7.addWidget(self.CreatePartsOnly, 0, 0, 1, 1)
-
-
-        self.verticalLayout.addLayout(self.gridLayout_7)
-
         self.gridLayout_2 = QGridLayout()
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
@@ -80,12 +55,15 @@ class Ui_Dialog(object):
 
         self.CreateTotal = QPushButton(self.MainFrame)
         self.CreateTotal.setObjectName(u"CreateTotal")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.CreateTotal.sizePolicy().hasHeightForWidth())
         self.CreateTotal.setSizePolicy(sizePolicy1)
         self.CreateTotal.setMaximumSize(QSize(40, 40))
-        icon1 = QIcon()
-        icon1.addFile(u":/Resources/Icons/Total.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.CreateTotal.setIcon(icon1)
+        icon = QIcon()
+        icon.addFile(u":/Resources/Icons/Total.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.CreateTotal.setIcon(icon)
         self.CreateTotal.setIconSize(QSize(32, 32))
         self.CreateTotal.setCheckable(False)
 
@@ -107,9 +85,9 @@ class Ui_Dialog(object):
         sizePolicy1.setHeightForWidth(self.CreateSummary.sizePolicy().hasHeightForWidth())
         self.CreateSummary.setSizePolicy(sizePolicy1)
         self.CreateSummary.setMaximumSize(QSize(40, 40))
-        icon2 = QIcon()
-        icon2.addFile(u":/Resources/Icons/Summary.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.CreateSummary.setIcon(icon2)
+        icon1 = QIcon()
+        icon1.addFile(u":/Resources/Icons/Summary.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.CreateSummary.setIcon(icon1)
         self.CreateSummary.setIconSize(QSize(32, 32))
 
         self.gridLayout_4.addWidget(self.CreateSummary, 0, 0, 1, 1)
@@ -121,6 +99,28 @@ class Ui_Dialog(object):
 
 
         self.verticalLayout.addLayout(self.gridLayout_4)
+
+        self.gridLayout_7 = QGridLayout()
+        self.gridLayout_7.setObjectName(u"gridLayout_7")
+        self.label_7 = QLabel(self.MainFrame)
+        self.label_7.setObjectName(u"label_7")
+
+        self.gridLayout_7.addWidget(self.label_7, 0, 1, 1, 1)
+
+        self.CreatePartsOnly = QPushButton(self.MainFrame)
+        self.CreatePartsOnly.setObjectName(u"CreatePartsOnly")
+        sizePolicy1.setHeightForWidth(self.CreatePartsOnly.sizePolicy().hasHeightForWidth())
+        self.CreatePartsOnly.setSizePolicy(sizePolicy1)
+        self.CreatePartsOnly.setMaximumSize(QSize(40, 40))
+        icon2 = QIcon()
+        icon2.addFile(u":/Resources/Icons/Parts.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.CreatePartsOnly.setIcon(icon2)
+        self.CreatePartsOnly.setIconSize(QSize(32, 32))
+
+        self.gridLayout_7.addWidget(self.CreatePartsOnly, 0, 0, 1, 1)
+
+
+        self.verticalLayout.addLayout(self.gridLayout_7)
 
         self.gridLayout_8 = QGridLayout()
         self.gridLayout_8.setObjectName(u"gridLayout_8")
@@ -552,13 +552,13 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Bill of Materials", None))
-        self.label_7.setText(QCoreApplication.translate("Dialog", u"Create parts only BoM", None))
-        self.CreatePartsOnly.setText("")
         self.label.setText(QCoreApplication.translate("Dialog", u"Create total BoM", None))
         self.CreateTotal.setText("")
         self.HelpButton.setText(QCoreApplication.translate("Dialog", u"...", None))
         self.CreateSummary.setText("")
         self.label_4.setText(QCoreApplication.translate("Dialog", u"Create summary  BoM", None))
+        self.label_7.setText(QCoreApplication.translate("Dialog", u"Create parts only BoM", None))
+        self.CreatePartsOnly.setText("")
         self.CreateFirstLevel.setText("")
         self.label_11.setText(QCoreApplication.translate("Dialog", u"Create first level BoM", None))
         self.CustomProp.setText(QCoreApplication.translate("Dialog", u"Custom properties", None))
