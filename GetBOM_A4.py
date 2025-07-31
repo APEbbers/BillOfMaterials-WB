@@ -42,7 +42,6 @@ class BomFunctions:
     # The startrow number which increases with every item and child
     StartRow = 0
     mainList = []
-    counter = 0
     
     # Get the mainwindow
     mw = Gui.getMainWindow()
@@ -56,6 +55,7 @@ class BomFunctions:
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
     def GetTreeObjects(self, checkAssemblyType=True) -> True:
+        self.mainList.clear()
         # Get the active document
         doc = App.ActiveDocument
 
@@ -213,10 +213,6 @@ class BomFunctions:
 
                 # Increase the itemnumber
                 ItemNumber = int(ItemNumber) + 1
-                
-                # Increase the maximum of the progressbar
-                self.progressBar.setMaximum(self.counter)
-                self.counter += 1
 
                 # define the itemnumber string. for toplevel this is equel to Itemnumber.
                 # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
@@ -354,10 +350,6 @@ class BomFunctions:
 
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
-                
-                # Increase the maximum of the progressbar
-                self.progressBar.setMaximum(self.counter)
-                self.counter += 1
 
                 # Set the quantity to 1.
                 Qty = 1
