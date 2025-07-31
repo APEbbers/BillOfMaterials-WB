@@ -936,6 +936,9 @@ class BomFunctions:
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
+                    
+            # disconnect the signal
+            self.signal_emitter.counter_signal.disconnect()
             # Close the progressbar
             self.progressBar.close()
         except Exception as e:
