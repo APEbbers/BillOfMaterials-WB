@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelHtoOVo.ui'
+## Form generated from reading UI file 'BoM_PanelupMQjJ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+from PySide.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+from PySide.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
+from PySide.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
     QFrame, QGridLayout, QLabel, QLayout,
     QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
     QSpinBox, QToolButton, QVBoxLayout, QWidget)
@@ -50,7 +50,7 @@ class Ui_Dialog(object):
         self.frame_2.setSizePolicy(sizePolicy1)
         self.frame_2.setMinimumSize(QSize(0, 200))
         self.frame_2.setAutoFillBackground(False)
-        self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_2.setFrameShape(QFrame.Shape.NoFrame)
         self.frame_2.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_14 = QGridLayout(self.frame_2)
         self.gridLayout_14.setObjectName(u"gridLayout_14")
@@ -161,44 +161,43 @@ class Ui_Dialog(object):
 
         self.frame = QFrame(self.MainFrame)
         self.frame.setObjectName(u"frame")
-        self.frame.setMinimumSize(QSize(0, 150))
+        self.frame.setMinimumSize(QSize(0, 0))
         self.frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame.setFrameShadow(QFrame.Shadow.Sunken)
         self.gridLayout_13 = QGridLayout(self.frame)
         self.gridLayout_13.setObjectName(u"gridLayout_13")
         self.gridLayout_11 = QGridLayout()
         self.gridLayout_11.setObjectName(u"gridLayout_11")
-        self.label_13 = QLabel(self.frame)
-        self.label_13.setObjectName(u"label_13")
-        self.label_13.setMinimumSize(QSize(0, 30))
-        font = QFont()
-        font.setPointSize(8)
-        font.setItalic(True)
-        self.label_13.setFont(font)
-        self.label_13.setWordWrap(True)
+        self.horizontalSpacer_8 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_11.addWidget(self.label_13, 1, 0, 1, 2)
+        self.gridLayout_11.addItem(self.horizontalSpacer_8, 0, 1, 1, 1)
 
-        self.label_10 = QLabel(self.frame)
-        self.label_10.setObjectName(u"label_10")
+        self.CustomProp = QToolButton(self.frame)
+        self.CustomProp.setObjectName(u"CustomProp")
+        self.CustomProp.setCheckable(True)
+        self.CustomProp.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self.CustomProp.setArrowType(Qt.ArrowType.DownArrow)
 
-        self.gridLayout_11.addWidget(self.label_10, 0, 0, 1, 2)
-
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_11.addItem(self.horizontalSpacer_3, 2, 0, 1, 1)
+        self.gridLayout_11.addWidget(self.CustomProp, 0, 0, 1, 1)
 
 
         self.gridLayout_13.addLayout(self.gridLayout_11, 0, 0, 1, 1)
 
-        self.gridLayout = QGridLayout()
+        self.CustomPropertiesFrame = QFrame(self.frame)
+        self.CustomPropertiesFrame.setObjectName(u"CustomPropertiesFrame")
+        self.CustomPropertiesFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.gridLayout = QGridLayout(self.CustomPropertiesFrame)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.label_8 = QLabel(self.frame)
-        self.label_8.setObjectName(u"label_8")
+        self.RemarkText = QLineEdit(self.CustomPropertiesFrame)
+        self.RemarkText.setObjectName(u"RemarkText")
 
-        self.gridLayout.addWidget(self.label_8, 0, 0, 1, 4)
+        self.gridLayout.addWidget(self.RemarkText, 4, 0, 1, 4)
 
-        self.UpdateProperties = QPushButton(self.frame)
+        self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout.addItem(self.horizontalSpacer_6, 5, 3, 1, 1)
+
+        self.UpdateProperties = QPushButton(self.CustomPropertiesFrame)
         self.UpdateProperties.setObjectName(u"UpdateProperties")
         sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
         sizePolicy3.setHorizontalStretch(0)
@@ -207,29 +206,36 @@ class Ui_Dialog(object):
         self.UpdateProperties.setSizePolicy(sizePolicy3)
         self.UpdateProperties.setMinimumSize(QSize(120, 0))
 
-        self.gridLayout.addWidget(self.UpdateProperties, 4, 0, 1, 3)
+        self.gridLayout.addWidget(self.UpdateProperties, 5, 0, 1, 3)
 
-        self.DescriptionText = QLineEdit(self.frame)
-        self.DescriptionText.setObjectName(u"DescriptionText")
-
-        self.gridLayout.addWidget(self.DescriptionText, 1, 0, 1, 4)
-
-        self.label_9 = QLabel(self.frame)
+        self.label_9 = QLabel(self.CustomPropertiesFrame)
         self.label_9.setObjectName(u"label_9")
 
-        self.gridLayout.addWidget(self.label_9, 2, 0, 1, 4)
+        self.gridLayout.addWidget(self.label_9, 3, 0, 1, 4)
 
-        self.RemarkText = QLineEdit(self.frame)
-        self.RemarkText.setObjectName(u"RemarkText")
+        self.label_8 = QLabel(self.CustomPropertiesFrame)
+        self.label_8.setObjectName(u"label_8")
 
-        self.gridLayout.addWidget(self.RemarkText, 3, 0, 1, 4)
+        self.gridLayout.addWidget(self.label_8, 1, 0, 1, 4)
 
-        self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.DescriptionText = QLineEdit(self.CustomPropertiesFrame)
+        self.DescriptionText.setObjectName(u"DescriptionText")
 
-        self.gridLayout.addItem(self.horizontalSpacer_6, 4, 3, 1, 1)
+        self.gridLayout.addWidget(self.DescriptionText, 2, 0, 1, 4)
+
+        self.label_13 = QLabel(self.CustomPropertiesFrame)
+        self.label_13.setObjectName(u"label_13")
+        self.label_13.setMinimumSize(QSize(0, 30))
+        font = QFont()
+        font.setPointSize(8)
+        font.setItalic(True)
+        self.label_13.setFont(font)
+        self.label_13.setWordWrap(True)
+
+        self.gridLayout.addWidget(self.label_13, 0, 0, 1, 4)
 
 
-        self.gridLayout_13.addLayout(self.gridLayout, 1, 0, 1, 1)
+        self.gridLayout_13.addWidget(self.CustomPropertiesFrame, 1, 0, 1, 1)
 
 
         self.verticalLayout.addWidget(self.frame)
@@ -538,6 +544,7 @@ class Ui_Dialog(object):
         self.retranslateUi(Dialog)
         self.toolButton_Settings.toggled.connect(self.SettingsFrame.setHidden)
         self.toolButton_Debug.clicked["bool"].connect(self.DebugFrame.setHidden)
+        self.CustomProp.clicked["bool"].connect(self.CustomPropertiesFrame.setHidden)
 
         QMetaObject.connectSlotsByName(Dialog)
     # setupUi
@@ -553,11 +560,11 @@ class Ui_Dialog(object):
         self.label_7.setText(QCoreApplication.translate("Dialog", u"Create parts only BoM", None))
         self.CreateFirstLevel.setText("")
         self.label_11.setText(QCoreApplication.translate("Dialog", u"Create first level BoM", None))
-        self.label_13.setText(QCoreApplication.translate("Dialog", u"<html><head/><body><p><span style=\" font-style:italic;\">Select an object in the tree and enter an description and/or remark. Press &quot;Update&quot; to create or update the property. </span>After updating the BoM, the updated property will be visible. </p></body></html>", None))
-        self.label_10.setText(QCoreApplication.translate("Dialog", u"<html><head/><body><p><span style=\" font-weight:700; text-decoration: underline;\">Update custom properties</span></p></body></html>", None))
-        self.label_8.setText(QCoreApplication.translate("Dialog", u"Description", None))
+        self.CustomProp.setText(QCoreApplication.translate("Dialog", u"Custom properties", None))
         self.UpdateProperties.setText(QCoreApplication.translate("Dialog", u"Update", None))
         self.label_9.setText(QCoreApplication.translate("Dialog", u"Remarks", None))
+        self.label_8.setText(QCoreApplication.translate("Dialog", u"Description", None))
+        self.label_13.setText(QCoreApplication.translate("Dialog", u"<html><head/><body><p><span style=\" font-style:italic;\">Select an object in the tree and enter an description and/or remark. Press &quot;Update&quot; to create or update the property. </span>After updating the BoM, the updated property will be visible. </p></body></html>", None))
         self.toolButton_Settings.setText(QCoreApplication.translate("Dialog", u"Settings", None))
         self.IndentedNumbering.setText(QCoreApplication.translate("Dialog", u"Indented numbering", None))
         self.IncludeBodies.setText(QCoreApplication.translate("Dialog", u"Include bodies", None))

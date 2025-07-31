@@ -56,7 +56,7 @@
          <bool>false</bool>
         </property>
         <property name="frameShape">
-         <enum>QFrame::Shape::StyledPanel</enum>
+         <enum>QFrame::Shape::NoFrame</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Shadow::Sunken</enum>
@@ -256,7 +256,7 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>150</height>
+          <height>0</height>
          </size>
         </property>
         <property name="frameShape">
@@ -268,37 +268,8 @@
         <layout class="QGridLayout" name="gridLayout_13">
          <item row="0" column="0">
           <layout class="QGridLayout" name="gridLayout_11">
-           <item row="1" column="0" colspan="2">
-            <widget class="QLabel" name="label_13">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>8</pointsize>
-               <italic>true</italic>
-              </font>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Select an object in the tree and enter an description and/or remark. Press &amp;quot;Update&amp;quot; to create or update the property. &lt;/span&gt;After updating the BoM, the updated property will be visible. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="2">
-            <widget class="QLabel" name="label_10">
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Update custom properties&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <spacer name="horizontalSpacer_3">
+           <item row="0" column="1">
+            <spacer name="horizontalSpacer_8">
              <property name="orientation">
               <enum>Qt::Orientation::Horizontal</enum>
              </property>
@@ -309,64 +280,107 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item row="0" column="0">
+            <widget class="QToolButton" name="CustomProp">
+             <property name="text">
+              <string>Custom properties</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+             </property>
+             <property name="arrowType">
+              <enum>Qt::ArrowType::DownArrow</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
          <item row="1" column="0">
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0" colspan="4">
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>Description</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="3">
-            <widget class="QPushButton" name="UpdateProperties">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>120</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Update</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="4">
-            <widget class="QLineEdit" name="DescriptionText"/>
-           </item>
-           <item row="2" column="0" colspan="4">
-            <widget class="QLabel" name="label_9">
-             <property name="text">
-              <string>Remarks</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0" colspan="4">
-            <widget class="QLineEdit" name="RemarkText"/>
-           </item>
-           <item row="4" column="3">
-            <spacer name="horizontalSpacer_6">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="QFrame" name="CustomPropertiesFrame">
+           <property name="frameShape">
+            <enum>QFrame::Shape::StyledPanel</enum>
+           </property>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="4" column="0" colspan="4">
+             <widget class="QLineEdit" name="RemarkText"/>
+            </item>
+            <item row="5" column="3">
+             <spacer name="horizontalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="5" column="0" colspan="3">
+             <widget class="QPushButton" name="UpdateProperties">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>120</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Update</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="4">
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>Remarks</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="4">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>Description</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="4">
+             <widget class="QLineEdit" name="DescriptionText"/>
+            </item>
+            <item row="0" column="0" colspan="4">
+             <widget class="QLabel" name="label_13">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>8</pointsize>
+                <italic>true</italic>
+               </font>
+              </property>
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Select an object in the tree and enter an description and/or remark. Press &amp;quot;Update&amp;quot; to create or update the property. &lt;/span&gt;After updating the BoM, the updated property will be visible. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -1013,12 +1027,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>111</x>
-     <y>464</y>
+     <x>130</x>
+     <y>514</y>
     </hint>
     <hint type="destinationlabel">
-     <x>316</x>
-     <y>519</y>
+     <x>334</x>
+     <y>758</y>
     </hint>
    </hints>
   </connection>
@@ -1029,12 +1043,28 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>118</x>
-     <y>764</y>
+     <x>137</x>
+     <y>811</y>
     </hint>
     <hint type="destinationlabel">
      <x>22</x>
      <y>832</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CustomProp</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>CustomPropertiesFrame</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>129</x>
+     <y>236</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>559</x>
+     <y>298</y>
     </hint>
    </hints>
   </connection>
