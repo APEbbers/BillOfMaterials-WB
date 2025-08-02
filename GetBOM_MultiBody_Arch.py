@@ -207,7 +207,7 @@ class BomFunctions:
             for j in range(len(ShadowList)):
                 shadowItem = ShadowList[j]
                 # if there is an item with the same label, compare its body with the existing item
-                if shadowItem == rowList["ObjectLabel"]:
+                if shadowItem["ObjectLabel"] == rowList["ObjectLabel"]:
                     test = General_BOM.CompareBodies(rowList["DocumentObject"], shadowItem["DocumentObject"])
                     if test is True and j > 0:
                         Quantity = Quantity + 1
