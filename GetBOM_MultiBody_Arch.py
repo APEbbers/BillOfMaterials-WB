@@ -206,9 +206,11 @@ class BomFunctions:
             Quantity = 1
             for j in range(len(ShadowList)):
                 shadowItem = ShadowList[j]
-                test = General_BOM.CompareBodies(rowList["DocumentObject"], shadowItem["DocumentObject"])
-                if test is True and j > 0:
-                    Quantity = Quantity + 1
+                # if there is an item with the same label, compare its body with the existing item
+                if shadowItem["ObjectLabel"] == rowList["ObjectLabel"]:
+                    test = General_BOM.CompareBodies(rowList["DocumentObject"], shadowItem["DocumentObject"])
+                    if test is True and j > 0:
+                        Quantity = Quantity + 1
 
             rowListNew = {
                 "ItemNumber": len(TemporaryList) + 1,
@@ -265,7 +267,12 @@ class BomFunctions:
             # create the mainList
             self.GetTreeObjects(checkAssemblyType=CheckAssemblyType)
 
-            self.CreateTotalBoM()
+            if command == "Raw":
+                    General_BOM.createBoMSpreadsheet(self.mainList, AssemblyType="BIM/Multibody") 
+            else:
+                self.CreateTotalBoM(
+                    CreateSpreadSheet=True
+                )
 
             # disconnect the signal
             self.signal_emitter.counter_signal.disconnect()
