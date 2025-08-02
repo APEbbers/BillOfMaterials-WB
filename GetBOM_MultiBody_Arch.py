@@ -265,7 +265,10 @@ class BomFunctions:
             # create the mainList
             self.GetTreeObjects(checkAssemblyType=CheckAssemblyType)
 
-            self.CreateTotalBoM()
+            if command == "Raw":
+                    General_BOM.createBoMSpreadsheet(self.mainList, AssemblyType="BIM/Multibody") 
+            else:
+                self.CreateTotalBoM()
 
             # disconnect the signal
             self.signal_emitter.counter_signal.disconnect()
