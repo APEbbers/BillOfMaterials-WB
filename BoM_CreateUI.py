@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
 # ***************************************************************************
 # *   Copyright (c) 2023 Paul Ebbers paul.ebbers@gmail.com                  *
 # *                                                                         *
