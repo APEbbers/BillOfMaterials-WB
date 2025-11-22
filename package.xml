@@ -11,7 +11,7 @@
 
   <maintainer email="business@apebbers.nl">Paul Ebbers</maintainer>
 
-  <license file="LICENSE">LGPL-2.1-or-later</license>
+  <license file="LICENSE">LGPL-3.0-or-later</license>
 
   <pythonmin>3.8.0</pythonmin>
 
