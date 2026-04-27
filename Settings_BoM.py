@@ -108,7 +108,8 @@ CUSTOM_HEADERS = GetStringSetting("CustomHeader")
 if CUSTOM_HEADERS == "":
     CUSTOM_HEADERS = "Number;Qty;Label;Description;Parent;Remarks"
 DEBUG_HEADERS = GetStringSetting("DebugHeader")
-DEBUG_HEADERS = "Type;TypeId"
+if DEBUG_HEADERS == "":
+    DEBUG_HEADERS = "Original label;Type;Internal name;Fullname;TypeId"
 
 # Import/Export location for columns
 IMPORT_LOCATION = GetStringSetting("ImportLocation")
@@ -223,9 +224,10 @@ def ReturnHeaders(CustomHeaders = None, DebugHeaders=None):
         DebugHeaderList = DebugHeaders.split(";")
         i = len(Headers.keys())
         for Header in DebugHeaderList:
+            i = i+1
             # Set the column
             Column = Standard_Functions.GetLetterFromNumber(
-                i + 1
+                i
             )
             # Set the cell
             Cell = f"{Column}1"
