@@ -81,30 +81,19 @@ def GetColorSetting(settingName: str) -> object:
     return result
 
 
-def SetStringSetting(settingName: str, value: str):
-    Text = translate(
-        "TitleBlock Workbench",
-        f"string setting not applied!!\n Settings was: {settingName} and value was {value}",
-    )
-    if value.lower() == "none":
-        if ENABLE_DEBUG is True:
-            Standard_Functions.Print(Text, "Log")
+def SetStringSetting(settingName, value: str):
+        if value.lower() == "none":
             value = ""
-    preferences.SetString(settingName, value)
+        if value == "":
+            value = "-"
+        preferences.SetString(settingName, value)
+        App.saveParameter()
+        return
 
-
-def SetBoolSetting(settingName: str, value):
-    if value.lower() == "true":
-        Bool = True
-    if str(value).lower() == "none" or value.lower() != "true":
-        Text = translate(
-            "TitleBlock Workbench",
-            f"bool setting not applied!!\n Settings was: {settingName} and value was {value}",
-        )
-        if ENABLE_DEBUG is True:
-            Standard_Functions.Print(Text, "Log")
-        Bool = False
-    preferences.SetBool(settingName, Bool)
+def SetBoolSetting(settingName, value: bool):
+    preferences.SetBool(settingName, value)
+    App.saveParameter()
+    return
 
 
 # endregion
@@ -154,7 +143,7 @@ if Settings.GetBoolSetting("IncludeBodies") is None:
 INCLUDE_BODIES = GetBoolSetting("IncludeBodies")
 
 if Settings.GetBoolSetting("UseIndentation") is None:
-    USE_INDENTATION = False
+    USE_INDENTATION = True
     Settings.SetBoolSetting("UseIndentation", USE_INDENTATION)
 USE_INDENTATION = GetBoolSetting("UseIndentation")
 # endregion

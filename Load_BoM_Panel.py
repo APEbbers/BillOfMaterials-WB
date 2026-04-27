@@ -26,9 +26,9 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide6.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
-from PySide6.QtGui import QIcon, QCursor
-from PySide6.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel, QCheckBox
+from PySide.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
+from PySide.QtGui import QIcon, QCursor
+from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel, QCheckBox
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -155,7 +155,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         )
 
         self.form.IncludeBodies.checkStateChanged.connect(self.on_IncludeBodies_Clicked)
-        self.form.UseIndentation.checkStateChanged.connect(self.on_UseIndentation_Clicked)
+        self.form.IndentedNumbering.checkStateChanged.connect(self.on_UseIndentation_Clicked)
 
         # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
         self.form.CreateRaw.connect(
