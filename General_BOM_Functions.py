@@ -918,7 +918,7 @@ class General_BOM:
         """
         result = ""
         # Get the list with rootobjects
-        RootObjects = DocObject.RootObjects
+        RootObjects = DocObject.Objects
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for RootObject in RootObjects:
