@@ -24,6 +24,7 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
+import Settings_BoM as Settings
 
 # Define the translation
 translate = App.Qt.translate
@@ -33,7 +34,7 @@ preferences = App.ParamGet("User parameter:BaseApp/Preferences/Mod/BoM Workbench
 
 
 # region -- functions to make sure that a None type result is ""
-def GetStringSetting(settingName: str) -> str:
+def GetStringSetting(settingName) -> str:
     result = preferences.GetString(settingName)
 
     if result.lower() == "none":
@@ -41,23 +42,30 @@ def GetStringSetting(settingName: str) -> str:
     return result
 
 
-def GetIntSetting(settingName: str) -> int:
+def GetIntSetting(settingName) -> int:
     result = preferences.GetInt(settingName)
     if result == "":
         result = None
     return result
 
-def GetFloatSetting(settingName: str) -> int:
+
+def GetFloatSetting(settingName) -> float:
     result = preferences.GetFloat(settingName)
     if result == "":
         result = None
     return result
 
 
-def GetBoolSetting(settingName: str) -> bool:
-    result = preferences.GetBool(settingName)
-    if str(result).lower() == "none":
-        result = False
+def GetBoolSetting(settingName) -> bool:
+    result = None
+    settings = preferences.GetContents()
+    exists = False
+    for setting in settings:
+        if setting[0] == "Boolean" and setting[1] == settingName:
+            exists = True
+            break
+    if exists is True:
+        result = preferences.GetBool(settingName)
     return result
 
 
@@ -73,30 +81,19 @@ def GetColorSetting(settingName: str) -> object:
     return result
 
 
-def SetStringSetting(settingName: str, value: str):
-    Text = translate(
-        "TitleBlock Workbench",
-        f"string setting not applied!!\n Settings was: {settingName} and value was {value}",
-    )
-    if value.lower() == "none":
-        if ENABLE_DEBUG is True:
-            Standard_Functions.Print(Text, "Log")
+def SetStringSetting(settingName, value: str):
+        if value.lower() == "none":
             value = ""
-    preferences.SetString(settingName, value)
+        if value == "":
+            value = "-"
+        preferences.SetString(settingName, value)
+        App.saveParameter()
+        return
 
-
-def SetBoolSetting(settingName: str, value):
-    if value.lower() == "true":
-        Bool = True
-    if str(value).lower() == "none" or value.lower() != "true":
-        Text = translate(
-            "TitleBlock Workbench",
-            f"bool setting not applied!!\n Settings was: {settingName} and value was {value}",
-        )
-        if ENABLE_DEBUG is True:
-            Standard_Functions.Print(Text, "Log")
-        Bool = False
-    preferences.SetBool(settingName, Bool)
+def SetBoolSetting(settingName, value: bool):
+    preferences.SetBool(settingName, value)
+    App.saveParameter()
+    return
 
 
 # endregion
@@ -104,9 +101,11 @@ def SetBoolSetting(settingName: str, value):
 # region -- All settings from the UI
 # BoM Settings
 CUSTOM_HEADERS = GetStringSetting("CustomHeader")
-if CUSTOM_HEADERS is "":
+if CUSTOM_HEADERS == "":
     CUSTOM_HEADERS = "Number;Qty;Label;Description;Parent;Remarks"
 DEBUG_HEADERS = GetStringSetting("DebugHeader")
+if DEBUG_HEADERS == "":
+    DEBUG_HEADERS = "Original label;Type;Internal name;Fullname;TypeId"
 
 # Import/Export location for columns
 IMPORT_LOCATION = GetStringSetting("ImportLocation")
@@ -137,6 +136,16 @@ AUTOFIT_FACTOR = GetFloatSetting("AutoFitFactor")
 # Enable debug mode. This will enable additional report messages
 ENABLE_DEBUG = GetBoolSetting("EnableDebug")
 ENABLE_DEBUG_COLUMNS = GetBoolSetting("EnableDebugColumns")
+
+if Settings.GetBoolSetting("IncludeBodies") is None:
+    INCLUDE_BODIES = False
+    Settings.SetBoolSetting("IncludeBodies", INCLUDE_BODIES)
+INCLUDE_BODIES = GetBoolSetting("IncludeBodies")
+
+if Settings.GetBoolSetting("UseIndentation") is None:
+    USE_INDENTATION = True
+    Settings.SetBoolSetting("UseIndentation", USE_INDENTATION)
+USE_INDENTATION = GetBoolSetting("UseIndentation")
 # endregion
 
 
@@ -217,13 +226,14 @@ def ReturnHeaders(CustomHeaders = None, DebugHeaders=None):
             # Add the cell and header as a dict item to the dict AdditionalHeaders
             Headers[Cell] = Header
             
-    if DebugHeaders is not None:
+    if DebugHeaders is not None and Settings.ENABLE_DEBUG_COLUMNS is True:
         DebugHeaderList = DebugHeaders.split(";")
         i = len(Headers.keys())
         for Header in DebugHeaderList:
+            i = i+1
             # Set the column
             Column = Standard_Functions.GetLetterFromNumber(
-                i + 1
+                i
             )
             # Set the cell
             Cell = f"{Column}1"

@@ -451,17 +451,26 @@ class BomFunctions:
             # If the property returns empty, it is an part. Return the linked object.
             # This way, duplicate items (normally like Bearing001, Bearing002, etc.) will be replaced with
             # the original part. This is used for summation of the same parts.
-            if docObject.getPropertyByName("Type") == "":
-                RowItem["DocumentObject"] = docObject.LinkedObject
-                RowItem["ObjectName"] = docObject.LinkedObject.Name
-                RowItem["ObjectLabel"] = docObject.LinkedObject.Label
+            try:
+                if docObject.getPropertyByName("Type") == "":
+                    RowItem["DocumentObject"] = docObject.LinkedObject
+                    RowItem["ObjectName"] = docObject.LinkedObject.Name
+                    RowItem["ObjectLabel"] = docObject.LinkedObject.Label
 
-                return RowItem
-            # If the property returns "Assembly", it is an sub-assembly. Return the object.
-            if docObject.getPropertyByName("Type") == "Assembly":
-                RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[0]
-                RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
-                return RowItem
+                    return RowItem
+            except Exception:
+                pass
+            try:
+                # If the property returns "Assembly", it is an sub-assembly. Return the object.
+                if docObject.getPropertyByName("Type") == "Assembly":
+                    RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[0]
+                    RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
+                    return RowItem
+            except Exception:
+                pass
+            RowItem["DocumentObject"] = docObject.LinkedObject
+            RowItem["ObjectName"] = docObject.LinkedObject.Name
+            RowItem["ObjectLabel"] = docObject.LinkedObject.Label
         except Exception:
             return None
 
@@ -504,6 +513,8 @@ class BomFunctions:
             # Define the property objects of the next row
             ItemObjectNext = BOMList[i + 1]
             ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
+            if ItemObjectTypeNext == "App::Link":
+                ItemObjectTypeNext = ItemObjectNext["DocumentObject"].getLinkedObject().TypeId              
 
             # Create a flag and set it true as default
             flag = True
@@ -512,6 +523,7 @@ class BomFunctions:
             if (
                 ItemObjectTypeNext == "Part::Feature"
                 or ItemObjectTypeNext == "PartDesign::Body"
+                or ItemObjectTypeNext == "Part::FeaturePython"
             ):
                 # Filter out all type of bodies
                 if AllowAllBodies is False:
