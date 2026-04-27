@@ -504,6 +504,8 @@ class BomFunctions:
             # Define the property objects of the next row
             ItemObjectNext = BOMList[i + 1]
             ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
+            if ItemObjectTypeNext == "App::Link":
+                ItemObjectTypeNext = ItemObjectNext["DocumentObject"].getLinkedObject().TypeId              
 
             # Create a flag and set it true as default
             flag = True
@@ -512,6 +514,7 @@ class BomFunctions:
             if (
                 ItemObjectTypeNext == "Part::Feature"
                 or ItemObjectTypeNext == "PartDesign::Body"
+                or ItemObjectTypeNext == "Part::FeaturePython"
             ):
                 # Filter out all type of bodies
                 if AllowAllBodies is False:

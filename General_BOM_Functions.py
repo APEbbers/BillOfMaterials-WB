@@ -917,8 +917,9 @@ class General_BOM:
             string: The assembly type as a string
         """
         result = ""
+        
         # Get the list with rootobjects
-        RootObjects = DocObject.Objects
+        RootObjects = self.GetRootObjects()
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for RootObject in RootObjects:
@@ -937,10 +938,11 @@ class General_BOM:
                     return "A2plus"
             except Exception:
                 pass
-
+        # print(RootObjects)
         # In the other workbenches go through the RootObjects
         for Object in RootObjects:
             try:
+                print(f"{Object.AssemblyType}, {Object.Type}")
                 if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
                     resultList.append("Assembly4")
             except Exception:
