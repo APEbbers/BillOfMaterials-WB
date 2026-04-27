@@ -26,9 +26,9 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
-from PySide.QtGui import QIcon, QCursor
-from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel
+from PySide6.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
+from PySide6.QtGui import QIcon, QCursor
+from PySide6.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel, QCheckBox
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -153,6 +153,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             SIGNAL("pressed()"),
             self.on_CreateFirstLevel_clicked,
         )
+
+        self.form.IncludeBodies.checkStateChanged.connect(self.on_IncludeBodies_Clicked)
+        self.form.UseIndentation.checkStateChanged.connect(self.on_UseIndentation_Clicked)
 
         # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
         self.form.CreateRaw.connect(
@@ -369,6 +372,17 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form.ColumnsConfigList.installEventFilter(EventInspector_ComboBox(self.form))
 
         self.manualChange = False
+        
+        if Settings_BoM.INCLUDE_BODIES is True:
+            self.form.IncludeBodies.setCheckState(Qt.CheckState.Checked)
+        else:
+            self.form.IncludeBodies.setCheckState(Qt.CheckState.Unchecked)
+    
+        if Settings_BoM.USE_INDENTATION is True:
+            self.form.IndentedNumbering.setCheckState(Qt.CheckState.Checked)
+        else:
+            self.form.IndentedNumbering.setCheckState(Qt.CheckState.Unchecked)
+        
         return
         # endregion
     
@@ -511,6 +525,20 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
     def on_CreateFirstLevel_clicked(self):
         self.CreateBOM("First level BoM")
+        return
+    
+    def on_IncludeBodies_Clicked(self):
+        if self.form.IncludeBodies.isChecked():
+            Settings_BoM.SetBoolSetting("IncludeBodies", True)
+        else:
+            Settings_BoM.SetBoolSetting("IncludeBodies", False)
+        return
+    
+    def on_UseIndentation_Clicked(self):
+        if self.form.IndentedNumbering.isChecked():
+            Settings_BoM.SetBoolSetting("UseIndentation", True)
+        else:
+            Settings_BoM.SetBoolSetting("UseIndentation", False)
         return
 
     def on_CreateRaw_clicked(self):

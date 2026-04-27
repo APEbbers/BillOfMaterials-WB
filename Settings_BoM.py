@@ -34,7 +34,7 @@ preferences = App.ParamGet("User parameter:BaseApp/Preferences/Mod/BoM Workbench
 
 
 # region -- functions to make sure that a None type result is ""
-def GetStringSetting(settingName: str) -> str:
+def GetStringSetting(settingName) -> str:
     result = preferences.GetString(settingName)
 
     if result.lower() == "none":
@@ -42,23 +42,30 @@ def GetStringSetting(settingName: str) -> str:
     return result
 
 
-def GetIntSetting(settingName: str) -> int:
+def GetIntSetting(settingName) -> int:
     result = preferences.GetInt(settingName)
     if result == "":
         result = None
     return result
 
-def GetFloatSetting(settingName: str) -> int:
+
+def GetFloatSetting(settingName) -> float:
     result = preferences.GetFloat(settingName)
     if result == "":
         result = None
     return result
 
 
-def GetBoolSetting(settingName: str) -> bool:
-    result = preferences.GetBool(settingName)
-    if str(result).lower() == "none":
-        result = False
+def GetBoolSetting(settingName) -> bool:
+    result = None
+    settings = preferences.GetContents()
+    exists = False
+    for setting in settings:
+        if setting[0] == "Boolean" and setting[1] == settingName:
+            exists = True
+            break
+    if exists is True:
+        result = preferences.GetBool(settingName)
     return result
 
 
@@ -140,6 +147,16 @@ AUTOFIT_FACTOR = GetFloatSetting("AutoFitFactor")
 # Enable debug mode. This will enable additional report messages
 ENABLE_DEBUG = GetBoolSetting("EnableDebug")
 ENABLE_DEBUG_COLUMNS = GetBoolSetting("EnableDebugColumns")
+
+if Settings.GetBoolSetting("IncludeBodies") is None:
+    INCLUDE_BODIES = False
+    Settings.SetBoolSetting("IncludeBodies", INCLUDE_BODIES)
+INCLUDE_BODIES = GetBoolSetting("IncludeBodies")
+
+if Settings.GetBoolSetting("UseIndentation") is None:
+    USE_INDENTATION = False
+    Settings.SetBoolSetting("UseIndentation", USE_INDENTATION)
+USE_INDENTATION = GetBoolSetting("UseIndentation")
 # endregion
 
 
