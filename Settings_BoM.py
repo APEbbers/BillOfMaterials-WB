@@ -104,9 +104,10 @@ def SetBoolSetting(settingName: str, value):
 # region -- All settings from the UI
 # BoM Settings
 CUSTOM_HEADERS = GetStringSetting("CustomHeader")
-if CUSTOM_HEADERS is "":
+if CUSTOM_HEADERS == "":
     CUSTOM_HEADERS = "Number;Qty;Label;Description;Parent;Remarks"
 DEBUG_HEADERS = GetStringSetting("DebugHeader")
+DEBUG_HEADERS = "Type;TypeId"
 
 # Import/Export location for columns
 IMPORT_LOCATION = GetStringSetting("ImportLocation")
