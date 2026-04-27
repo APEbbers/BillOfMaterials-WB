@@ -24,6 +24,7 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
+import Settings_BoM as Settings
 
 # Define the translation
 translate = App.Qt.translate
@@ -218,7 +219,7 @@ def ReturnHeaders(CustomHeaders = None, DebugHeaders=None):
             # Add the cell and header as a dict item to the dict AdditionalHeaders
             Headers[Cell] = Header
             
-    if DebugHeaders is not None:
+    if DebugHeaders is not None and Settings.ENABLE_DEBUG_COLUMNS is True:
         DebugHeaderList = DebugHeaders.split(";")
         i = len(Headers.keys())
         for Header in DebugHeaderList:
