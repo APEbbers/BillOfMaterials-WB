@@ -52,9 +52,7 @@ class General_BOM:
     # If a modified list is created, this function can be used to write it the a spreadsheet.
     # You can add a dict for the headers of this list
     @classmethod
-    def createBoMSpreadsheet(
-        self, mainList: list = None, Headers: dict = None, Summary: bool = False, IFCData=None, AssemblyType = ""
-    ):
+    def createBoMSpreadsheet(self, mainList: list = None, Headers: dict = None, Summary: bool = False, IFCData=None, AssemblyType = ""):
         # If the Mainlist is empty, return.
         if mainList is None:
             Text = translate("BoM Workbench", "No list available!!")
@@ -128,7 +126,7 @@ class General_BOM:
             # set the width based on the headers
 
             Standard_Functions.SetColumnWidth_SpreadSheet(
-                sheet=sheet, column=key[:1], cellValue=value
+                sheet=sheet, column=key[:1], cellValue=value, factor=Settings_BoM.AUTOFIT_FACTOR
             )
 
         # Style the Top row
@@ -245,8 +243,11 @@ class General_BOM:
                             if Settings_BoM.UNIT_POSITION != 1:
                                 sheet.set(Column + str(Row), "'" + str(value))
                             if Settings_BoM.UNIT_POSITION == 0:
-                                value = f"{Headers[Column + "1"]} [{unit}]"
+                                value = f"{Headers[Column + "1"]}"
+                                if unit != "" and unit is not None:
+                                    value = f"{Headers[Column + "1"]} [{unit}]"
                                 sheet.set(Column + "1", value)
+                                Headers[Column + "1"] = value
 
                     except Exception as e:
                         if Settings_BoM.ENABLE_DEBUG is True:
@@ -263,9 +264,7 @@ class General_BOM:
                 ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
 
                 if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
-                    Standard_Functions.SetColumnWidth_SpreadSheet(
-                        sheet=sheet, column=Column, cellValue=Value
-                    )
+                    Standard_Functions.SetColumnWidth_SpreadSheet(sheet=sheet, column=Column, cellValue=Value, factor=Settings_BoM.AUTOFIT_FACTOR)
 
         # Allign the columns
         if Row > 1:
