@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelYjZXLI.ui'
+## Form generated from reading UI file 'BoM_PanelrcXHAw.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
-from PySide.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
     QFrame, QGridLayout, QGroupBox, QLabel,
     QLayout, QLineEdit, QPushButton, QScrollArea,
     QSizePolicy, QSpacerItem, QSpinBox, QToolButton,
@@ -178,14 +178,14 @@ class Ui_Dialog(object):
 
         self.gridLayout_13.addLayout(self.gridLayout_11, 0, 0, 1, 1)
 
-        self.CustomPropertiesGroupBox = QGroupBox(self.frame)
-        self.CustomPropertiesGroupBox.setObjectName(u"CustomPropertiesGroupBox")
-        self.gridLayout = QGridLayout(self.CustomPropertiesGroupBox)
+        self.CustomProperties_Panel = QGroupBox(self.frame)
+        self.CustomProperties_Panel.setObjectName(u"CustomProperties_Panel")
+        self.gridLayout = QGridLayout(self.CustomProperties_Panel)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setHorizontalSpacing(1)
         self.gridLayout.setVerticalSpacing(6)
         self.gridLayout.setContentsMargins(12, 6, 6, 6)
-        self.RemarkText = QLineEdit(self.CustomPropertiesGroupBox)
+        self.RemarkText = QLineEdit(self.CustomProperties_Panel)
         self.RemarkText.setObjectName(u"RemarkText")
 
         self.gridLayout.addWidget(self.RemarkText, 4, 0, 1, 4)
@@ -194,7 +194,7 @@ class Ui_Dialog(object):
 
         self.gridLayout.addItem(self.horizontalSpacer_6, 5, 3, 1, 1)
 
-        self.UpdateProperties = QPushButton(self.CustomPropertiesGroupBox)
+        self.UpdateProperties = QPushButton(self.CustomProperties_Panel)
         self.UpdateProperties.setObjectName(u"UpdateProperties")
         sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
         sizePolicy2.setHorizontalStretch(0)
@@ -205,22 +205,22 @@ class Ui_Dialog(object):
 
         self.gridLayout.addWidget(self.UpdateProperties, 5, 0, 1, 3)
 
-        self.label_9 = QLabel(self.CustomPropertiesGroupBox)
+        self.label_9 = QLabel(self.CustomProperties_Panel)
         self.label_9.setObjectName(u"label_9")
 
         self.gridLayout.addWidget(self.label_9, 3, 0, 1, 4)
 
-        self.label_8 = QLabel(self.CustomPropertiesGroupBox)
+        self.label_8 = QLabel(self.CustomProperties_Panel)
         self.label_8.setObjectName(u"label_8")
 
         self.gridLayout.addWidget(self.label_8, 1, 0, 1, 4)
 
-        self.DescriptionText = QLineEdit(self.CustomPropertiesGroupBox)
+        self.DescriptionText = QLineEdit(self.CustomProperties_Panel)
         self.DescriptionText.setObjectName(u"DescriptionText")
 
         self.gridLayout.addWidget(self.DescriptionText, 2, 0, 1, 4)
 
-        self.label_13 = QLabel(self.CustomPropertiesGroupBox)
+        self.label_13 = QLabel(self.CustomProperties_Panel)
         self.label_13.setObjectName(u"label_13")
         self.label_13.setMinimumSize(QSize(0, 30))
         font = QFont()
@@ -232,7 +232,7 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.label_13, 0, 0, 1, 4)
 
 
-        self.gridLayout_13.addWidget(self.CustomPropertiesGroupBox, 1, 0, 1, 1)
+        self.gridLayout_13.addWidget(self.CustomProperties_Panel, 1, 0, 1, 1)
 
 
         self.verticalLayout.addWidget(self.frame)
@@ -274,17 +274,17 @@ class Ui_Dialog(object):
 
         self.gridLayout_19.addLayout(self.gridLayout_15, 0, 0, 1, 1)
 
-        self.SettingsGroupBox = QGroupBox(self.frame_3)
-        self.SettingsGroupBox.setObjectName(u"SettingsGroupBox")
+        self.Settings_Panel = QGroupBox(self.frame_3)
+        self.Settings_Panel.setObjectName(u"Settings_Panel")
         sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.SettingsGroupBox.sizePolicy().hasHeightForWidth())
-        self.SettingsGroupBox.setSizePolicy(sizePolicy4)
-        self.gridLayout_24 = QGridLayout(self.SettingsGroupBox)
+        sizePolicy4.setHeightForWidth(self.Settings_Panel.sizePolicy().hasHeightForWidth())
+        self.Settings_Panel.setSizePolicy(sizePolicy4)
+        self.gridLayout_24 = QGridLayout(self.Settings_Panel)
         self.gridLayout_24.setObjectName(u"gridLayout_24")
         self.gridLayout_24.setContentsMargins(12, 6, 6, 6)
-        self.label_12 = QLabel(self.SettingsGroupBox)
+        self.label_12 = QLabel(self.Settings_Panel)
         self.label_12.setObjectName(u"label_12")
         sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy5.setHorizontalStretch(0)
@@ -297,7 +297,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_6 = QGridLayout()
         self.gridLayout_6.setObjectName(u"gridLayout_6")
-        self.LoadColumns = QPushButton(self.SettingsGroupBox)
+        self.LoadColumns = QPushButton(self.Settings_Panel)
         self.LoadColumns.setObjectName(u"LoadColumns")
         sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy6.setHorizontalStretch(0)
@@ -309,7 +309,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_6.addWidget(self.LoadColumns, 0, 1, 1, 1)
 
-        self.ColumnsConfigList = QComboBox(self.SettingsGroupBox)
+        self.ColumnsConfigList = QComboBox(self.Settings_Panel)
         self.ColumnsConfigList.setObjectName(u"ColumnsConfigList")
         sizePolicy.setHeightForWidth(self.ColumnsConfigList.sizePolicy().hasHeightForWidth())
         self.ColumnsConfigList.setSizePolicy(sizePolicy)
@@ -324,12 +324,12 @@ class Ui_Dialog(object):
 
         self.gridLayout_3 = QGridLayout()
         self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.label_3 = QLabel(self.SettingsGroupBox)
+        self.label_3 = QLabel(self.Settings_Panel)
         self.label_3.setObjectName(u"label_3")
 
         self.gridLayout_3.addWidget(self.label_3, 0, 1, 1, 1)
 
-        self.SetColumns = QPushButton(self.SettingsGroupBox)
+        self.SetColumns = QPushButton(self.Settings_Panel)
         self.SetColumns.setObjectName(u"SetColumns")
         sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
         sizePolicy7.setHorizontalStretch(0)
@@ -350,7 +350,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_24.addLayout(self.gridLayout_3, 8, 0, 1, 2)
 
-        self.MaxLevel = QSpinBox(self.SettingsGroupBox)
+        self.MaxLevel = QSpinBox(self.Settings_Panel)
         self.MaxLevel.setObjectName(u"MaxLevel")
         sizePolicy8 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding)
         sizePolicy8.setHorizontalStretch(20)
@@ -365,7 +365,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_24.addWidget(self.MaxLevel, 5, 0, 1, 2)
 
-        self.IndentedNumbering = QCheckBox(self.SettingsGroupBox)
+        self.IndentedNumbering = QCheckBox(self.Settings_Panel)
         self.IndentedNumbering.setObjectName(u"IndentedNumbering")
         self.IndentedNumbering.setChecked(True)
 
@@ -375,12 +375,12 @@ class Ui_Dialog(object):
 
         self.gridLayout_24.addItem(self.horizontalSpacer, 4, 1, 1, 1)
 
-        self.IncludeBodies = QCheckBox(self.SettingsGroupBox)
+        self.IncludeBodies = QCheckBox(self.Settings_Panel)
         self.IncludeBodies.setObjectName(u"IncludeBodies")
 
         self.gridLayout_24.addWidget(self.IncludeBodies, 2, 0, 1, 2)
 
-        self.label_6 = QLabel(self.SettingsGroupBox)
+        self.label_6 = QLabel(self.Settings_Panel)
         self.label_6.setObjectName(u"label_6")
         sizePolicy3.setHeightForWidth(self.label_6.sizePolicy().hasHeightForWidth())
         self.label_6.setSizePolicy(sizePolicy3)
@@ -390,14 +390,14 @@ class Ui_Dialog(object):
 
         self.gridLayout_24.addWidget(self.label_6, 6, 0, 1, 2)
 
-        self.label_14 = QLabel(self.SettingsGroupBox)
+        self.label_14 = QLabel(self.Settings_Panel)
         self.label_14.setObjectName(u"label_14")
 
         self.gridLayout_24.addWidget(self.label_14, 9, 0, 1, 1)
 
         self.gridLayout_10 = QGridLayout()
         self.gridLayout_10.setObjectName(u"gridLayout_10")
-        self.UnitPosition = QComboBox(self.SettingsGroupBox)
+        self.UnitPosition = QComboBox(self.Settings_Panel)
         self.UnitPosition.addItem("")
         self.UnitPosition.addItem("")
         self.UnitPosition.addItem("")
@@ -411,7 +411,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_10.addWidget(self.UnitPosition, 0, 1, 1, 1)
 
-        self.label_10 = QLabel(self.SettingsGroupBox)
+        self.label_10 = QLabel(self.Settings_Panel)
         self.label_10.setObjectName(u"label_10")
         sizePolicy5.setHeightForWidth(self.label_10.sizePolicy().hasHeightForWidth())
         self.label_10.setSizePolicy(sizePolicy5)
@@ -427,7 +427,7 @@ class Ui_Dialog(object):
         self.gridLayout_24.addLayout(self.gridLayout_10, 7, 0, 1, 2)
 
 
-        self.gridLayout_19.addWidget(self.SettingsGroupBox, 1, 0, 1, 1)
+        self.gridLayout_19.addWidget(self.Settings_Panel, 1, 0, 1, 1)
 
 
         self.verticalLayout.addWidget(self.frame_3)
@@ -463,12 +463,12 @@ class Ui_Dialog(object):
 
         self.gridLayout_18.addLayout(self.gridLayout_17, 0, 0, 1, 1)
 
-        self.DebugGroupBox = QGroupBox(self.frame_4)
-        self.DebugGroupBox.setObjectName(u"DebugGroupBox")
-        self.gridLayout_22 = QGridLayout(self.DebugGroupBox)
+        self.Debug_Panel = QGroupBox(self.frame_4)
+        self.Debug_Panel.setObjectName(u"Debug_Panel")
+        self.gridLayout_22 = QGridLayout(self.Debug_Panel)
         self.gridLayout_22.setObjectName(u"gridLayout_22")
         self.gridLayout_22.setContentsMargins(12, 6, 6, 6)
-        self.DetectAssemblyType = QPushButton(self.DebugGroupBox)
+        self.DetectAssemblyType = QPushButton(self.Debug_Panel)
         self.DetectAssemblyType.setObjectName(u"DetectAssemblyType")
         sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy10.setHorizontalStretch(0)
@@ -480,12 +480,12 @@ class Ui_Dialog(object):
 
         self.gridLayout_5 = QGridLayout()
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.label_2 = QLabel(self.DebugGroupBox)
+        self.label_2 = QLabel(self.Debug_Panel)
         self.label_2.setObjectName(u"label_2")
 
         self.gridLayout_5.addWidget(self.label_2, 0, 1, 1, 1)
 
-        self.AssemblyType = QComboBox(self.DebugGroupBox)
+        self.AssemblyType = QComboBox(self.Debug_Panel)
         icon5 = QIcon()
         icon5.addFile(u":/Resources/Icons/A2p_workbench.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.AssemblyType.addItem(icon5, "")
@@ -528,7 +528,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_9 = QGridLayout()
         self.gridLayout_9.setObjectName(u"gridLayout_9")
-        self.CreateRaw = QPushButton(self.DebugGroupBox)
+        self.CreateRaw = QPushButton(self.Debug_Panel)
         self.CreateRaw.setObjectName(u"CreateRaw")
         sizePolicy1.setHeightForWidth(self.CreateRaw.sizePolicy().hasHeightForWidth())
         self.CreateRaw.setSizePolicy(sizePolicy1)
@@ -540,7 +540,7 @@ class Ui_Dialog(object):
 
         self.gridLayout_9.addWidget(self.CreateRaw, 0, 0, 1, 1)
 
-        self.label_5 = QLabel(self.DebugGroupBox)
+        self.label_5 = QLabel(self.Debug_Panel)
         self.label_5.setObjectName(u"label_5")
 
         self.gridLayout_9.addWidget(self.label_5, 0, 1, 1, 1)
@@ -549,7 +549,7 @@ class Ui_Dialog(object):
         self.gridLayout_22.addLayout(self.gridLayout_9, 2, 0, 1, 1)
 
 
-        self.gridLayout_18.addWidget(self.DebugGroupBox, 1, 0, 1, 1)
+        self.gridLayout_18.addWidget(self.Debug_Panel, 1, 0, 1, 1)
 
 
         self.verticalLayout.addWidget(self.frame_4)
