@@ -85,12 +85,15 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             QIcon(os.path.join(PATH_TB_ICONS, "BillOfMaterialsWB.svg"))
         )
 
-        # Get the adress of the reporisaty adress
+        # Get the adress of the repository adress
         self.ReproAdress = Standard_Functions.getReproAdress(os.path.dirname(__file__))
         if self.ReproAdress != "" or self.ReproAdress is not None:
             print(f"Bill of Materials Workbench: {self.ReproAdress}")
         else:
             print("Bill of Materials Workbench: Repro adress unknown")
+            
+            
+        Settings_BoM.WriteMissingSettings()
 
         # region - Connect controls with functions
         # Connect the help buttons
