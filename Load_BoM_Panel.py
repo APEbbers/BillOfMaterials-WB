@@ -111,6 +111,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.on_DetectAssemblyType_clicked,
         )
 
+        # This will create a connection between the pushbutton "CustomProp" and def "on_CustomProp_clicked"
+        self.form.CustomPropconnect(
+            self.form.CustomProp,
+            SIGNAL("pressed()"),
+            self.on_CustomProp_clicked,
+        )
+        
         # This will create a connection between the pushbutton "toolButton_Settings" and def "on_toolButton_Settings_clicked"
         self.form.toolButton_Settings.connect(
             self.form.toolButton_Settings,
@@ -464,6 +471,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             AboutAdress = self.ReproAdress + "wiki"
             webbrowser.open(AboutAdress, new=2, autoraise=True)
         return
+    
+    # Hide or show the custom properites
+    def on_CustomProp_clicked(self):
+        if self.form.CustomProperties_Panel.isHidden() is False:
+            self.form.CustomProperties_Panel.setHidden(True)
+        else:
+            self.form.CustomProperties_Panel.setHidden(False)
 
     # Hide or show the settings
     def on_toolButton_Settings_clicked(self):
