@@ -649,7 +649,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         import GetBOM_INTERNAL
         import GetBOM_A3
         import GetBOM_A2plus
-        import GetBOM_MultiBody_Arch
+        import GetBOM_MultiBody
+        import GetBOM_BIM
         
         # Activate the document which was active when this command started.
         try:
@@ -760,11 +761,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Arch":
-            # GetBOM_MultiBody_Arch.BomFunctions.Start(
-            #     command=Command,
-            #     CheckAssemblyType=not self.manualChange
-            # )
-            GetBOM_AppPart.BomFunctions.Start(
+            GetBOM_BIM.BomFunctions.Start(
                 command=Command,
                 Level=Level_Value,
                 IncludeBodies=IncludeBodies_Checked,
@@ -772,7 +769,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 CheckAssemblyType=False,
             )
         if AssemblyType_Selected == "MultiBody":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(
+            GetBOM_MultiBody.BomFunctions.Start(
                 command=Command,
                 CheckAssemblyType=not self.manualChange
             )
