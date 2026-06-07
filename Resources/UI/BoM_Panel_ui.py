@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelUhINwi.ui'
+## Form generated from reading UI file 'BoM_PanelWdmGjF.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.1
 ##
@@ -17,16 +17,16 @@ from PySide.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
     QFrame, QGridLayout, QGroupBox, QLabel,
-    QLayout, QLineEdit, QPushButton, QScrollArea,
-    QSizePolicy, QSpacerItem, QSpinBox, QToolButton,
-    QVBoxLayout, QWidget)
+    QLayout, QLineEdit, QPushButton, QSizePolicy,
+    QSpacerItem, QSpinBox, QToolButton, QVBoxLayout,
+    QWidget)
 import Icons_rc
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(495, 1221)
+        Dialog.resize(512, 1221)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -37,15 +37,7 @@ class Ui_Dialog(object):
         Dialog.setModal(True)
         self.gridLayout_12 = QGridLayout(Dialog)
         self.gridLayout_12.setObjectName(u"gridLayout_12")
-        self.scrollArea = QScrollArea(Dialog)
-        self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollAreaWidgetContents = QWidget()
-        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 479, 1205))
-        self.gridLayout_14 = QGridLayout(self.scrollAreaWidgetContents)
-        self.gridLayout_14.setObjectName(u"gridLayout_14")
-        self.MainFrame = QFrame(self.scrollAreaWidgetContents)
+        self.MainFrame = QFrame(Dialog)
         self.MainFrame.setObjectName(u"MainFrame")
         self.verticalLayout = QVBoxLayout(self.MainFrame)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -574,16 +566,8 @@ class Ui_Dialog(object):
         self.verticalLayout.addItem(self.verticalSpacer)
 
 
-        self.gridLayout_14.addWidget(self.MainFrame, 0, 0, 1, 1)
+        self.gridLayout_12.addWidget(self.MainFrame, 0, 0, 1, 1)
 
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-
-        self.gridLayout_12.addWidget(self.scrollArea, 0, 0, 1, 1)
-
-        QWidget.setTabOrder(self.CreateTotal, self.CreateSummary)
-        QWidget.setTabOrder(self.CreateSummary, self.CreatePartsOnly)
-        QWidget.setTabOrder(self.CreatePartsOnly, self.SetColumns)
-        QWidget.setTabOrder(self.SetColumns, self.AssemblyType)
 
         self.retranslateUi(Dialog)
 
