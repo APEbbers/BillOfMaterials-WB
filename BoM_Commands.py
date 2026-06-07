@@ -72,7 +72,8 @@ class CreatePartsOnlyBOM_Class:
         if General_BOM.CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("PartsOnly")
         if General_BOM.CheckAssemblyType(doc) == "Arch":
-            GetBOM_MultiBody_Arch.BomFunctions.Start()
+            # GetBOM_MultiBody_Arch.BomFunctions.Start()
+             GetBOM_AppPart.BomFunctions.Start("PartsOnly", CheckAssemblyType=False)
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             GetBOM_MultiBody_Arch.BomFunctions.Start()
 
