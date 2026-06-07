@@ -50,7 +50,7 @@ DefaultSettings = {
     "SpreadsheetColumnFontStyle_Bold": False,
     "SpreadsheetColumnFontStyle_Italic": False,
     "SpreadsheetColumnFontStyle_Underline": False,
-    "AutoFitFactor": 0.0,
+    "AutoFitFactor": 12.0,
     "UnitPosition": 0,
     "EnableDebug": False,
     "EnableDebugColumns": False,
@@ -139,6 +139,25 @@ def SetFloatSetting(settingName, value: float):
     return
 
 # endregion
+
+def WriteMissingSettings():
+    for DefaultSetting_Name, DefaultSetting_Value in DefaultSettings.items():
+        # for o in getmembers(Parameters):
+        #     if o.lower() == DefaultSetting_Name:
+        #         print(o)
+        if type(DefaultSetting_Value) is str:
+            if GetStringSetting(DefaultSetting_Name) == "":
+                SetStringSetting(DefaultSetting_Name, DefaultSetting_Value)
+        if type(DefaultSetting_Value) is bool:
+            if GetBoolSetting(DefaultSetting_Name) is None:
+                SetBoolSetting(DefaultSetting_Name, DefaultSetting_Value)
+        if type(DefaultSetting_Value) is int:
+            if GetIntSetting(DefaultSetting_Name) is None:
+                SetIntSetting(DefaultSetting_Name, DefaultSetting_Value)
+        if type(DefaultSetting_Value) is float:
+            if GetFloatSetting(DefaultSetting_Name) is None:
+                SetFloatSetting(DefaultSetting_Name, DefaultSetting_Value)
+    App.saveParameter()
 
 
 # endregion
