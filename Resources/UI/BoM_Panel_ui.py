@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelrcXHAw.ui'
+## Form generated from reading UI file 'BoM_PanelUhINwi.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.1
 ##
@@ -26,8 +26,8 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(495, 1043)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
+        Dialog.resize(495, 1221)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
@@ -42,7 +42,7 @@ class Ui_Dialog(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 462, 1166))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 479, 1205))
         self.gridLayout_14 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_14.setObjectName(u"gridLayout_14")
         self.MainFrame = QFrame(self.scrollAreaWidgetContents)
@@ -311,8 +311,11 @@ class Ui_Dialog(object):
 
         self.ColumnsConfigList = QComboBox(self.Settings_Panel)
         self.ColumnsConfigList.setObjectName(u"ColumnsConfigList")
-        sizePolicy.setHeightForWidth(self.ColumnsConfigList.sizePolicy().hasHeightForWidth())
-        self.ColumnsConfigList.setSizePolicy(sizePolicy)
+        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy7.setHorizontalStretch(0)
+        sizePolicy7.setVerticalStretch(0)
+        sizePolicy7.setHeightForWidth(self.ColumnsConfigList.sizePolicy().hasHeightForWidth())
+        self.ColumnsConfigList.setSizePolicy(sizePolicy7)
         self.ColumnsConfigList.setMinimumSize(QSize(0, 20))
         self.ColumnsConfigList.setMaximumSize(QSize(16777215, 30))
         self.ColumnsConfigList.setEditable(True)
@@ -331,11 +334,11 @@ class Ui_Dialog(object):
 
         self.SetColumns = QPushButton(self.Settings_Panel)
         self.SetColumns.setObjectName(u"SetColumns")
-        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
-        sizePolicy7.setHorizontalStretch(0)
-        sizePolicy7.setVerticalStretch(0)
-        sizePolicy7.setHeightForWidth(self.SetColumns.sizePolicy().hasHeightForWidth())
-        self.SetColumns.setSizePolicy(sizePolicy7)
+        sizePolicy8 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy8.setHorizontalStretch(0)
+        sizePolicy8.setVerticalStretch(0)
+        sizePolicy8.setHeightForWidth(self.SetColumns.sizePolicy().hasHeightForWidth())
+        self.SetColumns.setSizePolicy(sizePolicy8)
         icon4 = QIcon()
         icon4.addFile(u":/Resources/Icons/SetColumns.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.SetColumns.setIcon(icon4)
@@ -352,11 +355,11 @@ class Ui_Dialog(object):
 
         self.MaxLevel = QSpinBox(self.Settings_Panel)
         self.MaxLevel.setObjectName(u"MaxLevel")
-        sizePolicy8 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding)
-        sizePolicy8.setHorizontalStretch(20)
-        sizePolicy8.setVerticalStretch(0)
-        sizePolicy8.setHeightForWidth(self.MaxLevel.sizePolicy().hasHeightForWidth())
-        self.MaxLevel.setSizePolicy(sizePolicy8)
+        sizePolicy9 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding)
+        sizePolicy9.setHorizontalStretch(20)
+        sizePolicy9.setVerticalStretch(0)
+        sizePolicy9.setHeightForWidth(self.MaxLevel.sizePolicy().hasHeightForWidth())
+        self.MaxLevel.setSizePolicy(sizePolicy9)
         self.MaxLevel.setMinimumSize(QSize(20, 20))
         self.MaxLevel.setMaximumSize(QSize(16777215, 25))
         self.MaxLevel.setBaseSize(QSize(0, 0))
@@ -402,11 +405,11 @@ class Ui_Dialog(object):
         self.UnitPosition.addItem("")
         self.UnitPosition.addItem("")
         self.UnitPosition.setObjectName(u"UnitPosition")
-        sizePolicy9 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy9.setHorizontalStretch(0)
-        sizePolicy9.setVerticalStretch(0)
-        sizePolicy9.setHeightForWidth(self.UnitPosition.sizePolicy().hasHeightForWidth())
-        self.UnitPosition.setSizePolicy(sizePolicy9)
+        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy10.setHorizontalStretch(0)
+        sizePolicy10.setVerticalStretch(0)
+        sizePolicy10.setHeightForWidth(self.UnitPosition.sizePolicy().hasHeightForWidth())
+        self.UnitPosition.setSizePolicy(sizePolicy10)
         self.UnitPosition.setMinimumSize(QSize(0, 0))
 
         self.gridLayout_10.addWidget(self.UnitPosition, 0, 1, 1, 1)
@@ -470,11 +473,11 @@ class Ui_Dialog(object):
         self.gridLayout_22.setContentsMargins(12, 6, 6, 6)
         self.DetectAssemblyType = QPushButton(self.Debug_Panel)
         self.DetectAssemblyType.setObjectName(u"DetectAssemblyType")
-        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        sizePolicy10.setHorizontalStretch(0)
-        sizePolicy10.setVerticalStretch(0)
-        sizePolicy10.setHeightForWidth(self.DetectAssemblyType.sizePolicy().hasHeightForWidth())
-        self.DetectAssemblyType.setSizePolicy(sizePolicy10)
+        sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy11.setHorizontalStretch(0)
+        sizePolicy11.setVerticalStretch(0)
+        sizePolicy11.setHeightForWidth(self.DetectAssemblyType.sizePolicy().hasHeightForWidth())
+        self.DetectAssemblyType.setSizePolicy(sizePolicy11)
 
         self.gridLayout_22.addWidget(self.DetectAssemblyType, 0, 0, 1, 1)
 
@@ -556,17 +559,17 @@ class Ui_Dialog(object):
 
         self.DebugText = QLabel(self.MainFrame)
         self.DebugText.setObjectName(u"DebugText")
-        sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-        sizePolicy11.setHorizontalStretch(0)
-        sizePolicy11.setVerticalStretch(0)
-        sizePolicy11.setHeightForWidth(self.DebugText.sizePolicy().hasHeightForWidth())
-        self.DebugText.setSizePolicy(sizePolicy11)
+        sizePolicy12 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+        sizePolicy12.setHorizontalStretch(0)
+        sizePolicy12.setVerticalStretch(0)
+        sizePolicy12.setHeightForWidth(self.DebugText.sizePolicy().hasHeightForWidth())
+        self.DebugText.setSizePolicy(sizePolicy12)
         self.DebugText.setWordWrap(True)
         self.DebugText.setMargin(4)
 
         self.verticalLayout.addWidget(self.DebugText)
 
-        self.verticalSpacer = QSpacerItem(20, 100, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer = QSpacerItem(20, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout.addItem(self.verticalSpacer)
 
