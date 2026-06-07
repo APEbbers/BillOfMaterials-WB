@@ -26,9 +26,9 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-from PySide.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
-from PySide.QtGui import QIcon, QCursor
-from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel, QCheckBox
+from PySide6.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
+from PySide6.QtGui import QIcon, QCursor
+from PySide6.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel, QCheckBox
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -569,8 +569,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         return
     
     def on_UnitPosition_IndexChanged(self):
-        Settings_BoM.UNIT_POSITION = QComboBox.currentIndex()
-        Settings_BoM.SetIntSetting("UnitPosition", QComboBox.currentIndex())
+        Settings_BoM.UNIT_POSITION = self.form.UnitPosition.currentIndex()
+        Settings_BoM.SetIntSetting("UnitPosition", self.form.UnitPosition.currentIndex())
         
     def on_LoadColumns_clicked(self):        
         # Get the json file
