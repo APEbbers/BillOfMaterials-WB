@@ -760,9 +760,16 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 CheckAssemblyType=not self.manualChange,
             )
         if AssemblyType_Selected == "Arch":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(
+            # GetBOM_MultiBody_Arch.BomFunctions.Start(
+            #     command=Command,
+            #     CheckAssemblyType=not self.manualChange
+            # )
+            GetBOM_AppPart.BomFunctions.Start(
                 command=Command,
-                CheckAssemblyType=not self.manualChange
+                Level=Level_Value,
+                IncludeBodies=IncludeBodies_Checked,
+                IndentNumbering=UseIndent_Checked,
+                CheckAssemblyType=False,
             )
         if AssemblyType_Selected == "MultiBody":
             GetBOM_MultiBody_Arch.BomFunctions.Start(
