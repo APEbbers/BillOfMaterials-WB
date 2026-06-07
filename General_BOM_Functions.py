@@ -605,7 +605,7 @@ class General_BOM:
                 pass
             
             # Set MaterialCompare to True as default
-            MaterialCompare = True
+            MaterialCompare = False
             # if material needs to be taken into account, compare the material
             if CompareMaterial is True:
                 if BomListItem_Properties != Item_Properties:
@@ -1076,6 +1076,21 @@ class General_BOM:
 
     @classmethod
     def GetObjectsFromGroups(self, Group):
+        resultList = []
+        try:
+            Objects = Group.Group
+            if Objects.Visibility is True:
+                if Objects[0].TypeId != 'Assembly::JointGroup':
+                    for Object in Objects:
+                        if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
+                            resultList.append(Object)
+                        if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
+                            resultList.extend(self.Sub_GetObjectsFromGroups(Object))
+        except Exception:
+            pass
+        return resultList
+    
+    def Sub_GetObjectsFromGroups(self, Group):
         resultList = []
         try:
             Objects = Group.Group
