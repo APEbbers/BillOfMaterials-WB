@@ -92,7 +92,7 @@ def GetBoolSetting(settingName) -> bool:
             result = preferences.GetBool(settingName)
     return result
 
-def GetColorSetting(self, settingName: str) -> object:
+def GetColorSetting(settingName: str) -> object:
     # Create a tuple from the int value of the color
     result = QColor.fromRgba(preferences.GetUnsigned(settingName)).toTuple()
 
