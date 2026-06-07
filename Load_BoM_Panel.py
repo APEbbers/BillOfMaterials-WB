@@ -132,6 +132,11 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.on_toolButton_Debug_clicked,
         )
 
+        # This will create a connection between the combobox "UnitPosition" and def "on_UnitPosition_IndexChanged"
+        self.form.UnitPosition.currentIndexChanged.connect(
+            self.on_UnitPosition_IndexChanged
+        )
+        
         # This will create a connection between the pushbutton "Set extra columns" and def "on_SetColumns_clicked"
         self.form.SetColumns.connect(
             self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked
@@ -562,6 +567,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     def on_UpdateProperties_clicked(self):
         self.UpdateProperties()
         return
+    
+    def on_UnitPosition_IndexChanged(self):
+        Settings_BoM.UNIT_POSITION = QComboBox.currentIndex()
+        Settings_BoM.SetIntSetting("UnitPosition", QComboBox.currentIndex())
         
     def on_LoadColumns_clicked(self):        
         # Get the json file
