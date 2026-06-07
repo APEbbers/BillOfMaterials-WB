@@ -120,7 +120,7 @@ class General_BOM:
         )
 
         # Define the header range based on Headers
-        HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers)-1)}1"
+        HeaderRange = f"A1:{Standard_Functions.GetLetterFromNumber(len(Headers))}1"
 
         # Create the headers and set the width
         for key, value in Headers.items():
@@ -240,7 +240,13 @@ class General_BOM:
                                     rowList["DocumentObject"], Headers[Column + "1"]
                                 )[0]
                             unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
-                            sheet.set(Column + str(Row), "'" + str(value) +  unit)   
+                            if Settings_BoM.UNIT_POSITION == 1:
+                                sheet.set(Column + str(Row), "'" + str(value) +  unit)
+                            if Settings_BoM.UNIT_POSITION != 1:
+                                sheet.set(Column + str(Row), "'" + str(value))
+                            if Settings_BoM.UNIT_POSITION == 0:
+                                value = f"{Headers[Column + "1"]} [{unit}]"
+                                sheet.set(Column + "1", value)
 
                     except Exception as e:
                         if Settings_BoM.ENABLE_DEBUG is True:
@@ -265,7 +271,7 @@ class General_BOM:
         if Row > 1:
             sheet.setAlignment(
                 "A1:"
-                + str(Standard_Functions.GetLetterFromNumber(len(Headers)-1))
+                + str(Standard_Functions.GetLetterFromNumber(len(Headers)))
                 + str(Row),
                 "center",
                 "keep",
@@ -274,7 +280,7 @@ class General_BOM:
         # Style the table
         RangeStyleHeader = HeaderRange
         RangeStyleTable = (
-            "A2:" + str(Standard_Functions.GetLetterFromNumber(len(Headers)-1)) + str(Row)
+            "A2:" + str(Standard_Functions.GetLetterFromNumber(len(Headers))) + str(Row)
         )
         self.FormatTableColors(
             sheet=sheet,
@@ -917,8 +923,9 @@ class General_BOM:
             string: The assembly type as a string
         """
         result = ""
+        
         # Get the list with rootobjects
-        RootObjects = DocObject.RootObjects
+        RootObjects = self.GetRootObjects()
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for RootObject in RootObjects:
@@ -937,10 +944,11 @@ class General_BOM:
                     return "A2plus"
             except Exception:
                 pass
-
+        # print(RootObjects)
         # In the other workbenches go through the RootObjects
         for Object in RootObjects:
             try:
+                print(f"{Object.AssemblyType}, {Object.Type}")
                 if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
                     resultList.append("Assembly4")
             except Exception:

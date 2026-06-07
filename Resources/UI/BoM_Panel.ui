@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>578</width>
-    <height>1005</height>
+    <width>512</width>
+    <height>1221</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -31,7 +31,7 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout_10">
+  <layout class="QGridLayout" name="gridLayout_12">
    <item row="0" column="0">
     <widget class="QFrame" name="MainFrame">
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -282,13 +282,7 @@
           </layout>
          </item>
          <item row="1" column="0">
-          <widget class="QFrame" name="CustomPropertiesFrame">
-           <property name="frameShape">
-            <enum>QFrame::Shape::NoFrame</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Shadow::Sunken</enum>
-           </property>
+          <widget class="QGroupBox" name="CustomProperties_Panel">
            <layout class="QGridLayout" name="gridLayout">
             <property name="leftMargin">
              <number>12</number>
@@ -479,15 +473,12 @@
           </layout>
          </item>
          <item row="1" column="0">
-          <widget class="QFrame" name="SettingsFrame">
+          <widget class="QGroupBox" name="Settings_Panel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Shadow::Sunken</enum>
            </property>
            <layout class="QGridLayout" name="gridLayout_24">
             <property name="leftMargin">
@@ -502,19 +493,6 @@
             <property name="bottomMargin">
              <number>6</number>
             </property>
-            <item row="4" column="1">
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
             <item row="4" column="0">
              <widget class="QLabel" name="label_12">
               <property name="sizePolicy">
@@ -534,71 +512,7 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0" colspan="2">
-             <widget class="QCheckBox" name="IncludeBodies">
-              <property name="text">
-               <string>Include bodies</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="0" colspan="2">
-             <layout class="QGridLayout" name="gridLayout_3">
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_3">
-                <property name="text">
-                 <string> Set extra columns </string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QPushButton" name="SetColumns">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Resources/Icons/SetColumns.svg</normaloff>:/Resources/Icons/SetColumns.svg</iconset>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>32</width>
-                  <height>32</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <spacer name="horizontalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item row="3" column="0" colspan="2">
-             <widget class="QCheckBox" name="IndentedNumbering">
-              <property name="text">
-               <string>Indented numbering</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="9" column="0" colspan="2">
+            <item row="10" column="0" colspan="2">
              <layout class="QGridLayout" name="gridLayout_6">
               <item row="0" column="1">
                <widget class="QPushButton" name="LoadColumns">
@@ -652,6 +566,53 @@
               </item>
              </layout>
             </item>
+            <item row="8" column="0" colspan="2">
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string> Set extra columns </string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="SetColumns">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>:/Resources/Icons/SetColumns.svg</normaloff>:/Resources/Icons/SetColumns.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
             <item row="5" column="0" colspan="2">
              <widget class="QSpinBox" name="MaxLevel">
               <property name="sizePolicy">
@@ -692,6 +653,36 @@
               </property>
              </widget>
             </item>
+            <item row="3" column="0" colspan="2">
+             <widget class="QCheckBox" name="IndentedNumbering">
+              <property name="text">
+               <string>Indented numbering</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <widget class="QCheckBox" name="IncludeBodies">
+              <property name="text">
+               <string>Include bodies</string>
+              </property>
+             </widget>
+            </item>
             <item row="6" column="0" colspan="2">
              <widget class="QLabel" name="label_6">
               <property name="sizePolicy">
@@ -717,12 +708,79 @@
               </property>
              </widget>
             </item>
-            <item row="8" column="0">
+            <item row="9" column="0">
              <widget class="QLabel" name="label_14">
               <property name="text">
                <string>Load saved column configurations</string>
               </property>
              </widget>
+            </item>
+            <item row="7" column="0" colspan="2">
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="0" column="1">
+               <widget class="QComboBox" name="UnitPosition">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>In header</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>With value</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Hide</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_10">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Show units:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -803,13 +861,7 @@
           </layout>
          </item>
          <item row="1" column="0">
-          <widget class="QFrame" name="DebugFrame">
-           <property name="frameShape">
-            <enum>QFrame::Shape::NoFrame</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Shadow::Sunken</enum>
-           </property>
+          <widget class="QGroupBox" name="Debug_Panel">
            <layout class="QGridLayout" name="gridLayout_22">
             <property name="leftMargin">
              <number>12</number>
@@ -1039,7 +1091,7 @@
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>100</height>
+          <height>0</height>
          </size>
         </property>
        </spacer>
@@ -1049,64 +1101,8 @@
    </item>
   </layout>
  </widget>
- <tabstops>
-  <tabstop>CreateTotal</tabstop>
-  <tabstop>CreateSummary</tabstop>
-  <tabstop>CreatePartsOnly</tabstop>
-  <tabstop>SetColumns</tabstop>
-  <tabstop>AssemblyType</tabstop>
- </tabstops>
  <resources>
   <include location="../../Icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>toolButton_Settings</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SettingsFrame</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>130</x>
-     <y>514</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>334</x>
-     <y>758</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toolButton_Debug</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>DebugFrame</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>137</x>
-     <y>811</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>22</x>
-     <y>832</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>CustomProp</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>CustomPropertiesFrame</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>129</x>
-     <y>236</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>559</x>
-     <y>298</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

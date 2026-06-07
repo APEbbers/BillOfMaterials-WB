@@ -28,7 +28,7 @@ import os
 from inspect import getsourcefile
 from PySide.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
 from PySide.QtGui import QIcon, QCursor
-from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel
+from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel, QCheckBox
 from General_BOM_Functions import General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
@@ -111,6 +111,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.on_DetectAssemblyType_clicked,
         )
 
+        # This will create a connection between the pushbutton "CustomProp" and def "on_CustomProp_clicked"
+        self.form.CustomProp.connect(
+            self.form.CustomProp,
+            SIGNAL("pressed()"),
+            self.on_CustomProp_clicked,
+        )
+        
         # This will create a connection between the pushbutton "toolButton_Settings" and def "on_toolButton_Settings_clicked"
         self.form.toolButton_Settings.connect(
             self.form.toolButton_Settings,
@@ -125,6 +132,11 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.on_toolButton_Debug_clicked,
         )
 
+        # This will create a connection between the combobox "UnitPosition" and def "on_UnitPosition_IndexChanged"
+        self.form.UnitPosition.currentIndexChanged.connect(
+            self.on_UnitPosition_IndexChanged
+        )
+        
         # This will create a connection between the pushbutton "Set extra columns" and def "on_SetColumns_clicked"
         self.form.SetColumns.connect(
             self.form.SetColumns, SIGNAL("pressed()"), self.on_SetColumns_clicked
@@ -154,6 +166,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.on_CreateFirstLevel_clicked,
         )
 
+        self.form.IncludeBodies.checkStateChanged.connect(self.on_IncludeBodies_Clicked)
+        self.form.IndentedNumbering.checkStateChanged.connect(self.on_UseIndentation_Clicked)
+
         # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
         self.form.CreateRaw.connect(
             self.form.CreateRaw, SIGNAL("pressed()"), self.on_CreateRaw_clicked
@@ -172,14 +187,14 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if ENABLE_DEBUG is True:
             # Hide the debug section by default
             self.form.frame_4.setVisible(True)
-            self.form.DebugFrame.setVisible(True)
+            self.form.Debug_Panel.setVisible(True)
             self.form.toolButton_Debug.setVisible(True)
             self.form.DebugText.setVisible(True)
             self.form.frame_4.setEnabled(True)
         if ENABLE_DEBUG is False:
             # Hide the debug section by default
             self.form.frame_4.setHidden(True)
-            self.form.DebugFrame.setHidden(True)
+            self.form.Debug_Panel.setHidden(True)
             self.form.toolButton_Debug.setHidden(True)
             self.form.DebugText.setHidden(False)
             self.form.frame_4.setDisabled(True)
@@ -369,6 +384,17 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.form.ColumnsConfigList.installEventFilter(EventInspector_ComboBox(self.form))
 
         self.manualChange = False
+        
+        if Settings_BoM.INCLUDE_BODIES is True:
+            self.form.IncludeBodies.setCheckState(Qt.CheckState.Checked)
+        else:
+            self.form.IncludeBodies.setCheckState(Qt.CheckState.Unchecked)
+    
+        if Settings_BoM.USE_INDENTATION is True:
+            self.form.IndentedNumbering.setCheckState(Qt.CheckState.Checked)
+        else:
+            self.form.IndentedNumbering.setCheckState(Qt.CheckState.Unchecked)
+        
         return
         # endregion
     
@@ -450,20 +476,27 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             AboutAdress = self.ReproAdress + "wiki"
             webbrowser.open(AboutAdress, new=2, autoraise=True)
         return
+    
+    # Hide or show the custom properites
+    def on_CustomProp_clicked(self):
+        if self.form.CustomProperties_Panel.isHidden() is False:
+            self.form.CustomProperties_Panel.setHidden(True)
+        else:
+            self.form.CustomProperties_Panel.setHidden(False)
 
     # Hide or show the settings
     def on_toolButton_Settings_clicked(self):
-        if self.form.SettingsFrame.isHidden() is False:
-            self.form.SettingsFrame.setHidden(True)
+        if self.form.Settings_Panel.isHidden() is False:
+            self.form.Settings_Panel.setHidden(True)
         else:
-            self.form.SettingsFrame.setHidden(False)
+            self.form.Settings_Panel.setHidden(False)
 
     # Hide or show extra debug settings
     def on_toolButton_Debug_clicked(self):
-        if self.form.DebugFrame.isHidden() is False:
-            self.form.DebugFrame.setHidden(True)
+        if self.form.Debug_Panel.isHidden() is False:
+            self.form.Debug_Panel.setHidden(True)
         else:
-            self.form.DebugFrame.setHidden(False)
+            self.form.Debug_Panel.setHidden(False)
 
     # Function to detect the assembly type
     def on_DetectAssemblyType_clicked(self):
@@ -512,6 +545,20 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     def on_CreateFirstLevel_clicked(self):
         self.CreateBOM("First level BoM")
         return
+    
+    def on_IncludeBodies_Clicked(self):
+        if self.form.IncludeBodies.isChecked():
+            Settings_BoM.SetBoolSetting("IncludeBodies", True)
+        else:
+            Settings_BoM.SetBoolSetting("IncludeBodies", False)
+        return
+    
+    def on_UseIndentation_Clicked(self):
+        if self.form.IndentedNumbering.isChecked():
+            Settings_BoM.SetBoolSetting("UseIndentation", True)
+        else:
+            Settings_BoM.SetBoolSetting("UseIndentation", False)
+        return
 
     def on_CreateRaw_clicked(self):
         self.CreateBOM("Raw BoM")
@@ -520,6 +567,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     def on_UpdateProperties_clicked(self):
         self.UpdateProperties()
         return
+    
+    def on_UnitPosition_IndexChanged(self):
+        Settings_BoM.UNIT_POSITION = self.form.UnitPosition.currentIndex()
+        Settings_BoM.SetIntSetting("UnitPosition", self.form.UnitPosition.currentIndex())
         
     def on_LoadColumns_clicked(self):        
         # Get the json file

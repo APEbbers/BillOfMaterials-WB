@@ -24,6 +24,7 @@
 
 import FreeCAD as App
 import Standard_Functions_BOM_WB as Standard_Functions
+from PySide.QtGui import QColor
 
 # Define the translation
 translate = App.Qt.translate
@@ -31,72 +32,113 @@ translate = App.Qt.translate
 preferences = App.ParamGet("User parameter:BaseApp/Preferences/Mod/BoM Workbench")
 # endregion
 
+DefaultSettings = {
+    "CustomHeader": "Number;Qty;Label;Description;Parent;Remarks",
+    "DebugHeader": "Original label;Type;Internal name;Fullname;TypeId",
+    "ImportLocation": "",
+    "SpreadSheetHeaderBackGround": "",
+    "SpreadSheetHeaderForeGround": "",
+    "SpreadsheetHeaderFontStyle_Bold": True,
+    "SpreadsheetHeaderFontStyle_Italic": False,
+    "SpreadsheetHeaderFontStyle_Underline": False,
+    "SpreadSheetTableBackGround_1": "",
+    "SpreadSheetTableBackGround_2": "",
+    "SpreadSheetTableForeGround": "",
+    "SpreadsheetTableFontStyle_Bold": False,
+    "SpreadsheetTableFontStyle_Italic": False,
+    "SpreadsheetTableFontStyle_Underline": False,
+    "SpreadsheetColumnFontStyle_Bold": False,
+    "SpreadsheetColumnFontStyle_Italic": False,
+    "SpreadsheetColumnFontStyle_Underline": False,
+    "AutoFitFactor": 0.0,
+    "UnitPosition": 0,
+    "EnableDebug": False,
+    "EnableDebugColumns": False,
+    "IncludeBodies": False,
+    "UseIndentation": True,
+}
 
-# region -- functions to make sure that a None type result is ""
-def GetStringSetting(settingName: str) -> str:
+# region -- Functions to read the settings from the FreeCAD Parameters
+# and make sure that a None type result is ""
+def GetStringSetting(settingName) -> str:
     result = preferences.GetString(settingName)
 
     if result.lower() == "none":
         result = ""
     return result
 
-
-def GetIntSetting(settingName: str) -> int:
+def GetIntSetting(settingName) -> int:
     result = preferences.GetInt(settingName)
     if result == "":
         result = None
     return result
 
-def GetFloatSetting(settingName: str) -> int:
+def GetFloatSetting(settingName) -> float:
     result = preferences.GetFloat(settingName)
     if result == "":
         result = None
     return result
 
-
-def GetBoolSetting(settingName: str) -> bool:
-    result = preferences.GetBool(settingName)
-    if str(result).lower() == "none":
-        result = False
+def GetBoolSetting(settingName) -> bool:
+    result = None
+    settings = preferences.GetContents()
+    exists = False
+    if settings is not None:
+        for setting in settings:
+            if setting[0] == "Boolean" and setting[1] == settingName:
+                exists = True
+                break
+        if exists is True:
+            result = preferences.GetBool(settingName)
     return result
 
-
 def GetColorSetting(settingName: str) -> object:
-    from PySide.QtGui import QColor
-
     # Create a tuple from the int value of the color
     result = QColor.fromRgba(preferences.GetUnsigned(settingName)).toTuple()
 
-    # correct the order of the tuple and devide them by 255
+    # correct the order of the tuple and divide them by 255
     result = (result[3] / 255, result[0] / 255, result[1] / 255, result[2] / 255)
 
-    return result
+    return tuple(result)
 
+# endregion
 
-def SetStringSetting(settingName: str, value: str):
-    Text = translate(
-        "TitleBlock Workbench",
-        f"string setting not applied!!\n Settings was: {settingName} and value was {value}",
-    )
+# region - Functions to write settings to the FreeCAD Parameters
+#
+#
+def SetStringSetting(settingName, value: str):
     if value.lower() == "none":
-        if ENABLE_DEBUG is True:
-            Standard_Functions.Print(Text, "Log")
-            value = ""
+        value = ""
+    if value == "":
+        value = DefaultSettings[
+            settingName
+        ]  # pyright: ignore[reportAssignmentType]
     preferences.SetString(settingName, value)
+    App.saveParameter()
+    return
 
+def SetBoolSetting(settingName, value: bool):
+    preferences.SetBool(settingName, value)
+    App.saveParameter()
+    return
 
-def SetBoolSetting(settingName: str, value):
-    if value.lower() == "true":
-        Bool = True
-    if str(value).lower() == "none" or value.lower() != "true":
-        Text = translate(
-            "TitleBlock Workbench",
-            f"bool setting not applied!!\n Settings was: {settingName} and value was {value}",
-        )
-        if ENABLE_DEBUG is True:
-            Standard_Functions.Print(Text, "Log")
-        Bool = False
-    preferences.SetBool(settingName, Bool)
+def SetIntSetting(settingName, value: int):
+    # if str(value).lower() == "":
+        # value = int(DefaultSettings[settingName])
+    # if str(value).lower() != "":
+    preferences.SetInt(settingName, value)
+    App.saveParameter()
+    return
+
+def SetFloatSetting(settingName, value: float):
+    # if str(value).lower() == "":
+    #     value = float(DefaultSettings[settingName])
+    # if str(value).lower() != "":
+    preferences.SetFloat(settingName, value)
+    App.saveParameter()
+    return
+
+# endregion
 
 
 # endregion
@@ -104,9 +146,11 @@ def SetBoolSetting(settingName: str, value):
 # region -- All settings from the UI
 # BoM Settings
 CUSTOM_HEADERS = GetStringSetting("CustomHeader")
-if CUSTOM_HEADERS is "":
+if CUSTOM_HEADERS == "":
     CUSTOM_HEADERS = "Number;Qty;Label;Description;Parent;Remarks"
 DEBUG_HEADERS = GetStringSetting("DebugHeader")
+if DEBUG_HEADERS == "":
+    DEBUG_HEADERS = "Original label;Type;Internal name;Fullname;TypeId"
 
 # Import/Export location for columns
 IMPORT_LOCATION = GetStringSetting("ImportLocation")
@@ -116,27 +160,37 @@ SPREADSHEET_HEADERBACKGROUND = GetColorSetting("SpreadSheetHeaderBackGround")
 SPREADSHEET_HEADERFOREGROUND = GetColorSetting("SpreadSheetHeaderForeGround")
 SPREADSHEET_HEADERFONTSTYLE_BOLD = GetBoolSetting("SpreadsheetHeaderFontStyle_Bold")
 SPREADSHEET_HEADERFONTSTYLE_ITALIC = GetBoolSetting("SpreadsheetHeaderFontStyle_Italic")
-SPREADSHEET_HEADERFONTSTYLE_UNDERLINE = GetBoolSetting(
-    "SpreadsheetHeaderFontStyle_Underline"
-)
+SPREADSHEET_HEADERFONTSTYLE_UNDERLINE = GetBoolSetting("SpreadsheetHeaderFontStyle_Underline")
 SPREADSHEET_TABLEBACKGROUND_1 = GetColorSetting("SpreadSheetTableBackGround_1")
 SPREADSHEET_TABLEBACKGROUND_2 = GetColorSetting("SpreadSheetTableBackGround_2")
 SPREADSHEET_TABLEFOREGROUND = GetColorSetting("SpreadSheetTableForeGround")
 SPREADSHEET_TABLEFONTSTYLE_BOLD = GetBoolSetting("SpreadsheetTableFontStyle_Bold")
 SPREADSHEET_TABLEFONTSTYLE_ITALIC = GetBoolSetting("SpreadsheetTableFontStyle_Italic")
-SPREADSHEET_TABLEFONTSTYLE_UNDERLINE = GetBoolSetting(
-    "SpreadsheetTableFontStyle_Underline"
-)
+SPREADSHEET_TABLEFONTSTYLE_UNDERLINE = GetBoolSetting("SpreadsheetTableFontStyle_Underline")
 SPREADSHEET_COLUMNFONTSTYLE_BOLD = GetBoolSetting("SpreadsheetColumnFontStyle_Bold")
 SPREADSHEET_COLUMNFONTSTYLE_ITALIC = GetBoolSetting("SpreadsheetColumnFontStyle_Italic")
-SPREADSHEET_COLUMNFONTSTYLE_UNDERLINE = GetBoolSetting(
-    "SpreadsheetColumnFontStyle_Underline"
-)
+SPREADSHEET_COLUMNFONTSTYLE_UNDERLINE = GetBoolSetting("SpreadsheetColumnFontStyle_Underline")
 AUTOFIT_FACTOR = GetFloatSetting("AutoFitFactor")
+
+
+UNIT_POSITION = GetIntSetting("UnitPosition")
+if UNIT_POSITION is None:
+    UNIT_POSITION = DefaultSettings["UnitPosition"]
+    
 
 # Enable debug mode. This will enable additional report messages
 ENABLE_DEBUG = GetBoolSetting("EnableDebug")
 ENABLE_DEBUG_COLUMNS = GetBoolSetting("EnableDebugColumns")
+
+if GetBoolSetting("IncludeBodies") is None:
+    INCLUDE_BODIES = DefaultSettings["IncludeBodies"]
+    SetBoolSetting("IncludeBodies", INCLUDE_BODIES)
+INCLUDE_BODIES = GetBoolSetting("IncludeBodies")
+
+if GetBoolSetting("UseIndentation") is None:
+    USE_INDENTATION = DefaultSettings["UseIndentation"]
+    SetBoolSetting("UseIndentation", USE_INDENTATION)
+USE_INDENTATION = GetBoolSetting("UseIndentation")
 # endregion
 
 
@@ -217,13 +271,14 @@ def ReturnHeaders(CustomHeaders = None, DebugHeaders=None):
             # Add the cell and header as a dict item to the dict AdditionalHeaders
             Headers[Cell] = Header
             
-    if DebugHeaders is not None:
+    if DebugHeaders is not None and ENABLE_DEBUG_COLUMNS is True:
         DebugHeaderList = DebugHeaders.split(";")
         i = len(Headers.keys())
         for Header in DebugHeaderList:
+            i = i+1
             # Set the column
             Column = Standard_Functions.GetLetterFromNumber(
-                i + 1
+                i
             )
             # Set the cell
             Cell = f"{Column}1"
