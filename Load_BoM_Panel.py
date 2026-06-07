@@ -112,7 +112,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         )
 
         # This will create a connection between the pushbutton "CustomProp" and def "on_CustomProp_clicked"
-        self.form.CustomPropconnect(
+        self.form.CustomProp.connect(
             self.form.CustomProp,
             SIGNAL("pressed()"),
             self.on_CustomProp_clicked,
