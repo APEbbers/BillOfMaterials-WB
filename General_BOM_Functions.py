@@ -616,7 +616,7 @@ class General_BOM:
                     MaterialCompare = False            
             
             # if the material is equeal continue
-            if MaterialCompare is True:
+            if MaterialCompare is True or CompareMaterial is False:
                 # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
                 # If the itemnumber is more than one level deep:
                 if len(ItemNumber.split(".")) > 1:

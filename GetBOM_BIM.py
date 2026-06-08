@@ -104,7 +104,8 @@ class BomFunctions:
             "Part::Feature",
             "App::Part",
             "PartDesign::Body",
-            'App::GeometryPython'
+            'App::GeometryPython',
+            'App::DocumentObjectGroup'
         ]
 
         # Go through the list and compare the object ID's in the list with the ObjectId.
@@ -131,10 +132,10 @@ class BomFunctions:
         Returns:
                 True
         """
-        # Check if there are groups with items. create a list from it and add it to the docObjects.
-        for docObject in docObjects:
-            if docObject.TypeId == 'App::DocumentObjectGroup':
-                docObjects.extend(General_BOM.GetObjectsFromGroups(docObject))
+        # # Check if there are groups with items. create a list from it and add it to the docObjects.
+        # for docObject in docObjects:
+        #     if docObject.TypeId == 'App::DocumentObjectGroup':
+        #         docObjects.extend(General_BOM.GetObjectsFromGroups(docObject))
 
         for i in range(len(docObjects)):
             # Get the documentObject
@@ -209,10 +210,10 @@ class BomFunctions:
         Returns:
                 True
         """
-        # Check if there are groups with items. create a list from it and add it to the docObjects.
-        for ChildDocObject in ChilddocObjects:
-            if ChildDocObject.TypeId == 'App::DocumentObjectGroup':
-                ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(ChildDocObject))
+        # # Check if there are groups with items. create a list from it and add it to the docObjects.
+        # for ChildDocObject in ChilddocObjects:
+        #     if ChildDocObject.TypeId == 'App::DocumentObjectGroup':
+        #         ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(ChildDocObject))
 
         for i in range(len(ChilddocObjects)):
             # Get the childDocumentObject
@@ -244,7 +245,7 @@ class BomFunctions:
 
             # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
             # if childObject.TypeId == "App::Part":
-            if childObject.TypeId == 'App::GeometryPython':
+            if childObject.TypeId == 'App::GeometryPython' or childObject.TypeId == 'App::DocumentObjectGroup':
                 # Create a list with sub child objects as DocumentObjects
                 subChildObjects = []
                 # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
@@ -252,8 +253,8 @@ class BomFunctions:
                     # print(childObject.Group[j].TypeId + ", " + childObject.Group[j].Name)
                     # if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
                     subChildObjects.append(childObject.Group[j])
-                    if childObject.TypeId == 'App::DocumentObjectGroup':
-                        ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
+                    # if childObject.TypeId == 'App::DocumentObjectGroup':
+                    #     ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
 
                 if len(subChildObjects) > 0:
                     self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -335,6 +336,7 @@ class BomFunctions:
                 shadowItemNumber = itemNumber.rsplit(".", 1)[0]
                 # Define the shadow item.
                 shadowLabel = rowList["ObjectLabel"]
+                # shadowLabel = rowList["ObjectName"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Define the shadow body properties
@@ -358,7 +360,7 @@ class BomFunctions:
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
                         ObjectBasedPart=False,
-                        CompareMaterial=True,
+                        CompareMaterial=False,
                     )
                 )
 
@@ -400,6 +402,7 @@ class BomFunctions:
                     shadowItemNumber = "X"
                 # Define the shadow item.
                 shadowLabel = rowList["ObjectLabel"]
+                # shadowLabel = rowList["ObjectName"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Define the shadow properties
@@ -423,7 +426,7 @@ class BomFunctions:
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
                         ObjectBasedPart=False,
-                        CompareMaterial=True,
+                        CompareMaterial=False,
                     )
                 )
 
