@@ -128,7 +128,7 @@ class General_BOM:
             # set the width based on the headers
 
             Standard_Functions.SetColumnWidth_SpreadSheet(
-                sheet=sheet, column=key[:1], cellValue=value
+                sheet=sheet, column=key[:1], cellValue=value, factor=Settings_BoM.AUTOFIT_FACTOR
             )
 
         # Style the Top row
@@ -246,9 +246,10 @@ class General_BOM:
                                 sheet.set(Column + str(Row), "'" + str(value))
                             if Settings_BoM.UNIT_POSITION == 0:
                                 value = Headers[Column + "1"]
-                                if unit != "" or unit is None:
+                                if unit != "" or unit is not None:
                                     value = Headers[Column + "1"] + " [" + unit + "]"
                                 sheet.set(Column + "1", value)
+                                Headers[Column + "1"] = value
 
                     except Exception as e:
                         if Settings_BoM.ENABLE_DEBUG is True:
@@ -266,7 +267,7 @@ class General_BOM:
 
                 if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
                     Standard_Functions.SetColumnWidth_SpreadSheet(
-                        sheet=sheet, column=Column, cellValue=Value
+                        sheet=sheet, column=Column, cellValue=Value, factor=Settings_BoM.AUTOFIT_FACTOR
                     )
 
         # Allign the columns
