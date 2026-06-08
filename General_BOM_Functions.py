@@ -609,7 +609,7 @@ class General_BOM:
                 pass
             
             # Set MaterialCompare to True as default
-            MaterialCompare = False
+            MaterialCompare = True
             # if material needs to be taken into account, compare the material
             if CompareMaterial is True:
                 if BomListItem_Properties != Item_Properties:
