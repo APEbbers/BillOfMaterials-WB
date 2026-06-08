@@ -245,7 +245,7 @@ class General_BOM:
                             if Settings_BoM.UNIT_POSITION != 1:
                                 sheet.set(Column + str(Row), "'" + str(value))
                             if Settings_BoM.UNIT_POSITION == 0:
-                                value = f"{Headers[Column + "1"]} [{unit}]"
+                                value = Headers[Column + "1"] + "[" + unit + "]"
                                 sheet.set(Column + "1", value)
 
                     except Exception as e:
