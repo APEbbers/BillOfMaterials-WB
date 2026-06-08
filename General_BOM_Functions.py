@@ -246,7 +246,7 @@ class General_BOM:
                                 sheet.set(Column + str(Row), "'" + str(value))
                             if Settings_BoM.UNIT_POSITION == 0:
                                 value = Headers[Column + "1"]
-                                if unit != "" or unit is not None:
+                                if unit != "" and unit is not None:
                                     value = Headers[Column + "1"] + " [" + unit + "]"
                                 sheet.set(Column + "1", value)
                                 Headers[Column + "1"] = value
