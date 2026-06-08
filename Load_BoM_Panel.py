@@ -168,9 +168,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             SIGNAL("pressed()"),
             self.on_CreateFirstLevel_clicked,
         )
-
-        self.form.IncludeBodies.checkStateChanged.connect(self.on_IncludeBodies_Clicked)
-        self.form.IndentedNumbering.checkStateChanged.connect(self.on_UseIndentation_Clicked)
+        
+        self.form.IncludeBodies.stateChanged.connect(self.on_IncludeBodies_Clicked)
+        self.form.IndentedNumbering.stateChanged.connect(self.on_UseIndentation_Clicked)
 
         # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
         self.form.CreateRaw.connect(
