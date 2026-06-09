@@ -31,6 +31,7 @@ from datetime import datetime
 import os
 import Settings_BoM
 import getpass
+import decimal
 
 from PySide.QtCore import Qt, QObject, Signal
 from PySide.QtWidgets import QLabel, QMainWindow, QProgressBar
@@ -236,9 +237,7 @@ class General_BOM:
                                     Column + str(Row),
                                     os.path.basename(rowList["DocumentObject"].Name))                      
                         else:
-                            value = self.ReturnViewProperty(
-                                    rowList["DocumentObject"], Headers[Column + "1"]
-                                )[0]
+                            value = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[0]
                             unit = self.ReturnViewProperty(rowList["DocumentObject"], Headers[Column + "1"])[1]
                             if Settings_BoM.UNIT_POSITION == 1:
                                 sheet.set(Column + str(Row), "'" + str(value) +  unit)
@@ -249,11 +248,11 @@ class General_BOM:
                                 if unit != "" and unit is not None:
                                     value = Headers[Column + "1"] + " [" + unit + "]"
                                 sheet.set(Column + "1", value)
-                                Headers[Column + "1"] = value
+                                # Headers[Column + "1"] = value
 
                     except Exception as e:
-                        if Settings_BoM.ENABLE_DEBUG is True:
-                            print(e)
+                        # if Settings_BoM.ENABLE_DEBUG is True:
+                        print(e)
                         pass
 
             # Create the total number of items for the summary
@@ -1139,15 +1138,16 @@ class General_BOM:
 
         # if there is a linked object, use that.
         # Otherwise use the provided document.
-        try:
-            DocObject_Linked = DocObject.getLinkedObject()
-        except Exception:
-            pass
+        # try:
+        #     if DocObject.getLinkedObject() is not None:
+        #         DocObject = DocObject.getLinkedObject()
+        # except Exception:
+        #     pass
         
         isMaterialProperty = False
         try:
             MaterialProperties = {}
-            MaterialProperties = DocObject_Linked.ShapeMaterial.Properties
+            MaterialProperties = DocObject.ShapeMaterial.Properties
             for key in MaterialProperties.keys():
                 if "Material - " + key == PropertyName:
                     isMaterialProperty = True
@@ -1172,47 +1172,89 @@ class General_BOM:
 
             if isShapeProperty is False:             
                 try:
+                    unit = ""
                     try:
-                        resultValue = DocObject_Linked.getPropertyByName(PropertyName)
+                        resultValue = DocObject.getPropertyByName(PropertyName)                                                                 
                     except Exception:
-                        resultValue = None
+                        resultValue = None                    
+                        
+                    try:
+                        # if isinstance(resultValue, App.Units.Quantity):           
+                        value = resultValue.UserString.split(" ")[0]
+                        unit = resultValue.UserString.split(" ")[1]
+                        # value = str(resultValue).split(" ")[0]
+                        # unit = str(resultValue).split(" ")[1]
+                            
+                        # print(type(resultValue))
+                        print(value)
+                        print(unit)
+                        # resultValue = str(value)
+                        return (value, unit)
+                    except Exception as e:                        
+                        print(DocObject.Label + ", " + e.with_traceback(e.__traceback__))
+                        pass
 
                     if isinstance(resultValue, int):
                         resultValue = str(resultValue)
                     elif isinstance(resultValue, list):
-                        resultString = ""
-                        for item in resultValue:
-                            resultString = resultString + self.ObjectToString(item) + ", "
+                        # resultString = ""
+                        # for item in resultValue:
+                        #     resultString = resultString + self.ObjectToString(item) + ", "
                         resultValue = str(resultValue)
                     elif isinstance(resultValue, dict):
-                        resultString = ""
-                        for item in resultValue:
-                            resultString = resultString + self.ObjectToString(item) + ", "
+                        # resultString = ""
+                        # for item in resultValue:
+                        #     resultString = resultString + self.ObjectToString(item) + ", "
                         resultValue = str(resultValue)
                     else:
-                        resultValue = str(resultValue)
+                        resultValue = str(resultValue)     
+                                           
+                        # value = None
+                        # try:
+                        #     if resultValue is not None:
+                        #         value = decimal.Decimal(resultValue.split(" ")[0].replace("'", ""))
+                        #         unit = resultValue.split(" ")[1]
+                        #         return (str(value), unit)
+                        # except Exception:
+                        #     resultValue = str(DocObject_Linked.getPropertyByName(PropertyName))
+                        #     pass                       
 
                     if resultValue is None or resultValue == "None":
                         resultValue = ""
+                        
+                    # try:
+                    #     result_1 = str(resultValue).split(" ")[0]
+                    #     result_2 = str(resultValue).split(" ")[1]
+                    #     if result_1 != "":
+                    #         resultValue = result_1
+                    #         unit = result_2
+                    #         print(resultValue)
+                    #         print(unit)
+                    # except Exception as e:
+                    #     print(e.with_traceback(e.__traceback__))
+                    #     resultValue = DocObject.getPropertyByName(PropertyName)
+                    #     unit = "" 
+                    #     pass
 
-                    result = (resultValue, "")
+                    result = (resultValue, unit)
+                    # print(result)
                     return result
-                except Exception:
+                except Exception as e:
                     return ("", "")
 
             if isShapeProperty is True:
                 try:
-                    shapeObject = DocObject_Linked.Shape
+                    shapeObject = DocObject.Shape
 
                     # Get the value from the shape
                     #
                     # Get the boundingbox from the item as if it is not transformed
-                    BoundingBox = DocObject_Linked.ViewObject.getBoundingBox("", False)
+                    BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
                     try:
-                        if DocObject_Linked.TypeId.endswith("Body"):
+                        if DocObject.TypeId.endswith("Body"):
                             BoundingBox = shapeObject.BoundBox
                     except Exception:
-                        BoundingBox = DocObject_Linked.ViewObject.getBoundingBox("", False)
+                        BoundingBox = DocObject.ViewObject.getBoundingBox("", False)
                         print("viewObjects boundingbox is used")
                         pass
 
