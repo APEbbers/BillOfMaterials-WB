@@ -1182,13 +1182,7 @@ class General_BOM:
                         # if isinstance(resultValue, App.Units.Quantity):           
                         value = resultValue.UserString.split(" ")[0]
                         unit = resultValue.UserString.split(" ")[1]
-                        # value = str(resultValue).split(" ")[0]
-                        # unit = str(resultValue).split(" ")[1]
-                            
-                        # print(type(resultValue))
-                        print(value)
-                        print(unit)
-                        # resultValue = str(value)
+
                         return (value, unit)
                     except Exception as e:                        
                         print(DocObject.Label + ", " + e.with_traceback(e.__traceback__))
