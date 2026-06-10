@@ -253,8 +253,8 @@ class General_BOM:
                                     sheet.set(Column + "1", value)
 
                     except Exception as e:
-                        # if Settings_BoM.ENABLE_DEBUG is True:
-                        print(e)
+                        if Settings_BoM.ENABLE_DEBUG is True:
+                            print(e)
                         pass
 
             # Create the total number of items for the summary
@@ -949,11 +949,9 @@ class General_BOM:
                     return "A2plus"
             except Exception:
                 pass
-        # print(RootObjects)
         # In the other workbenches go through the RootObjects
         for Object in RootObjects:
             try:
-                print(f"{Object.AssemblyType}, {Object.Type}")
                 if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
                     resultList.append("Assembly4")
             except Exception:
@@ -1187,8 +1185,9 @@ class General_BOM:
                         unit = resultValue.UserString.split(" ")[1]
 
                         return (value, unit)
-                    except Exception as e:                        
-                        print(DocObject.Label + ", " + e.with_traceback(e.__traceback__))
+                    except Exception as e:
+                        if Settings_BoM.ENABLE_DEBUG:                    
+                            print(DocObject.Label + ", " + e.with_traceback(e.__traceback__))
                         pass
 
                     if isinstance(resultValue, int):
