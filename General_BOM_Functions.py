@@ -248,8 +248,8 @@ class General_BOM:
                                 value = Headers[Column + "1"]
                                 if unit != "" and unit is not None:
                                     value = Headers[Column + "1"] + " [" + unit + "]"
-                                sheet.set(Column + "1", value)
-                                # Headers[Column + "1"] = value
+                                if Headers[Column + "1"] == "":
+                                    sheet.set(Column + "1", value)
 
                     except Exception as e:
                         if Settings_BoM.ENABLE_DEBUG is True:
