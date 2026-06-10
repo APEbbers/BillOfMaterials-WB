@@ -35,6 +35,7 @@
       <depend optional="False" type="python">getpass</depend>
       <depend optional="False" type="python">matplotlib</depend>
       <depend optional="False" type="python">math</depend>
+      <!-- <depend optional="False" type="python">shapely</depend> -->
       <classname>BillOfMaterialsWB</classname>
       <subdirectory>./</subdirectory>
     </workbench>

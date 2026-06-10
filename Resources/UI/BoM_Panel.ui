@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>512</width>
-    <height>1221</height>
+    <height>1144</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -359,7 +359,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>30</height>
+                <height>40</height>
                </size>
               </property>
               <property name="font">
@@ -369,7 +369,7 @@
                </font>
               </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Select an object in the tree and enter an description and/or remark. Press &amp;quot;Update&amp;quot; to create or update the property. &lt;/span&gt;After updating the BoM, the updated property will be visible. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select an object in the tree and enter an description and/or remark. Press &amp;quot;Update&amp;quot; to create or update the property. After updating the BoM, the updated property will be visible in properties panel and will be added to the BoM when generated. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="wordWrap">
                <bool>true</bool>
@@ -1102,7 +1102,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../Icons.qrc"/>
+  <include location="../../../../../../../../home/paul/.local/share/FreeCAD/v1-2/Mod/BillOfMaterials-WB/Icons.qrc"/>
  </resources>
  <connections/>
 </ui>

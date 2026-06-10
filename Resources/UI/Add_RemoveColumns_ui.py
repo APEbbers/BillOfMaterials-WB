@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'Add_RemoveColumnskOsQur.ui'
+## Form generated from reading UI file 'Add_RemoveColumnsaeJifD.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -25,7 +25,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(733, 624)
+        Form.resize(733, 636)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -99,7 +99,7 @@ class Ui_Form(object):
         self.label_4.setObjectName(u"label_4")
         sizePolicy.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
         self.label_4.setSizePolicy(sizePolicy)
-        self.label_4.setWordWrap(False)
+        self.label_4.setWordWrap(True)
         self.label_4.setMargin(0)
         self.label_4.setIndent(-4)
 
@@ -368,7 +368,7 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
         self.LoadProperties.setText(QCoreApplication.translate("Form", u"Load", None))
-        self.label_4.setText(QCoreApplication.translate("Form", u"<html><head/><body><p>Select an object in the tree and press &quot;Load&quot; to show the available columns for that object type.</p></body></html>", None))
+        self.label_4.setText(QCoreApplication.translate("Form", u"<html><head/><body><p><span style=\" font-size:8pt;\">Select an object in the tree and press &quot;Load&quot; to show the available columns for that object type. Each column is based on a property present in the properties panel for the selected object.</span></p></body></html>", None))
         self.RemoveItem.setText("")
         self.Sort_ZA.setText("")
         self.label_2.setText(QCoreApplication.translate("Form", u"Selected columns:", None))

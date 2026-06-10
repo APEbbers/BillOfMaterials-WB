@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>733</width>
-    <height>624</height>
+    <height>636</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -144,10 +144,10 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select an object in the tree and press &amp;quot;Load&amp;quot; to show the available columns for that object type.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Select an object in the tree and press &amp;quot;Load&amp;quot; to show the available columns for that object type. Each column is based on a property present in the properties panel for the selected object.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="wordWrap">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="margin">
               <number>0</number>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'BoM_PanelWdmGjF.ui'
+## Form generated from reading UI file 'BoM_PanelQycEtP.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.1
 ##
@@ -26,7 +26,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(512, 1221)
+        Dialog.resize(512, 1144)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -214,7 +214,7 @@ class Ui_Dialog(object):
 
         self.label_13 = QLabel(self.CustomProperties_Panel)
         self.label_13.setObjectName(u"label_13")
-        self.label_13.setMinimumSize(QSize(0, 30))
+        self.label_13.setMinimumSize(QSize(0, 40))
         font = QFont()
         font.setPointSize(8)
         font.setItalic(True)
@@ -589,7 +589,7 @@ class Ui_Dialog(object):
         self.UpdateProperties.setText(QCoreApplication.translate("Dialog", u"Update", None))
         self.label_9.setText(QCoreApplication.translate("Dialog", u"Remarks", None))
         self.label_8.setText(QCoreApplication.translate("Dialog", u"Description", None))
-        self.label_13.setText(QCoreApplication.translate("Dialog", u"<html><head/><body><p><span style=\" font-style:italic;\">Select an object in the tree and enter an description and/or remark. Press &quot;Update&quot; to create or update the property. </span>After updating the BoM, the updated property will be visible. </p></body></html>", None))
+        self.label_13.setText(QCoreApplication.translate("Dialog", u"<html><head/><body><p>Select an object in the tree and enter an description and/or remark. Press &quot;Update&quot; to create or update the property. After updating the BoM, the updated property will be visible in properties panel and will be added to the BoM when generated. </p></body></html>", None))
         self.toolButton_Settings.setText(QCoreApplication.translate("Dialog", u"Settings", None))
         self.label_12.setText(QCoreApplication.translate("Dialog", u"<html><head/><body><p>Set deepest level for BoM</p></body></html>", None))
         self.LoadColumns.setText(QCoreApplication.translate("Dialog", u"Load", None))
