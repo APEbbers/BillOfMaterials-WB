@@ -398,7 +398,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         else:
             self.form.IndentedNumbering.setCheckState(Qt.CheckState.Unchecked)
         
+        self.form.UnitPosition.setCurrentIndex(Settings_BoM.UNIT_POSITION)
         return
+
         # endregion
     
     # Define Icon.

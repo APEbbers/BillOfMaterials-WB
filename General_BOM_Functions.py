@@ -23,6 +23,7 @@
 
 
 import FreeCAD as App
+import FreeCADGui as Gui
 import Standard_Functions_BOM_WB as Standard_Functions
 import StyleMapping_BOM_WB
 from Settings_BoM import CUSTOM_HEADERS
@@ -450,7 +451,8 @@ class General_BOM:
                     title="Bill of Materials",
                     style=0,
                 )
-
+        # Activate the BoM
+        Gui.Selection.addSelection(doc.Name, "BoM")
         return
 
     @classmethod
@@ -1138,11 +1140,11 @@ class General_BOM:
 
         # if there is a linked object, use that.
         # Otherwise use the provided document.
-        # try:
-        #     if DocObject.getLinkedObject() is not None:
-        #         DocObject = DocObject.getLinkedObject()
-        # except Exception:
-        #     pass
+        try:
+            if DocObject.getLinkedObject() is not None:
+                DocObject = DocObject.getLinkedObject()
+        except Exception:
+            pass
         
         isMaterialProperty = False
         try:
@@ -1177,9 +1179,9 @@ class General_BOM:
                         resultValue = DocObject.getPropertyByName(PropertyName)                                                                 
                     except Exception:
                         resultValue = None                    
-                        
-                    try:
-                        # if isinstance(resultValue, App.Units.Quantity):           
+                    
+                    # Check if the value contains numbers and units. if so return them
+                    try:      
                         value = resultValue.UserString.split(" ")[0]
                         unit = resultValue.UserString.split(" ")[1]
 
@@ -1202,33 +1204,9 @@ class General_BOM:
                         resultValue = str(resultValue)
                     else:
                         resultValue = str(resultValue)     
-                                           
-                        # value = None
-                        # try:
-                        #     if resultValue is not None:
-                        #         value = decimal.Decimal(resultValue.split(" ")[0].replace("'", ""))
-                        #         unit = resultValue.split(" ")[1]
-                        #         return (str(value), unit)
-                        # except Exception:
-                        #     resultValue = str(DocObject_Linked.getPropertyByName(PropertyName))
-                        #     pass                       
 
                     if resultValue is None or resultValue == "None":
                         resultValue = ""
-                        
-                    # try:
-                    #     result_1 = str(resultValue).split(" ")[0]
-                    #     result_2 = str(resultValue).split(" ")[1]
-                    #     if result_1 != "":
-                    #         resultValue = result_1
-                    #         unit = result_2
-                    #         print(resultValue)
-                    #         print(unit)
-                    # except Exception as e:
-                    #     print(e.with_traceback(e.__traceback__))
-                    #     resultValue = DocObject.getPropertyByName(PropertyName)
-                    #     unit = "" 
-                    #     pass
 
                     result = (resultValue, unit)
                     # print(result)

@@ -142,58 +142,58 @@ class BomFunctions:
             Object = docObjects[i]
 
             # If the documentObject is one of the allowed types, continue
-            # if self.AllowedObjectType(objectID=Object.TypeId) is True and Object.Visibility is True:
-            # Increase the itemnumber
-            ItemNumber = int(ItemNumber) + 1
+            if self.AllowedObjectType(objectID=Object.TypeId) is True and Object.Visibility is True:
+                # Increase the itemnumber
+                ItemNumber = int(ItemNumber) + 1
 
-            # Increase the global startrow to make sure the data ends up in the next row
-            self.StartRow = self.StartRow + 1
+                # Increase the global startrow to make sure the data ends up in the next row
+                self.StartRow = self.StartRow + 1
 
-            # define the itemnumber string. for toplevel this is equel to Itemnumber.
-            # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
-            ItemNumberString = str(ItemNumber)
-            # If there is a parentnumber (like 1.1, add it as prefix.)
-            if ParentNumber != "":
-                ItemNumberString = str(ParentNumber)
+                # define the itemnumber string. for toplevel this is equel to Itemnumber.
+                # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
+                ItemNumberString = str(ItemNumber)
+                # If there is a parentnumber (like 1.1, add it as prefix.)
+                if ParentNumber != "":
+                    ItemNumberString = str(ParentNumber)
 
-            # Get the linked object if there is one.
+                # Get the linked object if there is one.
 
-            # Create a rowList
-            rowList = {
-                "ItemNumber": ItemNumberString,
-                "DocumentObject": Object,
-                "ObjectLabel": Object.Label,
-                "ObjectName": Object.Name,
-                "Qty": 1,
-                "Type": "Part",
-            }
+                # Create a rowList
+                rowList = {
+                    "ItemNumber": ItemNumberString,
+                    "DocumentObject": Object,
+                    "ObjectLabel": Object.Label,
+                    "ObjectName": Object.Name,
+                    "Qty": 1,
+                    "Type": "Part",
+                }
 
-            # Add the rowList to the mainList
-            self.mainList.append(rowList)
+                # Add the rowList to the mainList
+                self.mainList.append(rowList)
 
-            # If the object is an container, go through the sub items, (a.k.a child objects)
-            # if Object.TypeId == "App::Part":
-            if Object.TypeId == 'App::GeometryPython' or (Object.TypeId == 'Part::FeaturePython' and Object.Name.lower() == "site"):
-                # Create a list with child objects as DocumentObjects
-                childObjects = []
-                # Make sure that the list is empty. (probally overkill)
-                childObjects.clear()
+                # If the object is an container, go through the sub items, (a.k.a child objects)
+                # if Object.TypeId == "App::Part":
+                if Object.TypeId == 'App::GeometryPython' or (Object.TypeId == 'Part::FeaturePython' and Object.Name.lower() == "site"):
+                    # Create a list with child objects as DocumentObjects
+                    childObjects = []
+                    # Make sure that the list is empty. (probally overkill)
+                    childObjects.clear()
 
-                # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                for j in range(len(Object.Group)):
-                    # if self.AllowedObjectType(Object.Group[j].TypeId) is True:
-                    childObjects.append(Object.Group[j])
+                    # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                    for j in range(len(Object.Group)):
+                        # if self.AllowedObjectType(Object.Group[j].TypeId) is True:
+                        childObjects.append(Object.Group[j])
 
-                if len(childObjects) > 0:
-                    self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
-                    # Go the the child objects with a separate function for the child objects
-                    # This way you can go through multiple levels
-                    self.GoThrough_ChildObjects(
-                        ChilddocObjects=childObjects,
-                        sheet=sheet,
-                        ChildItemNumber=0,
-                        ParentNumber=ItemNumberString,
-                    )
+                    if len(childObjects) > 0:
+                        self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                        # Go the the child objects with a separate function for the child objects
+                        # This way you can go through multiple levels
+                        self.GoThrough_ChildObjects(
+                            ChilddocObjects=childObjects,
+                            sheet=sheet,
+                            ChildItemNumber=0,
+                            ParentNumber=ItemNumberString,
+                        )
         return
 
     # Sub function of GoThrough_Objects.
@@ -223,48 +223,48 @@ class BomFunctions:
             self.StartRow = self.StartRow + 1
 
             # If the childDocumentObject is one of the allowed types, continue
-            # if self.AllowedObjectType(objectID=childObject.TypeId) is True and childObject.Visibility is True:
+            if self.AllowedObjectType(objectID=childObject.TypeId) is True and childObject.Visibility is True:
                 # Increase the itemnumber for the child
-            ChildItemNumber = int(ChildItemNumber) + 1
+                ChildItemNumber = int(ChildItemNumber) + 1
 
-            # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
-            ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
-            
-            # Create a rowList
-            rowList = {
-                "ItemNumber": ItemNumberString,
-                "DocumentObject": childObject,
-                "ObjectLabel": childObject.Label,
-                "ObjectName": childObject.Name,
-                "Qty": 1,
-                "Type": "Part",
-            }
+                # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
+                ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
+                
+                # Create a rowList
+                rowList = {
+                    "ItemNumber": ItemNumberString,
+                    "DocumentObject": childObject,
+                    "ObjectLabel": childObject.Label,
+                    "ObjectName": childObject.Name,
+                    "Qty": 1,
+                    "Type": "Part",
+                }
 
-            # add the rowList to the mainList
-            self.mainList.append(rowList)
+                # add the rowList to the mainList
+                self.mainList.append(rowList)
 
-            # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
-            # if childObject.TypeId == "App::Part":
-            if childObject.TypeId == 'App::GeometryPython' or childObject.TypeId == 'App::DocumentObjectGroup':
-                # Create a list with sub child objects as DocumentObjects
-                subChildObjects = []
-                # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
-                for j in range(len(childObject.Group)):
-                    # print(childObject.Group[j].TypeId + ", " + childObject.Group[j].Name)
-                    # if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
-                    subChildObjects.append(childObject.Group[j])
-                    # if childObject.TypeId == 'App::DocumentObjectGroup':
-                    #     ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
+                # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
+                # if childObject.TypeId == "App::Part":
+                if childObject.TypeId == 'App::GeometryPython' or childObject.TypeId == 'App::DocumentObjectGroup':
+                    # Create a list with sub child objects as DocumentObjects
+                    subChildObjects = []
+                    # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
+                    for j in range(len(childObject.Group)):
+                        # print(childObject.Group[j].TypeId + ", " + childObject.Group[j].Name)
+                        # if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
+                        subChildObjects.append(childObject.Group[j])
+                        # if childObject.TypeId == 'App::DocumentObjectGroup':
+                        #     ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
 
-                if len(subChildObjects) > 0:
-                    self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
-                    # Go the the sub child objects with this same function
-                    self.GoThrough_ChildObjects(
-                        ChilddocObjects=subChildObjects,
-                        sheet=sheet,
-                        ChildItemNumber=0,
-                        ParentNumber=ItemNumberString,
-                    )
+                    if len(subChildObjects) > 0:
+                        self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                        # Go the the sub child objects with this same function
+                        self.GoThrough_ChildObjects(
+                            ChilddocObjects=subChildObjects,
+                            sheet=sheet,
+                            ChildItemNumber=0,
+                            ParentNumber=ItemNumberString,
+                        )
         return
 
     # endregion
