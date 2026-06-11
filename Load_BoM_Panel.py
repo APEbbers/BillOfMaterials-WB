@@ -193,7 +193,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             SIGNAL("pressed()"),
             self.on_BetaFunctions_clicked,
         )
-        self.form.IncludeBodies.EnableMixedBoM.connect(self.on_EnableMixedBoM_Clicked)
+        self.form.EnableMixedBoM.connect(self.on_EnableMixedBoM_Clicked)
         # endregion
 
         # region - Debug settings
