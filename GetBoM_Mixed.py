@@ -2232,7 +2232,7 @@ class BomFunctions:
         IncludeBodies=False,
         IndentNumbering=True,
         DebugMode=False,
-    )
+    ):
         """_summary_
 
         Args:
