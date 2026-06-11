@@ -56,6 +56,7 @@ DefaultSettings = {
     "EnableDebugColumns": False,
     "IncludeBodies": False,
     "UseIndentation": True,
+    "EnableMixedBoM": False,
 }
 
 # region -- Functions to read the settings from the FreeCAD Parameters
@@ -163,6 +164,12 @@ def WriteMissingSettings():
 # endregion
 
 # region -- All settings from the UI
+# Beta settings
+ENABLE_MIXED_BOM = GetBoolSetting("EnableMixedBoM")
+if ENABLE_MIXED_BOM is None:
+    ENABLE_MIXED_BOM = DefaultSettings["EnableMixedBoM"]
+    SetBoolSetting("EnableMixedBoM", ENABLE_MIXED_BOM)
+
 # BoM Settings
 CUSTOM_HEADERS = GetStringSetting("CustomHeader")
 if CUSTOM_HEADERS == "":

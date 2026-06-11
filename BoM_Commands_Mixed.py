@@ -57,7 +57,7 @@ class CreatePartsOnlyBOM_MIXED_Class:
         if Answer == "yes":
             IncludeBodies = True
 
-        BoM = BomFunctions.CreateBoM(
+        BoM = BomFunctions.Start(
             command="PartsOnly",
             IncludeBodies=IncludeBodies,
             DebugMode=False,
@@ -112,7 +112,7 @@ class CreateSummarizedBOM_MIXED_Class:
         if Answer == "yes":
             IncludeBodies = True
 
-        BoM = BomFunctions.CreateBoM(
+        BoM = BomFunctions.Start(
             command="Summarized",
             IncludeBodies=IncludeBodies,
             DebugMode=False,
@@ -167,7 +167,7 @@ class CreateTotalBOM_MIXED_Class:
         if Answer == "yes":
             IncludeBodies = True
 
-        BoM = BomFunctions.CreateBoM(
+        BoM = BomFunctions.Start(
             command="Total",
             Level=0,
             IncludeBodies=IncludeBodies,
@@ -224,7 +224,7 @@ class CreateRawBOM_MIXED_Class:
         if Answer == "yes":
             IncludeBodies = True
 
-        BoM = BomFunctions.CreateBoM(
+        BoM = BomFunctions.Start(
             command="Raw",
             IncludeBodies=IncludeBodies,
             IndentNumbering=True,

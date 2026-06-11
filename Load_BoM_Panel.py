@@ -184,6 +184,16 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 
         self.form.LoadColumns.connect(self.form.LoadColumns, SIGNAL("pressed()"), self.on_LoadColumns_clicked)
         self.form.ColumnsConfigList.currentTextChanged.connect(self.on_ColumnsConfigList_currentTextChanged)
+                
+        # endregion
+
+        # region - Beta functions
+        self.form.BetaFunctions.connect(
+            self.form.BetaFunctions,
+            SIGNAL("pressed()"),
+            self.on_BetaFunctions_clicked,
+        )
+        self.form.IncludeBodies.EnableMixedBoM.connect(self.on_EnableMixedBoM_Clicked)
         # endregion
 
         # region - Debug settings
@@ -482,6 +492,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             webbrowser.open(AboutAdress, new=2, autoraise=True)
         return
     
+    # Hide or show the beta properites
+    def on_BetaFunctions_clicked(self):
+        if self.form.BetaFunctions_Panel .isHidden() is False:
+            self.form.BetaFunctions_Panel.setHidden(True)
+        else:
+            self.form.BetaFunctions_Panel.setHidden(False)
+    
     # Hide or show the custom properites
     def on_CustomProp_clicked(self):
         if self.form.CustomProperties_Panel.isHidden() is False:
@@ -549,6 +566,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
     def on_CreateFirstLevel_clicked(self):
         self.CreateBOM("First level BoM")
+        return
+    
+    def on_EnableMixedBoM_Clicked(self):
+        if self.form.EnableMixedBoM.isChecked():
+            Settings_BoM.SetBoolSetting("EnableMixedBoM", True)
+        else:
+            Settings_BoM.SetBoolSetting("EnableMixedBoM", False)
         return
     
     def on_IncludeBodies_Clicked(self):
@@ -653,6 +677,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         import GetBOM_A2plus
         import GetBOM_MultiBody
         import GetBOM_BIM
+        import GetBoM_Mixed
         
         # Activate the document which was active when this command started.
         try:
@@ -710,41 +735,59 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             Command = "Raw"
 
         # Get the correct BoM functions based on the  selected assembly type
-        if AssemblyType_Selected == "Assembly 4":
-            GetBOM_A4.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                EnableQuestion=False,
-                CheckAssemblyType=not self.manualChange,
-            )
-        if AssemblyType_Selected == "App:LinkGroup":
-            GetBOM_AppLink.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                EnableQuestion=False,
-                CheckAssemblyType=not self.manualChange,
-            )
-        if AssemblyType_Selected == "App:Part":
-            GetBOM_AppPart.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                CheckAssemblyType=not self.manualChange,
-            )
-        if AssemblyType_Selected == "Internal assembly":
-            GetBOM_INTERNAL.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                EnableQuestion=False,
-                CheckAssemblyType=not self.manualChange,
-            )
+        if Settings_BoM.ENABLE_MIXED_BOM is False:
+            if AssemblyType_Selected == "Assembly 4":
+                GetBOM_A4.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    EnableQuestion=False,
+                    CheckAssemblyType=not self.manualChange,
+                )
+            if AssemblyType_Selected == "App:LinkGroup":
+                GetBOM_AppLink.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    EnableQuestion=False,
+                    CheckAssemblyType=not self.manualChange,
+                )
+            if AssemblyType_Selected == "App:Part":
+                GetBOM_AppPart.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    CheckAssemblyType=not self.manualChange,
+                )
+            if AssemblyType_Selected == "Internal assembly":
+                GetBOM_INTERNAL.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    EnableQuestion=False,
+                    CheckAssemblyType=not self.manualChange,
+                )
+            if AssemblyType_Selected == "Assembly 3":
+                GetBOM_A3.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    EnableQuestion=False,
+                    CheckAssemblyType=not self.manualChange,
+                )
+        if Settings_BoM.ENABLE_MIXED_BOM:
+            GetBoM_Mixed.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    DebugMode=Settings_BoM.ENABLE_DEBUG
+                )
         if AssemblyType_Selected == "A2plus":
             GetBOM_A2plus.BomFunctions.Start(
                 command=Command,
@@ -752,16 +795,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 IncludeBodies=IncludeBodies_Checked,
                 IndentNumbering=UseIndent_Checked,
                 CheckAssemblyType=not self.manualChange,
-            )
-        if AssemblyType_Selected == "Assembly 3":
-            GetBOM_A3.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                EnableQuestion=False,
-                CheckAssemblyType=not self.manualChange,
-            )
+            )        
         if AssemblyType_Selected == "Arch":
             GetBOM_BIM.BomFunctions.Start(
                 command=Command,

@@ -2209,7 +2209,7 @@ class BomFunctions:
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
-    def CreateBoM(
+    def Start(
         self,
         command="",
         Level=0,
