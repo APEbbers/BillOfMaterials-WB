@@ -1739,7 +1739,7 @@ class BomFunctions:
 
     # One Print function for all console prints
     @classmethod
-    def __Print(Input: str, Type: str = ""):
+    def __Print(self, Input: str, Type: str = ""):
         if Type == "Warning":
             App.Console.PrintWarning(Input + "\n")
         elif Type == "Error":
