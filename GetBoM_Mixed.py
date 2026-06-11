@@ -1101,15 +1101,9 @@ class BomFunctions:
                                 # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                                 for j in range(len(childObject.getSubObjects())):
                                     if childObject.getSubObjects()[j] is not None:
-                                        subchildObjects.append(
-                                            childObject.getSubObject(
-                                                childObject.getSubObjects()[j], 1
-                                            ),
-                                        )
+                                        subchildObjects.append(childObject.getSubObject(childObject.getSubObjects()[j], 1))
                                 if len(subchildObjects) > 0:
-                                    self.__mainList[len(self.__mainList) - 1][
-                                        "Type"
-                                    ] = AssemblyType
+                                    self.__mainList[len(self.__mainList) - 1]["Type"] = AssemblyType
                                     # Go the the child objects with a separate function for the child objects
                                     # This way you can go through multiple levels
                                     self.__GoThrough_ChildObjects(
@@ -1217,7 +1211,7 @@ class BomFunctions:
     # Function for the a2plus WB. If an items is an duplicate but has a different lable than the first occurrence.
     # # The item will be replaced by the first occurrence. This way they can be summarized.
     @classmethod
-    def __ReturnDuplicates_a2p(self) -> list:
+    def ReturnDuplicates_a2p(self) -> list:
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.__mainList.copy()
 
@@ -1256,7 +1250,7 @@ class BomFunctions:
     # Function for the other WB's. If an items is an duplicate but has a different lable than the first occurrence.
     # # The item will be replaced by the first occurrence. This way they can be summarized.
     @classmethod
-    def __ReturnLinkedObject(self, RowItem: dict) -> App.DocumentObject:
+    def ReturnLinkedObject(self, RowItem: dict) -> App.DocumentObject:
         # Use an try-except statement incase there is no "getPropertyByName" method.
         try:
             docObject = RowItem["DocumentObject"]
@@ -1307,7 +1301,7 @@ class BomFunctions:
 
     # Function to check if an object is an body.
     @classmethod
-    def __CheckObject(self, docObject) -> bool:
+    def CheckObject(self, docObject) -> bool:
         # Default result will be false.
         objectCheck = False
         # Try to get the property "Type". Try-Except is needed because not all item types have a property "Type".
@@ -1382,7 +1376,7 @@ class BomFunctions:
 
     # Function to filter out bodies
     @classmethod
-    def __FilterBodies(
+    def FilterBodies(
         self, BOMList: list, AllowBodies: bool = True, AllowFeaturePython=True
     ) -> list:
         # Create an extra temporary list
@@ -1799,13 +1793,13 @@ class BomFunctions:
         CopyMainList = self.__mainList.copy()
 
         for i in range(len(CopyMainList)):
-            ReturnedRowIem = self.__ReturnLinkedObject(CopyMainList[i])
+            ReturnedRowIem = self.ReturnLinkedObject(CopyMainList[i])
 
             if ReturnedRowIem is not None:
                 CopyMainList[i] = ReturnedRowIem
 
         # For a2plus only
-        CopyMainList = self.__ReturnDuplicates_a2p()
+        CopyMainList = self.ReturnDuplicates_a2p()
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
@@ -1858,22 +1852,39 @@ class BomFunctions:
                     or shadowObject.TypeId == "Part::Feature"
                     or shadowObject.TypeId == "App::Part"
                 ):
-                    shadowObject = rowList["ObjectLabel"]
+                    shadowObject = rowList["ObjectLabel"]                
+                # Define the shadow body properties
+                shadowBodyProperties = ""
+                try:
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                except Exception:
+                    pass
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowObject,
                     "Item3": shadowType,
+                    "Item4": shadowBodyProperties,
                 }
 
+                # # Find the quantity for the item
+                # QtyValue = str(
+                #     self.__ObjectCounter_ItemNumber(
+                #         ListItem=rowList,
+                #         ItemNumber=itemNumber,
+                #         BomList=CopyMainList,
+                #         ObjectBasedPart=False,
+                #         ObjectBasedAssy=False,
+                #     )
+                # )
                 # Find the quantity for the item
                 QtyValue = str(
-                    self.__ObjectCounter_ItemNumber(
+                    General_BOM.ObjectCounter_ItemNumber(
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
                         ObjectBasedPart=False,
-                        ObjectBasedAssy=False,
+                        CompareMaterial=True,
                     )
                 )
 
@@ -1890,11 +1901,12 @@ class BomFunctions:
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
                 if (
-                    self.__ListContainsCheck(
+                    General_BOM.ListContainsCheck(
                         List=ShadowList,
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
                     )
                     is False
                 ):
@@ -1919,21 +1931,38 @@ class BomFunctions:
                     or shadowObject.TypeId == "App::Part"
                 ):
                     shadowObject = rowList["ObjectLabel"]
+                # Define the shadow body properties
+                shadowBodyProperties = ""
+                try:
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                except Exception:
+                    pass
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowObject,
                     "Item3": shadowType,
+                    "Item4": shadowBodyProperties,
                 }
 
+                # # Find the quantity for the item
+                # QtyValue = str(
+                #     self.__ObjectCounter_ItemNumber(
+                #         ListItem=rowList,
+                #         ItemNumber=itemNumber,
+                #         BomList=CopyMainList,
+                #         ObjectBasedPart=False,
+                #         ObjectBasedAssy=False,
+                #     )
+                # )
                 # Find the quantity for the item
                 QtyValue = str(
-                    self.__ObjectCounter_ItemNumber(
+                    General_BOM.ObjectCounter_ItemNumber(
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
                         ObjectBasedPart=False,
-                        ObjectBasedAssy=False,
+                        CompareMaterial=True,
                     )
                 )
 
@@ -1950,11 +1979,12 @@ class BomFunctions:
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
                 if (
-                    self.__ListContainsCheck(
+                    General_BOM.ListContainsCheck(
                         List=ShadowList,
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
                     )
                     is False
                 ):
@@ -1965,18 +1995,19 @@ class BomFunctions:
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
         if Level > 1:
-            TemporaryList = self.__FilterBodies(
+            TemporaryList = self.FilterBodies(
                 BOMList=TemporaryList,
                 AllowBodies=IncludeBodies,
                 AllowFeaturePython=True,
             )
 
-        # correct the quantities for the parts in subassemblies
-        TemporaryList = self.correctQtyAssemblies(TemporaryList)
+        # obsolete---------------------------------------------------------------
+        # # correct the quantities for the parts in subassemblies
+        # TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
-            TemporaryList = self.__CorrectItemNumbers(TemporaryList)
+            TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList, True)
 
         # If no indented numbering is needed, number the parts 1,2,3, etc.
         if IndentNumbering is False:
@@ -1993,7 +2024,7 @@ class BomFunctions:
     # The function CreateBoM can be used to write it the an spreadsheet.
     # The value for 'WB' must be provided. It is used for the correct filtering for each support WB
     @classmethod
-    def __SummarizedBoM(
+    def SummarizedBoM(
         self,
         IncludeBodies: bool = False,
         ObjectNameBased: bool = False,
@@ -2008,14 +2039,14 @@ class BomFunctions:
 
         # Replace duplicate items with their original
         for i in range(len(CopyMainList)):
-            ReturnedRowIem = self.__ReturnLinkedObject(CopyMainList[i])
+            ReturnedRowIem = self.ReturnLinkedObject(CopyMainList[i])
 
             if ReturnedRowIem is not None:
                 CopyMainList[i] = ReturnedRowIem
 
         # Replace duplicate items with their original
         # For a2plus only
-        CopyMainList = self.__ReturnDuplicates_a2p()
+        CopyMainList = self.ReturnDuplicates_a2p()
 
         # Create a temporary list
         TemporaryList = []
@@ -2043,18 +2074,28 @@ class BomFunctions:
             itemNumber = str(rowList["ItemNumber"])
 
             # create a place holder for the quantity
-            QtyValue = 1
+            QtyValue = rowList["Qty"]
 
             # Create a new dict as new Row item.
             rowListNew = dict
 
+            # # Find the quantity for the item
+            # QtyValue = str(
+            #     self.__ObjectCounter(
+            #         DocObject=None,
+            #         RowItem=rowList,
+            #         mainList=CopyMainList,
+            #         ObjectNameBased=ObjectNameBased,
+            #     )
+            # )
             # Find the quantity for the item
             QtyValue = str(
-                self.__ObjectCounter(
+                General_BOM.ObjectCounter(
                     DocObject=None,
                     RowItem=rowList,
                     mainList=CopyMainList,
                     ObjectNameBased=ObjectNameBased,
+                    CompareMaterial=True,
                 )
             )
 
@@ -2068,19 +2109,28 @@ class BomFunctions:
                 "Type": rowList["Type"],
             }
 
+            # Define the shadow body properties
+            shadowBodyProperties = ""
+            try:
+                shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+            except Exception:
+                pass
+
             # Create the row item for the shadow list.
             shadowRow = {
                 "Item1": rowList[ObjectNameField],
                 "Item2": rowList["DocumentObject"].TypeId,
                 "Item3": rowList["Type"],
+                "Item4": shadowBodyProperties,
             }
             # Add the rowItem if it is not in the shadow list.
             if (
-                self.__ListContainsCheck(
+                General_BOM.ListContainsCheck(
                     List=ShadowList,
                     Item1=shadowRow["Item1"],
                     Item2=shadowRow["Item2"],
                     Item3=shadowRow["Item3"],
+                    Item4=shadowRow["Item4"],
                 )
                 is False
             ):
@@ -2089,7 +2139,7 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.__FilterBodies(
+        TemporaryList = self.FilterBodies(
             BOMList=TemporaryList,
             AllowBodies=IncludeBodies,
             AllowFeaturePython=True,
@@ -2109,7 +2159,7 @@ class BomFunctions:
     # Function to create a BoM list for a parts only BoM.
     # The function CreateBoM can be used to write it the an spreadsheet.
     @classmethod
-    def __PartsOnly(
+    def PartsOnly(
         self,
         IncludeBodies: bool = False,
         ObjectNameBased: bool = False,
@@ -2124,14 +2174,14 @@ class BomFunctions:
 
         # Replace duplicate items with their original
         for i in range(len(CopyMainList)):
-            ReturnedRowIem = self.__ReturnLinkedObject(CopyMainList[i])
+            ReturnedRowIem = self.ReturnLinkedObject(CopyMainList[i])
 
             if ReturnedRowIem is not None:
                 CopyMainList[i] = ReturnedRowIem
 
         # Replace duplicate items with their original
         # For a2plus only
-        CopyMainList = self.__ReturnDuplicates_a2p()
+        CopyMainList = self.ReturnDuplicates_a2p()
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
@@ -2146,7 +2196,7 @@ class BomFunctions:
             rowList = CopyMainList[i]
 
             # if the objectcheck succeeded, continue.
-            if self.__CheckObject(docObject=rowList["DocumentObject"]) is True:
+            if self.CheckObject(docObject=rowList["DocumentObject"]) is True:
                 ObjectNameField = "ObjectName"
                 if ObjectNameBased is False:
                     ObjectNameField = "ObjectLabel"
@@ -2160,13 +2210,24 @@ class BomFunctions:
                 # Create a new dict as new Row item.
                 rowListNew = dict
 
+                # # Find the quantity for the item
+                # QtyValue = str(
+                #     self.__ObjectCounter(
+                #         DocObject=None,
+                #         RowItem=rowList,
+                #         mainList=CopyMainList,
+                #         ObjectNameBased=ObjectNameBased,
+                #     )
+                # )
+                
                 # Find the quantity for the item
                 QtyValue = str(
-                    self.__ObjectCounter(
+                    General_BOM.ObjectCounter(
                         DocObject=None,
                         RowItem=rowList,
                         mainList=CopyMainList,
                         ObjectNameBased=ObjectNameBased,
+                        CompareMaterial=True,
                     )
                 )
 
@@ -2180,21 +2241,49 @@ class BomFunctions:
                     "Type": rowList["Type"],
                 }
 
+                # # Create the row item for the shadow list.
+                # shadowRow = {
+                #     "Item1": rowList[ObjectNameField],
+                #     "Item2": rowList["DocumentObject"].TypeId,
+                #     "Item3": rowList["Type"],
+                # }
+                # # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
+                # # Add it to the temporary list.
+                # # Add the rowItem if it is not in the shadow list.
+                # if (
+                #     self.__ListContainsCheck(
+                #         List=ShadowList,
+                #         Item1=shadowRow["Item1"],
+                #         Item2=shadowRow["Item2"],
+                #         Item3=shadowRow["Item3"],
+                #     )
+                #     is False
+                # ):
+                
+                # Define the shadow body properties
+                shadowBodyProperties = ""
+                try:
+                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                except Exception:
+                    pass
+
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": rowList[ObjectNameField],
                     "Item2": rowList["DocumentObject"].TypeId,
                     "Item3": rowList["Type"],
+                    "Item4": shadowBodyProperties,
                 }
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
                 # Add the rowItem if it is not in the shadow list.
                 if (
-                    self.__ListContainsCheck(
+                    General_BOM.ListContainsCheck(
                         List=ShadowList,
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
                         Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
                     )
                     is False
                 ):
@@ -2204,7 +2293,7 @@ class BomFunctions:
 
         # If App:Links only contain the same bodies and IncludeBodies = False,
         # replace the App::Links with the bodies they contain. Including their quantity.
-        TemporaryList = self.__FilterBodies(
+        TemporaryList = self.FilterBodies(
             BOMList=TemporaryList,
             AllowBodies=IncludeBodies,
             AllowFeaturePython=True,
@@ -2276,20 +2365,20 @@ class BomFunctions:
                     )
 
                 if command == "Raw" or command == "":
-                    BoM = self.__FilterBodies(
+                    BoM = self.FilterBodies(
                         BOMList=self.__mainList,
                         AllowBodies=IncludeBodies,
                         AllowFeaturePython=True,
                     )
 
                 if command == "PartsOnly":
-                    BoM = self.__PartsOnly(
+                    BoM = self.PartsOnly(
                         IncludeBodies=IncludeBodies,
                         ObjectNameBased=False,
                     )
 
                 if command == "Summarized":
-                    BoM = self.__SummarizedBoM(
+                    BoM = self.SummarizedBoM(
                         IncludeBodies=IncludeBodies,
                         ObjectNameBased=False,
                     )
