@@ -24,7 +24,9 @@
 
 import FreeCAD as App
 import os
-
+from General_BOM_Functions import General_BOM
+import Standard_Functions_BOM_WB as Standard_Functions
+from Standard_Functions_BOM_WB import Print
 
 # Define the translation
 translate = App.Qt.translate
@@ -1784,6 +1786,7 @@ class BomFunctions:
     @classmethod
     def __CreateTotalBoM(
         self,
+        CreateSpreadSheet: bool = True,
         Level: int = 0,
         IndentNumbering: bool = True,
         IncludeBodies: bool = False,
@@ -1981,6 +1984,9 @@ class BomFunctions:
                 tempItem = TemporaryList[k]
                 tempItem["ItemNumber"] = k + 1
 
+        # Create the spreadsheet
+        if CreateSpreadSheet is True:
+            General_BOM.createBoMSpreadsheet(TemporaryList, AssemblyType="Mixed Assembly")
         return TemporaryList
 
     # Function to create a summary list of all assemblies and their parts.
@@ -1991,6 +1997,7 @@ class BomFunctions:
         self,
         IncludeBodies: bool = False,
         ObjectNameBased: bool = False,
+        CreateSpreadSheet: bool = True,
     ):
         # If the Mainlist is empty, return.
         if len(self.__mainList) == 0:
@@ -2092,6 +2099,10 @@ class BomFunctions:
         for k in range(len(TemporaryList)):
             tempItem = TemporaryList[k]
             tempItem["ItemNumber"] = k + 1
+        
+        # Create the spreadsheet
+        if CreateSpreadSheet is True:
+            General_BOM.createBoMSpreadsheet(TemporaryList, Headers=None, Summary=True, AssemblyType="Mixed Assembly")
 
         return TemporaryList
 
@@ -2102,6 +2113,7 @@ class BomFunctions:
         self,
         IncludeBodies: bool = False,
         ObjectNameBased: bool = False,
+        CreateSpreadSheet: bool = True,
     ):
         # If the Mainlist is empty, return.
         if len(self.__mainList) == 0:
@@ -2202,6 +2214,10 @@ class BomFunctions:
         for k in range(len(TemporaryList)):
             tempItem = TemporaryList[k]
             tempItem["ItemNumber"] = k + 1
+        
+        # Create the spreadsheet
+        if CreateSpreadSheet is True:
+            General_BOM.createBoMSpreadsheet(TemporaryList, AssemblyType="Mixed Assembly")
 
         return TemporaryList
 
@@ -2216,7 +2232,7 @@ class BomFunctions:
         IncludeBodies=False,
         IndentNumbering=True,
         DebugMode=False,
-    ) -> list:
+    )
         """_summary_
 
         Args:
