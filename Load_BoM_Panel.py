@@ -412,8 +412,10 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         
         if Settings_BoM.ENABLE_MIXED_BOM is True:
             self.form.EnableMixedBoM.setCheckState(Qt.CheckState.Checked)
+            self.form.BetaFunctions_Panel.setHidden(False)
         else:
             self.form.EnableMixedBoM.setCheckState(Qt.CheckState.Unchecked)
+            self.form.BetaFunctions_Panel.setHidden(True)
         
         self.form.UnitPosition.setCurrentIndex(Settings_BoM.UNIT_POSITION)
         return
@@ -750,7 +752,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         ]
 
         # Get the correct BoM functions based on the  selected assembly type
-        if (Settings_BoM.ENABLE_MIXED_BOM or self.form.EnableMixedBoM.isChecked()) and (AssemblyType_Selected in List_MixedBomAllowed):
+        if self.form.EnableMixedBoM.isChecked() and AssemblyType_Selected in List_MixedBomAllowed:
             GetBoM_Mixed.BomFunctions.Start(
                     command=Command,
                     Level=Level_Value,

@@ -54,6 +54,201 @@ class BomFunctions:
     # Create an instance of the signal emitter
     signal_emitter = SignalEmitter_Counter()
     
+    # region -- Help functions to create the mainList
+    # Function to check the type of workbench at top level
+    @classmethod
+    def CheckAssemblyType_Root(self, DocObject):
+        """_summary_
+
+        Args:
+            DocObject (App.DocumentObject): The DocumentObject
+
+        Returns:
+            string: The assembly type as a string
+        """
+        result = ""
+        # Get the list with rootobjects
+        RootObjects = DocObject.RootObjects
+
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for RootObject in RootObjects:
+            if RootObject.TypeId == "App::DocumentObjectGroup":
+                RootObjects.extend(self.GetObjectsFromGroups(RootObject))
+
+        # Define the result list.
+        resultList = []
+
+        # Go through the root objects. If there is an object type "a2pPart", this is an A2plus assembly.
+        # If not, continue.
+        # In the A2plus WB, you have to go through the Objects instead of the RootObjects
+        for Object in DocObject.Objects:
+            try:
+                if Object.objectType == "a2pPart":
+                    return "A2plus"
+            except Exception:
+                pass
+
+        # In the other workbenches go through the RootObjects
+        for Object in RootObjects:
+            try:
+                if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
+                    resultList.append("Assembly4")
+            except Exception:
+                pass
+
+            try:
+                if Object.SolverType == "SolveSpace":
+                    resultList.append("Assembly3")
+            except Exception:
+                pass
+
+            try:
+                if (
+                    Object.Type == "Assembly"
+                    and Object.TypeId == "Assembly::AssemblyObject"
+                ):
+                    resultList.append("Internal")
+            except Exception:
+                pass
+
+            try:
+                if Object.TypeId == "App::Link" or Object.TypeId == "App::LinkGroup":
+                    resultList.append("AppLink")
+            except Exception:
+                pass
+
+            try:
+                if Object.Type == "" and Object.TypeId == "App::Part":
+                    resultList.append("AppPart")
+            except Exception:
+                pass
+
+        # # Check if the document is an arch or multibody document
+        # try:
+        #     test = self.CheckMultiBodyType(DocObject)
+        #     if test != "":
+        #         resultList.append(test)
+        # except Exception:
+        #     pass
+
+        check_AppPart = False
+        for result in resultList:
+            if result == "Assembly3":
+                return "Assembly3"
+            if result == "Assembly4":
+                return "Assembly4"
+            if result == "Internal":
+                return "Internal"
+            if result == "AppLink":
+                return "AppLink"
+            if result == "Arch":
+                return "Arch"
+            if result == "MultiBody":
+                return "MultiBody"
+            if result == "AppPart":
+                check_AppPart = True
+
+        if check_AppPart is True:
+            result = "AppPart"
+
+        return result
+
+    # Function to check the type of workbench for a sub assembly
+    @classmethod
+    def CheckAssemblyType_Child(self, DocObject):
+        """_summary_
+
+        Args:
+            DocObject (App.DocumentObject): The DocumentObject
+
+        Returns:
+            string: The assembly type as a string
+        """
+        result = ""
+
+        try:
+            # Define the result list.
+            resultList = []
+
+            # In the other workbenches go through the RootObjects
+            try:
+                if DocObject.objectType == "a2pPart":
+                    resultList.append("A2plus")
+            except Exception:
+                pass
+
+            try:
+                if (
+                    DocObject.AssemblyType == "Part::Link"
+                    and DocObject.Type == "Assembly"
+                ):
+                    resultList.append("Assembly4")
+            except Exception:
+                pass
+
+            try:
+                if DocObject.SolverType == "SolveSpace":
+                    resultList.append("Assembly3")
+            except Exception:
+                pass
+
+            try:
+                if (
+                    DocObject.Type == "Assembly"
+                    and DocObject.TypeId == "Assembly::AssemblyObject"
+                ):
+                    resultList.append("Internal")
+            except Exception:
+                pass
+
+            try:
+                if (
+                    DocObject.TypeId == "App::Link"
+                    or DocObject.TypeId == "App::LinkGroup"
+                ):
+                    resultList.append("AppLink")
+            except Exception:
+                pass
+
+            try:
+                if DocObject.Type == "" and DocObject.TypeId == "App::Part":
+                    resultList.append("AppPart")
+            except Exception:
+                pass
+
+            # Check if the document is an arch or multibody document
+            try:
+                test = self.CheckMultiBodyType(DocObject)
+                if test != "":
+                    resultList.append(test)
+            except Exception:
+                pass
+
+            check_AppPart = False
+            for result in resultList:
+                if result == "A2plus":
+                    return "A2plus"
+                if result == "Assembly3":
+                    return "Assembly3"
+                if result == "Assembly4":
+                    return "Assembly4"
+                if result == "Internal":
+                    return "Internal"
+                if result == "AppLink":
+                    return "AppLink"
+                if result == "Arch":
+                    return "Arch"
+                if result == "MultiBody":
+                    return "MultiBody"
+                if result == "AppPart":
+                    check_AppPart = True
+
+            if check_AppPart is True:
+                result = "AppPart"
+        except Exception as e:
+            raise e
+
+        return result
     
     # Functions to count  document objects in a list based on the itemnumber of their parent.
     @classmethod
@@ -332,7 +527,8 @@ class BomFunctions:
         except Exception:
             pass
         return resultList
-        
+    
+    # endregion        
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
@@ -342,15 +538,8 @@ class BomFunctions:
         # Get the active document
         doc = App.ActiveDocument
 
-        # # Check the assembly type
-        # if checkAssembly is True:
-        #     AssemblyType = General_BOM.CheckAssemblyType(doc)
-        #     if AssemblyType != "Internal":
-        #         Print(
-        #             f"Not the internal assembly but an {AssemblyType} Assembly!!",
-        #             "Error",
-        #         )
-        #         return
+        # Detect the assembly type
+        AssemblyType = self.CheckAssemblyType_Root(doc)
 
         # Get the list with rootobjects
         # docObjects = doc.RootObjects
@@ -361,10 +550,10 @@ class BomFunctions:
             if rootObjects[i].Visibility is True:
                 docObjects.append(rootObjects[i])
 
-        # Check if there are groups with items. create a list from it and add it to the docObjects.
-        for docObject in docObjects:
-            if docObject.TypeId == "App::DocumentObjectGroup":
-                docObjects.extend(self.GetObjectsFromGroups(docObject))
+        # # Check if there are groups with items. create a list from it and add it to the docObjects.
+        # for docObject in docObjects:
+        #     if docObject.TypeId == "App::DocumentObjectGroup":
+        #         docObjects.extend(self.GetObjectsFromGroups(docObject))
 
         # Check if there are parts which are duplicates.
         # Threat them as identical parts and replace the copies with the original
@@ -503,6 +692,9 @@ class BomFunctions:
         for i in range(len(docObjects)):
             # Get the documentObject
             Object = docObjects[i]
+            
+            # Check if the docObject is an assembly and which type.
+            AssemblyType = self.CheckAssemblyType_Child(Object)
 
             # If the documentObject is one of the allowed types, continue
             if self.AllowedObjectType(Object.TypeId) is True and Object.Visibility is True:
@@ -556,6 +748,13 @@ class BomFunctions:
 
                 # add the rowList to the mainList
                 self.mainList.append(rowList)
+                
+                Assembly3 = False
+                try:
+                    if Object.SolverType == "SolveSpace":
+                        Assembly3 = True
+                except Exception:
+                    pass
 
                 # If the object is an container, go through the sub items, (a.k.a child objects)
                 if (
@@ -564,6 +763,7 @@ class BomFunctions:
                     or Object.TypeId == "App::Part"
                     or Object.TypeId == "Assembly::AssemblyObject"
                     or Object.TypeId == 'Assembly::AssemblyLink'
+                    or Assembly3 is True
                 ):
                     # Create a list with child objects as DocumentObjects
                     childObjects = []
@@ -571,19 +771,10 @@ class BomFunctions:
                     childObjects.clear()
                     # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                     for j in range(len(Object.getSubObjects())):
-                        if (
-                            Object.getSubObject(
-                                subname=Object.getSubObjects()[j], retType=1
-                            )
-                            is not None
-                        ):
-                            childObjects.append(
-                                Object.getSubObject(
-                                    subname=Object.getSubObjects()[j], retType=1
-                                ),
-                            )
+                        if (Object.getSubObject(subname=Object.getSubObjects()[j], retType=1) is not None):
+                            childObjects.append(Object.getSubObject(subname=Object.getSubObjects()[j], retType=1))
                     if len(childObjects) > 0:
-                        self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                        self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                         # Go the the child objects with a separate function for the child objects
                         # This way you can go through multiple levels
                         self.GoThrough_ChildObjects(
@@ -616,11 +807,14 @@ class BomFunctions:
                 for j in range(len(GroupItems)):
                     if GroupItems[j].Visibility is True:
                         ChilddocObjects.insert(i + j + 1, GroupItems[j])
-                    
+             
 
         for i in range(len(ChilddocObjects)):
             # Get the childDocumentObject
             childObject = ChilddocObjects[i]
+            
+             # Check if the childObject is an assembly and which type.
+            AssemblyType = self.CheckAssemblyType_Child(childObject)      
             
             # If the childDocumentObject is one of the allowed types, continue
             if self.AllowedObjectType(childObject.TypeId) is True and childObject.Visibility is True:
@@ -670,6 +864,13 @@ class BomFunctions:
 
                 # add the rowList to the mainList
                 self.mainList.append(rowList)
+                
+                Assembly3 = False
+                try:
+                    if childObject.SolverType == "SolveSpace":
+                        Assembly3 = True
+                except Exception:
+                    pass
 
                 # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
                 if (
@@ -678,6 +879,7 @@ class BomFunctions:
                     or childObject.TypeId == "App::Part"
                     or childObject.TypeId == "Assembly::AssemblyObject"
                     or childObject.TypeId == 'Assembly::AssemblyLink'
+                    or Assembly3 is True
                 ):
                     # Create a list with sub child objects as DocumentObjects
                     subChildObjects = []
@@ -697,7 +899,7 @@ class BomFunctions:
                                 ),
                             )
                     if len(subChildObjects) > 0:
-                        self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                        self.mainList[len(self.mainList) - 1]["Type"] = AssemblyType
                         # Go the the sub child objects with this same function
                         self.GoThrough_ChildObjects(
                             ChilddocObjects=subChildObjects,
@@ -712,24 +914,29 @@ class BomFunctions:
     # region -- Functions for creating the different types of BoM's
     # Function to check if a part is an sub-assembly.
     @classmethod
-    def ReturnLinkedObject(self, RowItem: dict):
-        # Use an try-except statement incase there is no "getPropertyByName" method.
-        # try:
+    def ReturnLinkedObject(self, RowItem: dict, AssemblyType = "") -> App.DocumentObject:
+        # Use an try-except statement incase there is no linked object.
+        OriginalRowItem = RowItem
         docObject = RowItem["DocumentObject"]
-        # If the property returns empty, it is an part. Return the linked object.
-        # This way, duplicate items (normally like Bearing001, Bearing002, etc.) will be replaced with
-        # the original part. This is used for summation of the same parts.
-
-        rowListNew = {
-            "ItemNumber": RowItem["ItemNumber"],
-            "DocumentObject": docObject.getLinkedObject(),
-            "ObjectLabel": docObject.getLinkedObject().Label,
-            "ObjectName": docObject.getLinkedObject().Name,
-            "Qty": RowItem["Qty"],
-            "Type": RowItem["Type"],
-            "Parent": docObject.getLinkedObject().FullName.split("#", 1)[0]
-        }
-
+        
+        if AssemblyType == "Assembly3":
+            try:
+                # RowItem["DocumentObject"] = docObject.LinkedObject
+                RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[0]
+                RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
+                return RowItem
+            except Exception:
+                return OriginalRowItem
+        else:
+            rowListNew = {
+                "ItemNumber": RowItem["ItemNumber"],
+                "DocumentObject": docObject.getLinkedObject(),
+                "ObjectLabel": docObject.getLinkedObject().Label,
+                "ObjectName": docObject.getLinkedObject().Name,
+                "Qty": RowItem["Qty"],
+                "Type": RowItem["Type"],
+                "Parent": docObject.getLinkedObject().FullName.split("#", 1)[0]
+            }
         return rowListNew
         # except Exception:
         #     return None
@@ -740,34 +947,40 @@ class BomFunctions:
         # Create an extra temporary list
         TempTemporaryList = []
 
+        TempTemporaryList.append(BOMList[0])
         # Go through the curent temporary list
-        for i in range(len(BOMList)):
-            # Define the property objects of the next row
+        for i in range(len(BOMList) - 1):
+            # Define the property objects
             ItemObject = BOMList[i]
-            ItemObjectType = ItemObject["DocumentObject"].TypeId
+
+            # Define the property objects of the next row
+            ItemObjectNext = BOMList[i + 1]
+            ItemObjectTypeNext = ItemObjectNext["DocumentObject"].TypeId
+            if ItemObjectTypeNext == "App::Link":
+                ItemObjectTypeNext = ItemObjectNext["DocumentObject"].getLinkedObject().TypeId              
 
             # Create a flag and set it true as default
             flag = True
 
             # If the next object is an body or feature, set the flag to False.
             if (
-                ItemObjectType == "Part::Feature"
-                or ItemObjectType == "PartDesign::Body"
-                or ItemObjectType == "Part::FeaturePython"
+                ItemObjectTypeNext == "Part::Feature"
+                or ItemObjectTypeNext == "PartDesign::Body"
+                or ItemObjectTypeNext == "Part::FeaturePython"
             ):
                 # Filter out all type of bodies
                 if AllowAllBodies is False:
-                    # ItemObject["Type"] = "Part"
+                    ItemObject["Type"] = "Part"
                     # set the flag to false.
                     flag = False
                 # Allow all bodies that are part of an assembly.
                 if AllowAllBodies is True:
-                    # ItemObject["Type"] = "Part"
+                    ItemObject["Assembly"] = "Part"
                     flag = True
 
             # if the flag is true, append the itemobject to the second temporary list.
             if flag is True:
-                TempTemporaryList.append(ItemObject)
+                TempTemporaryList.append(ItemObjectNext)
 
         # Replace the temporary list with the second temporary list.
         BOMList = TempTemporaryList
@@ -923,6 +1136,52 @@ class BomFunctions:
                         break
         return resultList
 
+
+    # Function to compare bodies
+    def CompareBodies(DocObject_1, DocObject_2) -> bool:
+        try:
+            Shape_1 = DocObject_1.Shape
+            Shape_2 = DocObject_2.Shape
+            Material_1 = ""
+
+            Material_1 = None
+            try:
+                Material_1 = DocObject_1.ShapeMaterial
+            except Exception:
+                pass
+
+            Material_2 = None
+            try:
+                Material_2 = DocObject_2.ShapeMaterial
+            except Exception:
+                pass
+            
+            if Material_1.Name != Material_2.Name:
+                return False
+
+            List_1 = [
+                Shape_1.Area,
+                Shape_1.Length,
+                Shape_1.Volume,
+            ]
+
+            List_2 = [
+                Shape_2.Area,
+                Shape_2.Length,
+                Shape_2.Volume,
+            ]
+
+            for i in range(len(List_1)):
+                Value_1 = round(List_1[i], 6)
+                Value_2 = round(List_2[i], 6)
+
+                if Value_1 != Value_2:
+                    return False
+
+            return True
+        except Exception:
+            return False   
+        
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it to an spreadsheet.
     @classmethod
@@ -943,7 +1202,7 @@ class BomFunctions:
         # Replace duplicate items with their original
         CopyMainList_2 = []
         for i in range(len(CopyMainList)):
-            CopyMainList_2.append(self.ReturnLinkedObject(CopyMainList[i]))
+            CopyMainList_2.append(self.ReturnLinkedObject(CopyMainList[i], CopyMainList[i]["Type"]))
         CopyMainList = CopyMainList_2
         
         # summarize duplicate subassemblies
@@ -996,7 +1255,8 @@ class BomFunctions:
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Get the parent
-                shadowParent = rowList["Parent"]
+                # shadowParent = rowList["Parent"]
+                shadowParent = ""
                 # Define the shadow body properties
                 shadowBodyProperties = ""     
                 try:           
@@ -1038,18 +1298,18 @@ class BomFunctions:
 
                 # If the shadow row is not yet in the shadow list, the item is not yet added to the temporary list.
                 # Add it to the temporary list.
-                # if (
-                #     General_BOM.ListContainsCheck(
-                #         List=ShadowList,
-                #         Item1=shadowRow["Item1"],
-                #         Item2=shadowRow["Item2"],
-                #         Item3=shadowRow["Item3"],
-                #         Item4=shadowRow["Item4"],
-                #         Item5=shadowRow["Item5"],
-                #     )
-                #     is False
-                # ):
-                if shadowRow not in ShadowList:
+                if (
+                    self.ListContainsCheck(
+                        List=ShadowList,
+                        Item1=shadowRow["Item1"],
+                        Item2=shadowRow["Item2"],
+                        Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
+                        Item5=shadowRow["Item5"],
+                    )
+                    is False
+                ):
+                # if shadowRow not in ShadowList:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
@@ -1072,7 +1332,8 @@ class BomFunctions:
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Get the parent
-                shadowParent = rowList["Parent"]
+                # shadowParent = rowList["Parent"]
+                shadowParent = ""
                 # Define the shadow body properties
                 shadowBodyProperties = ""
                 try:
@@ -1114,18 +1375,18 @@ class BomFunctions:
                     "Parent": rowList["Parent"]
                 }
 
-                # if (
-                #     General_BOM.ListContainsCheck(
-                #         List=ShadowList,
-                #         Item1=shadowRow["Item1"],
-                #         Item2=shadowRow["Item2"],
-                #         Item3=shadowRow["Item3"],
-                #         Item4=shadowRow["Item4"],
-                #         Item5=shadowRow["Item5"],
-                #     )
-                #     is False
-                # ):
-                if shadowRow not in ShadowList:
+                if (
+                    self.ListContainsCheck(
+                        List=ShadowList,
+                        Item1=shadowRow["Item1"],
+                        Item2=shadowRow["Item2"],
+                        Item3=shadowRow["Item3"],
+                        Item4=shadowRow["Item4"],
+                        Item5=shadowRow["Item5"],
+                    )
+                    is False
+                ):
+                # if shadowRow not in ShadowList:
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
@@ -1475,7 +1736,7 @@ class BomFunctions:
                         if Answer == "yes":
                             IncludeBodies = True
                     General_BOM.createBoMSpreadsheet(
-                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies), AssemblyType="FreeCAD Assembly"
+                        self.FilterBodies(self.mainList, AllowAllBodies=IncludeBodies), AssemblyType="Mixed Assembly"
                     )
 
                 if command == "PartsOnly":

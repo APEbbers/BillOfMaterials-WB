@@ -252,9 +252,7 @@ class BomFunctions:
                     # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                     for j in range(len(Object.getSubObjects())):
                         if Object.getSubObjects()[j] is not None:
-                            childObjects.append(
-                                Object.getSubObject(Object.getSubObjects()[j], 1),
-                            )
+                            childObjects.append(Object.getSubObject(Object.getSubObjects()[j], 1))
                     if len(childObjects) > 0:
                         self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
                         # Go the the child objects with a separate function for the child objects
