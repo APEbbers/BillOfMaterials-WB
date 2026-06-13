@@ -532,7 +532,7 @@ class BomFunctions:
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
-    def GetTreeObjects(self, checkAssembly=True):
+    def GetTreeObjects(self):
         self.mainList.clear()
         
         # Get the active document
@@ -544,8 +544,8 @@ class BomFunctions:
         # Get the list with rootobjects
         # docObjects = doc.RootObjects
         docObjects = []
-        rootObjects = self.GetRootObjects()
-        # rootObjects = doc.RootObjects
+        # rootObjects = self.GetRootObjects()
+        rootObjects = doc.RootObjects
         for i in range(len(rootObjects)):
             if rootObjects[i].Visibility is True:
                 docObjects.append(rootObjects[i])
@@ -947,6 +947,28 @@ class BomFunctions:
                 return RowItem
             except Exception:
                 return OriginalRowItem
+        elif AssemblyType == "Assembly4":
+            try:
+                if docObject.getPropertyByName("Type") == "":
+                    RowItem["DocumentObject"] = docObject.LinkedObject
+                    RowItem["ObjectName"] = docObject.LinkedObject.Name
+                    RowItem["ObjectLabel"] = docObject.LinkedObject.Label
+
+                    return RowItem
+            except Exception:
+                pass
+            try:
+                # If the property returns "Assembly", it is an sub-assembly. Return the object.
+                if docObject.getPropertyByName("Type") == "Assembly":
+                    RowItem["ObjectName"] = docObject.LinkedObject.FullName.split("#")[0]
+                    RowItem["ObjectLabel"] = docObject.LinkedObject.FullName.split("#")[0]
+                    return RowItem
+            except Exception:
+                pass
+            RowItem["DocumentObject"] = docObject.LinkedObject
+            RowItem["ObjectName"] = docObject.LinkedObject.Name
+            RowItem["ObjectLabel"] = docObject.LinkedObject.Label        
+            return RowItem    
         else:
             rowListNew = {
                 "ItemNumber": RowItem["ItemNumber"],
@@ -1300,7 +1322,7 @@ class BomFunctions:
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
-                        ObjectBasedPart=False,
+                        ObjectBasedPart=True,
                         CompareMaterial=True,
                     )
                 )
@@ -1377,7 +1399,7 @@ class BomFunctions:
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
-                        ObjectBasedPart=False,
+                        ObjectBasedPart=True,
                         CompareMaterial=True,
                     )
                 )
@@ -1726,7 +1748,7 @@ class BomFunctions:
             # Clear the mainList to avoid double data
             self.mainList.clear()
             # create the mainList
-            self.GetTreeObjects(checkAssembly=CheckAssemblyType)
+            self.GetTreeObjects()
             
             print("Used mixed BoM")
 
