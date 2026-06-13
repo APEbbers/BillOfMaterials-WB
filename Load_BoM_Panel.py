@@ -409,6 +409,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.IndentedNumbering.setCheckState(Qt.CheckState.Unchecked)
         
         self.form.UnitPosition.setCurrentIndex(Settings_BoM.UNIT_POSITION)
+        
+        if Settings_BoM.ENABLE_MIXED_BOM is True:
+            self.form.EnableMixedBoM.setCheckState(Qt.CheckState.Checked)
+        else:
+            self.form.EnableMixedBoM.setCheckState(Qt.CheckState.Unchecked)
+        
+        self.form.UnitPosition.setCurrentIndex(Settings_BoM.UNIT_POSITION)
         return
 
         # endregion
