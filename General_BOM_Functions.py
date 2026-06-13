@@ -53,7 +53,6 @@ currentScheme = App.Units.getSchema()
 # Function to create BoM. standard, a raw BoM will befrom the main list.
 # If a modified list is created, this function can be used to write it the a spreadsheet.
 # You can add a dict for the headers of this list
-# @classmethod
 def createBoMSpreadsheet(
     mainList = None, Headers: dict = None, Summary: bool = False, IFCData=None, AssemblyType = ""
 ):
@@ -456,9 +455,7 @@ def createBoMSpreadsheet(
     Gui.Selection.addSelection(doc.Name, "BoM")
     return
 
-# @classmethod
 def FormatTableColors(
-    self,
     sheet,
     HeaderRange,
     TableRange,
@@ -567,9 +564,7 @@ def FormatTableColors(
     return
 
 # Functions to count  document objects in a list based on the itemnumber of their parent.
-# @classmethod
 def ObjectCounter_ItemNumber(
-    self,
     ListItem,
     ItemNumber: str,
     BomList: list,
@@ -652,7 +647,6 @@ def ObjectCounter_ItemNumber(
     # Return the counter
     return counter
 
-# @classmethod
 def ListContainsCheck(List: list, Item1, Item2, Item3, Item4 = None, Item5 = None) -> bool:
     for i in range(len(List)):
         rowItem = List[i]
@@ -686,9 +680,7 @@ def ListContainsCheck(List: list, Item1, Item2, Item3, Item4 = None, Item5 = Non
     return False
 
 # Functions to count  document objects in a list. Can be object based or List row based comparison.
-# @classmethod
 def ObjectCounter(
-    self,
     DocObject=None,
     RowItem: dict = None,
     mainList: list = None,
@@ -796,7 +788,6 @@ def ObjectCounter(
     return counter
 
 # Function to correct the items of the BoM after filtering has taken place.
-# @classmethod
 def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
     """_summary_
 
@@ -917,7 +908,6 @@ def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
     return TemporaryList
 
 # Function to check the type of workbench
-# @classmethod
 def CheckAssemblyType(DocObject):
     """_summary_
 
@@ -1014,7 +1004,6 @@ def CheckAssemblyType(DocObject):
 
     return result
 
-# @classmethod
 def CheckMultiBodyType(DocObject):
     # Define the list with allowed types
     ListObjecttypes = [
@@ -1078,7 +1067,6 @@ def CheckMultiBodyType(DocObject):
 
     return result
 
-# @classmethod
 def GetObjectsFromGroups(Group):
     resultList = []
     try:
@@ -1109,7 +1097,6 @@ def Sub_GetObjectsFromGroups(Group):
         pass
     return resultList
 
-# @classmethod
 def ReturnDocProperty(DocObject, PropertyName) -> str:
     result = ""
     try:
@@ -1130,7 +1117,6 @@ def ReturnDocProperty(DocObject, PropertyName) -> str:
     except Exception:
         return ""
 
-# @classmethod
 def ReturnViewProperty(DocObject, PropertyName) -> list:
     resultValue: object
     resultUnit: str
@@ -1355,7 +1341,6 @@ def ReturnViewProperty(DocObject, PropertyName) -> list:
             except Exception:
                 return ""
 
-# @classmethod
 def ObjectToString(item):
     result: object
     try:
@@ -1381,7 +1366,6 @@ def ObjectToString(item):
     except Exception:
         return ""
 
-# @classmethod
 def ReturnViewProperty_IFC(DocObject):
     result: object
     try:
@@ -1413,7 +1397,6 @@ def ReturnViewProperty_IFC(DocObject):
         return ""
 
 # function to summarize, subassemblies with their children
-# @classmethod
 def ReplacesAssembly(BoMList: list):
     # Define the result list
     resultList = []
@@ -1501,7 +1484,6 @@ def ReplacesAssembly(BoMList: list):
                     break
     return resultList
 
-# @classmethod
 def correctQtyAssemblies(BOMList) -> list:
     # Define AssemblyQty and AssemblyNumber
     AssemblyQty = 1
@@ -1530,8 +1512,7 @@ def correctQtyAssemblies(BOMList) -> list:
 
     return BOMList
 
-# @classmethod
-def GetRootObjects(self):
+def GetRootObjects():
     # Get the active document
     doc = App.ActiveDocument
     
@@ -1548,7 +1529,6 @@ def GetRootObjects(self):
     return RootObjects
 
 # Function to compare bodies
-# @classmethod
 def CompareBodies(DocObject_1, DocObject_2) -> bool:
     try:
         Shape_1 = DocObject_1.Shape
@@ -1591,11 +1571,9 @@ def CompareBodies(DocObject_1, DocObject_2) -> bool:
 
         return True
     except Exception:
-        return False
-    
+        return False   
 
 # Function to return body properties as a list
-# @classmethod
 def ReturnBodyProperties(DocObject):
     try:
         Shape = DocObject.Shape
@@ -1618,7 +1596,6 @@ def ReturnBodyProperties(DocObject):
             print(e)
         return []
     
-# @classmethod
 def ReturnProgressBar():
     progressBar = QProgressBar(minimum=0, value=0)
     progressBar.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
