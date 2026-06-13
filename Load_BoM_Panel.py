@@ -786,7 +786,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                     Level=Level_Value,
                     IncludeBodies=IncludeBodies_Checked,
                     IndentNumbering=UseIndent_Checked,
-                    DebugMode=Settings_BoM.ENABLE_DEBUG
+                    CheckAssemblyType=False
                 )
         if AssemblyType_Selected == "A2plus":
             GetBOM_A2plus.BomFunctions.Start(
