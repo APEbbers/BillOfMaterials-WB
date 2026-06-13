@@ -27,6 +27,7 @@ import FreeCADGui as Gui
 import General_BOM_Functions as General_BOM
 import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
+import Settings_BoM
 import os
 
 from PySide.QtCore import Qt, QObject, Signal, QEventLoop
@@ -86,7 +87,7 @@ class BomFunctions:
         # Try to get the material. this only works with bodies
         Item_Properties = ""
         try:
-            Item_Properties = General_BOM.ReturnBodyProperties(ListItem["DocumentObject"])
+            Item_Properties = self.ReturnBodyProperties(ListItem["DocumentObject"])
         except Exception:
             pass
 
@@ -94,7 +95,7 @@ class BomFunctions:
         for i in range(len(BomList)):
             BomListItem_Properties = ""
             try:
-                BomListItem_Properties = General_BOM.ReturnBodyProperties(BomList[i]["DocumentObject"])
+                BomListItem_Properties = self.ReturnBodyProperties(BomList[i]["DocumentObject"])
             except Exception:
                 pass
             
@@ -220,14 +221,14 @@ class BomFunctions:
             # Try to get the material. this only works with bodies
             Item_Properties = ""
             try:
-                Item_Properties = General_BOM.ReturnBodyProperties(DocObject["DocumentObject"])
+                Item_Properties = self.ReturnBodyProperties(DocObject["DocumentObject"])
             except Exception:
                 pass
             
             for i in range(len(mainList)):
                 BomListItem_Properties = ""
                 try:
-                    BomListItem_Properties = General_BOM.ReturnBodyProperties(mainList[i]["DocumentObject"])
+                    BomListItem_Properties = self.ReturnBodyProperties(mainList[i]["DocumentObject"])
                 except Exception:
                     pass
                 
@@ -249,14 +250,14 @@ class BomFunctions:
             # Try to get the material. this only works with bodies
             Item_Properties = ""
             try:
-                Item_Properties = General_BOM.ReturnBodyProperties(RowItem["DocumentObject"])
+                Item_Properties = self.ReturnBodyProperties(RowItem["DocumentObject"])
             except Exception:
                 pass
             
             for i in range(len(mainList)):
                 BomListItem_Properties = ""
                 try:
-                    BomListItem_Properties = General_BOM.ReturnBodyProperties(mainList[i]["DocumentObject"])
+                    BomListItem_Properties = self.ReturnBodyProperties(mainList[i]["DocumentObject"])
                 except Exception:
                     pass
                 
@@ -283,10 +284,59 @@ class BomFunctions:
         # Return the counter
         return counter
     
+    # @classmethod
+    def GetRootObjects():
+        # Get the active document
+        doc = App.ActiveDocument
+        
+        #Get all the objects
+        Objects = doc.Objects
+        
+        RootObjects = []
+        
+        # Get all toplevel objects
+        for Object in Objects:
+            if len(Object.Parents) == 0 and Object.Visibility is True:
+                RootObjects.append(Object)
+        
+        return RootObjects
+    
+    @classmethod
+    def GetObjectsFromGroups(self, Group):
+        resultList = []
+        try:
+            Objects = Group.Group
+            if Objects.Visibility is True:
+                if Objects[0].TypeId != 'Assembly::JointGroup':
+                    for Object in Objects:
+                        if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
+                            resultList.append(Object)
+                        if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
+                            resultList.extend(self.Sub_GetObjectsFromGroups(Object))
+        except Exception:
+            pass
+        return resultList
+
+    @classmethod
+    def Sub_GetObjectsFromGroups(self, Group):
+        resultList = []
+        try:
+            Objects = Group.Group
+            if Objects.Visibility is True:
+                if Objects[0].TypeId != 'Assembly::JointGroup':
+                    for Object in Objects:
+                        if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
+                            resultList.append(Object)
+                        if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
+                            resultList.extend(self.Sub_GetObjectsFromGroups(Object))
+        except Exception:
+            pass
+        return resultList
+        
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
-    def GetTreeObjects(self, checkAssembly=True) -> True:
+    def GetTreeObjects(self, checkAssembly=True):
         self.mainList.clear()
         
         # Get the active document
@@ -305,7 +355,7 @@ class BomFunctions:
         # Get the list with rootobjects
         # docObjects = doc.RootObjects
         docObjects = []
-        rootObjects = General_BOM.GetRootObjects()
+        rootObjects = self.GetRootObjects()
         # rootObjects = doc.RootObjects
         for i in range(len(rootObjects)):
             if rootObjects[i].Visibility is True:
@@ -314,7 +364,7 @@ class BomFunctions:
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for docObject in docObjects:
             if docObject.TypeId == "App::DocumentObjectGroup":
-                docObjects.extend(General_BOM.GetObjectsFromGroups(docObject))
+                docObjects.extend(self.GetObjectsFromGroups(docObject))
 
         # Check if there are parts which are duplicates.
         # Threat them as identical parts and replace the copies with the original
@@ -444,7 +494,7 @@ class BomFunctions:
         for i in range(len(docObjects)):
             # Get the documentObject
             Object = docObjects[i]
-            GroupItems = General_BOM.GetObjectsFromGroups(Object)
+            GroupItems = self.GetObjectsFromGroups(Object)
             if len(GroupItems) > 0 and Object.Visibility is True:
                 for j in range(len(GroupItems)):
                     if GroupItems[j].Visibility is True:
@@ -561,7 +611,7 @@ class BomFunctions:
         for i in range(len(ChilddocObjects)):
             # Get the documentObject
             Object = ChilddocObjects[i]
-            GroupItems = General_BOM.GetObjectsFromGroups(Object)
+            GroupItems = self.GetObjectsFromGroups(Object)
             if len(GroupItems) > 0 and Object.Visibility is True:
                 for j in range(len(GroupItems)):
                     if GroupItems[j].Visibility is True:
@@ -724,6 +774,30 @@ class BomFunctions:
 
         # return the filtered list.
         return BOMList
+    
+    # Function to return body properties as a list
+    @classmethod
+    def ReturnBodyProperties(DocObject):
+        try:
+            Shape = DocObject.Shape
+            Material = ""
+            try:
+                Material = DocObject.ShapeMaterial.Name
+            except Exception:
+                pass
+            
+            List = [
+                round(Shape.Area, 6),
+                round(Shape.Length, 6),
+                round(Shape.Volume, 6),
+                Material,
+            ]
+
+            return List
+        except Exception as e:
+            if Settings_BoM.ENABLE_DEBUG is True:
+                print(e)
+            return []
 
     @classmethod
     def CheckObject(self, docObject, AllowBodies=False) -> bool:
@@ -759,6 +833,95 @@ class BomFunctions:
                     objectCheck = False
 
         return objectCheck
+    
+    # function to summarize, subassemblies with their children
+    @classmethod
+    def ReplacesAssembly(self, BoMList: list):
+        # Define the result list
+        resultList = []
+        # Define a list to hold items that are used to replace duplicates
+        ReplaceList = []
+        # Create a shadow list with items that has te be skipped
+        shadowList = []
+
+        # Go through the BoM
+        for i in range(len(BoMList)):
+            # getContents the row item
+            BoMListItem = BoMList[i]
+            # Get the itemnumber
+            itemNumber = str(BoMListItem["ItemNumber"])
+            # GEt the internal name of the item
+            itemName = BoMListItem["ObjectLabel"]
+            itemType = BoMListItem["Type"]
+            # Try to get the material. Set as empty string as default
+            itemMaterial = ""
+            try:
+                itemMaterial = self.ReturnBodyProperties(BoMListItem["DocumentObject"])
+            except Exception:
+                pass
+
+            # Add always the first item to the replace list
+            if i == 0:
+                ReplaceList.append(BoMList[i])
+
+            # Go trhough the replace list to see if there are duplicate items that must be replaced.
+            for j in range(len(ReplaceList)):
+                # Set skip to false as default
+                skip = False
+                
+                # Get the material from the replaced item. Set as empty string as default
+                ReplacedItem_Properties = ""
+                try:
+                    ReplacedItem_Properties = self.ReturnBodyProperties(ReplaceList[j]["DocumentObject"])
+                except Exception:
+                    pass
+
+                # if you at the end of the replace list: if the item is not in the shadowlist,
+                # add it to the result list.
+                if j == len(ReplaceList) - 1:
+                    # Go through the shadow list. If the current item is in the shadow list, skip it.
+                    for k in range(len(shadowList)):
+                        if shadowList[k]["ItemNumber"] == itemNumber:
+                            skip = True
+                    # If the item is not to be skipped, add the item from the replace list to the result list.
+                    if skip is False:
+                        resultList.append(BoMListItem)
+                        ReplaceList.append(BoMListItem)
+                    break
+
+                # If the itemnumber consists of multiple parts go here. (1.1.1 for example)
+                if len(itemNumber.split(".")) > 1:
+                    # if the part of the itemnumber minus the last digit is equeal to the
+                    # itemnumber minus the last digit in the BoMList go through here
+                    if (
+                        ReplaceList[j]["ItemNumber"].rsplit(".", 1)[0]
+                        == itemNumber.rsplit(".", 1)[0]
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplacedItem_Properties == itemMaterial
+                    ):
+                        # Go through the BoMList. Every item that starts with current itemnumber
+                        # is a child of the current item. Add it to the shadow list
+                        for k in range(len(BoMList)):
+                            if BoMList[k]["ItemNumber"].rsplit(".", 1)[0] == itemNumber:
+                                shadowList.append(BoMList[k])
+
+                        # Go through the shadow list. If the current item is in the shadow list, skip it.
+                        for k in range(len(shadowList)):
+                            if shadowList[k]["ItemNumber"] == itemNumber:
+                                skip = True
+
+                        # If the item is not to be skipped, add the item from the replace list to the result list.
+                        if skip is False:
+                            resultList.append(ReplaceList[j])
+                        break
+
+                if len(itemNumber.split(".")) == 1:
+                    if (
+                        ReplaceList[j]["ItemNumber"] == itemNumber
+                        and ReplaceList[j]["ObjectLabel"] == itemName and ReplaceList[j]["Type"] == itemType and ReplacedItem_Properties == itemMaterial
+                    ):
+                        resultList.append(ReplaceList[j])
+                        break
+        return resultList
 
     # Function to create a BoM list for a total BoM.
     # The function CreateBoM can be used to write it to an spreadsheet.
@@ -782,8 +945,10 @@ class BomFunctions:
         for i in range(len(CopyMainList)):
             CopyMainList_2.append(self.ReturnLinkedObject(CopyMainList[i]))
         CopyMainList = CopyMainList_2
-        # CopyMainList = General_BOM.ReplacesAssembly(CopyMainList)
-
+        
+        # summarize duplicate subassemblies
+        CopyMainList = self.ReplacesAssembly(CopyMainList)
+        
         # Create a temporary list
         TemporaryList = []
 
@@ -833,10 +998,11 @@ class BomFunctions:
                 # Get the parent
                 shadowParent = rowList["Parent"]
                 # Define the shadow body properties
-                shadowBodyProperties = ""                
-                # shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
-                # except Exception:
-                #     pass
+                shadowBodyProperties = ""     
+                try:           
+                    shadowBodyProperties = self.ReturnBodyProperties(rowList["DocumentObject"])
+                except Exception:
+                    pass
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
@@ -854,7 +1020,7 @@ class BomFunctions:
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
-                        ObjectBasedPart=True,
+                        ObjectBasedPart=False,
                         CompareMaterial=True,
                     )
                 )
@@ -909,10 +1075,10 @@ class BomFunctions:
                 shadowParent = rowList["Parent"]
                 # Define the shadow body properties
                 shadowBodyProperties = ""
-                # try:
-                #     shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
-                # except Exception:
-                #     pass
+                try:
+                    shadowBodyProperties = self.ReturnBodyProperties(rowList["DocumentObject"])
+                except Exception:
+                    pass
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
@@ -930,7 +1096,7 @@ class BomFunctions:
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
-                        ObjectBasedPart=True,
+                        ObjectBasedPart=False,
                         CompareMaterial=True,
                     )
                 )
@@ -1201,7 +1367,7 @@ class BomFunctions:
                 # Define the shadow body properties
                 shadowBodyProperties = ""
                 try:
-                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                    shadowBodyProperties = self.ReturnBodyProperties(rowList["DocumentObject"])
                 except Exception:
                     pass
 
@@ -1280,6 +1446,8 @@ class BomFunctions:
             self.mainList.clear()
             # create the mainList
             self.GetTreeObjects(checkAssembly=CheckAssemblyType)
+            
+            print("Used mixed BoM")
 
             if len(self.mainList) > 0:
                 IncludeBodiesText = "Do you want to include bodies?"

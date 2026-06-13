@@ -740,9 +740,26 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             Level_Value = 1
         if TypeOfBoM == "Raw BoM":
             Command = "Raw"
+            
+        List_MixedBomAllowed = [
+            "Internal assembly",
+            "Assembly 3",
+            "Assembly 4",
+            "App:LinkGroup",
+            "App:Part",
+        ]
 
         # Get the correct BoM functions based on the  selected assembly type
-        if Settings_BoM.ENABLE_MIXED_BOM is False:
+        if (Settings_BoM.ENABLE_MIXED_BOM or self.form.EnableMixedBoM.isChecked()) and (AssemblyType_Selected in List_MixedBomAllowed):
+            GetBoM_Mixed.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    EnableQuestion=False,
+                    CheckAssemblyType=False
+                )
+        else:
             if AssemblyType_Selected == "Assembly 4":
                 GetBOM_A4.BomFunctions.Start(
                     command=Command,
@@ -787,35 +804,27 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                     EnableQuestion=False,
                     CheckAssemblyType=not self.manualChange,
                 )
-        if Settings_BoM.ENABLE_MIXED_BOM:
-            GetBoM_Mixed.BomFunctions.Start(
+            if AssemblyType_Selected == "A2plus":
+                GetBOM_A2plus.BomFunctions.Start(
                     command=Command,
                     Level=Level_Value,
                     IncludeBodies=IncludeBodies_Checked,
                     IndentNumbering=UseIndent_Checked,
-                    CheckAssemblyType=False
+                    CheckAssemblyType=not self.manualChange,
+                )        
+            if AssemblyType_Selected == "Arch":
+                GetBOM_BIM.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    CheckAssemblyType=False,
                 )
-        if AssemblyType_Selected == "A2plus":
-            GetBOM_A2plus.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                CheckAssemblyType=not self.manualChange,
-            )        
-        if AssemblyType_Selected == "Arch":
-            GetBOM_BIM.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                CheckAssemblyType=False,
-            )
-        if AssemblyType_Selected == "MultiBody":
-            GetBOM_MultiBody.BomFunctions.Start(
-                command=Command,
-                CheckAssemblyType=not self.manualChange
-            )
+            if AssemblyType_Selected == "MultiBody":
+                GetBOM_MultiBody.BomFunctions.Start(
+                    command=Command,
+                    CheckAssemblyType=not self.manualChange
+                )
             
         mw.setCursor(Qt.CursorShape.ArrowCursor)
         return
