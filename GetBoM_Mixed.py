@@ -665,6 +665,29 @@ class BomFunctions:
 
         # Return the result.
         return result
+    
+     # Function which can be used as an filter. If the name is in the name of the object which is it compared to,
+    # it will return None. So for example "Bearing" is in "Bearing001" and will return None.
+    @classmethod
+    def FilterLinkedParts_A4(
+        self, ObjectDocument, objectComparison
+    ) -> App.DocumentObject:
+        # Use a try-except statement in case the object has no parent method.
+        try:
+            # Get the parents as a list. This will be like "[(<Part object>, 'LCS_Origin.')]"
+            Parents = ObjectDocument.Parents
+            # Go through the list with parents
+            for ParentObject in Parents:
+                # If the name of the second parent is in the compared object,the result will be None.
+                # if the name of the second parent is not in the name of the compared object, the result is the object document.
+                if str(ParentObject[1]).find(objectComparison.Name) == -1:
+                    return ObjectDocument
+                else:
+                    return None
+        except Exception:
+            # on an error return None.
+            return None
+
 
     # function to go through the objects and their child objects
     @classmethod
@@ -688,6 +711,29 @@ class BomFunctions:
                 for j in range(len(GroupItems)):
                     if GroupItems[j].Visibility is True:
                         docObjects.insert(i + j + 1, GroupItems[j])
+        
+        # This is for Assembly4 patterns
+        objectList = []                        
+        for i in range(len(docObjects)):
+            # Get the documentObject
+            Object = docObjects[i]
+            # Standard assume that the object is an array
+            IsArray = True
+
+            # Check if this is indeed an array
+            try:
+                ArrayType = Object.ArrayType
+            except Exception:
+                IsArray = False
+                pass
+            # If it is a pattern, add the amount of items from the pattern to the list
+            if IsArray is True:
+                Qty = int(Object.Count)
+                for i in range(Object.Count):
+                    objectList.append(Object.SourceObject)
+            else:
+                objectList.append(Object)
+        docObjects = objectList
 
         for i in range(len(docObjects)):
             # Get the documentObject
@@ -710,30 +756,6 @@ class BomFunctions:
                 # If there is a parentnumber (like 1.1, add it as prefix.)
                 if ParentNumber != "":
                     ItemNumberString = ParentNumber
-                    
-                # Set the quantity to 1.
-                Qty = 1
-
-                # Standard assume the object is not an array
-                IsArray = True
-
-                # If the object is an array. update the quantity and replace the array with is elements
-                try:
-                    ArrayType = Object.ArrayType
-                except Exception:
-                    IsArray = False
-                    pass
-
-                if IsArray is True:
-                    Qty = int(Object.Count)
-                    Object = Object.SourceObject
-                else:
-                    Qty = 1
-
-                for q in range(Qty):
-                    ItemNumberString = str(ItemNumber + q)
-                    if ParentNumber != "":
-                        ItemNumberString = str(ParentNumber + q)
 
                 # Create a rowList
                 rowList = {
@@ -801,13 +823,35 @@ class BomFunctions:
         """
         for i in range(len(ChilddocObjects)):
             # Get the documentObject
-            Object = ChilddocObjects[i]
-            GroupItems = self.GetObjectsFromGroups(Object)
-            if len(GroupItems) > 0 and Object.Visibility is True:
+            childObject = ChilddocObjects[i]
+            GroupItems = self.GetObjectsFromGroups(childObject)
+            if len(GroupItems) > 0 and childObject.Visibility is True:
                 for j in range(len(GroupItems)):
                     if GroupItems[j].Visibility is True:
                         ChilddocObjects.insert(i + j + 1, GroupItems[j])
-             
+        
+        # This is for Assembly4 patterns
+        childObjectList = []                        
+        for i in range(len(ChilddocObjects)):
+            # Get the documentObject
+            childObject = ChilddocObjects[i]
+            # Standard assume that the object is an array
+            IsArray = True
+
+            # Check if this is indeed an array
+            try:
+                ArrayType = childObject.ArrayType
+            except Exception:
+                IsArray = False
+                pass
+            # If it is a pattern, add the amount of items from the pattern to the list
+            if IsArray is True:
+                Qty = int(childObject.Count)
+                for i in range(childObject.Count):
+                    childObjectList.append(childObject.SourceObject)
+            else:
+                childObjectList.append(childObject)
+        ChilddocObjects = childObjectList     
 
         for i in range(len(ChilddocObjects)):
             # Get the childDocumentObject
@@ -826,30 +870,6 @@ class BomFunctions:
 
                 # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
                 ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
-                
-                # Set the quantity to 1.
-                Qty = 1
-
-                # Standard assume the object is not an array
-                IsArray = True
-
-                # If the object is an array. update the quantity and replace the array with is elements
-                try:
-                    ArrayType = childObject.ArrayType
-                except Exception:
-                    IsArray = False
-                    pass
-
-                if IsArray is True:
-                    Qty = int(childObject.Count)
-                    childObject = childObject.SourceObject
-                else:
-                    Qty = 1
-
-                for q in range(Qty):
-                    ItemNumberString = str(ChildItemNumber + q)
-                    if ParentNumber != "":
-                        ItemNumberString = ParentNumber + "." + str(ChildItemNumber + q)
 
                 # Create a rowList
                 rowList = {
@@ -1434,7 +1454,7 @@ class BomFunctions:
         # Replace duplicate items with their original
         CopyMainList_2 = []
         for i in range(len(CopyMainList)):
-            CopyMainList_2.append(self.ReturnLinkedObject(CopyMainList[i]))
+            CopyMainList_2.append(self.ReturnLinkedObject(CopyMainList[i], CopyMainList[i]["Type"]))
         CopyMainList = CopyMainList_2
 
         # Create a temporary list
@@ -1443,7 +1463,7 @@ class BomFunctions:
         # Create a shadow list to put objects on which shouldn't be added to the Temporary list, because they are already there.
         ShadowList = []
         # define an item for the shadow list.
-        shadowRow = dict
+        shadowRow = ()
 
         # Set the maximum for the progress bar                
         self.progressBar.setMaximum(len(CopyMainList)-1)
@@ -1471,11 +1491,11 @@ class BomFunctions:
             QtyValue = 1
 
             # Create a new dict as new Row item.
-            rowListNew = dict
+            rowListNew = {}
 
             # Find the quantity for the item
             QtyValue = str(
-                General_BOM.ObjectCounter(
+                self.ObjectCounter(
                     DocObject=None,
                     RowItem=rowList,
                     mainList=CopyMainList,
@@ -1498,7 +1518,7 @@ class BomFunctions:
             # Define the shadow body properties
             shadowBodyProperties = ""
             try:
-                shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                shadowBodyProperties = self.ReturnBodyProperties(rowList["DocumentObject"])
             except Exception:
                 pass
 
@@ -1512,7 +1532,7 @@ class BomFunctions:
             }
             # Add the rowItem if it is not in the shadow list.
             if (
-                General_BOM.ListContainsCheck(
+                self.ListContainsCheck(
                     List=ShadowList,
                     Item1=shadowRow["Item1"],
                     Item2=shadowRow["Item2"],
@@ -1562,13 +1582,13 @@ class BomFunctions:
         # Replace duplicate items with their original
         CopyMainList_2 = []
         for i in range(len(CopyMainList)):
-            CopyMainList_2.append(self.ReturnLinkedObject(CopyMainList[i]))
+            CopyMainList_2.append(self.ReturnLinkedObject(CopyMainList[i], CopyMainList[i]["Type"]))
         CopyMainList = CopyMainList_2
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
         # define an item for the shadow list.
-        shadowRow = dict
+        shadowRow = {}
 
         # Create a temporary list
         TemporaryList = []
@@ -1601,11 +1621,11 @@ class BomFunctions:
                 QtyValue = 1
 
                 # Create a new dict as new Row item.
-                rowListNew = dict
+                rowListNew = {}
 
                 # Find the quantity for the item
                 QtyValue = str(
-                    General_BOM.ObjectCounter(
+                    self.ObjectCounter(
                         DocObject=None,
                         RowItem=rowList,
                         mainList=CopyMainList,
@@ -1644,7 +1664,7 @@ class BomFunctions:
                 # Add it to the temporary list.
                 # Add the rowItem if it is not in the shadow list.
                 if (
-                    General_BOM.ListContainsCheck(
+                    self.ListContainsCheck(
                         List=ShadowList,
                         Item1=shadowRow["Item1"],
                         Item2=shadowRow["Item2"],
