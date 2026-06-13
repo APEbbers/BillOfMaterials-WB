@@ -55,7 +55,7 @@ currentScheme = App.Units.getSchema()
 # You can add a dict for the headers of this list
 # @classmethod
 def createBoMSpreadsheet(
-    self, mainList = None, Headers: dict = None, Summary: bool = False, IFCData=None, AssemblyType = ""
+    mainList = None, Headers: dict = None, Summary: bool = False, IFCData=None, AssemblyType = ""
 ):
     # If the Mainlist is empty, return.
     if mainList is None:
@@ -653,7 +653,7 @@ def ObjectCounter_ItemNumber(
     return counter
 
 # @classmethod
-def ListContainsCheck(self, List: list, Item1, Item2, Item3, Item4 = None, Item5 = None) -> bool:
+def ListContainsCheck(List: list, Item1, Item2, Item3, Item4 = None, Item5 = None) -> bool:
     for i in range(len(List)):
         rowItem = List[i]
         ListItem1 = rowItem["Item1"]
@@ -797,7 +797,7 @@ def ObjectCounter(
 
 # Function to correct the items of the BoM after filtering has taken place.
 # @classmethod
-def CorrectItemNumbers(self, BoMList: list, DebugMode: bool = False) -> list:
+def CorrectItemNumbers(BoMList: list, DebugMode: bool = False) -> list:
     """_summary_
 
     Args:
@@ -918,7 +918,7 @@ def CorrectItemNumbers(self, BoMList: list, DebugMode: bool = False) -> list:
 
 # Function to check the type of workbench
 # @classmethod
-def CheckAssemblyType(self, DocObject):
+def CheckAssemblyType(DocObject):
     """_summary_
 
     Args:
@@ -1015,7 +1015,7 @@ def CheckAssemblyType(self, DocObject):
     return result
 
 # @classmethod
-def CheckMultiBodyType(self, DocObject):
+def CheckMultiBodyType(DocObject):
     # Define the list with allowed types
     ListObjecttypes = [
         "Part::FeaturePython",
@@ -1079,7 +1079,7 @@ def CheckMultiBodyType(self, DocObject):
     return result
 
 # @classmethod
-def GetObjectsFromGroups(self, Group):
+def GetObjectsFromGroups(Group):
     resultList = []
     try:
         Objects = Group.Group
@@ -1094,7 +1094,7 @@ def GetObjectsFromGroups(self, Group):
         pass
     return resultList
 
-def Sub_GetObjectsFromGroups(self, Group):
+def Sub_GetObjectsFromGroups(Group):
     resultList = []
     try:
         Objects = Group.Group
@@ -1110,7 +1110,7 @@ def Sub_GetObjectsFromGroups(self, Group):
     return resultList
 
 # @classmethod
-def ReturnDocProperty(self, DocObject, PropertyName) -> str:
+def ReturnDocProperty(DocObject, PropertyName) -> str:
     result = ""
     try:
         if PropertyName == "FullName":
@@ -1131,7 +1131,7 @@ def ReturnDocProperty(self, DocObject, PropertyName) -> str:
         return ""
 
 # @classmethod
-def ReturnViewProperty(self, DocObject, PropertyName) -> list:
+def ReturnViewProperty(DocObject, PropertyName) -> list:
     resultValue: object
     resultUnit: str
     result: list
@@ -1356,7 +1356,7 @@ def ReturnViewProperty(self, DocObject, PropertyName) -> list:
                 return ""
 
 # @classmethod
-def ObjectToString(self, item):
+def ObjectToString(item):
     result: object
     try:
         if isinstance(item, int):
@@ -1382,7 +1382,7 @@ def ObjectToString(self, item):
         return ""
 
 # @classmethod
-def ReturnViewProperty_IFC(self, DocObject):
+def ReturnViewProperty_IFC(DocObject):
     result: object
     try:
         try:
@@ -1414,7 +1414,7 @@ def ReturnViewProperty_IFC(self, DocObject):
 
 # function to summarize, subassemblies with their children
 # @classmethod
-def ReplacesAssembly(self, BoMList: list):
+def ReplacesAssembly(BoMList: list):
     # Define the result list
     resultList = []
     # Define a list to hold items that are used to replace duplicates
@@ -1502,7 +1502,7 @@ def ReplacesAssembly(self, BoMList: list):
     return resultList
 
 # @classmethod
-def correctQtyAssemblies(self, BOMList) -> list:
+def correctQtyAssemblies(BOMList) -> list:
     # Define AssemblyQty and AssemblyNumber
     AssemblyQty = 1
     AssemblyNumber = ""
@@ -1549,7 +1549,7 @@ def GetRootObjects(self):
 
 # Function to compare bodies
 # @classmethod
-def CompareBodies(self, DocObject_1, DocObject_2) -> bool:
+def CompareBodies(DocObject_1, DocObject_2) -> bool:
     try:
         Shape_1 = DocObject_1.Shape
         Shape_2 = DocObject_2.Shape
@@ -1596,7 +1596,7 @@ def CompareBodies(self, DocObject_1, DocObject_2) -> bool:
 
 # Function to return body properties as a list
 # @classmethod
-def ReturnBodyProperties(self, DocObject):
+def ReturnBodyProperties(DocObject):
     try:
         Shape = DocObject.Shape
         Material = ""
@@ -1619,7 +1619,7 @@ def ReturnBodyProperties(self, DocObject):
         return []
     
 # @classmethod
-def ReturnProgressBar(self):
+def ReturnProgressBar():
     progressBar = QProgressBar(minimum=0, value=0)
     progressBar.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
     progressBar.setWindowFlag(Qt.WindowType.CustomizeWindowHint, True)
