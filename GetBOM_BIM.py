@@ -24,7 +24,7 @@
 
 import FreeCAD as App
 import FreeCADGui as Gui
-from General_BOM_Functions import General_BOM
+import General_BOM_Functions as General_BOM
 import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
 import os
@@ -476,7 +476,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList, AssemblyType="App::Part")
+            General_BOM.createBoMSpreadsheet(TemporaryList, AssemblyType="BIM")
         return
 
     # Function to create a summary list of all assemblies and their parts.
@@ -587,7 +587,7 @@ class BomFunctions:
         # Create the spreadsheet
         if CreateSpreadSheet is True:
             General_BOM.createBoMSpreadsheet(
-                mainList=TemporaryList, Headers=None, Summary=True
+                mainList=TemporaryList, Headers=None, Summary=True, AssemblyType="BIM"
             )
         return
 
@@ -706,7 +706,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList)
+            General_BOM.createBoMSpreadsheet(TemporaryList, AssemblyType="BIM")
         return
 
     # endregion
@@ -872,7 +872,7 @@ class BomFunctions:
                         Level=Level,
                     )
                 if command == "Raw":
-                    General_BOM.createBoMSpreadsheet(self.mainList, AssemblyType="App::Part") 
+                    General_BOM.createBoMSpreadsheet(self.mainList, AssemblyType="BIM") 
                 if command == "PartsOnly":
                     self.PartsOnly(
                         CreateSpreadSheet=True,

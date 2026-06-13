@@ -211,6 +211,7 @@ def ToggleToolbars(ToolbarName: str, WorkBench: str = ""):
     from PySide.QtWidgets import QToolBar
 
     # Get the active workbench
+    WB = None
     if WorkBench == "":
         WB = Gui.activeWorkbench()
     if WorkBench != "":

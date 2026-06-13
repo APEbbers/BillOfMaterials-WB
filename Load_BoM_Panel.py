@@ -29,7 +29,7 @@ from inspect import getsourcefile
 from PySide.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
 from PySide.QtGui import QIcon, QCursor
 from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel, QCheckBox
-from General_BOM_Functions import General_BOM
+import General_BOM_Functions as General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
 import sys

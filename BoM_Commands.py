@@ -49,7 +49,7 @@ class CreatePartsOnlyBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import General_BOM
+        import General_BOM_Functions as General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
@@ -109,7 +109,7 @@ class CreateSummarizedBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import General_BOM
+        import General_BOM_Functions as General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
@@ -158,7 +158,7 @@ class CreateTotalBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import General_BOM
+        import General_BOM_Functions as General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
@@ -207,7 +207,7 @@ class CreateSingleLevelBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import General_BOM
+        import General_BOM_Functions as General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
@@ -256,7 +256,7 @@ class CreateRawBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import General_BOM
+        import General_BOM_Functions as General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
