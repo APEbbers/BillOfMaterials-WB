@@ -411,7 +411,7 @@ class BomFunctions:
                 try:
                     shadowBodyProperties = self.ReturnBodyProperties_BIM(rowList["DocumentObject"])                    
                 except Exception:
-                    pass
+                    pass                
                 # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
@@ -723,8 +723,11 @@ class BomFunctions:
     def ReturnBodyProperties_BIM(self, DocObject):
         try:
             # First get the data from the BIM data
-            Length, Width, Height, Area = ""
-            Material = None
+            Length = ""
+            Width = ""
+            Height = ""
+            Area=""
+            Material = ""
             try:
                 Length = DocObject.getPropertyByName("Length").UserString.split(" ")[0]
             except Exception:
@@ -742,8 +745,8 @@ class BomFunctions:
             except Exception:
                 pass
             try:
-                Material = DocObject.getPropertyByName("Material").UserString.split(" ")[0]
-            except Exception:
+                Material = DocObject.getPropertyByName("Material").Material['CardName']
+            except Exception as e:
                 pass
 
             List = [
@@ -757,8 +760,8 @@ class BomFunctions:
 
             return List
         except Exception as e:
-            if Settings_BoM.ENABLE_DEBUG is True:
-                print(e)
+            # if Settings_BoM.ENABLE_DEBUG is True:
+            #     print(e)
             return
         
     # Functions to count  document objects in a list based on the itemnumber of their parent.
@@ -806,14 +809,14 @@ class BomFunctions:
                 pass
             
             # Set MaterialCompare to True as default
-            MaterialCompare = True
+            EqualProperties = True
             # if material needs to be taken into account, compare the material
             if CompareMaterial is True:
                 if BomListItem_Properties != Item_Properties:
-                    MaterialCompare = False            
+                    EqualProperties = False            
             
             # if the material is equeal continue
-            if MaterialCompare is True or CompareMaterial is False:
+            if EqualProperties is True or CompareMaterial is False:
                 # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
                 # If the itemnumber is more than one level deep:
                 if len(ItemNumber.split(".")) > 1:
