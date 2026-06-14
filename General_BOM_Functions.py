@@ -1134,14 +1134,12 @@ def ReturnViewProperty(DocObject, PropertyName) -> list:
     
     isMaterialProperty = False
     try:
-        Prefix = ""
+        Prefix = "Material - "
         MaterialProperties = {}
-        if PropertyName.startswith("Shape - ") is True:
-            Prefix = "Shape - "
+        try:
+            MaterialProperties = DocObject.Material.Material            
+        except Exception:
             MaterialProperties = DocObject.ShapeMaterial.Properties
-        if PropertyName.startswith("Shape - ") is False:
-            MaterialProperties = DocObject.Material.Material
-            Prefix = "Material - "
         for key in MaterialProperties.keys():
             if Prefix + key == PropertyName:
                 isMaterialProperty = True
