@@ -724,6 +724,7 @@ class BomFunctions:
         try:
             # First get the data from the BIM data
             Length, Width, Height, Area = ""
+            Material = None
             try:
                 Length = DocObject.getPropertyByName("Length").UserString.split(" ")[0]
             except Exception:
@@ -740,12 +741,17 @@ class BomFunctions:
                 Area = DocObject.getPropertyByName("Area").UserString.split(" ")[0]
             except Exception:
                 pass
+            try:
+                Material = DocObject.getPropertyByName("Material").UserString.split(" ")[0]
+            except Exception:
+                pass
 
             List = [
                 Length,
                 Width,
                 Height,
                 Area,
+                Material,
             ]
 
 

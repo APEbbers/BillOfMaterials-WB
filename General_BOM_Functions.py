@@ -1134,21 +1134,25 @@ def ReturnViewProperty(DocObject, PropertyName) -> list:
     
     isMaterialProperty = False
     try:
+        Prefix = ""
         MaterialProperties = {}
-        MaterialProperties = DocObject.ShapeMaterial.Properties
-        if int(App.Version()[0]) >= 1:
+        if PropertyName.startswith("Shape - ") is True:
+            Prefix = "Shape - "
+            MaterialProperties = DocObject.ShapeMaterial.Properties
+        if PropertyName.startswith("Shape - ") is False:
             MaterialProperties = DocObject.Material.Material
+            Prefix = "Material - "
         for key in MaterialProperties.keys():
-            if "Material - " + key == PropertyName:
+            if Prefix + key == PropertyName:
                 isMaterialProperty = True
     
         if isMaterialProperty is True:
-            if PropertyName == "Material - Density":
-                Density = MaterialProperties[PropertyName.replace("Material - ", "")]
+            if PropertyName == Prefix + " - Density":
+                Density = MaterialProperties[PropertyName.replace(Prefix, "")]
                 resultValue = Density.split(" ")[0]
                 resultUnit = Density.split(" ")[1]
             else:
-                resultValue = MaterialProperties[PropertyName.replace("Material - ", "")]
+                resultValue = MaterialProperties[PropertyName.replace(Prefix, "")]
                 resultUnit = ""
             result = (resultValue, resultUnit)
             return result
