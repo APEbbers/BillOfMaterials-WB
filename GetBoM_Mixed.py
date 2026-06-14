@@ -965,23 +965,28 @@ class BomFunctions:
                     return RowItem
             except Exception:
                 pass
-            RowItem["DocumentObject"] = docObject.LinkedObject
-            RowItem["ObjectName"] = docObject.LinkedObject.Name
-            RowItem["ObjectLabel"] = docObject.LinkedObject.Label        
+            try:
+                RowItem["DocumentObject"] = docObject.LinkedObject
+                RowItem["ObjectName"] = docObject.LinkedObject.Name
+                RowItem["ObjectLabel"] = docObject.LinkedObject.Label  
+            except Exception:
+                pass     
             return RowItem    
         else:
-            rowListNew = {
-                "ItemNumber": RowItem["ItemNumber"],
-                "DocumentObject": docObject.getLinkedObject(),
-                "ObjectLabel": docObject.getLinkedObject().Label,
-                "ObjectName": docObject.getLinkedObject().Name,
-                "Qty": RowItem["Qty"],
-                "Type": RowItem["Type"],
-                "Parent": docObject.getLinkedObject().FullName.split("#", 1)[0]
-            }
-        return rowListNew
-        # except Exception:
-        #     return None
+            try:
+                rowListNew = {
+                    "ItemNumber": RowItem["ItemNumber"],
+                    "DocumentObject": docObject.getLinkedObject(),
+                    "ObjectLabel": docObject.getLinkedObject().Label,
+                    "ObjectName": docObject.getLinkedObject().Name,
+                    "Qty": RowItem["Qty"],
+                    "Type": RowItem["Type"],
+                    "Parent": docObject.getLinkedObject().FullName.split("#", 1)[0]
+                }
+                return rowListNew
+            except Exception:
+                pass
+        return RowItem
 
     # Function to filter out bodies
     @classmethod
