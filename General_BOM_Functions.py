@@ -1136,6 +1136,8 @@ def ReturnViewProperty(DocObject, PropertyName) -> list:
     try:
         MaterialProperties = {}
         MaterialProperties = DocObject.ShapeMaterial.Properties
+        if int(App.Version()[0]) >= 1:
+            MaterialProperties = DocObject.Material.Material
         for key in MaterialProperties.keys():
             if "Material - " + key == PropertyName:
                 isMaterialProperty = True
