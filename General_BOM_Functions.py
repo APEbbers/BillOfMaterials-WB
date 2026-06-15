@@ -131,12 +131,12 @@ def createBoMSpreadsheet(
     ValuePrevious = ""
     TotalNoItems = 0
     # Go through the CopyMainlist
-    for i in range(len(CopyMainList)):
-        rowList = CopyMainList[i]
+    for j in range(len(CopyMainList)):
+        rowList = CopyMainList[j]
         # Set the row offset to 2. otherwise the headers will be overwritten
         rowOffset = 2
         # Increase the row
-        Row = i + rowOffset
+        Row = j + rowOffset
 
         # Fill the spreadsheet
         for j in range(1, len(Headers) + 1):
@@ -249,13 +249,21 @@ def createBoMSpreadsheet(
         TotalNoItems = TotalNoItems + int(rowList["Qty"])
 
     # Set the column widht
-    for key in Headers:
-        Column = key[:1]
-        NoChars = 0
+    # for key in Headers:
+    for i in range(1, 1000):
+        Column = Standard_Functions.GetLetterFromNumber(i)
+        Header = str(sheet.getContents(Column + "1"))
+        if Header == "":
+            break
+        
+        NoChars = len(Header)
+        Standard_Functions.SetColumnWidth_SpreadSheet(
+            sheet=sheet, column=Column, cellValue=Header, factor=Settings_BoM.AUTOFIT_FACTOR
+        )
         
         # Go through all rows
-        for i in range(1, len(CopyMainList)):
-            Value = str(sheet.getContents(Column + str(i)))
+        for j in range(1, len(CopyMainList)):
+            Value = str(sheet.getContents(Column + str(j)))
             if len(Value) > NoChars:
                 Standard_Functions.SetColumnWidth_SpreadSheet(
                     sheet=sheet, column=Column, cellValue=Value, factor=Settings_BoM.AUTOFIT_FACTOR
@@ -299,8 +307,8 @@ def createBoMSpreadsheet(
 
         # Go through the list. If it is an assembly, increase the AssemblyCounter by 1.
         # If it is an Part, increase the PartCounter by 1. Always increase the TotalCounter.
-        for i in range(len(CopyMainList)):
-            rowList = CopyMainList[i]
+        for j in range(len(CopyMainList)):
+            rowList = CopyMainList[j]
 
             isAssembly = False
             AssemblyTypes = [
@@ -329,7 +337,7 @@ def createBoMSpreadsheet(
         # Set the number of rows to be added.
         NoRows = 6
         # Insert the rows and merge for each row the first three cells
-        for i in range(NoRows):
+        for j in range(NoRows):
             sheet.insertRows(RowNumber, 1)
             sheet.mergeCells("A1:C1")
         sheet.mergeCells("A1:D1")

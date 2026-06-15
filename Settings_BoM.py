@@ -50,7 +50,7 @@ DefaultSettings = {
     "SpreadsheetColumnFontStyle_Bold": False,
     "SpreadsheetColumnFontStyle_Italic": False,
     "SpreadsheetColumnFontStyle_Underline": False,
-    "AutoFitFactor": 12.0,
+    "AutoFitFactor": 8,
     "UnitPosition": 0,
     "EnableDebug": False,
     "EnableDebugColumns": False,
