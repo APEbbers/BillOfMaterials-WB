@@ -69,16 +69,9 @@ def createBoMSpreadsheet(
     IsNewSheet = False
     sheet = None
     try:
-        # sheet = doc.getObjectsByLabel("BoM")[0]
         doc.removeObject("BoM")
     except Exception:
         pass
-    # if sheet is not None:
-    #     for i in range(
-    #         1, 16384
-    #     ):  # 16384 is the maximum rows of the spreadsheet module
-    #         doc.BoM.splitCell("A" + str(i))
-    #     sheet.clearAll()
     if sheet is None:
         sheet = doc.addObject("Spreadsheet::Sheet", "BoM")
         IsNewSheet = True
@@ -126,11 +119,6 @@ def createBoMSpreadsheet(
     # Create the headers and set the width
     for key, value in Headers.items():
         sheet.set(key, value)
-        # set the width based on the headers
-
-        Standard_Functions.SetColumnWidth_SpreadSheet(
-            sheet=sheet, column=key[:1], cellValue=value, factor=Settings_BoM.AUTOFIT_FACTOR
-        )
 
     # Style the Top row
     sheet.setStyle(HeaderRange, "bold")  # \bold|italic|underline'
@@ -260,16 +248,19 @@ def createBoMSpreadsheet(
         # Create the total number of items for the summary
         TotalNoItems = TotalNoItems + int(rowList["Qty"])
 
-        # Set the column widht
-        for key in Headers:
-            Column = key[:1]
-            Value = str(sheet.getContents(Column + str(Row)))
-            ValuePrevious = str(sheet.getContents(Column + str(Row - 1)))
-
-            if len(Value) > len(ValuePrevious) and len(Value) > len(Headers[key]):
+    # Set the column widht
+    for key in Headers:
+        Column = key[:1]
+        NoChars = 0
+        
+        # Go through all rows
+        for i in range(1, len(CopyMainList)):
+            Value = str(sheet.getContents(Column + str(i)))
+            if len(Value) > NoChars:
                 Standard_Functions.SetColumnWidth_SpreadSheet(
                     sheet=sheet, column=Column, cellValue=Value, factor=Settings_BoM.AUTOFIT_FACTOR
                 )
+                NoChars = len(Value)
 
     # Allign the columns
     if Row > 1:
