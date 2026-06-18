@@ -939,6 +939,7 @@ def CheckAssemblyType(DocObject):
                 return "A2plus"
         except Exception:
             pass
+    
     # In the other workbenches go through the RootObjects
     for Object in RootObjects:
         try:
@@ -973,7 +974,7 @@ def CheckAssemblyType(DocObject):
                 resultList.append("AppPart")
         except Exception:
             pass
-
+    
     # Check if the document is an arch or multibody document
     try:
         test = CheckMultiBodyType(DocObject)
@@ -1009,16 +1010,21 @@ def CheckMultiBodyType(DocObject):
     ListObjecttypes = [
         "Part::FeaturePython",
         "Part::Feature",
+        "App::Part",
         "PartDesign::Body",
+        'App::GeometryPython',
+        'App::DocumentObjectGroup',
+        'App::FeaturePython',
+        'App::DocumentObjectGroupPython'
     ]
 
-    # Define the list with not allowed types. (aka all assembly types)
-    ListBlockedTypes = [
-        "App::Part",
-        "App::LinkGroup",
-        "App::Link",
-        "Part::Link",
-    ]
+    # # Define the list with not allowed types. (aka all assembly types)
+    # ListBlockedTypes = [
+    #     "App::Part",
+    #     "App::LinkGroup",
+    #     "App::Link",
+    #     "Part::Link",
+    # ]
 
     # Define the result
     result = ""
@@ -1034,11 +1040,12 @@ def CheckMultiBodyType(DocObject):
     # define a boolan for the Arch item check
     isArchItem = False
 
-    # Go through the rootobjects. If it is a blocked type, return.
-    for RootObject in RootObjects:
-        for type in ListBlockedTypes:
-            if type == RootObject.TypeId:
-                return
+    # # Go through the rootobjects. If it is a blocked type, return.
+    # for RootObject in RootObjects:
+    #     for type in ListBlockedTypes:
+    #         if type == RootObject.TypeId:
+    #             print(f"{RootObject.Name} is a blocked type ({RootObject.TypeId})")
+    #             return
 
     # not returned, go through the obects in rootobjects
     for RootObject in RootObjects:
@@ -1064,7 +1071,7 @@ def CheckMultiBodyType(DocObject):
         result = "Arch"
     if isArchItem is False:
         result = "MultiBody"
-
+    print(result)
     return result
 
 def GetObjectsFromGroups(Group):

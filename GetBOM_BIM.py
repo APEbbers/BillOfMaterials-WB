@@ -106,7 +106,9 @@ class BomFunctions:
             "App::Part",
             "PartDesign::Body",
             'App::GeometryPython',
-            'App::DocumentObjectGroup'
+            'App::DocumentObjectGroup',
+            'App::FeaturePython',
+            'App::DocumentObjectGroupPython'
         ]
 
         # Go through the list and compare the object ID's in the list with the ObjectId.
@@ -174,7 +176,12 @@ class BomFunctions:
 
             # If the object is an container, go through the sub items, (a.k.a child objects)
             # if Object.TypeId == "App::Part":
-            if Object.TypeId == 'App::GeometryPython' or (Object.TypeId == 'Part::FeaturePython' and Object.Name.lower() == "site"):
+            if (
+                Object.TypeId == 'App::GeometryPython' or 
+                Object.TypeId == 'App::DocumentObjectGroupPython' or
+                Object.TypeId == 'App::FeaturePython' or 
+                (Object.TypeId == 'Part::FeaturePython' and Object.Name.lower() == "site")
+            ):
                 # Create a list with child objects as DocumentObjects
                 childObjects = []
                 # Make sure that the list is empty. (probally overkill)
@@ -246,7 +253,12 @@ class BomFunctions:
 
             # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
             # if childObject.TypeId == "App::Part":
-            if childObject.TypeId == 'App::GeometryPython' or childObject.TypeId == 'App::DocumentObjectGroup':
+            if (
+                childObject.TypeId == 'App::GeometryPython' or 
+                childObject.TypeId == 'App::DocumentObjectGroupPython' or
+                childObject.TypeId == 'App::FeaturePython' or 
+                (childObject.TypeId == 'Part::FeaturePython' and childObject.Name.lower() == "site")
+            ):
                 # Create a list with sub child objects as DocumentObjects
                 subChildObjects = []
                 # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
