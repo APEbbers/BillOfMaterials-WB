@@ -72,7 +72,6 @@ class BomFunctions:
 
         # Get the list with rootobjects
         docObjects = []
-        # rootObjects = General_BOM.GetRootObjects()
         rootObjects = doc.RootObjects
         for i in range(len(rootObjects)):
             if rootObjects[i].Visibility is True:

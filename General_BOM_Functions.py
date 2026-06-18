@@ -146,8 +146,7 @@ def createBoMSpreadsheet(
             elif Headers[Column + "1"] == "Qty":
                 sheet.set(Column + str(Row), "'" + str(rowList["Qty"]))
             elif Headers[Column + "1"] == "Label":
-                # sheet.set(Column + str(Row), "'" + rowList["ObjectLabel"])
-                sheet.set(Column + str(Row), "'" + rowList["DocumentObject"].Label)
+                sheet.set(Column + str(Row), "'" + rowList["ObjectLabel"])
             elif Headers[Column + "1"] == "Description":
                 sheet.set(Column + str(Row), "'" + ReturnViewProperty(rowList["DocumentObject"], "Description")[0])
             elif Headers[Column + "1"] == "Parent":
