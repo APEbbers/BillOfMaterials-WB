@@ -905,7 +905,10 @@ class BomFunctions:
                     )
             
             # disconnect the signal
-            self.signal_emitter.counter_signal.disconnect()
+            try:
+                self.signal_emitter.counter_signal.disconnect()
+            except Exception:
+                pass
             # Close the progressbar
             self.progressBar.close()
         except Exception as e:
