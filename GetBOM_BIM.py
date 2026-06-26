@@ -21,9 +21,8 @@
 #                                                                              #
 ################################################################################
 
-
-import FreeCAD as App
-import FreeCADGui as Gui
+import FreeCAD as App  # pyright: ignore[reportMissingModuleSource]
+import FreeCADGui as Gui # pyright: ignore[reportMissingModuleSource]
 import General_BOM_Functions as General_BOM
 import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
@@ -53,10 +52,13 @@ class BomFunctions:
     
     # Create an instance of the signal emitter
     signal_emitter = SignalEmitter_Counter()
+    
+    # Create a list for the root objects
+    rootObjects = []
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
-    def GetTreeObjects(self, checkAssemblyType=True) -> True:
+    def GetTreeObjects(self, checkAssemblyType=True):
         self.mainList.clear()
         # Get the active document
         doc = App.ActiveDocument
@@ -72,10 +74,10 @@ class BomFunctions:
 
         # Get the list with rootobjects
         docObjects = []
-        rootObjects = doc.RootObjects
-        for i in range(len(rootObjects)):
-            if rootObjects[i].Visibility is True:
-                docObjects.append(rootObjects[i])
+        self.rootObjects = doc.RootObjects
+        for i in range(len(self.rootObjects)):
+            if self.rootObjects[i].Visibility is True:
+                docObjects.append(self.rootObjects[i])
 
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
@@ -122,9 +124,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(
-        self, docObjects, sheet, ItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_Objects(self, docObjects, sheet, ItemNumber, ParentNumber: str = ""):
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -138,13 +138,25 @@ class BomFunctions:
         # for docObject in docObjects:
         #     if docObject.TypeId == 'App::DocumentObjectGroup':
         #         docObjects.extend(General_BOM.GetObjectsFromGroups(docObject))
+        
+        # Check if a site object is present.
+        sitePresent = False
+        for i in range(len(docObjects)):
+            # Get the documentObject
+            Object = docObjects[i]
+            if Object.Name.lower() == "site":
+                sitePresent = True
+                break
 
         for i in range(len(docObjects)):
             # Get the documentObject
             Object = docObjects[i]
+            
+            # If a site present, skip all other objects on the first level
+            if sitePresent:
+                if Object.Name.lower() != "site":
+                    continue
 
-            # If the documentObject is one of the allowed types, continue
-            # if self.AllowedObjectType(objectID=Object.TypeId) is True and Object.Visibility is True:
             # Increase the itemnumber
             ItemNumber = int(ItemNumber) + 1
 
@@ -157,8 +169,6 @@ class BomFunctions:
             # If there is a parentnumber (like 1.1, add it as prefix.)
             if ParentNumber != "":
                 ItemNumberString = str(ParentNumber)
-
-            # Get the linked object if there is one.
 
             # Create a rowList
             rowList = {
@@ -205,9 +215,7 @@ class BomFunctions:
 
     # Sub function of GoThrough_Objects.
     @classmethod
-    def GoThrough_ChildObjects(
-        self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""
-    ) -> True:
+    def GoThrough_ChildObjects(self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""):
         """
         Args:
                 ChilddocObjects (_type_):       list[DocumentObjects]\n
@@ -229,9 +237,7 @@ class BomFunctions:
             # Increase the global startrow to make sure the data ends up in the next row
             self.StartRow = self.StartRow + 1
 
-            # If the childDocumentObject is one of the allowed types, continue
-            # if self.AllowedObjectType(objectID=childObject.TypeId) is True and childObject.Visibility is True:
-                # Increase the itemnumber for the child
+            # Increase the itemnumber for the child
             ChildItemNumber = int(ChildItemNumber) + 1
 
             # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
