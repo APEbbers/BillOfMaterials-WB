@@ -171,6 +171,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         
         self.form.IncludeBodies.stateChanged.connect(self.on_IncludeBodies_Clicked)
         self.form.IndentedNumbering.stateChanged.connect(self.on_UseIndentation_Clicked)
+        self.form.FilterTopLevel.stateChanged.connect(self.on_FilterTopLevel_Clicked)
 
         # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
         self.form.CreateRaw.connect(
@@ -597,6 +598,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         else:
             Settings_BoM.SetBoolSetting("UseIndentation", False)
         return
+    
+    def on_FilterTopLevel_Clicked(self):
+        if self.form.FilterTopLevel.isChecked():
+            Settings_BoM.SetBoolSetting("FilterTopLevel", True)
+        else:
+            Settings_BoM.SetBoolSetting("FilterTopLevel", False)
+        return
 
     def on_CreateRaw_clicked(self):
         self.CreateBOM("Raw BoM")
@@ -873,6 +881,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.MaxLevel.setEnabled(False)
             self.form.label_5.setStyleSheet("""color: #787878;""")
             self.form.label_6.setStyleSheet("""color: #787878;""")
+            
+            if AssemblyType_Selected == "Arch":
+                self.form.FilterTopLevel.setEnabled(True)
+                # self.form.FilterTopLevel.setVisible(True)
+            else:
+                self.form.FilterTopLevel.setEnabled(False)
+                # self.form.FilterTopLevel.setVisible(False)
         else:
             self.form.IncludeBodies.setEnabled(True)
             self.form.label_3.setStyleSheet("")

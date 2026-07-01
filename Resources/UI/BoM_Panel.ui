@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>544</width>
-    <height>1245</height>
+    <height>1301</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -599,26 +599,14 @@
             <property name="bottomMargin">
              <number>6</number>
             </property>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label_12">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>20</height>
-               </size>
-              </property>
+            <item row="2" column="0" colspan="2">
+             <widget class="QCheckBox" name="IncludeBodies">
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set deepest level for BoM&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>Include bodies</string>
               </property>
              </widget>
             </item>
-            <item row="10" column="0" colspan="2">
+            <item row="11" column="0" colspan="2">
              <layout class="QGridLayout" name="gridLayout_6">
               <item row="0" column="1">
                <widget class="QPushButton" name="LoadColumns">
@@ -673,155 +661,6 @@
              </layout>
             </item>
             <item row="8" column="0" colspan="2">
-             <layout class="QGridLayout" name="gridLayout_3">
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_3">
-                <property name="text">
-                 <string> Set extra columns </string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QPushButton" name="SetColumns">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Resources/Icons/SetColumns.svg</normaloff>:/Resources/Icons/SetColumns.svg</iconset>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>32</width>
-                  <height>32</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <spacer name="horizontalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item row="5" column="0" colspan="2">
-             <widget class="QSpinBox" name="MaxLevel">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-                <horstretch>20</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>20</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>25</height>
-               </size>
-              </property>
-              <property name="baseSize">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set to &amp;quot;0&amp;quot;, all levels will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="suffix">
-               <string/>
-              </property>
-              <property name="minimum">
-               <number>0</number>
-              </property>
-              <property name="value">
-               <number>0</number>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0" colspan="2">
-             <widget class="QCheckBox" name="IndentedNumbering">
-              <property name="text">
-               <string>Indented numbering</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="2" column="0" colspan="2">
-             <widget class="QCheckBox" name="IncludeBodies">
-              <property name="text">
-               <string>Include bodies</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0" colspan="2">
-             <widget class="QLabel" name="label_6">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>200</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:7pt; font-style:italic;&quot;&gt;(When set to &amp;quot;0&amp;quot;, all levels will be displayed.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="9" column="0">
-             <widget class="QLabel" name="label_14">
-              <property name="text">
-               <string>Load saved column configurations</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="0" colspan="2">
              <layout class="QGridLayout" name="gridLayout_10">
               <item row="0" column="1">
                <widget class="QComboBox" name="UnitPosition">
@@ -887,6 +726,174 @@
                </spacer>
               </item>
              </layout>
+            </item>
+            <item row="7" column="0" colspan="2">
+             <widget class="QLabel" name="label_6">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>200</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:7pt; font-style:italic;&quot;&gt;(When set to &amp;quot;0&amp;quot;, all levels will be displayed.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="10" column="0">
+             <widget class="QLabel" name="label_14">
+              <property name="text">
+               <string>Load saved column configurations</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_12">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set deepest level for BoM&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0" colspan="2">
+             <widget class="QSpinBox" name="MaxLevel">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+                <horstretch>20</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="baseSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set to &amp;quot;0&amp;quot;, all levels will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="suffix">
+               <string/>
+              </property>
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="value">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2">
+             <widget class="QCheckBox" name="IndentedNumbering">
+              <property name="text">
+               <string>Indented numbering</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0" colspan="2">
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string> Set extra columns </string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="SetColumns">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>:/Resources/Icons/SetColumns.svg</normaloff>:/Resources/Icons/SetColumns.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item row="4" column="0">
+             <widget class="QCheckBox" name="FilterTopLevel">
+              <property name="text">
+               <string>Filter out top level parts that are not containers (BIM only)</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>

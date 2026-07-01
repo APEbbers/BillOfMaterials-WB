@@ -57,6 +57,7 @@ DefaultSettings = {
     "IncludeBodies": False,
     "UseIndentation": True,
     "EnableMixedBoM": False,
+    "FilterTopLevel": False,
 }
 
 # region -- Functions to read the settings from the FreeCAD Parameters
@@ -217,6 +218,11 @@ if GetBoolSetting("UseIndentation") is None:
     USE_INDENTATION = DefaultSettings["UseIndentation"]
     SetBoolSetting("UseIndentation", USE_INDENTATION)
 USE_INDENTATION = GetBoolSetting("UseIndentation")
+
+if GetBoolSetting("FilterTopLevel") is None:
+    FILTER_TOPLEVEL = DefaultSettings["FilterTopLevel"]
+    SetBoolSetting("FilterTopLevel", FILTER_TOPLEVEL)
+FILTER_TOPLEVEL = GetBoolSetting("FilterTopLevel")
 # endregion
 
 

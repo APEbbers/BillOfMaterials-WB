@@ -147,6 +147,19 @@ class BomFunctions:
             if Object.Name.lower() == "site":
                 sitePresent = True
                 break
+            try:
+                Object.BuildingType
+                sitePresent = True
+                break
+            except Exception:
+                pass
+            try:
+                Object.LevelOffset
+                sitePresent = True
+                break
+            except Exception:
+                pass
+            
 
         for i in range(len(docObjects)):
             # Get the documentObject
@@ -156,6 +169,16 @@ class BomFunctions:
             if sitePresent:
                 if Object.Name.lower() != "site":
                     continue
+                try:
+                    Object.BuildingType
+                    continue
+                except Exception:
+                    pass
+                try:
+                    Object.LevelOffset
+                    continue
+                except Exception:
+                    pass
 
             # Increase the itemnumber
             ItemNumber = int(ItemNumber) + 1
