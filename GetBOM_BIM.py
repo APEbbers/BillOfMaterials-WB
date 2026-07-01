@@ -141,24 +141,25 @@ class BomFunctions:
         
         # Check if a site object is present.
         sitePresent = False
-        for i in range(len(docObjects)):
-            # Get the documentObject
-            Object = docObjects[i]
-            if Object.Name.lower() == "site":
-                sitePresent = True
-                break
-            try:
-                Object.BuildingType
-                sitePresent = True
-                break
-            except Exception:
-                pass
-            try:
-                Object.LevelOffset
-                sitePresent = True
-                break
-            except Exception:
-                pass
+        if Settings_BoM.FILTER_TOPLEVEL is True:            
+            for i in range(len(docObjects)):
+                # Get the documentObject
+                Object = docObjects[i]
+                if Object.Name.lower() == "site":
+                    sitePresent = True
+                    break
+                try:
+                    Object.BuildingType
+                    sitePresent = True
+                    break
+                except Exception:
+                    pass
+                try:
+                    Object.LevelOffset
+                    sitePresent = True
+                    break
+                except Exception:
+                    pass
             
 
         for i in range(len(docObjects)):

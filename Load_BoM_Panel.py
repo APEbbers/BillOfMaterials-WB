@@ -68,6 +68,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     currentSheet = None
 
     ReproAdress: str = ""
+    
+    preferences = App.ParamGet("User parameter:BaseApp/Preferences/Mod/BoM Workbench")
 
     def __init__(self):
         # Makes "self.on_CreateBOM_clicked" listen to the changed control values instead initial values
@@ -212,6 +214,21 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.toolButton_Debug.setHidden(True)
             self.form.DebugText.setHidden(False)
             self.form.frame_4.setDisabled(True)
+        # endregion
+        
+        # region - Set checkboxes
+        if Settings_BoM.INCLUDE_BODIES is True:
+            self.form.IncludeBodies.setChecked(True)
+        else:
+            self.form.FilterTopLevel.setChecked(False)
+        if Settings_BoM.USE_INDENTATION is True:
+            self.form.IndentedNumbering.setChecked(True)
+        else:
+            self.form.FilterTopLevel.setChecked(False)
+        if Settings_BoM.FILTER_TOPLEVEL is True:
+            self.form.FilterTopLevel.setChecked(True)
+        else:
+            self.form.FilterTopLevel.setChecked(False)
         # endregion
 
         # region - add icons to the buttons
@@ -581,29 +598,37 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     def on_EnableMixedBoM_Clicked(self):
         if self.form.EnableMixedBoM.isChecked():
             Settings_BoM.SetBoolSetting("EnableMixedBoM", True)
+            Settings_BoM.ENABLE_MIXED_BOM = True
         else:
             Settings_BoM.SetBoolSetting("EnableMixedBoM", False)
+            Settings_BoM.ENABLE_MIXED_BOM = False
         return
     
     def on_IncludeBodies_Clicked(self):
         if self.form.IncludeBodies.isChecked():
             Settings_BoM.SetBoolSetting("IncludeBodies", True)
+            Settings_BoM.INCLUDE_BODIES = True
         else:
             Settings_BoM.SetBoolSetting("IncludeBodies", False)
+            Settings_BoM.INCLUDE_BODIES = False
         return
     
     def on_UseIndentation_Clicked(self):
         if self.form.IndentedNumbering.isChecked():
             Settings_BoM.SetBoolSetting("UseIndentation", True)
+            Settings_BoM.USE_INDENTATION = True
         else:
             Settings_BoM.SetBoolSetting("UseIndentation", False)
+            Settings_BoM.USE_INDENTATION = False
         return
     
     def on_FilterTopLevel_Clicked(self):
         if self.form.FilterTopLevel.isChecked():
             Settings_BoM.SetBoolSetting("FilterTopLevel", True)
+            Settings_BoM.FILTER_TOPLEVEL = True
         else:
             Settings_BoM.SetBoolSetting("FilterTopLevel", False)
+            Settings_BoM.FILTER_TOPLEVEL = False
         return
 
     def on_CreateRaw_clicked(self):
