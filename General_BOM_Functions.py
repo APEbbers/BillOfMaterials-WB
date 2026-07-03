@@ -1027,6 +1027,9 @@ def CheckMultiBodyType(DocObject):
 
     # Define the result
     result = ""
+    
+    # if CheckAssemblyType(DocObject) != "Arch" or CheckAssemblyType(DocObject) != "MultiBody":
+    #     return
 
     # Get the list with rootobjects
     RootObjects = DocObject.RootObjects
@@ -1070,7 +1073,7 @@ def CheckMultiBodyType(DocObject):
         result = "Arch"
     if isArchItem is False:
         result = "MultiBody"
-    print(result)
+
     return result
 
 def GetObjectsFromGroups(Group):

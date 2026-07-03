@@ -370,22 +370,30 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         doc = App.ActiveDocument
         if General_BOM.CheckAssemblyType(doc) == "A2plus":
             self.form.AssemblyType.setCurrentText("A2plus")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "AppLink":
             self.form.AssemblyType.setCurrentText("App:LinkGroup")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "AppPart":
             self.form.AssemblyType.setCurrentText("App:Part")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "Assembly3":
             self.form.AssemblyType.setCurrentText("Assembly 3")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "Assembly4":
             self.form.AssemblyType.setCurrentText("Assembly 4")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "Internal":
             self.form.AssemblyType.setCurrentText("Internal assembly")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "Arch":
             self.form.AssemblyType.setCurrentText("Arch")
+            self.form.FilterTopLevel.setEnabled(True)
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
+            self.form.FilterTopLevel.setEnabled(False)
+            
 
-        
         # Get the json file. If it doesn't exists, create a new one with a default configuration
         if os.path.exists(os.path.join(PATH_TB, "ColumConfigurations.json")) is False:
             DefaultDict = {
@@ -485,17 +493,20 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
         # If there is a backup sheet, restore it
         if self.currentSheet is not None:
-            # Get the backup sheet and rename it back
-            restoreSheet = doc.getObject(self.currentSheet.Name)
-            # Rename the backup sheet
-            restoreSheet.Label = "BoM"
+            try:
+                # Get the backup sheet and rename it back
+                restoreSheet = doc.getObject(self.currentSheet.Name)
+                # Rename the backup sheet
+                restoreSheet.Label = "BoM"
 
-            # message the user that the original is restored
-            Standard_Functions.Mbox(
-                "Original BoM restored!",
-                "Bill of Materials",
-                0,
-            )
+                # message the user that the original is restored
+                Standard_Functions.Mbox(
+                    "Original BoM restored!",
+                    "Bill of Materials",
+                    0,
+                )
+            except Exception:
+                pass
 
             # Recompute the document
             try:
@@ -888,7 +899,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.MaxLevel.setEnabled(True)
             self.form.label_5.setStyleSheet("")
             self.form.label_6.setStyleSheet("")
-        elif AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
+            
+            self.form.FilterTopLevel.setEnabled(False)                        
+        if AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
 
@@ -932,6 +945,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.label_5.setStyleSheet("")
             self.form.label_6.setStyleSheet("")
 
+            self.form.FilterTopLevel.setEnabled(False)
         return
 
     # A function to store a BoM if it already exists
