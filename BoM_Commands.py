@@ -49,14 +49,15 @@ class CreatePartsOnlyBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import General_BOM
+        import General_BOM_Functions as General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
         import GetBOM_INTERNAL
         import GetBOM_A3
         import GetBOM_A2plus
-        import GetBOM_MultiBody_Arch
+        import GetBOM_MultiBody
+        import GetBOM_BIM
 
         doc = App.ActiveDocument
         if General_BOM.CheckAssemblyType(doc) == "A2plus":
@@ -72,9 +73,14 @@ class CreatePartsOnlyBOM_Class:
         if General_BOM.CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("PartsOnly")
         if General_BOM.CheckAssemblyType(doc) == "Arch":
-            GetBOM_MultiBody_Arch.BomFunctions.Start()
+            GetBOM_BIM.BomFunctions.Start(
+                command="Total",
+                IncludeBodies=True,
+                IndentNumbering=True,
+                CheckAssemblyType=False,
+            )
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
-            GetBOM_MultiBody_Arch.BomFunctions.Start()
+            GetBOM_MultiBody.BomFunctions.Start()
 
         return
 
@@ -103,7 +109,7 @@ class CreateSummarizedBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import General_BOM
+        import General_BOM_Functions as General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
@@ -152,7 +158,7 @@ class CreateTotalBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import General_BOM
+        import General_BOM_Functions as General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
@@ -201,7 +207,7 @@ class CreateSingleLevelBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import General_BOM
+        import General_BOM_Functions as General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart
@@ -250,7 +256,7 @@ class CreateRawBOM_Class:
         }
 
     def Activated(self):
-        from General_BOM_Functions import General_BOM
+        import General_BOM_Functions as General_BOM
         import GetBOM_A4
         import GetBOM_AppLink
         import GetBOM_AppPart

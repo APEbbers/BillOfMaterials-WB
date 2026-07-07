@@ -68,8 +68,7 @@ class BomFunctions:
         """
         result = ""
         # Get the list with rootobjects
-        # RootObjects = DocObject.RootObjects
-        RootObjects = self.GetRootObjects()
+        RootObjects = DocObject.RootObjects
 
         # Check if there are groups with items. create a list from it and add it to the docObjects.
         for RootObject in RootObjects:
@@ -132,6 +131,7 @@ class BomFunctions:
         # except Exception:
         #     pass
 
+        check_AppPart = False
         for result in resultList:
             if result == "Assembly3":
                 return "Assembly3"
@@ -146,7 +146,11 @@ class BomFunctions:
             if result == "MultiBody":
                 return "MultiBody"
             if result == "AppPart":
-                return "AppPart"
+                check_AppPart = True
+
+        if check_AppPart is True:
+            result = "AppPart"
+
         return result
 
     # Function to check the type of workbench for a sub assembly
@@ -220,6 +224,7 @@ class BomFunctions:
             except Exception:
                 pass
 
+            check_AppPart = False
             for result in resultList:
                 if result == "A2plus":
                     return "A2plus"
@@ -236,7 +241,10 @@ class BomFunctions:
                 if result == "MultiBody":
                     return "MultiBody"
                 if result == "AppPart":
-                    return "AppPart"
+                    check_AppPart = True
+
+            if check_AppPart is True:
+                result = "AppPart"
         except Exception as e:
             raise e
 
@@ -532,15 +540,12 @@ class BomFunctions:
 
         # Detect the assembly type
         AssemblyType = self.CheckAssemblyType_Root(doc)
-        print(f"Assembly type is: {AssemblyType}")
 
         # Get the list with rootobjects
+        # docObjects = doc.RootObjects
         docObjects = []
         # rootObjects = self.GetRootObjects()
         rootObjects = doc.RootObjects
-        if AssemblyType == "Assembly4":
-            rootObjects = self.GetRootObjects()
-
         for i in range(len(rootObjects)):
             if rootObjects[i].Visibility is True:
                 docObjects.append(rootObjects[i])

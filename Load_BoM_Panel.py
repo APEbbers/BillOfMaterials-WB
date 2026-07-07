@@ -29,7 +29,7 @@ from inspect import getsourcefile
 from PySide.QtCore import SIGNAL, QSize, Qt, QObject, QEvent
 from PySide.QtGui import QIcon, QCursor
 from PySide.QtWidgets import QDialogButtonBox, QMenu, QComboBox, QTreeWidget, QLineEdit, QPushButton, QLabel, QCheckBox
-from General_BOM_Functions import General_BOM
+import General_BOM_Functions as General_BOM
 import BoM_ManageColumns
 import BoM_WB_Locator
 import sys
@@ -68,6 +68,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
     currentSheet = None
 
     ReproAdress: str = ""
+    
+    preferences = App.ParamGet("User parameter:BaseApp/Preferences/Mod/BoM Workbench")
 
     def __init__(self):
         # Makes "self.on_CreateBOM_clicked" listen to the changed control values instead initial values
@@ -171,6 +173,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         
         self.form.IncludeBodies.stateChanged.connect(self.on_IncludeBodies_Clicked)
         self.form.IndentedNumbering.stateChanged.connect(self.on_UseIndentation_Clicked)
+        self.form.FilterTopLevel.stateChanged.connect(self.on_FilterTopLevel_Clicked)
 
         # This will create a connection between the pushbutton "Summary BoM" and def "on_CreateSummary_clicked"
         self.form.CreateRaw.connect(
@@ -184,6 +187,16 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                 
         self.form.LoadColumns.connect(self.form.LoadColumns, SIGNAL("pressed()"), self.on_LoadColumns_clicked)
         self.form.ColumnsConfigList.currentTextChanged.connect(self.on_ColumnsConfigList_currentTextChanged)
+                
+        # endregion
+
+        # region - Beta functions
+        self.form.BetaFunctions.connect(
+            self.form.BetaFunctions,
+            SIGNAL("pressed()"),
+            self.on_BetaFunctions_clicked,
+        )
+        self.form.EnableMixedBoM.stateChanged.connect(self.on_EnableMixedBoM_Clicked)
         # endregion
 
         # region - Debug settings
@@ -201,6 +214,21 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.toolButton_Debug.setHidden(True)
             self.form.DebugText.setHidden(False)
             self.form.frame_4.setDisabled(True)
+        # endregion
+        
+        # region - Set checkboxes
+        if Settings_BoM.INCLUDE_BODIES is True:
+            self.form.IncludeBodies.setChecked(True)
+        else:
+            self.form.FilterTopLevel.setChecked(False)
+        if Settings_BoM.USE_INDENTATION is True:
+            self.form.IndentedNumbering.setChecked(True)
+        else:
+            self.form.FilterTopLevel.setChecked(False)
+        if Settings_BoM.FILTER_TOPLEVEL is True:
+            self.form.FilterTopLevel.setChecked(True)
+        else:
+            self.form.FilterTopLevel.setChecked(False)
         # endregion
 
         # region - add icons to the buttons
@@ -342,22 +370,30 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         doc = App.ActiveDocument
         if General_BOM.CheckAssemblyType(doc) == "A2plus":
             self.form.AssemblyType.setCurrentText("A2plus")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "AppLink":
             self.form.AssemblyType.setCurrentText("App:LinkGroup")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "AppPart":
             self.form.AssemblyType.setCurrentText("App:Part")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "Assembly3":
             self.form.AssemblyType.setCurrentText("Assembly 3")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "Assembly4":
             self.form.AssemblyType.setCurrentText("Assembly 4")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "Internal":
             self.form.AssemblyType.setCurrentText("Internal assembly")
+            self.form.FilterTopLevel.setEnabled(False)
         if General_BOM.CheckAssemblyType(doc) == "Arch":
             self.form.AssemblyType.setCurrentText("Arch")
+            self.form.FilterTopLevel.setEnabled(True)
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
+            self.form.FilterTopLevel.setEnabled(False)
+            
 
-        
         # Get the json file. If it doesn't exists, create a new one with a default configuration
         if os.path.exists(os.path.join(PATH_TB, "ColumConfigurations.json")) is False:
             DefaultDict = {
@@ -398,7 +434,18 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         else:
             self.form.IndentedNumbering.setCheckState(Qt.CheckState.Unchecked)
         
+        self.form.UnitPosition.setCurrentIndex(Settings_BoM.UNIT_POSITION)
+        
+        if Settings_BoM.ENABLE_MIXED_BOM is True:
+            self.form.EnableMixedBoM.setCheckState(Qt.CheckState.Checked)
+            self.form.BetaFunctions_Panel.setHidden(False)
+        else:
+            self.form.EnableMixedBoM.setCheckState(Qt.CheckState.Unchecked)
+            self.form.BetaFunctions_Panel.setHidden(True)
+        
+        self.form.UnitPosition.setCurrentIndex(Settings_BoM.UNIT_POSITION)
         return
+
         # endregion
     
     # Define Icon.
@@ -446,17 +493,20 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
 
         # If there is a backup sheet, restore it
         if self.currentSheet is not None:
-            # Get the backup sheet and rename it back
-            restoreSheet = doc.getObject(self.currentSheet.Name)
-            # Rename the backup sheet
-            restoreSheet.Label = "BoM"
+            try:
+                # Get the backup sheet and rename it back
+                restoreSheet = doc.getObject(self.currentSheet.Name)
+                # Rename the backup sheet
+                restoreSheet.Label = "BoM"
 
-            # message the user that the original is restored
-            Standard_Functions.Mbox(
-                "Original BoM restored!",
-                "Bill of Materials",
-                0,
-            )
+                # message the user that the original is restored
+                Standard_Functions.Mbox(
+                    "Original BoM restored!",
+                    "Bill of Materials",
+                    0,
+                )
+            except Exception:
+                pass
 
             # Recompute the document
             try:
@@ -479,6 +529,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             AboutAdress = self.ReproAdress + "wiki"
             webbrowser.open(AboutAdress, new=2, autoraise=True)
         return
+    
+    # Hide or show the beta properites
+    def on_BetaFunctions_clicked(self):
+        if self.form.BetaFunctions_Panel .isHidden() is False:
+            self.form.BetaFunctions_Panel.setHidden(True)
+        else:
+            self.form.BetaFunctions_Panel.setHidden(False)
     
     # Hide or show the custom properites
     def on_CustomProp_clicked(self):
@@ -549,18 +606,40 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         self.CreateBOM("First level BoM")
         return
     
+    def on_EnableMixedBoM_Clicked(self):
+        if self.form.EnableMixedBoM.isChecked():
+            Settings_BoM.SetBoolSetting("EnableMixedBoM", True)
+            Settings_BoM.ENABLE_MIXED_BOM = True
+        else:
+            Settings_BoM.SetBoolSetting("EnableMixedBoM", False)
+            Settings_BoM.ENABLE_MIXED_BOM = False
+        return
+    
     def on_IncludeBodies_Clicked(self):
         if self.form.IncludeBodies.isChecked():
             Settings_BoM.SetBoolSetting("IncludeBodies", True)
+            Settings_BoM.INCLUDE_BODIES = True
         else:
             Settings_BoM.SetBoolSetting("IncludeBodies", False)
+            Settings_BoM.INCLUDE_BODIES = False
         return
     
     def on_UseIndentation_Clicked(self):
         if self.form.IndentedNumbering.isChecked():
             Settings_BoM.SetBoolSetting("UseIndentation", True)
+            Settings_BoM.USE_INDENTATION = True
         else:
             Settings_BoM.SetBoolSetting("UseIndentation", False)
+            Settings_BoM.USE_INDENTATION = False
+        return
+    
+    def on_FilterTopLevel_Clicked(self):
+        if self.form.FilterTopLevel.isChecked():
+            Settings_BoM.SetBoolSetting("FilterTopLevel", True)
+            Settings_BoM.FILTER_TOPLEVEL = True
+        else:
+            Settings_BoM.SetBoolSetting("FilterTopLevel", False)
+            Settings_BoM.FILTER_TOPLEVEL = False
         return
 
     def on_CreateRaw_clicked(self):
@@ -649,7 +728,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         import GetBOM_INTERNAL
         import GetBOM_A3
         import GetBOM_A2plus
-        import GetBOM_MultiBody_Arch
+        import GetBOM_MultiBody
+        import GetBOM_BIM
+        import GetBoM_Mixed
         
         # Activate the document which was active when this command started.
         try:
@@ -705,70 +786,91 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             Level_Value = 1
         if TypeOfBoM == "Raw BoM":
             Command = "Raw"
+            
+        List_MixedBomAllowed = [
+            "Internal assembly",
+            "Assembly 3",
+            "Assembly 4",
+            "App:LinkGroup",
+            "App:Part",
+        ]
 
         # Get the correct BoM functions based on the  selected assembly type
-        if AssemblyType_Selected == "Assembly 4":
-            GetBOM_A4.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                EnableQuestion=False,
-                CheckAssemblyType=not self.manualChange,
-            )
-        if AssemblyType_Selected == "App:LinkGroup":
-            GetBOM_AppLink.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                EnableQuestion=False,
-                CheckAssemblyType=not self.manualChange,
-            )
-        if AssemblyType_Selected == "App:Part":
-            GetBOM_AppPart.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                CheckAssemblyType=not self.manualChange,
-            )
-        if AssemblyType_Selected == "Internal assembly":
-            GetBOM_INTERNAL.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                EnableQuestion=False,
-                CheckAssemblyType=not self.manualChange,
-            )
-        if AssemblyType_Selected == "A2plus":
-            GetBOM_A2plus.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                CheckAssemblyType=not self.manualChange,
-            )
-        if AssemblyType_Selected == "Assembly 3":
-            GetBOM_A3.BomFunctions.Start(
-                command=Command,
-                Level=Level_Value,
-                IncludeBodies=IncludeBodies_Checked,
-                IndentNumbering=UseIndent_Checked,
-                EnableQuestion=False,
-                CheckAssemblyType=not self.manualChange,
-            )
-        if AssemblyType_Selected == "Arch":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(
-                command=Command,
-                CheckAssemblyType=not self.manualChange
-            )
-        if AssemblyType_Selected == "MultiBody":
-            GetBOM_MultiBody_Arch.BomFunctions.Start(
-                command=Command,
-                CheckAssemblyType=not self.manualChange
-            )
+        if self.form.EnableMixedBoM.isChecked() and AssemblyType_Selected in List_MixedBomAllowed:
+            GetBoM_Mixed.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    EnableQuestion=False,
+                    CheckAssemblyType=False
+                )
+        else:
+            if AssemblyType_Selected == "Assembly 4":
+                GetBOM_A4.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    EnableQuestion=False,
+                    CheckAssemblyType=not self.manualChange,
+                )
+            if AssemblyType_Selected == "App:LinkGroup":
+                GetBOM_AppLink.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    EnableQuestion=False,
+                    CheckAssemblyType=not self.manualChange,
+                )
+            if AssemblyType_Selected == "App:Part":
+                GetBOM_AppPart.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    CheckAssemblyType=not self.manualChange,
+                )
+            if AssemblyType_Selected == "Internal assembly":
+                GetBOM_INTERNAL.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    EnableQuestion=False,
+                    CheckAssemblyType=not self.manualChange,
+                )
+            if AssemblyType_Selected == "Assembly 3":
+                GetBOM_A3.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    EnableQuestion=False,
+                    CheckAssemblyType=not self.manualChange,
+                )
+            if AssemblyType_Selected == "A2plus":
+                GetBOM_A2plus.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    CheckAssemblyType=not self.manualChange,
+                )        
+            if AssemblyType_Selected == "Arch":
+                GetBOM_BIM.BomFunctions.Start(
+                    command=Command,
+                    Level=Level_Value,
+                    IncludeBodies=IncludeBodies_Checked,
+                    IndentNumbering=UseIndent_Checked,
+                    CheckAssemblyType=False,
+                )
+            if AssemblyType_Selected == "MultiBody":
+                GetBOM_MultiBody.BomFunctions.Start(
+                    command=Command,
+                    CheckAssemblyType=not self.manualChange
+                )
             
         mw.setCursor(Qt.CursorShape.ArrowCursor)
         return
@@ -797,7 +899,9 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.MaxLevel.setEnabled(True)
             self.form.label_5.setStyleSheet("")
             self.form.label_6.setStyleSheet("")
-        elif AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
+            
+            self.form.FilterTopLevel.setEnabled(False)                        
+        if AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
 
@@ -815,6 +919,13 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.MaxLevel.setEnabled(False)
             self.form.label_5.setStyleSheet("""color: #787878;""")
             self.form.label_6.setStyleSheet("""color: #787878;""")
+            
+            if AssemblyType_Selected == "Arch":
+                self.form.FilterTopLevel.setEnabled(True)
+                # self.form.FilterTopLevel.setVisible(True)
+            else:
+                self.form.FilterTopLevel.setEnabled(False)
+                # self.form.FilterTopLevel.setVisible(False)
         else:
             self.form.IncludeBodies.setEnabled(True)
             self.form.label_3.setStyleSheet("")
@@ -834,6 +945,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.label_5.setStyleSheet("")
             self.form.label_6.setStyleSheet("")
 
+            self.form.FilterTopLevel.setEnabled(False)
         return
 
     # A function to store a BoM if it already exists

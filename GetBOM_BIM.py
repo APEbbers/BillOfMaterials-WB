@@ -21,13 +21,13 @@
 #                                                                              #
 ################################################################################
 
-
-import FreeCAD as App
-import FreeCADGui as Gui
+import FreeCAD as App  # pyright: ignore[reportMissingModuleSource]
+import FreeCADGui as Gui # pyright: ignore[reportMissingModuleSource]
 import General_BOM_Functions as General_BOM
 import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
 import os
+import Settings_BoM
 
 from PySide.QtCore import Qt, QObject, Signal, QEventLoop
 from PySide.QtWidgets import QLabel, QMainWindow, QProgressBar, QApplication
@@ -52,35 +52,32 @@ class BomFunctions:
     
     # Create an instance of the signal emitter
     signal_emitter = SignalEmitter_Counter()
+    
+    # Create a list for the root objects
+    rootObjects = []
 
     # region -- Functions to create the mainList. This is the foundation for other BoM functions
     @classmethod
-    def GetTreeObjects(self, checkAssemblyType=True) :
+    def GetTreeObjects(self, checkAssemblyType=True):
         self.mainList.clear()
         # Get the active document
         doc = App.ActiveDocument
-        LastActiveDoc = doc.Name
 
         # Check the assembly type
         if checkAssemblyType is True:
             AssemblyType = General_BOM.CheckAssemblyType(doc)
-            if AssemblyType != "A2plus":
+            if AssemblyType != "AppPart":
                 Print(
-                    f"Not an A2plus assembly but an {AssemblyType} assembly!!", "Error"
+                    f"Not an AppPart assembly but an {AssemblyType} assembly!!", "Error"
                 )
                 return
 
         # Get the list with rootobjects
-        rootObjects = doc.Objects
-
-        # Get all the parts and subassemblies
         docObjects = []
-        for i in range(len(rootObjects)):
-            try:
-                if rootObjects[i].objectType == "a2pPart":
-                    docObjects.append(rootObjects[i])
-            except Exception:
-                pass
+        self.rootObjects = doc.RootObjects
+        for i in range(len(self.rootObjects)):
+            if self.rootObjects[i].Visibility is True:
+                docObjects.append(self.rootObjects[i])
 
         # Get the spreadsheet.
         sheet = App.ActiveDocument.getObject("BoM")
@@ -90,20 +87,9 @@ class BomFunctions:
 
         # Go Through all objects
         self.GoThrough_Objects(
-            docObjects=docObjects,
-            ParentDocument=doc,
-            sheet=sheet,
-            ItemNumber=ItemNumber,
-            ParentNumber="",
+            docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber, ParentNumber=""
         )
 
-        # Activate the document which was active when this command started.
-        try:
-            doc = App.setActiveDocument(LastActiveDoc)
-            doc.recompute()
-        except Exception:
-            Standard_Functions.Print("Recompute failed!", "Error")
-            pass
         return
 
     # Function to compare an object type with supported object types.
@@ -120,6 +106,10 @@ class BomFunctions:
             "Part::Feature",
             "App::Part",
             "PartDesign::Body",
+            'App::GeometryPython',
+            'App::DocumentObjectGroup',
+            'App::FeaturePython',
+            'App::DocumentObjectGroupPython'
         ]
 
         # Go through the list and compare the object ID's in the list with the ObjectId.
@@ -134,9 +124,7 @@ class BomFunctions:
 
     # function to go through the objects and their child objects
     @classmethod
-    def GoThrough_Objects(
-        self, ParentDocument, docObjects, sheet, ItemNumber, ParentNumber: str = ""
-    ) :
+    def GoThrough_Objects(self, docObjects, sheet, ItemNumber, ParentNumber: str = ""):
         """
         Args:
                 docObjects (_type_):    list[DocumentObjects]\n
@@ -146,92 +134,112 @@ class BomFunctions:
         Returns:
                 True
         """
+        # # Check if there are groups with items. create a list from it and add it to the docObjects.
+        # for docObject in docObjects:
+        #     if docObject.TypeId == 'App::DocumentObjectGroup':
+        #         docObjects.extend(General_BOM.GetObjectsFromGroups(docObject))
+        
+        # Check if a site object is present.
+        sitePresent = False
+        if Settings_BoM.FILTER_TOPLEVEL is True:            
+            for i in range(len(docObjects)):
+                # Get the documentObject
+                Object = docObjects[i]
+                if Object.Name.lower() == "site":
+                    sitePresent = True
+                    break
+                try:
+                    Object.BuildingType
+                    sitePresent = True
+                    break
+                except Exception:
+                    pass
+                try:
+                    Object.LevelOffset
+                    sitePresent = True
+                    break
+                except Exception:
+                    pass
+            
+
         for i in range(len(docObjects)):
             # Get the documentObject
             Object = docObjects[i]
+            
+            # If a site present, skip all other objects on the first level
+            if sitePresent:
+                if Object.Name.lower() != "site":
+                    continue
+                try:
+                    Object.BuildingType
+                    continue
+                except Exception:
+                    pass
+                try:
+                    Object.LevelOffset
+                    continue
+                except Exception:
+                    pass
 
-            # If the documentObject is one of the allowed types, continue
-            try:
-                if Object.objectType == "a2pPart":
-                    # Increase the itemnumber
-                    ItemNumber = int(ItemNumber) + 1
+            # Increase the itemnumber
+            ItemNumber = int(ItemNumber) + 1
 
-                    # Increase the global startrow to make sure the data ends up in the next row
-                    self.StartRow = self.StartRow + 1
+            # Increase the global startrow to make sure the data ends up in the next row
+            self.StartRow = self.StartRow + 1
 
-                    # define the itemnumber string. for toplevel this is equel to Itemnumber.
-                    # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
-                    ItemNumberString = str(ItemNumber)
-                    # If there is a parentnumber (like 1.1, add it as prefix.)
-                    if ParentNumber != "":
-                        ItemNumberString = str(ParentNumber)
+            # define the itemnumber string. for toplevel this is equel to Itemnumber.
+            # For sublevels this is itemnumber + "." + itemnumber. (e.g. 1.1)
+            ItemNumberString = str(ItemNumber)
+            # If there is a parentnumber (like 1.1, add it as prefix.)
+            if ParentNumber != "":
+                ItemNumberString = str(ParentNumber)
 
-                    # Create a rowList
-                    rowList = {
-                        "ItemNumber": ItemNumberString,
-                        "DocumentObject": Object,
-                        "ObjectLabel": Object.Label,
-                        "ObjectName": Object.Name,
-                        "Qty": 1,
-                        "Type": "Part",
-                    }
+            # Create a rowList
+            rowList = {
+                "ItemNumber": ItemNumberString,
+                "DocumentObject": Object,
+                "ObjectLabel": Object.Label,
+                "ObjectName": Object.Name,
+                "Qty": 1,
+                "Type": "Part",
+            }
 
-                    # Add the rowList to the mainList
-                    self.mainList.append(rowList)
+            # Add the rowList to the mainList
+            self.mainList.append(rowList)
 
-                    # If the object is an container, go through the sub items, (a.k.a child objects)
-                    if Object.subassemblyImport is True:
-                        # Create a list with child objects as DocumentObjects
-                        childObjects = []
-                        # Make sure that the list is empty. (probally overkill)
-                        childObjects.clear()
+            # If the object is an container, go through the sub items, (a.k.a child objects)
+            # if Object.TypeId == "App::Part":
+            if (
+                Object.TypeId == 'App::GeometryPython' or 
+                Object.TypeId == 'App::DocumentObjectGroupPython' or
+                Object.TypeId == 'App::FeaturePython' or 
+                (Object.TypeId == 'Part::FeaturePython' and Object.Name.lower() == "site")
+            ):
+                # Create a list with child objects as DocumentObjects
+                childObjects = []
+                # Make sure that the list is empty. (probally overkill)
+                childObjects.clear()
 
-                        # Get the path of the sub-object
-                        FullPath = Object.sourceFile
-                        # If the path starts with ".", it is in the same folder as this document.
-                        # Combine the path of this document with the path of the subobject.
-                        if FullPath.startswith(".\\") or FullPath.startswith("./"):
-                            FullPath = os.path.join(
-                                os.path.dirname(ParentDocument.FileName),
-                                FullPath,
-                            )
-                        # Open the sub object. Open it hidden
-                        ObjectDocument = App.openDocument(FullPath, True)
-                        # Go through the objects of this sub objects
-                        for j in range(len(ObjectDocument.Objects)):
-                            childObject = ObjectDocument.Objects[j]
-                            # If the documentObject is one of the allowed types, add it to the list of child objects
-                            try:
-                                if childObject.objectType == "a2pPart":
-                                    childObjects.append(childObject)
-                            except Exception:
-                                pass
+                # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
+                for j in range(len(Object.Group)):
+                    # if self.AllowedObjectType(Object.Group[j].TypeId) is True:
+                    childObjects.append(Object.Group[j])
 
-                        if len(childObjects) > 0:
-                            self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
-                            # Go the the child objects with a separate function for the child objects
-                            # This way you can go through multiple levels
-                            self.GoThrough_ChildObjects(
-                                ChilddocObjects=childObjects,
-                                ParentDocument=ParentDocument,
-                                sheet=sheet,
-                                ChildItemNumber=0,
-                                ParentNumber=ItemNumberString,
-                            )
-            except Exception:
-                pass
+                if len(childObjects) > 0:
+                    self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                    # Go the the child objects with a separate function for the child objects
+                    # This way you can go through multiple levels
+                    self.GoThrough_ChildObjects(
+                        ChilddocObjects=childObjects,
+                        sheet=sheet,
+                        ChildItemNumber=0,
+                        ParentNumber=ItemNumberString,
+                    )
         return
 
     # Sub function of GoThrough_Objects.
     @classmethod
-    def GoThrough_ChildObjects(
-        self,
-        ParentDocument,
-        ChilddocObjects,
-        sheet,
-        ChildItemNumber,
-        ParentNumber: str = "",
-    ) :
+    def GoThrough_ChildObjects(self, ChilddocObjects, sheet, ChildItemNumber, ParentNumber: str = ""):
         """
         Args:
                 ChilddocObjects (_type_):       list[DocumentObjects]\n
@@ -241,6 +249,11 @@ class BomFunctions:
         Returns:
                 True
         """
+        # # Check if there are groups with items. create a list from it and add it to the docObjects.
+        # for ChildDocObject in ChilddocObjects:
+        #     if ChildDocObject.TypeId == 'App::DocumentObjectGroup':
+        #         ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(ChildDocObject))
+
         for i in range(len(ChilddocObjects)):
             # Get the childDocumentObject
             childObject = ChilddocObjects[i]
@@ -248,100 +261,53 @@ class BomFunctions:
             # Increase the global startrow to make sure the data ends up in the next row
             self.StartRow = self.StartRow + 1
 
-            # If the childDocumentObject is one of the allowed types, continue
-            try:
-                if childObject.objectType == "a2pPart":                    
-                    # Increase the itemnumber for the child
-                    ChildItemNumber = int(ChildItemNumber) + 1
-                    # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
-                    ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
-                    # Create a rowList
-                    rowList = {
-                        "ItemNumber": ItemNumberString,
-                        "DocumentObject": childObject,
-                        "ObjectLabel": childObject.Label,
-                        "ObjectName": childObject.Name,
-                        "Qty": 1,
-                        "Type": "Part",
-                    }
+            # Increase the itemnumber for the child
+            ChildItemNumber = int(ChildItemNumber) + 1
 
-                    # add the rowList to the mainList
-                    self.mainList.append(rowList)
-
-                    # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
-                    if childObject.subassemblyImport is True:
-                        # Create a list with sub child objects as DocumentObjects
-                        subChildObjects = []
-                        # Make sure that the list is empty. (probally overkill)
-                        subChildObjects.clear()
-
-                        # Get the path of the child object
-                        FullPath = childObject.sourceFile
-                        # If the path starts with ".", it is in the same folder as this document.
-                        # Combine the path of this document with the path of the subobject.
-                        if FullPath.startswith(".\\") or FullPath.startswith("./"):
-                            FullPath = os.path.join(
-                                os.path.dirname(ParentDocument.FileName),
-                                FullPath,
-                            )
-                        # Open the sub object. Open it hidden
-                        childObjectDocument = App.openDocument(FullPath, True)
-                        # Go through the objects of this sub objects
-                        for j in range(len(childObjectDocument.Objects)):
-                            childObject = childObjectDocument.Objects[j]
-                            # If the documentObject is one of the allowed types, add it to the list of child objects
-                            try:
-                                if childObject.objectType == "a2pPart":
-                                    subChildObjects.append(childObject)
-                            except Exception:
-                                pass
-
-                        if len(subChildObjects) > 0:
-                            self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
-                            # Go the the sub child objects with this same function
-                            self.GoThrough_ChildObjects(
-                                ChilddocObjects=subChildObjects,
-                                sheet=sheet,
-                                ChildItemNumber=0,
-                                ParentNumber=ItemNumberString,
-                            )
-            except Exception:
-                pass
-        return
-
-    @classmethod
-    def ReturnDuplicates(self) -> list:
-        # copy the main list. Leave the orginal intact for other fdunctions
-        CopyMainList = self.mainList.copy()
-
-        # Create a shadowlist for the paths and labels
-        ShadowList = []
-
-        for i in range(len(CopyMainList)):
-            path = CopyMainList[i]["DocumentObject"].sourceFile
-            Label = CopyMainList[i]["ObjectLabel"]
-            if len(Label.split("_")) > 1:
-                if (
-                    Label.rsplit("_", 1)[1].isnumeric()
-                    and len(Label.rsplit("_", 1)[1]) == 3
-                ):
-                    Label = Label.rsplit("_", 1)[0]
-
-            ShadowItem = {
-                "Path": path,
-                "Label": Label,
+            # define the itemnumber string. This is parent number + "." + child item number. (e.g. 1.1.1)
+            ItemNumberString = ParentNumber + "." + str(ChildItemNumber)
+            
+            # Create a rowList
+            rowList = {
+                "ItemNumber": ItemNumberString,
+                "DocumentObject": childObject,
+                "ObjectLabel": childObject.Label,
+                "ObjectName": childObject.Name,
+                "Qty": 1,
+                "Type": "Part",
             }
-            HasItem = False
-            for j in range(len(ShadowList)):
-                if ShadowList[j] == ShadowItem:
-                    CopyMainList[i]["ObjectLabel"] = ShadowList[j]["Label"]
-                    HasItem = True
 
-            if HasItem is False:
-                CopyMainList[i]["ObjectLabel"] = Label
-                ShadowList.append(ShadowItem)
+            # add the rowList to the mainList
+            self.mainList.append(rowList)
 
-        return CopyMainList
+            # If the child object is an container, go through the sub items with this function,(a.k.a child objects)
+            # if childObject.TypeId == "App::Part":
+            if (
+                childObject.TypeId == 'App::GeometryPython' or 
+                childObject.TypeId == 'App::DocumentObjectGroupPython' or
+                childObject.TypeId == 'App::FeaturePython' or 
+                (childObject.TypeId == 'Part::FeaturePython' and childObject.Name.lower() == "site")
+            ):
+                # Create a list with sub child objects as DocumentObjects
+                subChildObjects = []
+                # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
+                for j in range(len(childObject.Group)):
+                    # print(childObject.Group[j].TypeId + ", " + childObject.Group[j].Name)
+                    # if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
+                    subChildObjects.append(childObject.Group[j])
+                    # if childObject.TypeId == 'App::DocumentObjectGroup':
+                    #     ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
+
+                if len(subChildObjects) > 0:
+                    self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
+                    # Go the the sub child objects with this same function
+                    self.GoThrough_ChildObjects(
+                        ChilddocObjects=subChildObjects,
+                        sheet=sheet,
+                        ChildItemNumber=0,
+                        ParentNumber=ItemNumberString,
+                    )
+        return
 
     # endregion
 
@@ -362,14 +328,20 @@ class BomFunctions:
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
 
-        # Filter duplicate items
-        CopyMainList = self.ReturnDuplicates()
-
-        # summarize duplicate subassemblies
-        CopyMainList = General_BOM.ReplacesAssembly(CopyMainList)
+        # # summarize duplicate subassemblies
+        # CopyMainList = General_BOM.ReplacesAssembly(CopyMainList)
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
+        ShadowList_2 = []
+        # Create two lists for splitting the copy of the main list
+        ItemNumberList = []
+        ObjectDocumentList = []
+
+        # Create two lists out of the CopyMainList
+        for i in range(len(CopyMainList)):
+            ItemNumberList.append(CopyMainList[i]["ItemNumber"])
+            ObjectDocumentList.append(CopyMainList[i]["DocumentObject"])
 
         # Create a temporary list
         TemporaryList = []
@@ -406,12 +378,13 @@ class BomFunctions:
                 shadowItemNumber = itemNumber.rsplit(".", 1)[0]
                 # Define the shadow item.
                 shadowLabel = rowList["ObjectLabel"]
+                # shadowLabel = rowList["ObjectName"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
                 # Define the shadow body properties
                 shadowBodyProperties = ""
                 try:
-                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                    shadowBodyProperties = self.ReturnBodyProperties_BIM(rowList["DocumentObject"])
                 except Exception:
                     pass
                   # Create the row item for the shadow list.
@@ -424,7 +397,7 @@ class BomFunctions:
 
                 # Find the quantity for the item
                 QtyValue = str(
-                    General_BOM.ObjectCounter_ItemNumber(
+                    self.ObjectCounter_ItemNumber(
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
@@ -453,30 +426,34 @@ class BomFunctions:
                         Item3=shadowRow["Item3"],
                         Item4=shadowRow["Item4"],
                     )
-                    is False
+                    is False and not shadowItemNumber in ShadowList_2
                 ):
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
-                    # Emit a signal for a visual counter dialog
-                    self.signal_emitter.counter_signal.emit("Object processed")
+                else:
+                    if shadowType == "Assembly":
+                        ShadowList_2.append(itemNumber)
 
             # if the itemnumber is one level (1, 2 , 4, etc.) and the level is equal or shorter then the level wanted, continue
             if len(itemNumber.split(".")) == 1:
                 # set the itemnumber for the shadow list to zero. This can because we are only at the first level.
-                shadowItemNumber = 1
 
+                shadowItemNumber = itemNumber
+                if rowList["Type"] == "Part" or rowList["Type"] == "Assembly":
+                    shadowItemNumber = "X"
                 # Define the shadow item.
                 shadowLabel = rowList["ObjectLabel"]
+                # shadowLabel = rowList["ObjectName"]
                 # Define the shadow type:
                 shadowType = rowList["Type"]
-                # Define the shadow body properties
+                # Define the shadow properties
                 shadowBodyProperties = ""
                 try:
-                    shadowBodyProperties = General_BOM.ReturnBodyProperties(rowList["DocumentObject"])
+                    shadowBodyProperties = self.ReturnBodyProperties_BIM(rowList["DocumentObject"])                    
                 except Exception:
-                    pass
-                  # Create the row item for the shadow list.
+                    pass                
+                # Create the row item for the shadow list.
                 shadowRow = {
                     "Item1": shadowItemNumber,
                     "Item2": shadowLabel,
@@ -486,7 +463,7 @@ class BomFunctions:
 
                 # Find the quantity for the item
                 QtyValue = str(
-                    General_BOM.ObjectCounter_ItemNumber(
+                    self.ObjectCounter_ItemNumber(
                         ListItem=rowList,
                         ItemNumber=itemNumber,
                         BomList=CopyMainList,
@@ -515,11 +492,15 @@ class BomFunctions:
                         Item3=shadowRow["Item3"],
                         Item4=shadowRow["Item4"],
                     )
-                    is False
+                    is False and not shadowItemNumber in ShadowList_2
                 ):
                     TemporaryList.append(rowListNew)
                     # add the shadow row to the shadow list. This prevents from adding this item an second time.
                     ShadowList.append(shadowRow)
+                else:
+                    if shadowType == "Assembly":
+                        ShadowList_2.append(itemNumber)
+                                       
 
         # Correct the itemnumbers if indentation is wanted.
         if IndentNumbering is True:
@@ -536,7 +517,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList, AssemblyType="A2plus")
+            General_BOM.createBoMSpreadsheet(TemporaryList, AssemblyType="BIM")
         return
 
     # Function to create a summary list of all assemblies and their parts.
@@ -552,9 +533,6 @@ class BomFunctions:
 
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
-
-        # Filter duplicate items
-        CopyMainList = self.ReturnDuplicates()
 
         # Create a temporary list
         TemporaryList = []
@@ -650,7 +628,7 @@ class BomFunctions:
         # Create the spreadsheet
         if CreateSpreadSheet is True:
             General_BOM.createBoMSpreadsheet(
-                mainList=TemporaryList, Headers=None, Summary=True, AssemblyType="A2plus"
+                mainList=TemporaryList, Headers=None, Summary=True, AssemblyType="BIM"
             )
         return
 
@@ -668,9 +646,6 @@ class BomFunctions:
             return
         # copy the main list. Leave the orginal intact for other fdunctions
         CopyMainList = self.mainList.copy()
-
-        # Filter duplicate items
-        CopyMainList = self.ReturnDuplicates()
 
         # create a shadowlist. Will be used to avoid duplicates
         ShadowList = []
@@ -698,7 +673,8 @@ class BomFunctions:
             # Get the row item
             rowList = CopyMainList[i]
 
-            if rowList["Type"] == "Part":
+            TypeListParts = ["Part::FeaturePython", "Part::Feature", "PartDesign::Body"]
+            if TypeListParts.__contains__(rowList["DocumentObject"].TypeId) is True:
                 ObjectNameField = "ObjectName"
                 if ObjectNameBased is False:
                     ObjectNameField = "ObjectLabel"
@@ -771,7 +747,7 @@ class BomFunctions:
 
         # Create the spreadsheet
         if CreateSpreadSheet is True:
-            General_BOM.createBoMSpreadsheet(TemporaryList, AssemblyType="A2plus")
+            General_BOM.createBoMSpreadsheet(TemporaryList, AssemblyType="BIM")
         return
 
     # endregion
@@ -782,6 +758,138 @@ class BomFunctions:
         self.progressBar.setValue(value + 1)
         QApplication.processEvents()
         return
+    
+     # Function to return body properties as a list
+    @classmethod
+    def ReturnBodyProperties_BIM(self, DocObject):
+        try:
+            # First get the data from the BIM data
+            Length = ""
+            Width = ""
+            Height = ""
+            Area=""
+            Material = ""
+            try:
+                Length = DocObject.getPropertyByName("Length").UserString.split(" ")[0]
+            except Exception:
+                pass
+            try:
+                Width = DocObject.getPropertyByName("Width").UserString.split(" ")[0]
+            except Exception:
+                pass
+            try:
+                Height = DocObject.getPropertyByName("Height").UserString.split(" ")[0]
+            except Exception:
+                pass
+            try:
+                Area = DocObject.getPropertyByName("Area").UserString.split(" ")[0]
+            except Exception:
+                pass
+            try:
+                Material = DocObject.getPropertyByName("Material").Material['CardName']
+            except Exception as e:
+                pass
+
+            List = [
+                Length,
+                Width,
+                Height,
+                Area,
+                Material,
+            ]
+
+
+            return List
+        except Exception as e:
+            # if Settings_BoM.ENABLE_DEBUG is True:
+            #     print(e)
+            return
+        
+    # Functions to count  document objects in a list based on the itemnumber of their parent.
+    @classmethod
+    def ObjectCounter_ItemNumber(
+        self,
+        ListItem,
+        ItemNumber: str,
+        BomList: list,
+        ObjectBasedPart: bool = True,
+        CompareMaterial: bool = False
+    ) -> int:
+        """_summary_
+
+        Args:
+            ListItem (dict): Item from main list.
+            ItemNumber (str): Item number of document object.
+            BomList (list): complete main list.
+            ObjectBasedPart (bool, optional): Compare objects (True) or object.labels (False) Defaults to True.
+            ObjectBasedAssy (bool, optional): Compare objects when they are an assembly.(ObjectBased must be False)) Defaults to False.
+
+        Returns:
+            int: number of document number in item number range.
+        """
+        ObjectNameValuePart = "Object"
+        if ObjectBasedPart is False:
+            ObjectNameValuePart = "ObjectLabel"
+
+        # Set the counter
+        counter = 0
+
+        # Try to get the material. this only works with bodies
+        Item_Properties = ""
+        try:
+            Item_Properties = self.ReturnBodyProperties_BIM(ListItem["DocumentObject"])
+        except Exception:
+            pass
+
+        # Go Through the objectList
+        for i in range(len(BomList)):
+            BomListItem_Properties = ""
+            try:
+                BomListItem_Properties = self.ReturnBodyProperties_BIM(BomList[i]["DocumentObject"])
+            except Exception:
+                pass
+            
+            # Set MaterialCompare to True as default
+            EqualProperties = True
+            # if material needs to be taken into account, compare the material
+            if CompareMaterial is True:
+                if BomListItem_Properties != Item_Properties:
+                    EqualProperties = False            
+            
+            # if the material is equeal continue
+            if EqualProperties is True or CompareMaterial is False:
+                # The parent number is the itemnumber without the last digit. if both ItemNumber and item in numberlist are the same, continue.
+                # If the itemnumber is more than one level deep:
+                if len(ItemNumber.split(".")) > 1:
+                    if (
+                        BomList[i]["ItemNumber"].rsplit(".", 1)[0]
+                        == ItemNumber.rsplit(".", 1)[0]
+                    ):
+                        if ObjectNameValuePart == "Object":
+                            if (
+                                BomList[i]["DocumentObject"]
+                                == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]
+                            ):
+                                counter = counter + 1
+                        if ObjectNameValuePart == "ObjectLabel":
+                            if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
+                                counter = counter + 1
+
+                # If the itemnumber is one level deep:
+                if (
+                    len(ItemNumber.split(".")) == 1
+                    and len(BomList[i]["ItemNumber"].split(".")) == 1
+                ):
+                    # if ListItem["Type"] == "Part":
+                    if ObjectNameValuePart == "Object":
+                        if BomList[i]["DocumentObject"] == ListItem["DocumentObject"] and BomList[i]["Type"] == ListItem["Type"]:
+                            counter = counter + 1
+                    if ObjectNameValuePart == "ObjectLabel":
+                        if BomList[i]["ObjectLabel"] == ListItem["ObjectLabel"] and BomList[i]["Type"] == ListItem["Type"]:
+                            counter = counter + 1
+
+        # Return the counter
+        return counter
 
     # Function to start the other functions based on a command string that is passed.
     @classmethod
@@ -814,7 +922,7 @@ class BomFunctions:
                         Level=Level,
                     )
                 if command == "Raw":
-                    General_BOM.createBoMSpreadsheet(self.mainList, AssemblyType="A2plus")
+                    General_BOM.createBoMSpreadsheet(self.mainList, AssemblyType="BIM") 
                 if command == "PartsOnly":
                     self.PartsOnly(
                         CreateSpreadSheet=True,
@@ -825,9 +933,12 @@ class BomFunctions:
                         CreateSpreadSheet=True,
                         ObjectNameBased=False,
                     )
-                    
+            
             # disconnect the signal
-            self.signal_emitter.counter_signal.disconnect()
+            try:
+                self.signal_emitter.counter_signal.disconnect()
+            except Exception:
+                pass
             # Close the progressbar
             self.progressBar.close()
         except Exception as e:

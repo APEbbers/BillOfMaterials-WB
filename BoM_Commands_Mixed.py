@@ -57,13 +57,13 @@ class CreatePartsOnlyBOM_MIXED_Class:
         if Answer == "yes":
             IncludeBodies = True
 
-        BoM = BomFunctions.CreateBoM(
+        BoM = BomFunctions.Start(
             command="PartsOnly",
             IncludeBodies=IncludeBodies,
             DebugMode=False,
         )
         if BoM is not None:
-            General_BOM_Functions.General_BOM.createBoMSpreadsheet(
+            General_BOM.createBoMSpreadsheet(
                 mainList=BoM, Headers=None, Summary=False
             )
 
@@ -112,13 +112,13 @@ class CreateSummarizedBOM_MIXED_Class:
         if Answer == "yes":
             IncludeBodies = True
 
-        BoM = BomFunctions.CreateBoM(
+        BoM = BomFunctions.Start(
             command="Summarized",
             IncludeBodies=IncludeBodies,
             DebugMode=False,
         )
         if BoM is not None:
-            General_BOM_Functions.General_BOM.createBoMSpreadsheet(
+            General_BOM.createBoMSpreadsheet(
                 mainList=BoM, Headers=None, Summary=False
             )
 
@@ -150,7 +150,7 @@ class CreateTotalBOM_MIXED_Class:
 
     def Activated(self):
         from GetBoM_Mixed import BomFunctions
-        import General_BOM_Functions
+        import General_BOM_Functions as General_BOM
         import Standard_Functions_BOM_WB as Standard_Functions
 
         IncludeBodies = False
@@ -167,7 +167,7 @@ class CreateTotalBOM_MIXED_Class:
         if Answer == "yes":
             IncludeBodies = True
 
-        BoM = BomFunctions.CreateBoM(
+        BoM = BomFunctions.Start(
             command="Total",
             Level=0,
             IncludeBodies=IncludeBodies,
@@ -175,7 +175,7 @@ class CreateTotalBOM_MIXED_Class:
             DebugMode=False,
         )
         if BoM is not None:
-            General_BOM_Functions.General_BOM.createBoMSpreadsheet(
+            General_BOM.createBoMSpreadsheet(
                 mainList=BoM, Headers=None, Summary=False
             )
 
@@ -224,14 +224,14 @@ class CreateRawBOM_MIXED_Class:
         if Answer == "yes":
             IncludeBodies = True
 
-        BoM = BomFunctions.CreateBoM(
+        BoM = BomFunctions.Start(
             command="Raw",
             IncludeBodies=IncludeBodies,
             IndentNumbering=True,
             DebugMode=False,
         )
         if BoM is not None:
-            General_BOM_Functions.General_BOM.createBoMSpreadsheet(
+            General_BOM.createBoMSpreadsheet(
                 mainList=BoM, Headers=None, Summary=False
             )
 

@@ -24,7 +24,7 @@
 
 import FreeCAD as App
 import FreeCADGui as Gui
-from General_BOM_Functions import General_BOM
+import General_BOM_Functions as General_BOM
 import Standard_Functions_BOM_WB as Standard_Functions
 from Standard_Functions_BOM_WB import Print
 import os

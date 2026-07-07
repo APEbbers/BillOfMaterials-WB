@@ -50,12 +50,14 @@ DefaultSettings = {
     "SpreadsheetColumnFontStyle_Bold": False,
     "SpreadsheetColumnFontStyle_Italic": False,
     "SpreadsheetColumnFontStyle_Underline": False,
-    "AutoFitFactor": 12.0,
+    "AutoFitFactor": 8,
     "UnitPosition": 0,
     "EnableDebug": False,
     "EnableDebugColumns": False,
     "IncludeBodies": False,
     "UseIndentation": True,
+    "EnableMixedBoM": False,
+    "FilterTopLevel": False,
 }
 
 # region -- Functions to read the settings from the FreeCAD Parameters
@@ -163,6 +165,12 @@ def WriteMissingSettings():
 # endregion
 
 # region -- All settings from the UI
+# Beta settings
+ENABLE_MIXED_BOM = GetBoolSetting("EnableMixedBoM")
+if ENABLE_MIXED_BOM is None:
+    ENABLE_MIXED_BOM = DefaultSettings["EnableMixedBoM"]
+    SetBoolSetting("EnableMixedBoM", ENABLE_MIXED_BOM)
+
 # BoM Settings
 CUSTOM_HEADERS = GetStringSetting("CustomHeader")
 if CUSTOM_HEADERS == "":
@@ -210,6 +218,11 @@ if GetBoolSetting("UseIndentation") is None:
     USE_INDENTATION = DefaultSettings["UseIndentation"]
     SetBoolSetting("UseIndentation", USE_INDENTATION)
 USE_INDENTATION = GetBoolSetting("UseIndentation")
+
+if GetBoolSetting("FilterTopLevel") is None:
+    FILTER_TOPLEVEL = DefaultSettings["FilterTopLevel"]
+    SetBoolSetting("FilterTopLevel", FILTER_TOPLEVEL)
+FILTER_TOPLEVEL = GetBoolSetting("FilterTopLevel")
 # endregion
 
 

@@ -5,7 +5,7 @@
 
   <description>A workbench to create Bill of Materials (BoM) independent of the assembly workbench of your choice.</description>
 
-  <version>1.2.0.4</version>
+  <version>1.3.0</version>
 
   <date>2024-01-03</date>
 
@@ -35,6 +35,7 @@
       <depend optional="False" type="python">getpass</depend>
       <depend optional="False" type="python">matplotlib</depend>
       <depend optional="False" type="python">math</depend>
+      <!-- <depend optional="False" type="python">shapely</depend> -->
       <classname>BillOfMaterialsWB</classname>
       <subdirectory>./</subdirectory>
     </workbench>

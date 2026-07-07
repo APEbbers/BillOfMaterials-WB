@@ -26,7 +26,7 @@ import FreeCAD as App
 import FreeCADGui as Gui
 import os
 from inspect import getsourcefile
-import General_BOM_Functions
+import General_BOM_Functions as General_BOM
 import Standard_Functions_BOM_WB as Standard_Functions
 from PySide.QtGui import QPalette, QIcon
 from PySide.QtWidgets import QListWidgetItem, QDialogButtonBox, QListWidget, QStyle, QStyledItemDelegate, QStyleOptionViewItem, QComboBox 
@@ -61,7 +61,7 @@ PATH_TB_ICONS = os.path.join(PATH_TB, PATH_TB_RESOURCES, "Icons")
 PATH_TB_UI = os.path.join(PATH_TB, PATH_TB_RESOURCES, "UI")
 
 # Get the initial headers. To use for the reset button.
-initalHeaders = General_BOM_Functions.General_BOM.customHeaders
+initalHeaders = General_BOM.customHeaders
 
 
 class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
@@ -314,7 +314,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
         self.form.Columns_Present.clear()
 
         # Get the currently applied custom columns
-        customHeaders = General_BOM_Functions.General_BOM.customHeaders
+        customHeaders = General_BOM.customHeaders
         # Check if the fixed columns are present
         if not "Number" in customHeaders:
             customHeaders = "Number;" + customHeaders
@@ -515,7 +515,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
             result = result[1:]
 
         # Set the custom headers for the current session
-        General_BOM_Functions.General_BOM.customHeaders = result
+        General_BOM.customHeaders = result
         # Write the custom headers to preferences, for next time
         Settings_BoM.SetStringSetting("CustomHeader", result)
         # If debug is enabled, log the action.
@@ -542,7 +542,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
             result = result[1:]
 
         # Set the custom headers for the current session
-        General_BOM_Functions.General_BOM.customHeaders = result
+        General_BOM.customHeaders = result
         # Write the custom headers to preferences, for next time
         Settings_BoM.SetStringSetting("CustomHeader", result)
 
@@ -593,7 +593,7 @@ class LoadDialog(Add_RemoveColumns_ui.Ui_Form):
                 self.form.Columns_To_Add.addItem(Property)
 
         # Set the headers to the initial state in the current session
-        General_BOM_Functions.General_BOM.customHeaders = initalHeaders
+        General_BOM.customHeaders = initalHeaders
         # Set the headers to the initial state in the preferences, for next time
         Settings_BoM.SetStringSetting("CustomHeader", initalHeaders)
 
