@@ -386,8 +386,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
         if General_BOM.CheckAssemblyType(doc) == "Internal":
             self.form.AssemblyType.setCurrentText("Internal assembly")
             self.form.FilterTopLevel.setEnabled(False)
-        if General_BOM.CheckAssemblyType(doc) == "Arch":
-            self.form.AssemblyType.setCurrentText("Arch")
+        if General_BOM.CheckAssemblyType(doc) == "BIM":
+            self.form.AssemblyType.setCurrentText("BIM")
             self.form.FilterTopLevel.setEnabled(True)
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
@@ -574,8 +574,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.AssemblyType.setCurrentText("Assembly 4")
         if General_BOM.CheckAssemblyType(doc) == "Internal":
             self.form.AssemblyType.setCurrentText("Internal assembly")
-        if General_BOM.CheckAssemblyType(doc) == "Arch":
-            self.form.AssemblyType.setCurrentText("Arch")
+        if General_BOM.CheckAssemblyType(doc) == "BIM":
+            self.form.AssemblyType.setCurrentText("BIM")
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             self.form.AssemblyType.setCurrentText("MultiBody")
 
@@ -754,8 +754,8 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             AssemblyType_Selected = "Assembly 4"
         if General_BOM.CheckAssemblyType(doc) == "Internal":
             AssemblyType_Selected = "Internal assembly"
-        if General_BOM.CheckAssemblyType(doc) == "Arch":
-            AssemblyType_Selected = "Arch"
+        if General_BOM.CheckAssemblyType(doc) == "BIM":
+            AssemblyType_Selected = "BIM"
         if General_BOM.CheckAssemblyType(doc) == "MultiBody":
             AssemblyType_Selected = "MultiBody"
         
@@ -858,7 +858,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
                     IndentNumbering=UseIndent_Checked,
                     CheckAssemblyType=not self.manualChange,
                 )        
-            if AssemblyType_Selected == "Arch":
+            if AssemblyType_Selected == "BIM":
                 GetBOM_BIM.BomFunctions.Start(
                     command=Command,
                     Level=Level_Value,
@@ -901,7 +901,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.label_6.setStyleSheet("")
             
             self.form.FilterTopLevel.setEnabled(False)                        
-        if AssemblyType_Selected == "Arch" or AssemblyType_Selected == "MultiBody":
+        if AssemblyType_Selected == "BIM" or AssemblyType_Selected == "MultiBody":
             self.form.IncludeBodies.setEnabled(False)
             self.form.label_3.setStyleSheet("""color: #787878;""")
 
@@ -920,7 +920,7 @@ class LoadWidget(BoM_Panel_ui.Ui_Dialog):
             self.form.label_5.setStyleSheet("""color: #787878;""")
             self.form.label_6.setStyleSheet("""color: #787878;""")
             
-            if AssemblyType_Selected == "Arch":
+            if AssemblyType_Selected == "BIM":
                 self.form.FilterTopLevel.setEnabled(True)
                 # self.form.FilterTopLevel.setVisible(True)
             else:

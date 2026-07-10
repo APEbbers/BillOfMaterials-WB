@@ -72,7 +72,7 @@ class CreatePartsOnlyBOM_Class:
             GetBOM_A3.BomFunctions.Start("PartsOnly")
         if General_BOM.CheckAssemblyType(doc) == "Internal":
             GetBOM_INTERNAL.BomFunctions.Start("PartsOnly")
-        if General_BOM.CheckAssemblyType(doc) == "Arch":
+        if General_BOM.CheckAssemblyType(doc) == "BIM":
             GetBOM_BIM.BomFunctions.Start(
                 command="Total",
                 IncludeBodies=True,

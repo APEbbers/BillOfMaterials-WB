@@ -684,7 +684,7 @@ class Ui_Dialog(object):
         self.AssemblyType.setItemText(4, QCoreApplication.translate("Dialog", u"App:LinkGroup", None))
         self.AssemblyType.setItemText(5, QCoreApplication.translate("Dialog", u"App:Part", None))
         self.AssemblyType.setItemText(6, QCoreApplication.translate("Dialog", u"MultiBody", None))
-        self.AssemblyType.setItemText(7, QCoreApplication.translate("Dialog", u"Arch", None))
+        self.AssemblyType.setItemText(7, QCoreApplication.translate("Dialog", u"BIM", None))
 
         self.CreateRaw.setText("")
         self.label_5.setText(QCoreApplication.translate("Dialog", u"Create raw BoM", None))

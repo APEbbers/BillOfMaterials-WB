@@ -992,8 +992,8 @@ def CheckAssemblyType(DocObject):
             return "Internal"
         if result == "AppLink":
             return "AppLink"
-        if result == "Arch":
-            return "Arch"
+        if result == "BIM":
+            return "BIM"
         if result == "MultiBody":
             return "MultiBody"
         if result == "AppPart":
@@ -1028,7 +1028,7 @@ def CheckMultiBodyType(DocObject):
     # Define the result
     result = ""
     
-    # if CheckAssemblyType(DocObject) != "Arch" or CheckAssemblyType(DocObject) != "MultiBody":
+    # if CheckAssemblyType(DocObject) != "BIM" or CheckAssemblyType(DocObject) != "MultiBody":
     #     return
 
     # Get the list with rootobjects
@@ -1070,7 +1070,7 @@ def CheckMultiBodyType(DocObject):
 
     # set the result to the correct string.
     if isArchItem is True:
-        result = "Arch"
+        result = "BIM"
     if isArchItem is False:
         result = "MultiBody"
 

@@ -141,7 +141,7 @@ class BomFunctions:
                 return "Internal"
             if result == "AppLink":
                 return "AppLink"
-            if result == "Arch":
+            if result == "BIM":
                 return "Arch"
             if result == "MultiBody":
                 return "MultiBody"
