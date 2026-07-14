@@ -219,8 +219,10 @@ class BomFunctions:
                 Object.TypeId == 'App::DocumentObjectGroupPython' or 
                 Object.TypeId == 'App::DocumentObjectGroup' or 
                 Object.TypeId == 'App::FeaturePython' or 
-                Object.TypeId == 'App::Part' or 
-                (Object.TypeId == 'Part::FeaturePython' and Object.Name.lower() == "site")
+                Object.TypeId == 'Part::FeaturePython' or 
+                Object.TypeId == 'Part::Feature' or 
+                Object.TypeId == 'App::Part' #or 
+                # (Object.TypeId == 'Part::FeaturePython' and Object.Name.lower() == "site")
             ):
                 # Create a list with child objects as DocumentObjects
                 childObjects = []
@@ -234,6 +236,16 @@ class BomFunctions:
                         childObjects.append(Object.Group[j])
                 except Exception:
                     pass
+                if len(childObjects) == 0:
+                    try:
+                        for k in range(len(Object.InList)):
+                            try:
+                                Object.InList[k].Hosts
+                                childObjects.append(Object.InList[k])
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
 
                 if len(childObjects) > 0:
                     self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -297,8 +309,10 @@ class BomFunctions:
                 childObject.TypeId == 'App::DocumentObjectGroupPython' or
                 childObject.TypeId == 'App::DocumentObjectGroup' or
                 childObject.TypeId == 'App::FeaturePython' or 
-                childObject.TypeId == 'App::Part' or 
-                (childObject.TypeId == 'Part::FeaturePython' and childObject.Name.lower() == "site")
+                childObject.TypeId == 'Part::FeaturePython' or 
+                childObject.TypeId == 'Part::Feature' or 
+                childObject.TypeId == 'App::Part' #or 
+                # (childObject.TypeId == 'Part::FeaturePython' and childObject.Name.lower() == "site")
             ):
                 # Create a list with sub child objects as DocumentObjects
                 subChildObjects = []
@@ -312,6 +326,16 @@ class BomFunctions:
                         #     ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
                 except Exception:
                     pass
+                if len(subChildObjects) == 0:
+                    try:
+                        for k in range(len(childObject.InList)):
+                            try:
+                                childObject.InList[k].Hosts
+                                subChildObjects.append(childObject.InList[k])
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
 
                 if len(subChildObjects) > 0:
                     self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
