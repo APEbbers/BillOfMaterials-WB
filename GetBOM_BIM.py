@@ -228,9 +228,12 @@ class BomFunctions:
                 childObjects.clear()
 
                 # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                for j in range(len(Object.Group)):
-                    # if self.AllowedObjectType(Object.Group[j].TypeId) is True:
-                    childObjects.append(Object.Group[j])
+                try:
+                    for j in range(len(Object.Group)):
+                        # if self.AllowedObjectType(Object.Group[j].TypeId) is True:
+                        childObjects.append(Object.Group[j])
+                except Exception:
+                    pass
 
                 if len(childObjects) > 0:
                     self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -300,12 +303,15 @@ class BomFunctions:
                 # Create a list with sub child objects as DocumentObjects
                 subChildObjects = []
                 # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
-                for j in range(len(childObject.Group)):
-                    # print(childObject.Group[j].TypeId + ", " + childObject.Group[j].Name)
-                    # if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
-                    subChildObjects.append(childObject.Group[j])
-                    # if childObject.TypeId == 'App::DocumentObjectGroup':
-                    #     ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
+                try:
+                    for j in range(len(childObject.Group)):
+                        # print(childObject.Group[j].TypeId + ", " + childObject.Group[j].Name)
+                        # if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
+                        subChildObjects.append(childObject.Group[j])
+                        # if childObject.TypeId == 'App::DocumentObjectGroup':
+                        #     ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
+                except Exception:
+                    pass
 
                 if len(subChildObjects) > 0:
                     self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
