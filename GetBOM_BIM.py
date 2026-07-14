@@ -232,10 +232,12 @@ class BomFunctions:
                 # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
                 try:
                     for j in range(len(Object.Group)):
-                        # if self.AllowedObjectType(Object.Group[j].TypeId) is True:
-                        childObjects.append(Object.Group[j])
+                        if self.AllowedObjectType(Object.Group[j].TypeId) is True:
+                            childObjects.append(Object.Group[j])
                 except Exception:
                     pass
+                # If childObjects is empty, check for objects that have a 'Host'.
+                # This are objects like doors and windows that are part of a wall
                 if len(childObjects) == 0:
                     try:
                         for k in range(len(Object.InList)):
@@ -319,13 +321,14 @@ class BomFunctions:
                 # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
                 try:
                     for j in range(len(childObject.Group)):
-                        # print(childObject.Group[j].TypeId + ", " + childObject.Group[j].Name)
-                        # if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
-                        subChildObjects.append(childObject.Group[j])
-                        # if childObject.TypeId == 'App::DocumentObjectGroup':
-                        #     ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
+                        if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
+                            subChildObjects.append(childObject.Group[j])
+                            # if childObject.TypeId == 'App::DocumentObjectGroup':
+                            #     ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
                 except Exception:
                     pass
+                # If childObjects is empty, check for objects that have a 'Host'.
+                # This are objects like doors and windows that are part of a wall
                 if len(subChildObjects) == 0:
                     try:
                         for k in range(len(childObject.InList)):
