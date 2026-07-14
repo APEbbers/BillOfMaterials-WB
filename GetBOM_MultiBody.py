@@ -81,13 +81,13 @@ class BomFunctions:
         AssemblyType = ""
         if checkAssemblyType is True:
             AssemblyType = General_BOM.CheckAssemblyType(doc)
-            if AssemblyType != "MultiBody" and AssemblyType != "Arch":
+            if AssemblyType != "MultiBody" and AssemblyType != "BIM":
                 Print(f"Not a multibody part but an {AssemblyType} Assembly!!", "Error")
                 return
         if AssemblyType == "MultiBody" or AssemblyType == "":
             self.Type = "MultiBody"
-        if AssemblyType == "Arch":
-            self.Type = "Arch"
+        if AssemblyType == "BIM":
+            self.Type = "BIM"
 
         # Get the list with rootobjects
         # docObjects = doc.RootObjects

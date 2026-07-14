@@ -211,8 +211,10 @@ class BomFunctions:
             # if Object.TypeId == "App::Part":
             if (
                 Object.TypeId == 'App::GeometryPython' or 
-                Object.TypeId == 'App::DocumentObjectGroupPython' or
+                Object.TypeId == 'App::DocumentObjectGroupPython' or 
+                Object.TypeId == 'App::DocumentObjectGroup' or 
                 Object.TypeId == 'App::FeaturePython' or 
+                Object.TypeId == 'App::Part' or 
                 (Object.TypeId == 'Part::FeaturePython' and Object.Name.lower() == "site")
             ):
                 # Create a list with child objects as DocumentObjects
@@ -249,10 +251,10 @@ class BomFunctions:
         Returns:
                 True
         """
-        # # Check if there are groups with items. create a list from it and add it to the docObjects.
-        # for ChildDocObject in ChilddocObjects:
-        #     if ChildDocObject.TypeId == 'App::DocumentObjectGroup':
-        #         ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(ChildDocObject))
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for ChildDocObject in ChilddocObjects:
+            if ChildDocObject.TypeId == 'App::DocumentObjectGroup':
+                ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(ChildDocObject))
 
         for i in range(len(ChilddocObjects)):
             # Get the childDocumentObject
@@ -285,7 +287,9 @@ class BomFunctions:
             if (
                 childObject.TypeId == 'App::GeometryPython' or 
                 childObject.TypeId == 'App::DocumentObjectGroupPython' or
+                childObject.TypeId == 'App::DocumentObjectGroup' or
                 childObject.TypeId == 'App::FeaturePython' or 
+                childObject.TypeId == 'App::Part' or 
                 (childObject.TypeId == 'Part::FeaturePython' and childObject.Name.lower() == "site")
             ):
                 # Create a list with sub child objects as DocumentObjects

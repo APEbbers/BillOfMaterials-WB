@@ -1110,7 +1110,7 @@
                 </item>
                 <item>
                  <property name="text">
-                  <string>Arch</string>
+                  <string>BIM</string>
                  </property>
                  <property name="icon">
                   <iconset>
@@ -1214,8 +1214,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../../../../../../../home/paul/.local/share/FreeCAD/v1-2/Mod/BillOfMaterials-WB/Icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
