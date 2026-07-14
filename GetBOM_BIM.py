@@ -141,6 +141,8 @@ class BomFunctions:
         
         # Check if a site object is present.
         sitePresent = False
+        buildingPresent = False
+        levelPresent = False
         if Settings_BoM.FILTER_TOPLEVEL is True:            
             for i in range(len(docObjects)):
                 # Get the documentObject
@@ -150,13 +152,13 @@ class BomFunctions:
                     break
                 try:
                     Object.BuildingType
-                    sitePresent = True
+                    buildingPresent = True
                     break
                 except Exception:
                     pass
                 try:
                     Object.LevelOffset
-                    sitePresent = True
+                    levelPresent = True
                     break
                 except Exception:
                     pass
@@ -170,16 +172,19 @@ class BomFunctions:
             if sitePresent:
                 if Object.Name.lower() != "site":
                     continue
+            if buildingPresent:
                 try:
                     Object.BuildingType
-                    continue
-                except Exception:
                     pass
+                except Exception:
+                    continue
+            if levelPresent:
                 try:
                     Object.LevelOffset
-                    continue
-                except Exception:
                     pass
+                except Exception:
+                    continue
+                
 
             # Increase the itemnumber
             ItemNumber = int(ItemNumber) + 1
@@ -506,9 +511,9 @@ class BomFunctions:
                         ShadowList_2.append(itemNumber)
                                        
 
-        # Correct the itemnumbers if indentation is wanted.
-        if IndentNumbering is True:
-            TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
+        # # Correct the itemnumbers if indentation is wanted.
+        # if IndentNumbering is True:
+        #     TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
 
         # # correct the quantities for the parts in subassemblies
         # TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
