@@ -493,13 +493,13 @@ class BomFunctions:
         resultList = []
         try:
             Objects = Group.Group
-            if Objects.Visibility is True:
-                if Objects[0].TypeId != 'Assembly::JointGroup':
-                    for Object in Objects:
-                        if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
-                            resultList.append(Object)
-                        if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
-                            resultList.extend(self.Sub_GetObjectsFromGroups(Object))
+            # if Objects.Visibility is True:
+            if Objects[0].TypeId != 'Assembly::JointGroup':
+                for Object in Objects:
+                    if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
+                        resultList.append(Object)
+                    if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
+                        resultList.extend(self.Sub_GetObjectsFromGroups(Object))
         except Exception:
             pass
         return resultList
@@ -538,17 +538,17 @@ class BomFunctions:
         docObjects = []
         # rootObjects = self.GetRootObjects()
         rootObjects = doc.RootObjects
-        if AssemblyType == "Assembly4":
+        if AssemblyType == "Assembly4" or AssemblyType == "Internal":
             rootObjects = self.GetRootObjects()
 
         for i in range(len(rootObjects)):
             if rootObjects[i].Visibility is True:
                 docObjects.append(rootObjects[i])
 
-        # # Check if there are groups with items. create a list from it and add it to the docObjects.
-        # for docObject in docObjects:
-        #     if docObject.TypeId == "App::DocumentObjectGroup":
-        #         docObjects.extend(self.GetObjectsFromGroups(docObject))
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for docObject in docObjects:
+            if docObject.TypeId == "App::DocumentObjectGroup":
+                docObjects.extend(self.GetObjectsFromGroups(docObject))
 
         # Check if there are parts which are duplicates.
         # Threat them as identical parts and replace the copies with the original
@@ -820,6 +820,7 @@ class BomFunctions:
             # Get the documentObject
             childObject = ChilddocObjects[i]
             GroupItems = self.GetObjectsFromGroups(childObject)
+            print(GroupItems)
             if len(GroupItems) > 0 and childObject.Visibility is True:
                 for j in range(len(GroupItems)):
                     if GroupItems[j].Visibility is True:
@@ -843,7 +844,10 @@ class BomFunctions:
             if IsArray is True:
                 Qty = int(childObject.Count)
                 for i in range(childObject.Count):
-                    childObjectList.append(childObject.SourceObject)
+                    try:
+                        childObjectList.append(childObject.SourceObject)
+                    except Exception:
+                        pass
             else:
                 childObjectList.append(childObject)
         ChilddocObjects = childObjectList     
