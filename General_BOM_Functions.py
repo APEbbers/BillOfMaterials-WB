@@ -1080,13 +1080,13 @@ def GetObjectsFromGroups(Group):
     resultList = []
     try:
         Objects = Group.Group
-        if Objects.Visibility is True:
-            if Objects[0].TypeId != 'Assembly::JointGroup':
-                for Object in Objects:
-                    if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
-                        resultList.append(Object)
-                    if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
-                        resultList.extend(Sub_GetObjectsFromGroups(Object))
+        # if Objects.Visibility is True:
+        if Objects[0].TypeId != 'Assembly::JointGroup':
+            for Object in Objects:
+                if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
+                    resultList.append(Object)
+                if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
+                    resultList.extend(Sub_GetObjectsFromGroups(Object))
     except Exception:
         pass
     return resultList
@@ -1095,13 +1095,13 @@ def Sub_GetObjectsFromGroups(Group):
     resultList = []
     try:
         Objects = Group.Group
-        if Objects.Visibility is True:
-            if Objects[0].TypeId != 'Assembly::JointGroup':
-                for Object in Objects:
-                    if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
-                        resultList.append(Object)
-                    if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
-                        resultList.extend(GetObjectsFromGroups(Object))
+        # if Objects.Visibility is True:
+        if Objects[0].TypeId != 'Assembly::JointGroup':
+            for Object in Objects:
+                if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
+                    resultList.append(Object)
+                if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
+                    resultList.extend(GetObjectsFromGroups(Object))
     except Exception:
         pass
     return resultList
