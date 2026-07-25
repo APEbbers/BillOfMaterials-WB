@@ -591,8 +591,6 @@ class BomFunctions:
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
         
-        print(docObjects)
-        
         # Go Through all objects
         self.GoThrough_Objects(
             docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber
@@ -1772,7 +1770,6 @@ class BomFunctions:
             self.GetTreeObjects()
             
             print("Used mixed BoM")
-            print(len(self.mainList))
 
             if len(self.mainList) > 0:
                 IncludeBodiesText = "Do you want to include bodies?"

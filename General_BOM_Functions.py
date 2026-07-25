@@ -69,7 +69,10 @@ def createBoMSpreadsheet(
     IsNewSheet = False
     sheet = None
     try:
-        doc.removeObject("BoM")
+        objects = doc.getObjectsByLabel("BoM")
+        for obj in objects:
+            if obj.Label == "BoM":
+                doc.removeObject(obj.Name)
     except Exception:
         pass
     if sheet is None:
