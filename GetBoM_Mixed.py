@@ -472,7 +472,7 @@ class BomFunctions:
         return counter
     
     # @classmethod
-    def GetRootObjects():
+    def GetRootObjects(AssemblyType = ""):
         # Get the active document
         doc = App.ActiveDocument
         
@@ -482,9 +482,24 @@ class BomFunctions:
         RootObjects = []
         
         # Get all toplevel objects
-        for Object in Objects:
-            if len(Object.Parents) == 0 and Object.Visibility is True:
-                RootObjects.append(Object)
+        if AssemblyType == "Assembly4":
+            for Object in Objects:
+                try:
+                    if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
+                        RootObjects.append(Object)
+                except Exception:
+                    pass
+        if AssemblyType == "Internal":
+            for Object in Objects:
+                try:
+                    if (Object.Type == "Assembly" and Object.TypeId == "Assembly::AssemblyObject"):
+                        RootObjects.append(Object)
+                except Exception:
+                    pass
+        if AssemblyType == "":
+                for Object in Objects:
+                    if len(Object.Parents) == 0 and Object.Visibility is True:
+                        RootObjects.append(Object)
         
         return RootObjects
     
@@ -493,13 +508,13 @@ class BomFunctions:
         resultList = []
         try:
             Objects = Group.Group
-            if Objects.Visibility is True:
-                if Objects[0].TypeId != 'Assembly::JointGroup':
-                    for Object in Objects:
-                        if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
-                            resultList.append(Object)
-                        if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
-                            resultList.extend(self.Sub_GetObjectsFromGroups(Object))
+            # if Objects.Visibility is True:
+            if Objects[0].TypeId != 'Assembly::JointGroup':
+                for Object in Objects:
+                    if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:                        
+                        resultList.append(Object)
+                    if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
+                        resultList.extend(self.Sub_GetObjectsFromGroups(Object))
         except Exception:
             pass
         return resultList
@@ -509,13 +524,13 @@ class BomFunctions:
         resultList = []
         try:
             Objects = Group.Group
-            if Objects.Visibility is True:
-                if Objects[0].TypeId != 'Assembly::JointGroup':
-                    for Object in Objects:
-                        if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
-                            resultList.append(Object)
-                        if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
-                            resultList.extend(self.Sub_GetObjectsFromGroups(Object))
+            # if Objects.Visibility is True:
+            if Objects[0].TypeId != 'Assembly::JointGroup':
+                for Object in Objects:
+                    if Object.TypeId != "App::DocumentObjectGroup" and Object.Visibility is True:
+                        resultList.append(Object)
+                    if Object.TypeId == "App::DocumentObjectGroup" and Object.Visibility is True:
+                        resultList.extend(self.Sub_GetObjectsFromGroups(Object))
         except Exception:
             pass
         return resultList
@@ -532,23 +547,24 @@ class BomFunctions:
 
         # Detect the assembly type
         AssemblyType = self.CheckAssemblyType_Root(doc)
-        print(f"Assembly type is: {AssemblyType}")
 
         # Get the list with rootobjects
         docObjects = []
         # rootObjects = self.GetRootObjects()
         rootObjects = doc.RootObjects
-        if AssemblyType == "Assembly4":
-            rootObjects = self.GetRootObjects()
+        if AssemblyType == "Assembly4" or AssemblyType == "Internal":
+            rootObjects = self.GetRootObjects("Assembly4")
+        if AssemblyType == "Internal":
+            rootObjects = self.GetRootObjects("Internal")
 
         for i in range(len(rootObjects)):
             if rootObjects[i].Visibility is True:
                 docObjects.append(rootObjects[i])
 
-        # # Check if there are groups with items. create a list from it and add it to the docObjects.
-        # for docObject in docObjects:
-        #     if docObject.TypeId == "App::DocumentObjectGroup":
-        #         docObjects.extend(self.GetObjectsFromGroups(docObject))
+        # Check if there are groups with items. create a list from it and add it to the docObjects.
+        for docObject in docObjects:
+            if docObject.TypeId == "App::DocumentObjectGroup":
+                docObjects.extend(self.GetObjectsFromGroups(docObject))
 
         # Check if there are parts which are duplicates.
         # Threat them as identical parts and replace the copies with the original
@@ -574,7 +590,7 @@ class BomFunctions:
 
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
-
+        
         # Go Through all objects
         self.GoThrough_Objects(
             docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber
@@ -705,7 +721,7 @@ class BomFunctions:
             if len(GroupItems) > 0 and Object.Visibility is True:
                 for j in range(len(GroupItems)):
                     if GroupItems[j].Visibility is True:
-                        docObjects.insert(i + j + 1, GroupItems[j])
+                        docObjects.append(GroupItems[j])
         
         # This is for Assembly4 patterns
         objectList = []                        
@@ -823,7 +839,7 @@ class BomFunctions:
             if len(GroupItems) > 0 and childObject.Visibility is True:
                 for j in range(len(GroupItems)):
                     if GroupItems[j].Visibility is True:
-                        ChilddocObjects.insert(i + j + 1, GroupItems[j])
+                        ChilddocObjects.append(GroupItems[j])
         
         # This is for Assembly4 patterns
         childObjectList = []                        
@@ -843,7 +859,10 @@ class BomFunctions:
             if IsArray is True:
                 Qty = int(childObject.Count)
                 for i in range(childObject.Count):
-                    childObjectList.append(childObject.SourceObject)
+                    try:
+                        childObjectList.append(childObject.SourceObject)
+                    except Exception:
+                        pass
             else:
                 childObjectList.append(childObject)
         ChilddocObjects = childObjectList     
