@@ -472,7 +472,7 @@ class BomFunctions:
         return counter
     
     # @classmethod
-    def GetRootObjects():
+    def GetRootObjects(AssemblyType = ""):
         # Get the active document
         doc = App.ActiveDocument
         
@@ -482,9 +482,24 @@ class BomFunctions:
         RootObjects = []
         
         # Get all toplevel objects
-        for Object in Objects:
-            if len(Object.Parents) == 0 and Object.Visibility is True:
-                RootObjects.append(Object)
+        if AssemblyType == "Assembly4":
+            for Object in Objects:
+                try:
+                    if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
+                        RootObjects.append(Object)
+                except Exception:
+                    pass
+        if AssemblyType == "Internal":
+            for Object in Objects:
+                try:
+                    if (Object.Type == "Assembly" and Object.TypeId == "Assembly::AssemblyObject"):
+                        RootObjects.append(Object)
+                except Exception:
+                    pass
+        if AssemblyType == "":
+                for Object in Objects:
+                    if len(Object.Parents) == 0 and Object.Visibility is True:
+                        RootObjects.append(Object)
         
         return RootObjects
     
@@ -538,7 +553,9 @@ class BomFunctions:
         # rootObjects = self.GetRootObjects()
         rootObjects = doc.RootObjects
         if AssemblyType == "Assembly4" or AssemblyType == "Internal":
-            rootObjects = self.GetRootObjects()
+            rootObjects = self.GetRootObjects("Assembly4")
+        if AssemblyType == "Internal":
+            rootObjects = self.GetRootObjects("Internal")
 
         for i in range(len(rootObjects)):
             if rootObjects[i].Visibility is True:
@@ -573,7 +590,9 @@ class BomFunctions:
 
         # Define the start of the item numbering. At 0, the loop will start from 1.
         ItemNumber = 0
-
+        
+        print(docObjects)
+        
         # Go Through all objects
         self.GoThrough_Objects(
             docObjects=docObjects, sheet=sheet, ItemNumber=ItemNumber
@@ -1753,6 +1772,7 @@ class BomFunctions:
             self.GetTreeObjects()
             
             print("Used mixed BoM")
+            print(len(self.mainList))
 
             if len(self.mainList) > 0:
                 IncludeBodiesText = "Do you want to include bodies?"

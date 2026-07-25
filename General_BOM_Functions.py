@@ -943,13 +943,13 @@ def CheckAssemblyType(DocObject):
     for Object in RootObjects:
         try:
             if Object.AssemblyType == "Part::Link" and Object.Type == "Assembly":
-                resultList.append("Assembly4")
+                return "Assembly4"
         except Exception:
             pass
 
         try:
             if Object.SolverType == "SolveSpace":
-                resultList.append("Assembly3")
+                return "Assembly3"
         except Exception:
             pass
 
@@ -958,19 +958,19 @@ def CheckAssemblyType(DocObject):
                 Object.Type == "Assembly"
                 and Object.TypeId == "Assembly::AssemblyObject"
             ):
-                resultList.append("Internal")
+                return "Internal"
         except Exception:
             pass
 
         try:
             if Object.TypeId == "App::Link" or Object.TypeId == "App::LinkGroup":
-                resultList.append("AppLink")
+                return "AppLink"
         except Exception:
             pass
 
         try:
             if Object.Type == "" and Object.TypeId == "App::Part":
-                resultList.append("AppPart")
+                return "AppPart"
         except Exception:
             pass
     
@@ -982,26 +982,11 @@ def CheckAssemblyType(DocObject):
     except Exception:
         pass
 
-    check_AppPart = False
     for result in resultList:
-        if result == "Assembly3":
-            return "Assembly3"
-        if result == "Assembly4":
-            return "Assembly4"
-        if result == "Internal":
-            return "Internal"
-        if result == "AppLink":
-            return "AppLink"
         if result == "BIM":
             return "BIM"
         if result == "MultiBody":
             return "MultiBody"
-        if result == "AppPart":
-            check_AppPart = True
-
-    if check_AppPart is True:
-        result = "AppPart"
-
     return result
 
 def CheckMultiBodyType(DocObject):
