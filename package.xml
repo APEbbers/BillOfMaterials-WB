@@ -9,6 +9,8 @@
 
   <date>2024-01-03</date>
 
+  <author>Paul Ebbers</author>
+
   <maintainer email="business@apebbers.nl">Paul Ebbers</maintainer>
 
   <license file="LICENSE">LGPL-3.0-or-later</license>
