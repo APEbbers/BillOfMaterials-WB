@@ -217,7 +217,7 @@ class BomFunctions:
             if len(GroupItems) > 0 and Object.Visibility is True:
                 for j in range(len(GroupItems)):
                     if GroupItems[j].Visibility is True:
-                        docObjects.insert(i + j + 1, GroupItems[j])
+                        docObjects.append(GroupItems[j])
 
         for i in range(len(docObjects)):
             # Get the documentObject
@@ -304,12 +304,12 @@ class BomFunctions:
         """
         for i in range(len(ChilddocObjects)):
             # Get the documentObject
-            Object = ChilddocObjects[i]
-            GroupItems = General_BOM.GetObjectsFromGroups(Object)
-            if len(GroupItems) > 0 and Object.Visibility is True:
+            childObject = ChilddocObjects[i]
+            GroupItems = General_BOM.GetObjectsFromGroups(childObject)
+            if len(GroupItems) > 0 and childObject.Visibility is True:
                 for j in range(len(GroupItems)):
                     if GroupItems[j].Visibility is True:
-                        ChilddocObjects.insert(i + j + 1, GroupItems[j])
+                        ChilddocObjects.append(GroupItems[j])
                     
 
         for i in range(len(ChilddocObjects)):

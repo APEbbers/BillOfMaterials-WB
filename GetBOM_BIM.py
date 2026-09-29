@@ -141,6 +141,8 @@ class BomFunctions:
         
         # Check if a site object is present.
         sitePresent = False
+        buildingPresent = False
+        levelPresent = False
         if Settings_BoM.FILTER_TOPLEVEL is True:            
             for i in range(len(docObjects)):
                 # Get the documentObject
@@ -150,13 +152,13 @@ class BomFunctions:
                     break
                 try:
                     Object.BuildingType
-                    sitePresent = True
+                    buildingPresent = True
                     break
                 except Exception:
                     pass
                 try:
                     Object.LevelOffset
-                    sitePresent = True
+                    levelPresent = True
                     break
                 except Exception:
                     pass
@@ -170,16 +172,19 @@ class BomFunctions:
             if sitePresent:
                 if Object.Name.lower() != "site":
                     continue
+            if buildingPresent:
                 try:
                     Object.BuildingType
-                    continue
-                except Exception:
                     pass
+                except Exception:
+                    continue
+            if levelPresent:
                 try:
                     Object.LevelOffset
-                    continue
-                except Exception:
                     pass
+                except Exception:
+                    continue
+                
 
             # Increase the itemnumber
             ItemNumber = int(ItemNumber) + 1
@@ -214,8 +219,10 @@ class BomFunctions:
                 Object.TypeId == 'App::DocumentObjectGroupPython' or 
                 Object.TypeId == 'App::DocumentObjectGroup' or 
                 Object.TypeId == 'App::FeaturePython' or 
-                Object.TypeId == 'App::Part' or 
-                (Object.TypeId == 'Part::FeaturePython' and Object.Name.lower() == "site")
+                Object.TypeId == 'Part::FeaturePython' or 
+                Object.TypeId == 'Part::Feature' or 
+                Object.TypeId == 'App::Part' #or 
+                # (Object.TypeId == 'Part::FeaturePython' and Object.Name.lower() == "site")
             ):
                 # Create a list with child objects as DocumentObjects
                 childObjects = []
@@ -223,9 +230,24 @@ class BomFunctions:
                 childObjects.clear()
 
                 # Go through the subObjects of the document object, If the item(i) is not None, add it to the list.
-                for j in range(len(Object.Group)):
-                    # if self.AllowedObjectType(Object.Group[j].TypeId) is True:
-                    childObjects.append(Object.Group[j])
+                try:
+                    for j in range(len(Object.Group)):
+                        if self.AllowedObjectType(Object.Group[j].TypeId) is True:
+                            childObjects.append(Object.Group[j])
+                except Exception:
+                    pass
+                # If childObjects is empty, check for objects that have a 'Host'.
+                # This are objects like doors and windows that are part of a wall
+                if len(childObjects) == 0:
+                    try:
+                        for k in range(len(Object.InList)):
+                            try:
+                                Object.InList[k].Hosts
+                                childObjects.append(Object.InList[k])
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
 
                 if len(childObjects) > 0:
                     self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -289,18 +311,34 @@ class BomFunctions:
                 childObject.TypeId == 'App::DocumentObjectGroupPython' or
                 childObject.TypeId == 'App::DocumentObjectGroup' or
                 childObject.TypeId == 'App::FeaturePython' or 
-                childObject.TypeId == 'App::Part' or 
-                (childObject.TypeId == 'Part::FeaturePython' and childObject.Name.lower() == "site")
+                childObject.TypeId == 'Part::FeaturePython' or 
+                childObject.TypeId == 'Part::Feature' or 
+                childObject.TypeId == 'App::Part' #or 
+                # (childObject.TypeId == 'Part::FeaturePython' and childObject.Name.lower() == "site")
             ):
                 # Create a list with sub child objects as DocumentObjects
                 subChildObjects = []
                 # Go through the subObjects of the child document object, if item(i) is not None, add it to the list
-                for j in range(len(childObject.Group)):
-                    # print(childObject.Group[j].TypeId + ", " + childObject.Group[j].Name)
-                    # if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
-                    subChildObjects.append(childObject.Group[j])
-                    # if childObject.TypeId == 'App::DocumentObjectGroup':
-                    #     ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
+                try:
+                    for j in range(len(childObject.Group)):
+                        if self.AllowedObjectType(childObject.Group[j].TypeId) is True:
+                            subChildObjects.append(childObject.Group[j])
+                            # if childObject.TypeId == 'App::DocumentObjectGroup':
+                            #     ChilddocObjects.extend(General_BOM.GetObjectsFromGroups(childObject))
+                except Exception:
+                    pass
+                # If childObjects is empty, check for objects that have a 'Host'.
+                # This are objects like doors and windows that are part of a wall
+                if len(subChildObjects) == 0:
+                    try:
+                        for k in range(len(childObject.InList)):
+                            try:
+                                childObject.InList[k].Hosts
+                                subChildObjects.append(childObject.InList[k])
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
 
                 if len(subChildObjects) > 0:
                     self.mainList[len(self.mainList) - 1]["Type"] = "Assembly"
@@ -506,9 +544,9 @@ class BomFunctions:
                         ShadowList_2.append(itemNumber)
                                        
 
-        # Correct the itemnumbers if indentation is wanted.
-        if IndentNumbering is True:
-            TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
+        # # Correct the itemnumbers if indentation is wanted.
+        # if IndentNumbering is True:
+        #     TemporaryList = General_BOM.CorrectItemNumbers(TemporaryList)
 
         # # correct the quantities for the parts in subassemblies
         # TemporaryList = General_BOM.correctQtyAssemblies(TemporaryList)
