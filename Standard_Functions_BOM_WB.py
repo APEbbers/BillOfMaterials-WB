@@ -122,48 +122,7 @@ def Mbox(text, title="", style=0, IconType="Information", default="", stringList
             replyText = reply[0]  # which will be "" if they clicked Cancel
         return str(replyText)
 
-
-def SaveDialog(files, OverWrite: bool = True):
-    """
-    files must be like:\n
-    files = [\n
-        ('All Files', '*.*'),\n
-        ('Python Files', '*.py'),\n
-        ('Text Document', '*.txt')\n
-    ]\n
-    \n
-    OverWrite:\n
-    If True, file will be overwritten\n
-    If False, only the path+filename will be returned\n
-    """
-    import tkinter as tk
-    from tkinter.filedialog import asksaveasfile
-    from tkinter.filedialog import askopenfilename
-
-    # Create the window
-    root = tk.Tk()
-    # Hide the window
-    root.withdraw()
-
-    if OverWrite is True:
-        file = asksaveasfile(filetypes=files, defaultextension=files)
-        if file is not None:
-            return file.name
-    if OverWrite is False:
-        file = askopenfilename(filetypes=files, defaultextension=files)
-        if file is not None:
-            return file
-
-
 def GetLetterFromNumber(number: int, UCase: bool = True):
-    # from openpyxl.utils import get_column_letter
-
-    # Letter = get_column_letter(number)
-
-    # # If UCase is true, convert to upper case
-    # if UCase is True:
-    #     Letter = Letter.upper()
-
     """Number to Excel-style column name, e.g., 1 = A, 26 = Z, 27 = AA, 703 = AAA."""
     Letter = ""
     while number > 0:
@@ -173,10 +132,6 @@ def GetLetterFromNumber(number: int, UCase: bool = True):
 
 
 def GetNumberFromLetter(Letter):
-    # from openpyxl.utils import column_index_from_string
-
-    # Number = column_index_from_string(Letter)
-
     """Excel-style column name to number, e.g., A = 1, Z = 26, AA = 27, AAA = 703."""
     number = 0
     for c in Letter:
@@ -228,38 +183,6 @@ def RemoveLettersFromString(string: str) -> str:
     result = "".join(no_chars)
 
     return result
-
-
-def CheckIfWorkbookExists(FullFileName: str, CreateIfNone: bool = True):
-    import os
-
-    try:
-        from openpyxl import Workbook
-    except Exception:
-        return False
-
-    result = False
-    try:
-        result = os.path.exists(FullFileName)
-    except Exception:
-        if CreateIfNone is True:
-            Filter = [
-                ("Excel", "*.xlsx"),
-                (
-                    "Excel Macro-enabled Workbook",
-                    "*.xlsm",
-                ),
-            ]
-            FullFileName = SaveDialog(Filter)
-            if FullFileName.strip():
-                wb = Workbook(str(FullFileName))
-                wb.save(FullFileName)
-                wb.close()
-                result = True
-        if CreateIfNone is False:
-            result = False
-    return result
-
 
 def ColorConvertor(ColorRGB: [], Alpha: float = 1) -> ():
     """
